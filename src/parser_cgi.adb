@@ -85,12 +85,12 @@ cgi_cookie_count_t     : identifier;
 -- True if Error on Parse.
 -----------------------------------------------------------------------------
 
-procedure ParseParsing_Errors( result : out unbounded_string; kind : out identifier ) is
+procedure ParseParsing_Errors( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( cgi_parsing_errors_t );
   if isExecutingCommand then
-     result := to_spar_boolean( cgi.parsing_errors );
+     result := storage'( to_spar_boolean( cgi.parsing_errors ), noMetaLabel );
   end if;
 end ParseParsing_Errors;
 
@@ -102,12 +102,12 @@ end ParseParsing_Errors;
 -- True if Input Received.
 -----------------------------------------------------------------------------
 
-procedure ParseInput_Received( result : out unbounded_string; kind : out identifier ) is
+procedure ParseInput_Received( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( cgi_input_received_t );
   if isExecutingCommand then
-     result := to_spar_boolean( cgi.input_received );
+     result := storage'( to_spar_boolean( cgi.input_received ), noMetaLabel );
   end if;
 end ParseInput_Received;
 
@@ -121,12 +121,12 @@ end ParseInput_Received;
 -- query.
 -------------------------------------------------------------------------------
 
-procedure ParseIs_Index( result : out unbounded_string; kind : out identifier ) is
+procedure ParseIs_Index( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( cgi_is_index_t );
   if isExecutingCommand then
-     result := to_spar_boolean( cgi.is_index );
+     result := storage'( to_spar_boolean( cgi.is_index ), noMetaLabel );
   end if;
 end ParseIs_Index;
 
@@ -139,12 +139,12 @@ end ParseIs_Index;
 -- type CGI_Method_Type is (Get, Post, Unknown);
 -----------------------------------------------------------------------------
 
-procedure ParseCGI_Method( result : out unbounded_string; kind : out identifier ) is
+procedure ParseCGI_Method( result : out storage; kind : out identifier ) is
 begin
   kind := cgi_cgi_method_type_t;
   expect( cgi_cgi_method_t );
   if isExecutingCommand then
-     result := To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" );
+     result := storage'( To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" ), noMetaLabel );
   end if;
 end ParseCGI_Method;
 
@@ -161,26 +161,26 @@ end ParseCGI_Method;
 -- These routines find the Index'th value of that key (normally the first one).
 -----------------------------------------------------------------------------
 
-procedure ParseValue( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseValue( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string := to_unbounded_string( " 1" ); -- default
+  exprExpr2 : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel ); -- default
   expr_type2: identifier;
-  expr_val3 : unbounded_string := identifiers( false_t ).value.all;
+  exprExpr3 : storage := storage'( identifiers( false_t ).value.all, noMetalabel );
   expr_type3: identifier;
 begin
   kind := string_t;
   expect( cgi_value_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( expr_val2, expr_type2 );
+        ParseExpression( exprExpr2, expr_type2 );
         if uniTypesOk( expr_type2, positive_t ) then
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
-              ParseExpression( expr_val3, expr_type3 );
+              ParseExpression( exprExpr3, expr_type3 );
               if uniTypesOk( expr_type3, boolean_t ) then
                  null;
               end if;
@@ -191,9 +191,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       result := cgi.Value( expr_val,
-         positive'value( to_string( expr_val2 ) ),
-         expr_val3 = identifiers( true_t ).value.all );
+       result := storage'( cgi.Value( exprExpr.value,
+         positive'value( to_string( exprExpr2.value ) ),
+         exprExpr3.value = identifiers( true_t ).value.all ), noMetaLabel );
      exception when constraint_error =>
          err( +"key does not exist" );
      when others =>
@@ -211,27 +211,27 @@ end ParseValue;
 -- Was a given key provided?
 -----------------------------------------------------------------------------
 
-procedure ParseKey_Exists( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseKey_Exists( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  exprExpr2 : storage;
   expr_type2: identifier;
 begin
   kind := boolean_t;
   expect( cgi_key_exists_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( expr_val2, expr_type2 );
+     ParseExpression( exprExpr2, expr_type2 );
      if uniTypesOk( expr_type2, positive_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
   if isExecutingCommand then
-     result := to_spar_boolean(
-          cgi.key_exists( expr_val, positive'value( to_string( expr_val2 ) ) )
-       );
+     result := storage'( to_spar_boolean(
+          cgi.key_exists( exprExpr.value, positive'value( to_string( exprExpr2.value ) ) )
+       ), noMetaLabel );
 -- RESULT SHOULD BE NUMERIC BOOLEAN, NOT STRING.  UTIL FUNCTION FOR THIS?
   end if;
 end ParseKey_Exists;
@@ -244,19 +244,19 @@ end ParseKey_Exists;
 -- How many of a given key were provided?
 -----------------------------------------------------------------------------
 
-procedure ParseKey_Count( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseKey_Count( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := natural_t;
   expect( cgi_key_count_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     result := to_unbounded_string( cgi.key_count( expr_val )'img );
+     result := storage'( to_unbounded_string( cgi.key_count( exprExpr.value )'img ), noMetaLabel );
   end if;
 end ParseKey_Count;
 
@@ -271,12 +271,12 @@ end ParseKey_Count;
 -- 0 means no data sent.
 -----------------------------------------------------------------------------
 
-procedure ParseCGIArgument_Count( result : out unbounded_string; kind : out identifier ) is
+procedure ParseCGIArgument_Count( result : out storage; kind : out identifier ) is
 begin
    kind := natural_t;
   expect( cgi_argument_count_t );
   if isExecutingCommand then
-     result := to_unbounded_string( natural'image( cgi.Argument_Count ));
+     result := storage'( to_unbounded_string( natural'image( cgi.Argument_Count )), noMetaLabel );
   end if;
 end ParseCGIArgument_Count;
 
@@ -287,20 +287,20 @@ end ParseCGIArgument_Count;
 -- function ParseKey(Position : in Positive) return Unbounded_String is
 -----------------------------------------------------------------------------
 
-procedure ParseKey( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseKey( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := string_t;
   expect( cgi_key_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       result := cgi.key( positive( to_numeric( expr_val ) ) );
+       result := storage'( cgi.key( positive( to_numeric( exprExpr.value ) ) ), noMetaLabel );
      exception when constraint_error =>
        err( +"no key at this position" );
      when others =>
@@ -316,20 +316,20 @@ end ParseKey;
 -- function ParseKeyValue(Position : in Positive) return Unbounded_String is
 -----------------------------------------------------------------------------
 
-procedure ParseKeyValue( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseKeyValue( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := string_t;
   expect( cgi_key_value_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       result := cgi.value( positive( to_numeric( expr_val ) ) );
+       result := storage'( cgi.value( positive( to_numeric( exprExpr.value ) ) ), noMetaLabel );
      exception when constraint_error =>
        err( +"no key at this position" );
      when others =>
@@ -352,25 +352,25 @@ end ParseKeyValue;
 -- Returns True if a given Key has exactly Value as one of its values.
 -----------------------------------------------------------------------------
 
-procedure ParseKey_Value_Exists( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseKey_Value_Exists( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  expr2_val  : unbounded_string := to_unbounded_string( "1" );
+  expr2Expr  : storage := storage'( to_unbounded_string( "1" ), noMetaLabel );
   expr2_type : identifier;
 begin
   kind := boolean_t;
   expect( cgi_key_value_exists_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( expr2_val, expr2_type );
+     ParseExpression( expr2Expr, expr2_type );
      if uniTypesOk( expr2_type, uni_string_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
   if isExecutingCommand then
-     result := to_spar_boolean( cgi.key_value_exists( expr_val, expr2_val ) );
+     result := storage'( to_spar_boolean( cgi.key_value_exists( exprExpr.value, expr2Expr.value ) ), noMetaLabel );
   end if;
 end ParseKey_Value_Exists;
 
@@ -391,20 +391,20 @@ end ParseKey_Value_Exists;
 -----------------------------------------------------------------------------
 
 procedure ParsePut_CGI_Header is
-  expr_val  : unbounded_string := to_unbounded_string( "Content-Type: text/html" );
+  exprExpr  : storage := storage'( to_unbounded_string( "Content-Type: text/html" ), noMetaLabel );
   expr_type : identifier;
 begin
   expect( cgi_put_cgi_header_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
-     ParseExpression( expr_val, expr_type );
+     ParseExpression( exprExpr, expr_type );
      if uniTypesOk( expr_type, uni_string_t ) then
          null;
      end if;
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     cgi.put_cgi_header( to_string( expr_val ) );
+     cgi.put_cgi_header( to_string( exprExpr.value ) );
   end if;
 end ParsePut_CGI_Header;
 
@@ -421,18 +421,18 @@ end ParsePut_CGI_Header;
 -----------------------------------------------------------------------------
 
 procedure ParsePut_HTML_Head is
-  expr_val  : unbounded_string;
+  exprExpr  : storage;
   expr_type : identifier;
-  expr2_val  : unbounded_string := null_unbounded_string;
+  expr2Expr  : storage := nullStorage;
   expr2_type : identifier;
 begin
   expect( cgi_put_html_head_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         expectParameterComma;
-        ParseExpression( expr2_val, expr2_type );
+        ParseExpression( expr2Expr, expr2_type );
         if uniTypesOk( expr2_type, uni_string_t ) then
            null;
         end if;
@@ -440,7 +440,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     cgi.put_HTML_head( to_string( expr_val ), to_string( expr2_val ) );
+     cgi.put_HTML_head( to_string( exprExpr.value ), to_string( expr2Expr.value ) );
   end if;
 end ParsePut_HTML_Head;
 
@@ -454,17 +454,17 @@ end ParsePut_HTML_Head;
 -----------------------------------------------------------------------------
 
 procedure ParsePut_HTML_Heading is
-  expr_val  : unbounded_string;
+  exprExpr  : storage;
   expr_type : identifier;
-  level_val  : unbounded_string;
+  levelExpr  : storage;
   level_type : identifier;
 begin
   expect( cgi_put_html_heading_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( level_val, level_type );
+     ParseExpression( levelExpr, level_type );
      if baseTypesOk( level_type, positive_t ) then
         null;
      end if;
@@ -472,8 +472,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        cgi.put_HTML_heading( to_string( expr_val ),
-           positive( to_numeric( level_val ) ) );
+        cgi.put_HTML_heading( to_string( exprExpr.value ),
+           positive( to_numeric( levelExpr.value ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -507,18 +507,18 @@ end ParsePut_HTML_Tail;
 -----------------------------------------------------------------------------
 
 procedure ParsePut_Error_Message is
-  expr_val  : unbounded_string;
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   expect( cgi_put_error_message_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     cgi.put_error_message( to_string( expr_val ) );
+     cgi.put_error_message( to_string( exprExpr.value ) );
   end if;
 end ParsePut_Error_Message;
 
@@ -550,11 +550,11 @@ end ParsePut_Variables;
 -- Returns the URL of this script.
 -----------------------------------------------------------------------------
 
-procedure ParseMy_URL( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMy_URL( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( cgi_my_url_t );
-  result := to_unbounded_string( cgi.my_url );
+  result := storage'( to_unbounded_string( cgi.my_url ), noMetaLabel );
 end ParseMy_URL;
 
 --function ParseGet_Environment(Variable : in String) return String is
@@ -573,20 +573,20 @@ end ParseMy_URL;
 -- Returns 0 if Value is the empty/null string (i.e., length=0)
 -----------------------------------------------------------------------------
 
-procedure ParseLine_Count( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseLine_Count( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := natural_t;
   expect( cgi_line_count_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := to_unbounded_string( cgi.line_count( to_string(expr_val))'img);
+     result := storage'( to_unbounded_string( cgi.line_count( to_string(exprExpr.value))'img), noMetaLabel );
   end if;
 end ParseLine_Count;
 
@@ -601,21 +601,21 @@ end ParseLine_Count;
 -- This is the same as Line_Count(Value(Key)).
 -----------------------------------------------------------------------------
 
-procedure ParseLine_Count_Of_Value( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseLine_Count_Of_Value( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := natural_t;
   expect( cgi_line_count_of_value_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := to_unbounded_string( cgi.line_count_of_value(
-       to_string(expr_val))'img);
+     result := storage'( to_unbounded_string( cgi.line_count_of_value(
+       to_string(exprExpr.value))'img), noMetaLabel );
   end if;
 end ParseLine_Count_of_Value;
 
@@ -628,19 +628,19 @@ end ParseLine_Count_of_Value;
 -- If there's no such line, raise Constraint_Error.
 -----------------------------------------------------------------------------
 
-procedure ParseCGILine (result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCGILine (result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  pos_val  : unbounded_string;
+  posExpr  : storage;
   pos_type : identifier;
 begin
   kind := string_t;
   expect( cgi_line_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( pos_val, pos_type );
+     ParseExpression( posExpr, pos_type );
      if baseTypesOk( pos_type, positive_t ) then
         null;
      end if;
@@ -648,8 +648,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( cgi.line( to_string( expr_val ),
-           positive( to_numeric( pos_val ) ) ) );
+        result := storage'( to_unbounded_string( cgi.line( to_string( exprExpr.value ),
+           positive( to_numeric( posExpr.value ) ) ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -668,19 +668,19 @@ end ParseCGILine;
 -- This is the same as Line(Value(Key), Position).
 -----------------------------------------------------------------------------
 
-procedure ParseValue_of_Line( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseValue_of_Line( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  pos_val  : unbounded_string;
+  posExpr  : storage;
   pos_type : identifier;
 begin
   kind := string_t;
   expect( cgi_value_of_line_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( pos_val, pos_type );
+     ParseExpression( posExpr, pos_type );
      if baseTypesOk( pos_type, positive_t ) then
         null;
      end if;
@@ -688,8 +688,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( cgi.value_of_line( to_string( expr_val),
-           positive( to_numeric( pos_val ) ) ) );
+        result := storage'( to_unbounded_string( cgi.value_of_line( to_string( exprExpr.value ),
+           positive( to_numeric( posExpr.value ) ) ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -715,20 +715,20 @@ end ParseValue_of_Line;
 -- NOTE: procedure version not implemented
 -----------------------------------------------------------------------------
 
-procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseURL_Decode( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  bool_val  : unbounded_string := identifiers( true_t ).value.all;
+  boolExpr : storage := storage'( identifiers( true_t ).value.all, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
   expect( cgi_url_decode_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( bool_val, bool_type );
+        ParseExpression( boolExpr, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
            null;
         end if;
@@ -737,7 +737,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.URL_Decode( expr_val, bool_val = identifiers( true_t ).value.all );
+        result := storage'( cgi.URL_Decode( exprExpr.value, boolExpr.value = identifiers( true_t ).value.all ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -754,20 +754,20 @@ end ParseURL_Decode;
 -- Same as procedure, but returns a new Unbounded_String.
 -----------------------------------------------------------------------------
 
-procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseURL_Encode( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value.all;
+  boolExpr  : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
   expect( cgi_url_encode_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( bool_val, bool_type );
+        ParseExpression( boolExpr, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
            null;
         end if;
@@ -776,8 +776,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.URL_Encode( expr_val, bool_val = identifiers( true_t
-).value.all );
+        result := storage'( cgi.URL_Encode( exprExpr.value, boolExpr.value = identifiers( true_t
+).value.all ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -802,20 +802,20 @@ end ParseURL_Encode;
 -- Same as procedure, but returns a new value.
 -----------------------------------------------------------------------------
 
-procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseHTML_Encode( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
 begin
   kind := string_t;
   expect( cgi_html_encode_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := cgi.HTML_encode( expr_val );
+     result := storage'( cgi.HTML_encode( exprExpr.value ), noMetaLabel );
   end if;
 end ParseHTML_Encode;
 
@@ -841,52 +841,52 @@ end ParseHTML_Encode;
 -----------------------------------------------------------------------------
 
 procedure ParseSet_Cookie is
-  key_val      : unbounded_string;
+  keyExpr      : storage;
   key_type     : identifier;
-  cookie_val   : unbounded_string;
+  cookieExpr   : storage;
   cookie_type  : identifier;
-  path_val     : unbounded_string := null_unbounded_string;
+  pathExpr     : storage := nullStorage;
   path_type    : identifier;
-  domain_val   : unbounded_string := null_unbounded_string;
+  domainExpr   : storage := nullStorage;
   domain_type  : identifier;
-  expires_val  : unbounded_string := null_unbounded_string;
+  expiresExpr  : storage := nullStorage;
   expires_type : identifier;
-  secure_val   : unbounded_string := identifiers( false_t ).value.all;
+  secureExpr   : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
   secure_type  : identifier;
 begin
   -- lookup defaults
   findIdent( to_unbounded_string( "PATH_INFO" ), path_type );
   if path_type /= eof_t then
-     path_val := identifiers( path_type ).value.all;
+     pathExpr.value := identifiers( path_type ).value.all;
   end if;
   findIdent( to_unbounded_string( "SERVER_NAME" ), domain_type );
   if domain_type /= eof_t then
-     domain_val := identifiers( domain_type ).value.all;
+     domainExpr.value:= identifiers( domain_type ).value.all;
   end if;
   expect( cgi_set_cookie_t );
   expect( symbol_t, "(" );
-  ParseExpression( key_val, key_type );
+  ParseExpression( keyExpr, key_type );
   if baseTypesOK( key_type, string_t ) then
      expectParameterComma;
   end if;
-  ParseExpression( cookie_val, cookie_type );
+  ParseExpression( cookieExpr, cookie_type );
   if baseTypesOK( cookie_type, string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( expires_val, expires_type );
+        ParseExpression( expiresExpr, expires_type );
         if baseTypesOK( expires_type, string_t ) then
   if token = symbol_t and identifiers( token ).value.all = "," then
      getNextToken;
-     ParseExpression( path_val, path_type );
+     ParseExpression( pathExpr, path_type );
      if baseTypesOK( path_type, string_t ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
            getNextToken;
-           ParseExpression( domain_val, domain_type );
+           ParseExpression( domainExpr, domain_type );
            if baseTypesOK( domain_type, string_t ) then
 
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
-              ParseExpression( secure_val, secure_type );
+              ParseExpression( secureExpr, secure_type );
               if baseTypesOK( secure_type, boolean_t ) then
                  null;
               end if;
@@ -900,12 +900,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     cgi.set_cookie( to_string( key_val ),
-       to_string( cookie_val ),
-       to_string( expires_val ),
-       to_string( path_val ),
-       to_string( domain_val ),
-       (secure_val = identifiers( true_t ).value.all) );
+     cgi.set_cookie( to_string( keyExpr.value ),
+       to_string( cookieExpr.value ),
+       to_string( expiresExpr.value ),
+       to_string( pathExpr.value ),
+       to_string( domainExpr.value ),
+       (secureExpr.value = identifiers( true_t ).value.all) );
   end if;
 end ParseSet_Cookie;
 
@@ -919,26 +919,26 @@ end ParseSet_Cookie;
 -- return Unbounded_String is
 -----------------------------------------------------------------------------
 
-procedure ParseCookie_Value( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCookie_Value( result : out storage; kind : out identifier ) is
+  exprExpr  : storage;
   expr_type : identifier;
-  pos_val  : unbounded_string := to_unbounded_string( " 1" );
+  posExpr   : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel );
   pos_type : identifier;
-  bool_val  : unbounded_string := identifiers( false_t ).value.all;
+  boolExpr  : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
   expect( cgi_cookie_value_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( pos_val, pos_type );
+        ParseExpression( posExpr, pos_type );
         if baseTypesOk( pos_type, positive_t ) then
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
-              ParseExpression( bool_val, bool_type );
+              ParseExpression( boolExpr, bool_type );
               if baseTypesOk( bool_type, boolean_t ) then
                  null;
               end if;
@@ -949,9 +949,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := cgi.cookie_value( expr_val,
-           positive( to_numeric( pos_val ) ),
-           bool_val = identifiers( true_t ).value.all );
+        result := storage'( cgi.cookie_value( exprExpr.value,
+           positive( to_numeric( posExpr.value ) ),
+           boolExpr.value = identifiers( true_t ).value.all ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -965,12 +965,12 @@ end ParseCookie_Value;
 -- Returns the number of cookies (0 if none)
 -----------------------------------------------------------------------------
 
-procedure ParseCookie_Count( result : out unbounded_string; kind : out identifier ) is
+procedure ParseCookie_Count( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( cgi_cookie_count_t );
   if isExecutingCommand then
-     result := to_unbounded_string( cgi.cookie_count'img );
+     result := storage'( to_unbounded_string( cgi.cookie_count'img ), noMetaLabel );
   end if;
 end ParseCookie_Count;
 

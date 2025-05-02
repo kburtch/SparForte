@@ -34,6 +34,6 @@ package parser_strings_pcre is
 
 perl_match_t : identifier;
 
-procedure ParseStringsPerlMatch( result : out unbounded_string; kind : out identifier );
+procedure ParseStringsPerlMatch( result : out storage; kind : out identifier );
 
 end parser_strings_pcre;

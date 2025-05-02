@@ -1286,10 +1286,10 @@ end ParseProgramName;
 -- with the clause on the type itself.  If no clause exists, do nothing.
 --
 -- kind_id is the data type.
--- expr_se is the storage element to be tested for that type
+-- expr is the storage element to be tested for that type
 -----------------------------------------------------------------------------
 
-procedure DoContracts( kind_id : identifier; expr_se : in out storage ) is
+procedure DoContracts( kind_id : identifier; expr : in out storage ) is
    type_value_id : identifier;
 
    -- DO CONTRACT1
@@ -1297,14 +1297,14 @@ procedure DoContracts( kind_id : identifier; expr_se : in out storage ) is
    -- The inner recursive procedure.
    --------------------------------------------------------------------------
 
-   procedure DoContract1( kind_id : identifier; expr_se : in out storage ) is
+   procedure DoContract1( kind_id : identifier; expr : in out storage ) is
       scriptState : aScriptState;
       save_error_found : boolean;
    begin
       if identifiers( kind_id ).kind /= variable_t then    -- not uni?
          -- Cannot do DoContract1 because type identifier will change
          -- So switched it to DoContracts
-         DoContracts( identifiers( kind_id ).kind, expr_se ); -- parents first
+         DoContracts( identifiers( kind_id ).kind, expr ); -- parents first
       end if;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
@@ -1353,8 +1353,8 @@ begin
       -- Otherwise, assign the value to the variable and apply contracts.
 
       if kind_id /= new_t and kind_id /= eof_t then
-         identifiers( type_value_id ).value.all := expr_se.value;
-         DoContract1( kind_id, expr_se);
+         identifiers( type_value_id ).value.all := expr.value;
+         DoContract1( kind_id, expr);
       end if;
 
       -- If the validation function altered the data, return the new value
@@ -1367,10 +1367,10 @@ begin
       --if identifiers( type_value_id ).wasWritten then
 
       -- Copying a value is not so easy for an array
-      expr_se.value := identifiers( type_value_id ).value.all;
+      expr.value := identifiers( type_value_id ).value.all;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
-            put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr_se.value ) ) ) );
+            put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr.value ) ) ) );
          end if;
       end if;
    end if;
@@ -2888,17 +2888,17 @@ begin
   else
      if Token = symbol_t and then identifiers( Token ).value.all = "$?" then
         f.value := to_unbounded_string( last_status'img );
-        f.metaLabel := noMetaLevel;
+        f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
         f.value := to_unbounded_string( aPID'image( getpid ) );
-        f.metaLabel := noMetaLevel;
+        f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
         f.value := to_unbounded_string( aPID'image( lastChild ) );
-        f.metaLabel := noMetaLevel;
+        f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
@@ -2908,7 +2908,7 @@ begin
         end if;
         if isExecutingStaticCommand then
            f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-           f.metaLabel := noMetaLevel;
+           f.metaLabel := noMetaLabel;
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -2921,7 +2921,7 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingStaticCommand then
-           f.metaLabel := noMetaLevel;
+           f.metaLabel := noMetaLabel;
            begin
               f.value := to_unbounded_string(
                  Argument(

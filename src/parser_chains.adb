@@ -60,12 +60,12 @@ chains_chain_count_t    : identifier;
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
-procedure ParseChainsInChain( result : out unbounded_string; kind : out identifier ) is
+procedure ParseChainsInChain( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( chains_in_chain_t );
   if isExecutingCommand then
-     result := to_spar_boolean( in_chain /= none );
+     result := storage'( to_spar_boolean( in_chain /= none ), noMetaLabel );
   end if;
 end ParseChainsInChain;
 
@@ -77,21 +77,21 @@ end ParseChainsInChain;
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
-procedure ParseChainsChainContext( result : out unbounded_string; kind : out identifier ) is
+procedure ParseChainsChainContext( result : out storage; kind : out identifier ) is
 begin
   kind := chain_context_t;
   expect( chains_chain_context_t );
   if isExecutingCommand then
      if in_chain = none then
-        result := to_unbounded_string( "3" );
+        result := storage'( to_unbounded_string( "3" ), noMetaLabel );
      else
         case chain_context is
         when first =>
-           result := to_unbounded_string( "0" );
+           result := storage'( to_unbounded_string( "0" ), noMetaLabel );
         when last =>
-           result := to_unbounded_string( "2" );
+           result := storage'( to_unbounded_string( "2" ), noMetaLabel );
         when others =>
-           result := to_unbounded_string( "1" );
+           result := storage'( to_unbounded_string( "1" ), noMetaLabel );
         end case;
      end if;
   end if;
@@ -105,7 +105,7 @@ end ParseChainsChainContext;
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
-procedure ParseChainsChainCount( result : out unbounded_string; kind : out identifier ) is
+procedure ParseChainsChainCount( result : out storage; kind : out identifier ) is
   chain_count_id : identifier;
 begin
   kind := positive_t;
@@ -115,7 +115,7 @@ begin
         err( +"not in a chain" );
      else
         findIdent( chain_count_str, chain_count_id );
-        result := identifiers( chain_count_id ).value.all;
+        result := storage'( identifiers( chain_count_id ).value.all, noMetaLabel );
      end if;
   end if;
 end ParseChainsChainCount;

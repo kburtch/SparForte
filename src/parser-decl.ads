@@ -39,7 +39,7 @@ package parser.decl is
    procedure ParseMeta;
    procedure ParseSubtype;
    procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean );
-   procedure ParseAssignPart( expr_se : out storage; expr_type : out identifier );
+   procedure ParseAssignPart( expr : out storage; expr_type : out identifier );
    procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssign : boolean := true );
 
 end parser.decl;

@@ -62,22 +62,22 @@ cmd_envval_t      : identifier;
 -- Ada: Command_Line.Argument
 ------------------------------------------------------------------------------
 
-procedure ParseArgument( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseArgument( result : out storage; kind : out identifier ) is
+  expr  : storage;
   expr_type : identifier;
 begin
   kind := uni_string_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( cmd_argument_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Argument( integer'value(
-         to_string( expr_val ) ) + optionOffset ) );
+       result := storage'( to_unbounded_string( Argument( integer'value(
+         to_string( expr.value ) ) + optionOffset ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -92,12 +92,12 @@ end ParseArgument;
 -- Ada: Command_Line.Argument_Cont
 ------------------------------------------------------------------------------
 
-procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier ) is
+procedure ParseArgument_Count( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( cmd_argcount_t );
   if isExecutingCommand then
-     result := to_unbounded_string( integer'image( Argument_Count-optionOffset ));
+     result := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset )), noMetaLabel );
   end if;
 end ParseArgument_Count;
 
@@ -109,12 +109,12 @@ end ParseArgument_Count;
 -- Ada: Command_Line.Command_Name
 ------------------------------------------------------------------------------
 
-procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier ) is
+procedure ParseCommand_Name( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( cmd_commandname_t );
   if isExecutingCommand then
-     result := to_unbounded_string( Command_Name );
+     result := storage'( to_unbounded_string( Command_Name ), noMetaLabel );
   end if;
 end ParseCommand_Name;
 
@@ -127,18 +127,18 @@ end ParseCommand_Name;
 ------------------------------------------------------------------------------
 
 procedure ParseSetExitStatus is
-  expr_val  : unbounded_string;
+  expr  : storage;
   expr_type : identifier;
 begin
   expect( cmd_setexit_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, short_short_integer_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       last_status := aStatusCode( to_numeric( expr_val ) );
+       last_status := aStatusCode( to_numeric( expr.value ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -153,12 +153,12 @@ end ParseSetExitStatus;
 -- Ada: Command_Line.Environment_Count
 ------------------------------------------------------------------------------
 
-procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier ) is
+procedure ParseEnvironment_Count( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( cmd_envcnt_t );
   if isExecutingCommand then
-     result := to_unbounded_string( integer'image( Environment_Count ));
+     result := storage'( to_unbounded_string( integer'image( Environment_Count )), noMetaLabel );
   end if;
 end ParseEnvironment_Count;
 
@@ -170,22 +170,22 @@ end ParseEnvironment_Count;
 -- Ada: Command_Line.Environment_Value
 ------------------------------------------------------------------------------
 
-procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseEnvironment_Value( result : out storage; kind : out identifier ) is
+  expr  : storage;
   expr_type : identifier;
 begin
   kind := uni_string_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( cmd_envval_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Environment_Value( integer'value(
-         to_string( expr_val ) ) ) );
+       result := storage'( to_unbounded_string( Environment_Value( integer'value(
+         to_string( expr.value ) ) ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;

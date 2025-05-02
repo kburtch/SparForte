@@ -60,16 +60,24 @@ optionOffset: natural := 0;     -- offset to script parameters
 -- being provided by all of these types.
 -----------------------------------------------------------------------------
 
-subtype aBourneShellWord is unbounded_string;            -- a root type
+subtype aBourneShellWord is storage;                     -- a root type
 type aRawShellWord is new aBourneShellWord;              -- unprocessed word
 type aGlobShellWord is new aBourneShellWord;             -- glob-able word
 type anExpandedShellWord is new aBourneShellWord;        -- fully expanded word
 
 -- Useful constants for shell words with null strings.
 
-nullRawShellWord : constant aRawShellWord := aRawShellWord( null_unbounded_string );
-nullGlobShellWord : constant aGlobShellWord := aGlobShellWord( null_unbounded_string );
-nullExpandedShellWord : constant anExpandedShellWord := anExpandedShellWord( null_unbounded_string );
+nullRawShellWord : constant aRawShellWord := aRawShellWord( nullStorage );
+nullGlobShellWord : constant aGlobShellWord := aGlobShellWord( nullStorage);
+nullExpandedShellWord : constant anExpandedShellWord := anExpandedShellWord( nullStorage );
+
+-- Convenience functions
+
+function Element( word : aRawShellWord; pos : positive ) return character;
+function Length( word : aRawShellWord) return natural;
+
+function Element( word : aGlobShellWord; pos : positive ) return character;
+function Length( word : aGlobShellWord) return natural;
 
 
 ------------------------------------------------------------------------------

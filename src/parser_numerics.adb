@@ -142,180 +142,180 @@ shannon_entropy_of_t : identifier;
 
 -----------------------------------------------------------------------------
 
-procedure ParseNumericsRandom( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRandom( result : out storage; kind : out identifier ) is
   -- Syntax: random
   -- Source: Ada.Numerics.Float_Random.Random
 begin
   kind := float_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( random_t );
   if isExecutingCommand then
-     result := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
+     result.value := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
        random_generator ) ) );
   end if;
 end ParseNumericsRandom;
 
-procedure ParseNumericsShiftLeft( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsShiftLeft( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.shift_left( x, b )
   -- Source: Interfaces
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  amt_val   : unbounded_string;
+  amt_st    : storage;
   amt_type  : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( shift_left_t );
-  ParseFirstNumericParameter( shift_left_t, expr_val, expr_type );
-  ParseLastNumericParameter( shift_left_t, amt_val, amt_type, natural_t );
+  ParseFirstNumericParameter( shift_left_t, expr_st, expr_type );
+  ParseLastNumericParameter( shift_left_t, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( numericValue( shift_left(
-           unsigned_64( to_numeric( expr_val ) ),
-           natural( to_numeric( amt_val ) )
-        ) ) );
+        result := storage'( to_unbounded_string( numericValue( shift_left(
+           unsigned_64( to_numeric( expr_st.value ) ),
+           natural( to_numeric( amt_st.value ) )
+        ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsShiftLeft;
 
-procedure ParseNumericsShiftRight( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsShiftRight( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.shift_right( x, b )
   -- Source: Interfaces
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  amt_val   : unbounded_string;
+  amt_st    : storage;
   amt_type  : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( shift_right_t );
-  ParseFirstNumericParameter( shift_right_t, expr_val, expr_type );
-  ParseLastNumericParameter( shift_right_t, amt_val, amt_type, natural_t );
+  ParseFirstNumericParameter( shift_right_t, expr_st, expr_type );
+  ParseLastNumericParameter( shift_right_t, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( numericValue( shift_right(
-           unsigned_64( to_numeric( expr_val ) ),
-           natural( to_numeric( amt_val ) )
-        ) ) );
+        result := storage'( to_unbounded_string( numericValue( shift_right(
+           unsigned_64( to_numeric( expr_st.value ) ),
+           natural( to_numeric( amt_st.value ) )
+        ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsShiftRight;
 
-procedure ParseNumericsRotateLeft( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRotateLeft( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.rotate_left( x, b )
   -- Source: Interfaces
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  amt_val   : unbounded_string;
+  amt_st    : storage;
   amt_type  : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( rotate_left_t );
-  ParseFirstNumericParameter( rotate_left_t, expr_val, expr_type );
-  ParseLastNumericParameter( rotate_left_t, amt_val, amt_type, natural_t );
+  ParseFirstNumericParameter( rotate_left_t, expr_st, expr_type );
+  ParseLastNumericParameter( rotate_left_t, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( numericValue( rotate_left(
-           unsigned_64( to_numeric( expr_val ) ),
-           natural( to_numeric( amt_val ) )
-        ) ) );
+        result := storage'( to_unbounded_string( numericValue( rotate_left(
+           unsigned_64( to_numeric( expr_st.value ) ),
+           natural( to_numeric( amt_st.value) )
+        ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsRotateLeft;
 
-procedure ParseNumericsRotateRight( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRotateRight( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.rotate_right( x, b )
   -- Source: Interfaces
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  amt_val   : unbounded_string;
+  amt_st    : storage;
   amt_type  : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( rotate_right_t );
-  ParseFirstNumericParameter( rotate_right_t, expr_val, expr_type );
-  ParseLastNumericParameter( rotate_right_t, amt_val, amt_type, natural_t );
+  ParseFirstNumericParameter( rotate_right_t, expr_st, expr_type );
+  ParseLastNumericParameter( rotate_right_t, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( numericValue( rotate_right(
-           unsigned_64( to_numeric( expr_val ) ),
-           natural( to_numeric( amt_val ) )
-        ) ) );
+        result := storage'( to_unbounded_string( numericValue( rotate_right(
+           unsigned_64( to_numeric( expr_st.value ) ),
+           natural( to_numeric( amt_st.value) )
+        ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsRotateRight;
 
-procedure ParseNumericsASR( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsASR( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.shift_right_arithmetic( x, b )
   -- Source: Interfaces
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  amt_val   : unbounded_string;
+  amt_st    : storage;
   amt_type  : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( shift_right_arith_t );
-  ParseFirstNumericParameter( shift_right_arith_t, expr_val, expr_type );
-  ParseLastNumericParameter( shift_right_arith_t, amt_val, amt_type, natural_t );
+  ParseFirstNumericParameter( shift_right_arith_t, expr_st, expr_type );
+  ParseLastNumericParameter( shift_right_arith_t, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( numericValue( shift_right_arithmetic(
-           unsigned_64( to_numeric( expr_val ) ),
-           natural( to_numeric( amt_val ) )
-        ) ) );
+        result := storage'(to_unbounded_string( numericValue( shift_right_arithmetic(
+           unsigned_64( to_numeric( expr_st.value ) ),
+           natural( to_numeric( amt_st.value ) )
+        ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsASR;
 
-procedure ParseNumericsSqrt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSqrt( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sqrt( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sqrt
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( sqrt_t );
-  ParseSingleNumericParameter( sqrt_t, expr_val, expr_type );
+  ParseSingleNumericParameter( sqrt_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( sqrt( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( sqrt( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsSqrt;
 
-procedure ParseNumericsLog( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsLog( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.log( expr [,base] )
   -- Source: Ada.Numerics.Long_Elementary_Functions.Log
-  expr_val  : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
-  base_val  : unbounded_string;
+  base_st   : storage;
   base_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( log_t );
-  ParseFirstNumericParameter( log_t, expr_val, expr_type );
+  ParseFirstNumericParameter( log_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( log_t, base_val, base_type );
+     ParseLastNumericParameter( log_t, base_st, base_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
      if isExecutingCommand then
         if base_type = eof_t then
-           result := to_unbounded_string( log( to_numeric( expr_val ) ) );
+           result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ) ) ), noMetaLabel );
         else
-           result := to_unbounded_string( log( to_numeric( expr_val ),
-             to_numeric( base_val ) ) );
+           result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ),
+             to_numeric( base_st.value ) ) ), noMetaLabel );
         end if;
      end if;
   exception when others =>
@@ -323,47 +323,47 @@ begin
   end;
 end ParseNumericsLog;
 
-procedure ParseNumericsExp( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsExp( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.exp( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Exp
-  expr_val : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( exp_t );
-  ParseSingleNumericParameter( exp_t, expr_val, expr_type );
+  ParseSingleNumericParameter( exp_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-        result := to_unbounded_string( exp( to_numeric( expr_val ) ) );
+        result := storage'( to_unbounded_string( exp( to_numeric( expr_st.value) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsExp;
 
-procedure ParseNumericsSin( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSin( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sin( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sin
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( sin_t );
-  ParseFirstNumericParameter( sin_t, expr_val, expr_type );
+  ParseFirstNumericParameter( sin_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( sin_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( sin_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
      if isExecutingCommand then
         if cycle_type = eof_t then
-           result := to_unbounded_string( sin( to_numeric( expr_val ) ) );
+           result := storage'(to_unbounded_string( sin( to_numeric( expr_st.value ) ) ), noMetaLabel );
         else
-           result := to_unbounded_string( sin( to_numeric( expr_val ),
-             to_numeric( cycle_val ) ) );
+           result := storage'( to_unbounded_string( sin( to_numeric( expr_st.value ),
+             to_numeric( cycle_st.value ) ) ), noMetaLabel );
         end if;
      end if;
   exception when others =>
@@ -371,29 +371,29 @@ begin
   end;
 end ParseNumericsSin;
 
-procedure ParseNumericsCos( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCos( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.cos( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cos
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( cos_t );
-  ParseFirstNumericParameter( cos_t, expr_val, expr_type );
+  ParseFirstNumericParameter( cos_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cos_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( cos_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( cos( to_numeric( expr_val ) ) );
+          result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( cos( to_numeric( expr_val ),
-             to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ),
+             to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -402,29 +402,29 @@ begin
   end;
 end ParseNumericsCos;
 
-procedure ParseNumericsTan( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsTan( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.tan( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Tan
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( tan_t );
-  ParseFirstNumericParameter( tan_t, expr_val, expr_type );
+  ParseFirstNumericParameter( tan_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( tan_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( tan_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( tan( to_numeric( expr_val ) ) );
+          result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( tan( to_numeric( expr_val ),
-            to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ),
+            to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -432,29 +432,29 @@ begin
   end;
 end ParseNumericsTan;
 
-procedure ParseNumericsCot( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCot( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.cot( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cot
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( cot_t );
-  ParseFirstNumericParameter( cot_t, expr_val, expr_type );
+  ParseFirstNumericParameter( cot_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cot_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( cot_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( cot( to_numeric( expr_val ) ) );
+          result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( cot( to_numeric( expr_val ),
-            to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ),
+            to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -462,29 +462,29 @@ begin
   end;
 end ParseNumericsCot;
 
-procedure ParseNumericsArcSin( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcSin( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.ArcSin( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcSin
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st   : storage;
+  expr_type   : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( arcsin_t );
-  ParseFirstNumericParameter( arcsin_t, expr_val, expr_type );
+  ParseFirstNumericParameter( arcsin_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( arcsin_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( arcsin_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( arcsin( to_numeric( expr_val ) ) );
+          result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( arcsin( to_numeric( expr_val ),
-            to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value),
+            to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -492,29 +492,29 @@ begin
   end;
 end ParseNumericsArcSin;
 
-procedure ParseNumericsArcCos( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcCos( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.ArcCos( expr, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcCos
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  cycle_val  : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( arccos_t );
-  ParseFirstNumericParameter( arccos_t, expr_val, expr_type );
+  ParseFirstNumericParameter( arccos_t, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( arccos_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( arccos_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( arccos( to_numeric( expr_val ) ) );
+          result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( arccos( to_numeric( expr_val ),
-            to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ),
+            to_numeric( cycle_st.value ) ) ),  noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -522,34 +522,34 @@ begin
   end;
 end ParseNumericsArcCos;
 
-procedure ParseNumericsArcTan( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcTan( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.ArcTan( expr, expr2, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcTan
   -- note: second parameter is not optional in mine but is in Ada
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  expr2_st   : storage;
   expr2_type : identifier;
-  cycle_val  : unbounded_string;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( arctan_t );
-  ParseFirstNumericParameter( arctan_t, expr_val, expr_type );
-  ParseNextNumericParameter( arctan_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( arctan_t, expr_st, expr_type );
+  ParseNextNumericParameter( arctan_t, expr2_st, expr2_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( arctan_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( arctan_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( arctan( to_numeric( expr_val ),
-            to_numeric( expr2_val ) ) );
+          result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( arctan( to_numeric( expr_val ),
-            to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -557,34 +557,34 @@ begin
   end;
 end ParseNumericsArcTan;
 
-procedure ParseNumericsArcCot( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcCot( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.ArcCot( expr, expr2, [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcCot
   -- note: second parameter is not optional in mine but is in Ada
-  expr_val : unbounded_string;
-  expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr_st    : storage;
+  expr_type  : identifier;
+  expr2_st   : storage;
   expr2_type : identifier;
-  cycle_val  : unbounded_string;
+  cycle_st   : storage;
   cycle_type : identifier := eof_t;
 begin
   kind := uni_numeric_t;
   expect( arccot_t );
-  ParseFirstNumericParameter( arccot_t, expr_val, expr_type );
-  ParseNextNumericParameter( arccot_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( arccot_t, expr_st, expr_type );
+  ParseNextNumericParameter( arccot_t, expr2_st, expr2_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( arccot_t, cycle_val, cycle_type );
+     ParseLastNumericParameter( arccot_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
        if cycle_type = eof_t then
-          result := to_unbounded_string( arccot( to_numeric( expr_val ),
-            to_numeric( expr2_val ) ) );
+          result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( arccot( to_numeric( expr_val ),
-            to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
+          result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ), noMetaLabel );
        end if;
     end if;
   exception when others =>
@@ -592,471 +592,471 @@ begin
   end;
 end ParseNumericsArcCot;
 
-procedure ParseNumericsSinH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSinH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.Sinh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sinh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( sinh_t );
-  ParseSingleNumericParameter( sinh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( sinh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( sinh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( sinh( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsSinH;
 
-procedure ParseNumericsCosH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCosH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.Cosh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cosh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( cosh_t );
-  ParseSingleNumericParameter( cosh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( cosh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( cosh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( cosh( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsCosH;
 
-procedure ParseNumericsTanH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsTanH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.Tanh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Tanh
-  expr_val : unbounded_string;
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( tanh_t );
-  ParseSingleNumericParameter( tanh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( tanh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( tanh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( tanh( to_numeric( expr_st.value) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsTanH;
 
-procedure ParseNumericsCoth( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCoth( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.Coth( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Coth
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( coth_t );
-  ParseSingleNumericParameter( coth_t, expr_val, expr_type );
+  ParseSingleNumericParameter( coth_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( coth(  to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( coth(  to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsCotH;
 
-procedure ParseNumericsArcSinH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcSinH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.arcsinh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arcsinh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( arcsinh_t );
-  ParseSingleNumericParameter( arcsinh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( arcsinh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( arcsinh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( arcsinh( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcSinH;
 
-procedure ParseNumericsArcCosH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcCosH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.arccosh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( arccosh_t );
-  ParseSingleNumericParameter( arccosh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( arccosh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( arccosh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( arccosh( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcCosH;
 
-procedure ParseNumericsArcTanH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcTanH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.arctanh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arctanh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( arctanh_t );
-  ParseSingleNumericParameter( arctanh_t, expr_val, expr_type );
+  ParseSingleNumericParameter( arctanh_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( arctanh( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( arctanh( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcTanH;
 
-procedure ParseNumericsArcCotH( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArcCotH( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.arccoth( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( arccoth_t );
-  ParseSingleNumericParameter( arccoth_t, expr_val, expr_type );
+  ParseSingleNumericParameter( arccoth_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( arccoth( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( arccoth( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcCotH;
 
-procedure ParseNumericsFloor( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsFloor( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.floor( expr );
   -- Source: Ada 'floor attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( floor_t );
-  ParseSingleNumericParameter( floor_t, expr_val, expr_type );
+  ParseSingleNumericParameter( floor_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( numericValue'floor( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'floor( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsFloor;
 
-procedure ParseNumericsCeiling( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCeiling( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.ceiling( expr );
   -- Source: Ada 'ceiling attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( ceiling_t );
-  ParseSingleNumericParameter( ceiling_t, expr_val, expr_type );
+  ParseSingleNumericParameter( ceiling_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( numericValue'ceiling( to_numeric( expr_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'ceiling( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsCeiling;
 
-procedure ParseNumericsRounding( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRounding( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.rounding( expr );
   -- Source: Ada 'rounding attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( rounding_t );
-  ParseSingleNumericParameter( rounding_t, expr_val, expr_type );
+  ParseSingleNumericParameter( rounding_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue'rounding( to_numeric( expr_val ) ) );
+      result := storage'( to_unbounded_string( numericValue'rounding( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsRounding;
 
-procedure ParseNumericsUnbiasedRounding( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsUnbiasedRounding( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.unbiased_rounding( expr );
   -- Source: Ada 'unbiased_rounding attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( unbiased_rounding_t );
-  ParseSingleNumericParameter( unbiased_rounding_t, expr_val, expr_type );
+  ParseSingleNumericParameter( unbiased_rounding_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_val ) ) );
+      result := storage'( to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsUnbiasedRounding;
 
-procedure ParseNumericsTruncation( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsTruncation( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.truncation( expr );
   -- Source: Ada 'truncation attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( truncation_t );
-  ParseSingleNumericParameter( truncation_t, expr_val, expr_type );
+  ParseSingleNumericParameter( truncation_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue'truncation( to_numeric( expr_val ) ) );
+      result := storage'( to_unbounded_string( numericValue'truncation( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsTruncation;
 
-procedure ParseNumericsRemainder( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRemainder( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.remainder( expr, expr2 );
   -- Source: Ada 'remainder attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr2_st : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( remainder_t );
-  ParseFirstNumericParameter( remainder_t, expr_val, expr_type );
-  ParseLastNumericParameter( remainder_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( remainder_t, expr_st, expr_type );
+  ParseLastNumericParameter( remainder_t, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'remainder( to_numeric( expr_val ),
-         to_numeric( expr2_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'remainder( to_numeric( expr_st.value ),
+         to_numeric( expr2_st.value ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsRemainder;
 
-procedure ParseNumericsExponent( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsExponent( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.exponent( expr );
   -- Source: Ada 'exponent attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( exponent_t );
-  ParseSingleNumericParameter( exponent_t, expr_val, expr_type );
+  ParseSingleNumericParameter( exponent_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_val ) ) ) );
+      result := storage'( to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_st.value ) ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsExponent;
 
-procedure ParseNumericsFraction( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsFraction( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.fraction( expr );
   -- Source: Ada 'fraction attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( fraction_t );
-  ParseSingleNumericParameter( fraction_t, expr_val, expr_type );
+  ParseSingleNumericParameter( fraction_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue'fraction( to_numeric( expr_val ) ) );
+      result := storage'( to_unbounded_string( numericValue'fraction( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsFraction;
 
-procedure ParseNumericsLeadingPart( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsLeadingPart( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.leading_part( expr, expr2 );
   -- Source: Ada 'leading_part attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr2_st : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( leading_part_t );
-  ParseFirstNumericParameter( leading_part_t, expr_val, expr_type );
-  ParseLastNumericParameter( leading_part_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( leading_part_t, expr_st, expr_type );
+  ParseLastNumericParameter( leading_part_t, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'leading_part( to_numeric( expr_val ),
-         integer( to_numeric( expr2_val ) ) ) );
+       result := storage'( to_unbounded_string( numericValue'leading_part( to_numeric( expr_st.value ),
+         integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsLeadingPart;
 
-procedure ParseNumericsCopySign( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsCopySign( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.copy_sign( expr, expr2 );
   -- Source: Ada 'copy_sign attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr2_st : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( copy_sign_t );
-  ParseFirstNumericParameter( copy_sign_t, expr_val, expr_type );
-  ParseLastNumericParameter( copy_sign_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( copy_sign_t, expr_st, expr_type );
+  ParseLastNumericParameter( copy_sign_t, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'copy_sign( to_numeric( expr_val ),
-         to_numeric( expr2_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'copy_sign( to_numeric( expr_st.value ),
+         to_numeric( expr2_st.value ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsCopySign;
 
-procedure ParseNumericsSturges( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSturges( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sturges( low, high, total );
   -- Source: SparForte builtin, Sturge's method
-  lo_val : unbounded_string;
+  lo_st : storage;
   lo_type : identifier;
-  hi_val : unbounded_string;
+  hi_st : storage;
   hi_type : identifier;
-  total_val : unbounded_string;
+  total_st : storage;
   total_type : identifier;
   lo, hi, total : numericValue;
 begin
   kind := uni_numeric_t;
   expect( sturges_t );
-  ParseFirstNumericParameter( sturges_t, lo_val, lo_type );
-  ParseNextNumericParameter( sturges_t, hi_val, hi_type );
-  ParseLastNumericParameter( sturges_t, total_val, total_type );
+  ParseFirstNumericParameter( sturges_t, lo_st, lo_type );
+  ParseNextNumericParameter( sturges_t, hi_st, hi_type );
+  ParseLastNumericParameter( sturges_t, total_st, total_type );
   begin
      if isExecutingCommand then
-        lo := to_numeric( lo_val );
-        hi := to_numeric( hi_val );
-        total := to_numeric( total_val );
-        result := to_unbounded_string(
+        lo := to_numeric( lo_st.value );
+        hi := to_numeric( hi_st.value );
+        total := to_numeric( total_st.value );
+        result := storage'( to_unbounded_string(
            numericValue'rounding(
               (hi-lo) / 1.0+log( total )
            )
-        ); -- TODO: this is wrong
+        ), noMetaLabel ); -- TODO: this is wrong
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsSturges;
 
-procedure ParseNumericsMax( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsMax( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.max( expr, expr2 );
   -- Source: Ada 'max attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr2_st : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( max_t );
-  ParseFirstNumericParameter( max_t, expr_val, expr_type );
-  ParseLastNumericParameter( max_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( max_t, expr_st, expr_type );
+  ParseLastNumericParameter( max_t, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'max( to_numeric( expr_val ),
-         to_numeric( expr2_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'max( to_numeric( expr_st.value ),
+         to_numeric( expr2_st.value ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsMax;
 
-procedure ParseNumericsMin( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsMin( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.max( expr, expr2 );
   -- Source: Ada 'max attribute
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
-  expr2_val : unbounded_string;
+  expr2_st : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( min_t );
-  ParseFirstNumericParameter( min_t, expr_val, expr_type );
-  ParseLastNumericParameter( min_t, expr2_val, expr2_type );
+  ParseFirstNumericParameter( min_t, expr_st, expr_type );
+  ParseLastNumericParameter( min_t, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'min( to_numeric( expr_val ),
-         to_numeric( expr2_val ) ) );
+       result := storage'( to_unbounded_string( numericValue'min( to_numeric( expr_st.value ),
+         to_numeric( expr2_st.value ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsMin;
 
-procedure ParseNumericsMachine( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsMachine( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.machine( expr, expr2 );
   -- Source: Ada 'machine attribute
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   kind := uni_numeric_t;
   expect( machine_t );
-  ParseSingleNumericParameter( machine_t, expr_val, expr_type );
+  ParseSingleNumericParameter( machine_t, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( numericValue'machine( to_numeric( expr_val ) ) );
+      result := storage'( to_unbounded_string( numericValue'machine( to_numeric( expr_st.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsMachine;
 
-procedure ParseNumericsScaling( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsScaling( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.scaling( expr, expr2 );
   -- Source: Ada 'scaling attribute
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
-  expr2_val  : unbounded_string;
+  expr2_st   : storage;
   expr2_type : identifier;
 begin
   kind := uni_numeric_t;
   expect( scaling_t );
-  ParseFirstNumericParameter(scaling_t,  expr_val, expr_type );
-  ParseLastNumericParameter( scaling_t, expr2_val, expr2_type, integer_t );
+  ParseFirstNumericParameter(scaling_t,  expr_st, expr_type );
+  ParseLastNumericParameter( scaling_t, expr2_st, expr2_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( numericValue'scaling( to_numeric( expr_val ),
-         integer( to_numeric( expr2_val ) ) ) );
+       result := storage'( to_unbounded_string( numericValue'scaling( to_numeric( expr_st.value ),
+         integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsScaling;
 
-procedure ParseNumericsValue( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsValue( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.value( expr, expr2 );
   -- Source: Ada 'value attribute
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   kind := uni_numeric_t;
   expect( value_t );
-  ParseSingleStringParameter( value_t, expr_val, expr_type, string_t );
+  ParseSingleStringParameter( value_t, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
-       --result := trim( to_unbounded_string( to_numeric( expr_val ) ), left );
-       result := to_unbounded_string( to_numeric( expr_val ) );
+       --result := trim( storage'( to_unbounded_string( to_numeric( expr_st.value ) ), left );
+       result := storage'( to_unbounded_string( to_numeric( expr_st.value ) ), noMetaLabel );
      end if;
   exception
   when constraint_error =>
@@ -1064,7 +1064,7 @@ begin
   when storage_error =>
      err( +"storage_error exception raised" );
   when ada.strings.index_error =>
-     if expr_val = null_unbounded_string then
+     if expr_st.value = null_unbounded_string then
         err(
           context => value_t,
           subjectNotes => pl( qp( "the numeric value" ) ),
@@ -1076,7 +1076,7 @@ begin
           context => value_t,
           subjectNotes => pl( qp( "the numeric value" ) ),
           reason => +"raised a index_error on the string value",
-          obstructorNotes => em_value( expr_val ),
+          obstructorNotes => em_value( expr_st.value ),
           obstructortype => expr_type
         );
      end if;
@@ -1085,18 +1085,18 @@ begin
   end;
 end ParseNumericsValue;
 
-procedure ParseNumericsPos( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsPos( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.pos( character );
   -- Source: Ada 'pos attribute
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   kind := positive_t;
   expect( pos_t );
-  ParseSingleStringParameter( pos_t, expr_val, expr_type, character_t );
+  ParseSingleStringParameter( pos_t, expr_st, expr_type, character_t );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( character'pos( Element( expr_val, 1 ) )'img );
+       result := storage'( to_unbounded_string( character'pos( Element( expr_st.value, 1 ) )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1106,52 +1106,52 @@ end ParseNumericsPos;
 procedure ParseNumericsAbs( result : out storage ) is
   -- Syntax: numerics.abs( n );
   -- Source: Ada abs function
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   expect( abs_t );
-  ParseSingleNumericParameter( abs_t, expr_val, expr_type );
+  ParseSingleNumericParameter( abs_t, expr_st, expr_type );
   begin
      if isExecutingCommand then
-       result.value := to_unbounded_string( abs( to_numeric( expr_val ) ) );
+       result.value := to_unbounded_string( abs( to_numeric( expr_st.value ) ) );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsAbs;
 
-procedure ParseNumericsMd5( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsMd5( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.md5( s );
   -- Source: MD5.Disgest_To_Text
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
   C          : Context;
   FP         : Fingerprint;
 begin
   kind := string_t;
   expect( numerics_md5_t );
-  ParseSingleStringParameter( numerics_md5_t, expr_val, expr_type, string_t );
+  ParseSingleStringParameter( numerics_md5_t, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
        Init( C );
-       Update( C, to_string( expr_val ) );
+       Update( C, to_string( expr_st.value ) );
        Final( C, FP );
-       result := to_unbounded_string( Digest_To_Text( FP ) );
+       result := storage'( to_unbounded_string( Digest_To_Text( FP ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsMd5;
 
-procedure ParseNumericsSerial( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSerial( result : out storage; kind : out identifier ) is
   -- Syntax: serial
   -- Source: N/A
 begin
   kind := natural_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( serial_t );
   if isExecutingCommand then
-     result := to_unbounded_string( serialNumber );
+     result.value := to_unbounded_string( serialNumber );
      if serialNumber = maxInteger then
         serialNumber := 0.0;
      else
@@ -1160,62 +1160,62 @@ begin
   end if;
 end ParseNumericsSerial;
 
-procedure ParseNumericsRnd( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRnd( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.rnd( n );
   -- Source: N/A
-  expr_val    : unbounded_string;
+  expr_st     : storage;
   expr_type   : identifier;
 begin
   kind := positive_t;
   expect( rnd_t );
-  ParseSingleNumericParameter( rnd_t, expr_val, expr_type, positive_t );
+  ParseSingleNumericParameter( rnd_t, expr_st, expr_type, positive_t );
   begin
      if isExecutingCommand then
         -- from pegasoft.numerics
-        result := to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_val ) ) ) ) );
+        result := storage'( to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_st.value ) ) ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsRnd;
 
-procedure ParseNumericsOdd( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsOdd( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.odd( n );
   -- Source: N/A
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( odd_t );
-  ParseSingleNumericParameter( odd_t, expr_val, expr_type, integer_t );
+  ParseSingleNumericParameter( odd_t, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_spar_boolean( integer( to_numeric( expr_val ) ) mod 2 = 1 );
+       result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 1 ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsOdd;
 
-procedure ParseNumericsEven( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsEven( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.even( n );
   -- Source: N/A
-  expr_val   : unbounded_string;
+  expr_st    : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( even_t );
-  ParseSingleNumericParameter( even_t, expr_val, expr_type, integer_t );
+  ParseSingleNumericParameter( even_t, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_spar_boolean( integer( to_numeric( expr_val ) ) mod 2 = 0 );
+       result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 0 ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsEven;
 
-procedure ParseNumericsRe( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsRe( result : out storage; kind : out identifier ) is
   -- Syntax: r := numerics.re( n );
   -- Source: N/A
   record_id : identifier;
@@ -1236,14 +1236,14 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( numericValue( Re( c ) ) );
+       result := storage'( to_unbounded_string( numericValue( Re( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
   end;
 end ParseNumericsRe;
 
-procedure ParseNumericsIm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsIm( result : out storage; kind : out identifier ) is
   -- Syntax: r := numerics.im( n );
   -- Source: N/A
   record_id : identifier;
@@ -1264,7 +1264,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( numericValue( Im( c ) ) );
+       result := storage'( to_unbounded_string( numericValue( Im( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1274,7 +1274,7 @@ end ParseNumericsIm;
 procedure ParseNumericsSetRe is
   -- Syntax: numerics.set_re( n );
   -- Source: N/A
-  expr_val : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
   record_id : identifier;
   c : complex;
@@ -1286,7 +1286,7 @@ begin
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
      expectParameterComma;
-     ParseExpression( expr_val, expr_type );
+     ParseExpression( expr_st, expr_type );
      if baseTypesOk( expr_type, long_float_t ) then
         expect( symbol_t, ")" );
      end if;
@@ -1297,7 +1297,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       Set_Re( c, to_numeric( expr_val ) );
+       Set_Re( c, to_numeric( expr_st.value ) );
        identifiers( real_t ).value.all := to_unbounded_string( numericValue( c.re ) );
      end if;
   exception when others =>
@@ -1309,7 +1309,7 @@ end ParseNumericsSetRe;
 procedure ParseNumericsSetIm is
   -- Syntax: numerics.set_im( n );
   -- Source: N/A
-  expr_val    : unbounded_string;
+  expr_st     : storage;
   expr_type   : identifier;
   record_id   : identifier;
   real_t      : identifier;
@@ -1321,7 +1321,7 @@ begin
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
      expectParameterComma;
-     ParseExpression( expr_val, expr_type );
+     ParseExpression( expr_st, expr_type );
      if baseTypesOk( expr_type, long_float_t ) then
         expect( symbol_t, ")" );
      end if;
@@ -1332,7 +1332,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       Set_Im( c, to_numeric( expr_val ) );
+       Set_Im( c, to_numeric( expr_st.value ) );
        identifiers( img_t ).value.all := to_unbounded_string( numericValue( c.Im ) );
      end if;
   exception when others =>
@@ -1342,28 +1342,28 @@ end ParseNumericsSetIm;
 
 -- Can't return a new complex expression
 --
---procedure ParseNumericsSetComposeFromCartisian( result : out unbounded_string ) is
+--procedure ParseNumericsSetComposeFromCartisian( result : out storage ) is
   -- Syntax: r := numerics.compose_from_cartisian( r [, i] );
   -- Source: N/A
-  --expr_val   : unbounded_string;
+  --expr_st   : unbounded_string;
   --expr_type  : identifier;
 --begin
   --expect( _t );
   --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
+  --ParseExpression( expr_st, expr_type );
   --if baseTypesOk( expr_type, complex_t ) then
      --expect( symbol_t, ")" );
   --end if;
   --begin
      --if isExecutingCommand then
-       --result := to_numeric( expr_val );
+       --result := to_numeric( expr_st.value );
      --end if;
   --exception when others =>
      --err_exception_raised;
   --end;
 --end ParseNumericsComposeFromCartisian;
 
-procedure ParseNumericsModulus( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsModulus( result : out storage; kind : out identifier ) is
   -- Syntax: r := numerics.modulus( n );
   -- Source: N/A
   record_id   : identifier;
@@ -1384,7 +1384,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( numericValue( Modulus( c ) ) );
+       result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1393,11 +1393,11 @@ end ParseNumericsModulus;
 
 -- abs is a renaming of modulus
 
-procedure ParseNumericsArgument( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsArgument( result : out storage; kind : out identifier ) is
   -- Syntax: r := numerics.argument( n [,c] );
   -- Source: N/A
   record_id   : identifier;
-  cycle_val   : unbounded_string;
+  cycle_st    : storage;
   cycle_type  : identifier;
   has_cycle   : boolean := false;
   c : complex;
@@ -1411,7 +1411,7 @@ begin
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( cycle_val, cycle_type );
+        ParseExpression( cycle_st, cycle_type );
         has_cycle := true;
      end if;
      expect( symbol_t, ")" );
@@ -1423,9 +1423,9 @@ begin
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
        if has_cycle then
-          result := to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_val ) ) ) );
+          result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ), noMetaLabel );
        else
-          result := to_unbounded_string( numericValue( Argument( c ) ) );
+          result := storage'( to_unbounded_string( numericValue( Argument( c ) ) ), noMetaLabel );
        end if;
      end if;
   exception when others =>
@@ -1434,21 +1434,21 @@ begin
 end ParseNumericsArgument;
 
 -- Can't return record expressions
---procedure ParseNumericsComposeFromPolar( result : out unbounded_string ) is
+--procedure ParseNumericsComposeFromPolar( result : out storage ) is
   -- Syntax: r := numerics.compose_from_polar( n ,a );
   -- Source: N/A
-  --expr_val   : unbounded_string;
+  --expr_st   : unbounded_string;
   --expr_type  : identifier;
 --begin
   --expect( _t );
   --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
+  --ParseExpression( expr_st, expr_type );
   --if baseTypesOk( expr_type, complex_t ) then
      --expect( symbol_t, ")" );
   --end if;
   --begin
      --if isExecutingCommand then
---       result := to_numeric( expr_val );
+--       result := to_numeric( expr_st.value );
  --    end if;
   --exception when others =>
    --  err_exception_raised;
@@ -1456,186 +1456,186 @@ end ParseNumericsArgument;
 --end ParseNumericsComposeFromPolar;
 
 -- Can't return a record expression
---procedure ParseNumericsConjugate( result : out unbounded_string ) is
+--procedure ParseNumericsConjugate( result : out storage ) is
   -- Syntax: r := numerics.conjugate( n );
   -- Source: N/A
-  --expr_val   : unbounded_string;
+  --expr_st   : unbounded_string;
   --expr_type  : identifier;
 --begin
   --expect( _t );
   --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
+  --ParseExpression( expr_st, expr_type );
   --if baseTypesOk( expr_type, complex_t ) then
      --expect( symbol_t, ")" );
   --end if;
   --begin
      --if isExecutingCommand then
-       --result := to_numeric( expr_val );
+       --result := to_numeric( expr_st.value );
      --end if;
   --exception when others =>
      --err_exception_raised;
   --end;
 --end ParseNumericsConjugate;
 
-procedure ParseNumericsHashOf( result : out unbounded_string; kind : out identifier) is
+procedure ParseNumericsHashOf( result : out storage; kind : out identifier) is
   -- Syntax: numerics.hash_of( s, l )
-  expr1_val   : unbounded_string;
+  expr1_st    : storage;
   expr1_type  : identifier;
-  expr2_val   : unbounded_string;
+  expr2_st    : storage;
   expr2_type  : identifier;
 begin
   kind := natural_t;
   expect( hash_of_t );
-  ParseFirstNumericParameter( hash_of_t, expr1_val, expr1_type, string_t );
-  ParseLastNumericParameter( hash_of_t, expr2_val, expr2_type, natural_t );
+  ParseFirstNumericParameter( hash_of_t, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( hash_of_t, expr2_st, expr2_type, natural_t );
   declare
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( numericValue( hash_of( expr1_val, limit ) ) );
+       limit := hash_integer( to_numeric( expr2_st.value ) );
+       result := storage'( to_unbounded_string( numericValue( hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsHashOf;
 
-procedure ParseNumericsSdbmHashOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSdbmHashOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sdbm_hash_of( s, l )
-  expr1_val   : unbounded_string;
+  expr1_st    : storage;
   expr1_type  : identifier;
-  expr2_val   : unbounded_string;
+  expr2_st    : storage;
   expr2_type  : identifier;
 begin
   kind := natural_t;
   expect( sdbm_hash_of_t );
-  ParseFirstNumericParameter( sdbm_hash_of_t, expr1_val, expr1_type, string_t );
-  ParseLastNumericParameter( sdbm_hash_of_t, expr2_val, expr2_type, natural_t );
+  ParseFirstNumericParameter( sdbm_hash_of_t, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( sdbm_hash_of_t, expr2_st, expr2_type, natural_t );
   declare
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( numericValue( sdbm_hash_of( expr1_val, limit ) ) );
+       limit := hash_integer( to_numeric( expr2_st.value ) );
+       result := storage'( to_unbounded_string( numericValue( sdbm_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsSdbmHashOf;
 
-procedure ParseNumericsFnvHashOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsFnvHashOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.fnv_hash_of( s, l )
-  expr1_val   : unbounded_string;
+  expr1_st    : storage;
   expr1_type  : identifier;
-  expr2_val   : unbounded_string;
+  expr2_st    : storage;
   expr2_type  : identifier;
 begin
   kind := natural_t;
   expect( fnv_hash_of_t );
-  ParseFirstNumericParameter( fnv_hash_of_t, expr1_val, expr1_type, string_t );
-  ParseLastNumericParameter( fnv_hash_of_t, expr2_val, expr2_type, natural_t );
+  ParseFirstNumericParameter( fnv_hash_of_t, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( fnv_hash_of_t, expr2_st, expr2_type, natural_t );
   declare
     limit  : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( numericValue( fnv_hash_of( expr1_val, limit ) ) );
+       limit := hash_integer( to_numeric( expr2_st.value ) );
+       result := storage'( to_unbounded_string( numericValue( fnv_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsFnvHashOf;
 
-procedure ParseNumericsMurmurHashOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsMurmurHashOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.murmur_hash_of( s, l )
-  expr1_val   : unbounded_string;
+  expr1_st    : storage;
   expr1_type  : identifier;
-  expr2_val   : unbounded_string;
+  expr2_st    : storage;
   expr2_type  : identifier;
 begin
   kind := natural_t;
   expect( murmur_hash_of_t );
-  ParseFirstNumericParameter( murmur_hash_of_t, expr1_val, expr1_type, string_t );
-  ParseLastNumericParameter( murmur_hash_of_t, expr2_val, expr2_type, natural_t );
+  ParseFirstNumericParameter( murmur_hash_of_t, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( murmur_hash_of_t, expr2_st, expr2_type, natural_t );
   declare
     limit  : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( numericValue( murmur_hash_of( expr1_val, limit ) ) );
+       limit := hash_integer( to_numeric( expr2_st.value ) );
+       result := storage'( to_unbounded_string( numericValue( murmur_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseNumericsMurmurHashOf;
 
-procedure ParseNumericsSHA1DigestOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSHA1DigestOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sha1_digest_of( s );
   -- Source: GNAT.SHA1.Digest
-  src_val  : unbounded_string;
+  src_st   : storage;
   src_type : identifier;
 begin
   expect( sha1_digest_of_t );
-  ParseSingleStringParameter( sha1_digest_of_t, src_val, src_type );
+  ParseSingleStringParameter( sha1_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA1.Digest( to_string( src_val ) ) );
+     result := storage'( to_unbounded_string( Gnat.SHA1.Digest( to_string( src_st.value ) ) ), noMetaLabel );
   end if;
 end ParseNumericsSHA1DigestOf;
 
-procedure ParseNumericsSHA224DigestOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSHA224DigestOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sha224_digest_of( s );
   -- Source: GNAT.SHA224.Digest
-  src_val  : unbounded_string;
+  src_st   : storage;
   src_type : identifier;
 begin
   expect( sha224_digest_of_t );
-  ParseSingleStringParameter( sha224_digest_of_t, src_val, src_type );
+  ParseSingleStringParameter( sha224_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA224.Digest( to_string( src_val ) ) );
+     result := storage'( to_unbounded_string( Gnat.SHA224.Digest( to_string( src_st.value ) ) ), noMetaLabel );
   end if;
 end ParseNumericsSHA224DigestOf;
 
-procedure ParseNumericsSHA256DigestOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSHA256DigestOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sha256_digest_of( s );
   -- Source: GNAT.SHA256.Digest
-  src_val  : unbounded_string;
+  src_st   : storage;
   src_type : identifier;
 begin
   expect( sha256_digest_of_t );
-  ParseSingleStringParameter( sha256_digest_of_t, src_val, src_type );
+  ParseSingleStringParameter( sha256_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA256.Digest( to_string( src_val ) ) );
+     result := storage'( to_unbounded_string( Gnat.SHA256.Digest( to_string( src_st.value ) ) ), noMetaLabel );
   end if;
 end ParseNumericsSHA256DigestOf;
 
-procedure ParseNumericsSHA512DigestOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsSHA512DigestOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.sha512_digest_of( s );
   -- Source: GNAT.SHA512.Digest
-  src_val  : unbounded_string;
+  src_st   : storage;
   src_type : identifier;
 begin
   expect( sha512_digest_of_t );
-  ParseSingleStringParameter( sha512_digest_of_t, src_val, src_type );
+  ParseSingleStringParameter( sha512_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := to_unbounded_string( Gnat.SHA512.Digest( to_string( src_val ) ) );
+     result := storage'( to_unbounded_string( Gnat.SHA512.Digest( to_string( src_st.value ) ) ), noMetaLabel );
   end if;
 end ParseNumericsSHA512DigestOf;
 
-procedure ParseNumericsShannonEntropyOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseNumericsShannonEntropyOf( result : out storage; kind : out identifier ) is
   -- Syntax: numerics.shannon_entropy_of( s );
   -- Source: N/A
-  src_val  : unbounded_string;
+  src_st   : storage;
   src_type : identifier;
 begin
   expect( shannon_entropy_of_t );
-  ParseSingleStringParameter( shannon_entropy_of_t, src_val, src_type );
+  ParseSingleStringParameter( shannon_entropy_of_t, src_st, src_type );
   kind := long_float_t;
   if isExecutingCommand then
-     result := to_unbounded_string( shannon_entropy_of( src_val ) );
+     result := storage'( to_unbounded_string( shannon_entropy_of( src_st.value ) ), noMetaLabel );
   end if;
 end ParseNumericsShannonEntropyOf;
 

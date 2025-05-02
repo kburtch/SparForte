@@ -82,7 +82,7 @@ end ParseGnatCRC32Initialize;
 procedure ParseGnatCRC32Update is
   -- gnat.crc32.update( crc32 )
   var_id  : identifier;
-  expr_val  : unbounded_string;
+  expr  : storage;
   expr_type : identifier;
 begin
   expect( gnat_crc32_update_t );
@@ -90,7 +90,7 @@ begin
   ParseIdentifier( var_id );
   if baseTypesOk( identifiers( var_id ).kind, gnat_crc32_crc32_t ) then
      expectParameterComma;
-     ParseExpression( expr_val, expr_type );
+     ParseExpression( expr, expr_type );
      --if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
      if uniTypesOk( expr_type, uni_string_t ) then
         expect( symbol_t, ")" );
@@ -102,7 +102,7 @@ begin
        c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
            identifiers( var_id ).value.all ) );
      begin
-       Gnat.CRC32.Update( C, to_string( expr_val ) );
+       Gnat.CRC32.Update( C, to_string( expr.value ) );
        --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
        identifiers( var_id ).value.all := to_unbounded_string( numericValue( C ) );
      exception when others =>
@@ -111,7 +111,7 @@ begin
   end if;
 end ParseGnatCRC32Update;
 
-procedure ParseGnatCRC32GetValue( result : out unbounded_string; kind : out identifier ) is
+procedure ParseGnatCRC32GetValue( result : out storage; kind : out identifier ) is
   -- integer := gnat.crc32.update( crc32 )  -- really, unsigned 32
   var_id  : identifier;
 begin
@@ -125,7 +125,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := identifiers( var_id ).value.all;
+       result := storage'( identifiers( var_id ).value.all, noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;

@@ -90,7 +90,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      DoRecordToJson( jsonString, source_var_id );
-     assignParameter( target_ref, jsonString );
+     assignParameter( target_ref, storage'( jsonString, noMetaLabel ) );
   end if;
 end ParseRecordsToJson;
 
@@ -99,7 +99,7 @@ procedure ParseRecordsToRecord is
   -- Source: N/A
   --target_var_id : identifier;
   target_ref    : reference;
-  sourceVal     : unbounded_string;
+  sourceExpr     : storage;
   sourceType    : identifier;
   baseType      : identifier;
   subprogramId  : constant identifier := records_to_record_t;
@@ -130,16 +130,16 @@ begin
      expectRecord( subprogramId, target_ref.id  );
   end if;
   expectParameterComma;
-  ParseExpression( sourceVal, sourceType );
+  ParseExpression( sourceExpr, sourceType );
   if baseTypesOK( sourceType, json_string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      begin
-       DoJsonToRecord( target_ref.id, sourceVal );
+       DoJsonToRecord( target_ref.id, sourceExpr.value );
      exception when constraint_error =>
        err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
-               contextAltText( sourceVal,"decoding the JSON string" ),
+               contextAltText( sourceExpr.value,"decoding the JSON string" ),
             subject => target_ref.id,
             subjectType => identifiers( target_ref.id ).kind,
             reason =>  +"the decoding failed because",

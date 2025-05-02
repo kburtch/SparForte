@@ -52,7 +52,7 @@ procedure ParseDesignPragmaAffinityIdentifier( name : out unbounded_string );
 procedure ParseDesignPragmaModeIdentifier( name : out unbounded_string );
 procedure ParseDesignPragmaAffinityModeIdentifier( name : out unbounded_string );
 
-procedure DoContracts( kind_id : identifier; expr_se : in out storage );
+procedure DoContracts( kind_id : identifier; expr : in out storage );
 
 
 ------------------------------------------------------------------------------

@@ -142,20 +142,20 @@ end err_empty;
 --
 ------------------------------------------------------------------------------
 
-procedure err_index( subprogram : identifier; idxExpr : unbounded_string ) is
+procedure err_index( subprogram : identifier; idxExpr : storage ) is
 begin
   err( context => subprogram,
-       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr ),
+       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr.value ),
        reason => +"is",
        obstructorNotes => +"not in the vector"
   );
 end err_index;
 
-procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : unbounded_string ) is
+procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : storage ) is
 begin
   err( context => subprogram,
-       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr1 ) &
-                  pl( " or" ) & em_value( idxExpr2 ),
+       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr1.value ) &
+                  pl( " or" ) & em_value( idxExpr2.value ),
        reason => +"is",
        obstructorNotes => +"not in the vector"
   );
@@ -172,9 +172,9 @@ end err_index;
 --
 ------------------------------------------------------------------------------
 
-procedure err_count( subprogram : identifier; cntExpr : unbounded_string; cntType : identifier ) is
+procedure err_count( subprogram : identifier; cntExpr : storage; cntType : identifier ) is
 begin
-   if cntExpr = "" then
+   if cntExpr.value = "" then
       err( context => subprogram,
            subjectNotes => pl( qp( "the count value" ) ),
            subjectType  => cntType,
@@ -184,7 +184,7 @@ begin
       );
    else
       err( context => subprogram,
-           subjectNotes => pl( qp( "the count value of " ) & toSecureData( to_string( cntExpr ) ) ),
+           subjectNotes => pl( qp( "the count value of " ) & toSecureData( to_string( cntExpr.value ) ) ),
            subjectType  => cntType,
            reason => +"is not valid for",
            obstructor => containers_count_type_t,
@@ -388,8 +388,9 @@ begin
         -- Attach the resource
 
         declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
-        identifiers( cursRef.id ).svalue := to_unbounded_string( resId );
-        identifiers( cursRef.id ).value := identifiers( cursRef.id ).svalue'access;
+        identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+        identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
+        identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
         identifiers( cursRef.id ).resource := true;
      end if;
   else
@@ -426,8 +427,9 @@ begin
         -- Attach the resource
 
         declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
-        identifiers( cursRef.id ).svalue := to_unbounded_string( resId );
-        identifiers( cursRef.id ).value := identifiers( cursRef.id ).svalue'access;
+        identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+        identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
+        identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
         identifiers( cursRef.id ).resource := true;
      end if;
   else
@@ -570,9 +572,9 @@ end ParseVectorsClear;
 procedure ParseVectorsToVector is
   vectorId   : identifier;
   theVector  : resPtr;
-  itemExpr   : unbounded_string;
+  itemExpr   : storage;
   itemType   : identifier;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   subprogramId : constant identifier := vectors_to_vector_t;
 begin
@@ -583,7 +585,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       theVector.vslVector := Vector_String_Lists.To_Vector( itemExpr, ada.containers.count_type'value( to_string( cntExpr ) ) );
+       theVector.vslVector := Vector_String_Lists.To_Vector( itemExpr.value, ada.containers.count_type'value( to_string( cntExpr.value ) ) );
      end;
   end if;
 end ParseVectorsToVector;
@@ -596,7 +598,7 @@ end ParseVectorsToVector;
 -- Ada:    c := capacity( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsCapacity( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsCapacity( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   subprogramId : constant identifier := vectors_capacity_t;
@@ -607,7 +609,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Capacity( theVector.vslVector ) ) );
+       result := storage'(
+         to_unbounded_string(
+            ada.containers.count_type'image( Vector_String_Lists.Capacity( theVector.vslVector ) )
+         ),
+         noMetaLabel
+      );
      end;
   end if;
 end ParseVectorsCapacity;
@@ -623,7 +630,7 @@ end ParseVectorsCapacity;
 procedure ParseVectorsReserveCapacity is
   vectorId   : identifier;
   theVector  : resPtr;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   subprogramId : constant identifier := vectors_reserve_capacity_t;
 begin
@@ -634,13 +641,13 @@ begin
      declare
        cnt : ada.containers.count_type;
      begin
-       cnt := ada.containers.count_type( to_numeric( cntExpr ) );
+       cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr ) ) ),
+            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr.value ) ) ),
             subjectType  => cntType,
             reason => +"is not valid for",
             obstructor => containers_count_type_t,
@@ -659,7 +666,7 @@ end ParseVectorsReserveCapacity;
 -- Ada:    c := length( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsLength( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsLength( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   subprogramId : constant identifier := vectors_length_t;
@@ -670,7 +677,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Length( theVector.vslVector ) ) );
+       result := storage'(
+         to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Length( theVector.vslVector ) ) ),
+         noMetaLabel
+      );
      end;
   end if;
 end ParseVectorsLength;
@@ -686,7 +696,7 @@ end ParseVectorsLength;
 procedure ParseVectorsSetLength is
   vectorId   : identifier;
   theVector  : resPtr;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   subprogramId : constant identifier := vectors_set_length_t;
 begin
@@ -697,13 +707,13 @@ begin
      declare
        cnt : ada.containers.count_type;
      begin
-       cnt := ada.containers.count_type( to_numeric( cntExpr ) );
+       cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr ) ) ),
+            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr.value ) ) ),
             subjectType  => cntType,
             reason => +"is not valid for",
             obstructor => containers_count_type_t,
@@ -722,7 +732,7 @@ end ParseVectorsSetLength;
 -- Ada:    b := is_empty( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsIsEmpty( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsIsEmpty( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   subprogramId : constant identifier := vectors_is_empty_t;
@@ -733,7 +743,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_spar_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) );
+       result := storage'( to_spar_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsIsEmpty;
@@ -749,9 +759,9 @@ end ParseVectorsIsEmpty;
 procedure ParseVectorsAppendElements is
   vectorId  : identifier;
   theVector : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_append_elements_t;
@@ -771,10 +781,10 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Vector_String_Lists.Append( theVector.vslVector, itemExpr, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Vector_String_Lists.Append( theVector.vslVector, itemExpr.value, cnt );
        else
-          Vector_String_Lists.Append( theVector.vslVector, itemExpr );
+          Vector_String_Lists.Append( theVector.vslVector, itemExpr.value );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -795,9 +805,9 @@ end ParseVectorsAppendElements;
 procedure ParseVectorsPrependElements is
   vectorId  : identifier;
   theVector : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_prepend_elements_t;
@@ -817,10 +827,10 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr.value, cnt );
        else
-          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr );
+          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr.value );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -843,9 +853,9 @@ end ParseVectorsPrependElements;
 procedure ParseVectorsAppend is
   vectorId  : identifier;
   theVector : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
-  strExpr   : unbounded_string;
+  strExpr   : storage;
   strType   : identifier;
   subprogramId : constant identifier := vectors_append_t;
 begin
@@ -858,8 +868,8 @@ begin
        idx : vector_index;
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
-       Append( theVector.vslVector, idx, strExpr );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
+       Append( theVector.vslVector, idx, strExpr.value );
      exception when constraint_error =>
        err( +"append index is wrong type" );
      when storage_error =>
@@ -879,9 +889,9 @@ end ParseVectorsAppend;
 procedure ParseVectorsPrepend is
   vectorId  : identifier;
   theVector : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
-  strExpr   : unbounded_string;
+  strExpr   : storage;
   strType   : identifier;
   subprogramId : constant identifier := vectors_prepend_t;
 begin
@@ -894,8 +904,8 @@ begin
        idx : vector_index;
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
-       Prepend( theVector.vslVector, idx, strExpr );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
+       Prepend( theVector.vslVector, idx, strExpr.value );
      exception when constraint_error =>
        err( +"prepend count must be a natural integer" );
      when storage_error =>
@@ -912,7 +922,7 @@ end ParseVectorsPrepend;
 -- Ada:    n := vectors.first_index( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsFirstIndex( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsFirstIndex( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   userIdx    : vector_index;
@@ -925,7 +935,8 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        userIdx := Vector_String_Lists.First_Index( theVector.vslVector );
-       result := to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) );
+       result := storage'( to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) ),
+         noMetaLabel );
      end;
   end if;
 end ParseVectorsFirstIndex;
@@ -938,7 +949,7 @@ end ParseVectorsFirstIndex;
 -- Ada:    i := vectors.last_index( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsLastIndex( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   userIdx    : vector_index;
@@ -953,7 +964,7 @@ begin
 --put_line( "last_index: vector = " & to_string( identifiers( vectorId ).name ) );
        userIdx := Vector_String_Lists.Last_Index( theVector.vslVector );
 -- put_line( "last_index: userIdx = " & userIdx'img );
-       result := to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) );
+       result := storage'( to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) ), noMetaLabel );
 -- put_line( "last_index: result = " & to_string( result ) ); -- DEBUG
      end;
   end if;
@@ -967,10 +978,10 @@ end ParseVectorsLastIndex;
 -- Ada:    e := vectors.element( c ) | ( v, i )
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsElement( result : out storage; kind : out identifier ) is
   vectorId  : identifier;
   theVector : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
   cursorId  : identifier := eof_t;
   theCursor : resPtr;
@@ -1031,12 +1042,12 @@ begin
      begin
        if cursorId /= eof_t then
          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-         result := Vector_String_Lists.Element( theCursor.vslCursor );
+         result := storage'( Vector_String_Lists.Element( theCursor.vslCursor ), noMetaLabel );
        else
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
-         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
-         result := Vector_String_Lists.Element( theVector.vslVector, idx );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
+         result := storage'( Vector_String_Lists.Element( theVector.vslVector, idx ), noMetaLabel );
        end if;
 -- NOTE: Vector Lists stores internally a natural
      exception when constraint_error =>
@@ -1055,7 +1066,7 @@ end ParseVectorsElement;
 -- Ada:    e := vectors.first_element( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsFirstElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsFirstElement( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   subprogramId : constant identifier := vectors_first_element_t;
@@ -1066,7 +1077,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := Vector_String_Lists.First_Element( theVector.vslVector );
+       result := storage'( Vector_String_Lists.First_Element( theVector.vslVector ), noMetaLabel );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1081,7 +1092,7 @@ end ParseVectorsFirstElement;
 -- Ada:    e := vectors.last_element( v );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsLastElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsLastElement( result : out storage; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
   subprogramId : constant identifier := vectors_last_element_t;
@@ -1092,7 +1103,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := Vector_String_Lists.Last_Element( theVector.vslVector );
+       result := storage'( Vector_String_Lists.Last_Element( theVector.vslVector ), noMetaLabel );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1110,7 +1121,7 @@ end ParseVectorsLastElement;
 procedure ParseVectorsDeleteFirst is
   vectorId  : identifier;
   theVector : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_delete_first_t;
@@ -1129,7 +1140,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Vector_String_Lists.Delete_First( theVector.vslVector, cnt );
        else
           Vector_String_Lists.Delete_First( theVector.vslVector );
@@ -1155,7 +1166,7 @@ end ParseVectorsDeleteFirst;
 procedure ParseVectorsDeleteLast is
   vectorId  : identifier;
   theVector : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_delete_last_t;
@@ -1174,7 +1185,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Vector_String_Lists.Delete_Last( theVector.vslVector, cnt );
        else
           Vector_String_Lists.Delete_Last( theVector.vslVector );
@@ -1197,10 +1208,10 @@ end ParseVectorsDeleteLast;
 -- Ada:    b := vectors.contains( v, e )
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsContains( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsContains( result : out storage; kind : out identifier ) is
   vectorId  : identifier;
   theVector : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
   subprogramId : constant identifier := vectors_contains_t;
 begin
@@ -1211,8 +1222,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_spar_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr ) );
-
+       result := storage'( to_spar_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr.value ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsContains;
@@ -1419,11 +1429,11 @@ procedure ParseVectorsDelete is
   theVector : resPtr;
   cursorId  : identifier;
   theCursor : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
   hasIdx    : boolean := false;
   idx       : Vector_String_Lists.Extended_Index;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   cnt       : Ada.Containers.Count_Type;
@@ -1456,17 +1466,17 @@ begin
            if hasCnt then
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
-              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr ) );
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr.value ) );
               Vector_String_Lists.Delete( theVector.vslVector, idx, cnt );
            else
-              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr ) );
+              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr.value ) );
               Vector_String_Lists.Delete( theVector.vslVector, idx );
            end if;
         else
            findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            if hasCnt then
-              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
               Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
            else
               Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
@@ -1488,7 +1498,7 @@ end ParseVectorsDelete;
 -- Ada:    b := has_element( c );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsHasElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsHasElement( result : out storage; kind : out identifier ) is
   cursorId   : identifier;
   theCursor  : resPtr;
   subprogramId : constant identifier := vectors_has_element_t;
@@ -1499,7 +1509,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := to_spar_boolean( Vector_String_Lists.Has_Element( theCursor.vslCursor ) );
+       result := storage'( to_spar_boolean( Vector_String_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsHasElement;
@@ -1512,7 +1522,7 @@ end ParseVectorsHasElement;
 -- Ada:    b := v1 = v2;
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsEqual( result : out unbounded_string; kind : out identifier ) is
+procedure ParseVectorsEqual( result : out storage; kind : out identifier ) is
   leftVectorId  : identifier;
   rightVectorId : identifier;
   leftVector    : resPtr;
@@ -1533,7 +1543,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( leftVectorId ).value.all ), leftVector );
        findResource( to_resource_id( identifiers( rightVectorId ).value.all ), rightVector );
-       result := to_spar_boolean( leftVector.vslVector = rightVector.vslVector );
+       result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1573,18 +1583,18 @@ end ParseVectorsEqual;
 procedure ParseVectorsInsert is
   vectorId   : identifier;
   theVector  : resPtr;
-  beforeVal  : unbounded_string;
+  beforeExpr  : storage;
   beforeType : identifier;
-  elemVal    : unbounded_string;
+  elemExpr    : storage;
   elemType   : identifier;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   hasCnt     : boolean := false;
   subprogramId : constant identifier := vectors_insert_t;
 begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextNumericParameter( subprogramId, beforeVal, beforeType, identifiers( vectorId ).genKind );
+  ParseNextNumericParameter( subprogramId, beforeExpr, beforeType, identifiers( vectorId ).genKind );
 
   -- In Ada, the element can be missing, the count can be missing, or both.
   -- If the count type and element type are the same, SparForte cannot
@@ -1593,7 +1603,7 @@ begin
 
   --if token = symbol_t and identifiers( token ).value.all = "," then
      expectParameterComma( subprogramId );
-     ParseExpression( elemVal, elemType );
+     ParseExpression( elemExpr, elemType );
      if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
            ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -1609,19 +1619,19 @@ begin
        cnt : ada.containers.count_type := 1;
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeExpr.value ) ) );
        if hasCnt then
           begin
-             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
-          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
+          Vector_String_Lists.Insert( theVector.vslVector, idx, elemExpr.value, cnt );
        else
-          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
+          Vector_String_Lists.Insert( theVector.vslVector, idx, elemExpr.value );
        end if;
      exception when constraint_error =>
-       err_index( subprogramId, beforeVal );
+       err_index( subprogramId, beforeExpr );
      when storage_error =>
        err_storage;
      when others =>
@@ -1697,9 +1707,9 @@ end ParseVectorsInsertVector;
 procedure ParseVectorsInsertBefore is
   vectorId   : identifier;
   cursorId   : identifier;
-  elemVal    : unbounded_string;
+  elemExpr    : storage;
   elemType   : identifier;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   hasCnt     : boolean := false;
   --cursorId2  : identifier;
@@ -1708,7 +1718,7 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
-  ParseNextGenItemParameter( subprogramId, elemVal, elemType, identifiers( vectorId ).genKind2 );
+  ParseNextGenItemParameter( subprogramId, elemExpr, elemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -1731,12 +1741,12 @@ begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        if hasCnt then
           begin
-             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemVal, cnt );
+       Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr.value, cnt );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1803,7 +1813,7 @@ begin
 
        if identifiers( cursor2ref.id ).list then
           findResource( to_resource_id(
-             identifiers( cursor2ref.id ).avalue( cursor2ref.index ) ),
+             identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
              theCursor2 );
        else
           findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
@@ -1843,10 +1853,10 @@ end ParseVectorsInsertVectorAndMark;
 procedure ParseVectorsInsertBeforeAndMark is
   vectorId   : identifier;
   cursorId   : identifier;
-  elemVal    : unbounded_string;
+  elemExpr    : storage;
   elemType   : identifier;
   cursor2Ref : reference;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   hasCnt     : boolean := false;
   subprogramId : constant identifier := vectors_insert_before_and_mark_t;
@@ -1856,7 +1866,7 @@ begin
   ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
 
   expectParameterComma( subprogramId );
-  ParseExpression( elemVal, elemType );
+  ParseExpression( elemExpr, elemType );
   if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
      ParseNextOutVectorCursor( subprogramId, vectorId, cursor2Ref );
      if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1896,7 +1906,7 @@ begin
 
        if identifiers( cursor2ref.id ).list then
           findResource( to_resource_id(
-             identifiers( cursor2ref.id ).avalue( cursor2ref.index ) ),
+             identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
              theCursor2 );
        else
           findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
@@ -1905,7 +1915,7 @@ begin
 
        if hasCnt then
           begin
-             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
@@ -1913,7 +1923,7 @@ begin
        Vector_String_Lists.Insert(
           Container => theVector.vslVector,
           Before    => theCursor.vslCursor,
-          New_Item  => elemVal,
+          New_Item  => elemExpr.value,
           Position  => theCursor2.vslCursor,
           Count     => cnt
        );
@@ -1939,10 +1949,10 @@ end ParseVectorsInsertBeforeAndMark;
 procedure ParseVectorsInsertSpace is
   vectorId   : identifier;
   beforeCursorId : identifier;
-  beforeIdxExpr : unbounded_string;
+  beforeIdxExpr : storage;
   beforeIdxType : identifier;
   positionCursorRef : reference;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   theVector  : resPtr;
   cnt        : ada.containers.count_type := 1;
@@ -1976,7 +1986,7 @@ begin
 
        if hasCnt then
            begin
-              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
            exception when others =>
              err_count( subprogramId, cntExpr, cntType );
            end;
@@ -1989,7 +1999,7 @@ begin
           declare
              idx : vector_index;
           begin
-             idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeIdxExpr ) ) );
+             idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeIdxExpr.value ) ) );
              Vector_String_Lists.Insert_Space( theVector.vslVector, idx, cnt );
           end;
        else
@@ -2013,7 +2023,7 @@ begin
              );
              AssignParameter(
                  positionCursorRef,
-                 to_unbounded_string( positionCursorResourceId )
+                 storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
              );
              findResource( positionCursorResourceId, thePositionCursor );
              Vector_String_Lists.Insert_Space(
@@ -2085,9 +2095,9 @@ procedure ParseVectorsSwap is
   theVector  : resPtr;
   theCursor  : resPtr;
   theCursor2 : resPtr;
-  idxExpr1   : unbounded_string;
+  idx1Expr   : storage;
   idxType1   : identifier;
-  idxExpr2   : unbounded_string;
+  idx2Expr   : storage;
   idxType2   : identifier;
   hasIdx     : boolean := false;
   subprogramId : constant identifier := vectors_swap_t;
@@ -2100,7 +2110,7 @@ begin
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
      ParseLastInOutInstantiatedParameter( subprogramId, cursorId2, vectors_cursor_t );
   else
-     ParseExpression( idxExpr1, idxType1 );
+     ParseExpression( idx1Expr, idxType1 );
      vectorIndexOrCursorOk( subprogramId, idxType1, vectorId );
      expectParameterComma( subprogramId );
      -- special case error to improve readability and avoid an more general
@@ -2116,7 +2126,7 @@ begin
           obstructorType => identifiers( token ).kind
         );
      end if;
-     ParseExpression( idxExpr2, idxType2 );
+     ParseExpression( idx2Expr, idxType2 );
      if not type_checks_done then
         baseTypesOK( idxType2, identifiers( vectorId ).genKind );
      end if;
@@ -2130,12 +2140,12 @@ begin
            idx1 : vector_index;
            idx2 : vector_index;
         begin
-           idx1 := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr1 ) ) );
-           idx2 := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr2 ) ) );
+           idx1 := toRealVectorIndex( vectorId, integer( to_numeric( idx1Expr.value ) ) );
+           idx2 := toRealVectorIndex( vectorId, integer( to_numeric( idx2Expr.value ) ) );
            findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
            Vector_String_Lists.Swap( theVector.vslVector, idx1, idx2 );
         exception when constraint_error =>
-           err_index( subprogramId, idxExpr1, idxExpr2 );
+           err_index( subprogramId, idx1Expr, idx2Expr );
         when others =>
            err_exception_raised;
         end;
@@ -2164,7 +2174,7 @@ end ParseVectorsSwap;
 
 procedure ParseVectorsFind is
   vectorId      : identifier;
-  itemExpr      : unbounded_string;
+  itemExpr      : storage;
   itemType      : identifier;
   startCursorId : identifier;
   positionCursorRef : reference;
@@ -2214,11 +2224,11 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            to_unbounded_string( positionCursorResourceId )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_String_Lists.Find( theVector.vslVector, itemExpr, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_String_Lists.Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
      exception when others =>
        err_exception_raised;
      end;
@@ -2235,7 +2245,7 @@ end ParseVectorsFind;
 
 procedure ParseVectorsReverseFind is
   vectorId      : identifier;
-  itemExpr      : unbounded_string;
+  itemExpr      : storage;
   itemType      : identifier;
   startCursorId : identifier;
   positionCursorRef : reference;
@@ -2285,11 +2295,11 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            to_unbounded_string( positionCursorResourceId )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_String_Lists.Reverse_Find( theVector.vslVector, itemExpr, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_String_Lists.Reverse_Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
      end;
   end if;
 end ParseVectorsReverseFind;
@@ -2304,9 +2314,9 @@ end ParseVectorsReverseFind;
 
 procedure ParseVectorsFindIndex is
   vectorId      : identifier;
-  itemExpr      : unbounded_string;
+  itemExpr      : storage;
   itemType      : identifier;
-  startIdxExpr  : unbounded_string;
+  startIdxExpr  : storage;
   startIdxType  : identifier;
   positionIdxRef : reference;
   subprogramId : constant identifier := vectors_find_index_t;
@@ -2328,14 +2338,14 @@ begin
      begin
         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 
-        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
+        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_String_Lists.Find_Index( theVector.vslVector, itemExpr, startIdx );
+        positionIdx := Vector_String_Lists.Find_Index( theVector.vslVector, itemExpr.value, startIdx );
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
-            positionValue
+            storage'( positionValue, noMetaLabel )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -2353,9 +2363,9 @@ end ParseVectorsFindIndex;
 
 procedure ParseVectorsReverseFindIndex is
   vectorId      : identifier;
-  itemExpr      : unbounded_string;
+  itemExpr      : storage;
   itemType      : identifier;
-  startIdxExpr  : unbounded_string;
+  startIdxExpr  : storage;
   startIdxType  : identifier;
   positionIdxRef : reference;
   subprogramId : constant identifier := vectors_reverse_find_index_t;
@@ -2377,14 +2387,14 @@ begin
      begin
         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 
-        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
+        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_String_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr, startIdx );
+        positionIdx := Vector_String_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr.value, startIdx );
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
-            positionValue
+            storage'( positionValue, noMetaLabel )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -2403,9 +2413,9 @@ end ParseVectorsReverseFindIndex;
 procedure ParseVectorsIncrement is
   vectorId  : identifier;
   theVector : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
-  numExpr   : unbounded_string;
+  numExpr   : storage;
   numType   : identifier;
   hasAmt    : boolean := false;
   subprogramId : constant identifier := vectors_increment_t;
@@ -2438,7 +2448,7 @@ begin
        floatVal  : numericValue;
      begin
        if hasAmt then
-          floatVal := numericValue( natural( to_numeric( numExpr ) ) );
+          floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
        else
           floatVal := 1.0;
        end if;
@@ -2446,14 +2456,14 @@ begin
          idx : vector_index;
        begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
          Increment( theVector.vslVector, idx, floatVal );
        end;
      exception when constraint_error =>
        err( context => subprogramId,
           subjectNotes => pl( qp( "the amount" ) ),
           reason  => +"should be a natural not",
-          obstructorNotes => em_value( numExpr ),
+          obstructorNotes => em_value( numExpr.value ),
           obstructorType => numType,
           remedy => +"the value should be >= 0"
        );
@@ -2474,9 +2484,9 @@ end ParseVectorsIncrement;
 procedure ParseVectorsDecrement is
   vectorId  : identifier;
   theVector : resPtr;
-  idxExpr   : unbounded_string;
+  idxExpr   : storage;
   idxType   : identifier;
-  numExpr   : unbounded_string;
+  numExpr   : storage;
   numType   : identifier;
   hasAmt    : boolean := false;
   subprogramId : constant identifier := vectors_decrement_t;
@@ -2509,7 +2519,7 @@ begin
        floatVal  : numericValue;
      begin
        if hasAmt then
-          floatVal := numericValue( natural( to_numeric( numExpr ) ) );
+          floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
        else
           floatVal := 1.0;
        end if;
@@ -2517,14 +2527,14 @@ begin
          idx : vector_index;
        begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
          Decrement( theVector.vslVector, idx, floatVal );
        end;
      exception when constraint_error =>
        err( context => subprogramId,
           subjectNotes => pl( qp( "the amount" ) ),
           reason  => +"should be a natural not",
-          obstructorNotes => em_value( numExpr ),
+          obstructorNotes => em_value( numExpr.value ),
           obstructorType => numType,
           remedy => +"the value should be >= 0"
        );

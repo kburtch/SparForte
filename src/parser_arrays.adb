@@ -167,7 +167,7 @@ end err_storage;
 -- Source: arraytypeorvar'first
 -----------------------------------------------------------------------------
 
-procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier ) is
+procedure ParseArraysFirst( result : out storage; kind : out identifier ) is
   var_id   : identifier;
   subprogramId : constant identifier := arrays_first_t;
 begin
@@ -185,11 +185,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     result.metaLabel := noMetaLabel;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
-        f := to_unbounded_string( long_integer'image( identifiers( var_id ).firstBound ) );
+        result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).firstBound ) );
      else
         begin
-           f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'first ) );
+           result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).aStorage'first ) );
         exception when CONSTRAINT_ERROR =>
            err(
                contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -197,8 +198,8 @@ begin
                subjectNotes => subjectInterpreter,
                reason => +"had an internal error because",
                obstructorNotes => pl( "the index is out of range " &
-                   identifiers( var_id ).avalue'first'img & " .. " &
-                   identifiers( var_id ).avalue'last'img )
+                   identifiers( var_id ).aStorage'first'img & " .. " &
+                   identifiers( var_id ).aStorage'last'img )
            );
         when STORAGE_ERROR =>
            err_storage;
@@ -220,7 +221,7 @@ end ParseArraysFirst;
 -- Source: arraytypeorvar'last
 -----------------------------------------------------------------------------
 
-procedure ParseArraysLast( f : out unbounded_string; kind : out identifier ) is
+procedure ParseArraysLast( result : out storage; kind : out identifier ) is
   var_id   : identifier;
   --array_id : arrayID;
   subprogramId : constant identifier := arrays_last_t;
@@ -239,11 +240,12 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     result.metaLabel := noMetaLabel;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
-        f := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound ) );
+        result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound ) );
      else
         begin
-           f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'last ) );
+           result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).aStorage'last ) );
         exception when CONSTRAINT_ERROR =>
            err(
                contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -251,8 +253,8 @@ begin
                subjectNotes => subjectInterpreter,
                reason => +"had an internal error because",
                obstructorNotes => pl( "the index is out of range " &
-                   identifiers( var_id ).avalue'first'img & " .. " &
-                   identifiers( var_id ).avalue'last'img )
+                   identifiers( var_id ).aStorage'first'img & " .. " &
+                   identifiers( var_id ).aStorage'last'img )
            );
         when STORAGE_ERROR =>
            err_storage;
@@ -274,7 +276,7 @@ end ParseArraysLast;
 -- Source: arraytypeorvar'length
 -----------------------------------------------------------------------------
 
-procedure ParseArraysLength( f : out unbounded_string; kind : out identifier ) is
+procedure ParseArraysLength( result : out storage; kind : out identifier ) is
   var_id   : identifier;
   subprogramId : constant identifier := arrays_length_t;
 begin
@@ -292,10 +294,11 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     result.metaLabel := noMetaLabel;
      if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-        f := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound - identifiers( var_id ).firstBound + 1 ) );
+        result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound - identifiers( var_id ).firstBound + 1 ) );
      else
-        f := to_unbounded_string( long_integer'image( identifiers( var_id ).avalue'length ) );
+        result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).aStorage'length ) );
      end if;
   end if;
 end ParseArraysLength;
@@ -313,7 +316,7 @@ end ParseArraysLength;
 -------------------------------------------------------------------------------
 
 offsetArrayBeingSorted : long_integer;
-ZeroElement            : unbounded_string;
+ZeroElement            : storage;
 arrayBeingSortedId     : identifier;
 
 
@@ -324,17 +327,17 @@ arrayBeingSortedId     : identifier;
 -----------------------------------------------------------------------------
 
 procedure moveElement( From, To : natural ) is
-  data : unbounded_string;
+  data : storage;
 begin
   if From = 0 then
      data := ZeroElement;
   else
-     data := identifiers( arrayBeingSortedId ).avalue( long_integer(From)+offsetArrayBeingSorted );
+     data := identifiers( arrayBeingSortedId ).aStorage( long_integer(From)+offsetArrayBeingSorted );
   end if;
   if To = 0 then
      ZeroElement := data;
   else
-     identifiers( arrayBeingSortedId ).avalue( long_integer(To)+offsetArrayBeingSorted ) := data;
+     identifiers( arrayBeingSortedId ).aStorage( long_integer(To)+offsetArrayBeingSorted ) := data;
    end if;
 end moveElement;
 
@@ -346,21 +349,21 @@ end moveElement;
 -----------------------------------------------------------------------------
 
 function Lt_string( Op1, Op2 : natural ) return boolean is
-  data1, data2 : unbounded_string;
+  data1, data2 : storage;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
+     data1 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op1 )+offsetArrayBeingSorted );
      --data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
      --data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
-     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
+     data2 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
-  return data1 < data2;
+  return data1.value < data2.value;
 end Lt_string;
 
 
@@ -371,21 +374,21 @@ end Lt_string;
 -----------------------------------------------------------------------------
 
 function Lt_string_descending( Op1, Op2 : natural ) return boolean is
-  data1, data2 : unbounded_string;
+  data1, data2 : storage;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
      -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
-     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
+     data1 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
      -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
-     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
+     data2 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
-  return data1 > data2;
+  return data1.value > data2.value;
 end Lt_string_descending;
 
 
@@ -396,21 +399,21 @@ end Lt_string_descending;
 -----------------------------------------------------------------------------
 
 function Lt_numeric( Op1, Op2 : natural ) return boolean is
-  data1, data2 : unbounded_string;
+  data1, data2 : storage;
   result : boolean := false;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
+     data1 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
+     data2 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   begin
-    result := to_numeric( data1 ) < to_numeric( data2 );
+    result := to_numeric( data1.value ) < to_numeric( data2.value );
   exception when others =>
     err( contextNotes => +"comparing values during the sort",
          subject => arrayBeingSortedId,
@@ -431,21 +434,21 @@ end Lt_numeric;
 -----------------------------------------------------------------------------
 
 function Lt_numeric_descending( Op1, Op2 : natural ) return boolean is
-  data1, data2 : unbounded_string;
+  data1, data2 : storage;
   result : boolean := false;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
+     data1 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
+     data2 := identifiers( arrayBeingSortedId ).aStorage( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   begin
-    result := to_numeric( data1 ) > to_numeric( data2 );
+    result := to_numeric( data1.value ) > to_numeric( data2.value );
   exception when others =>
     err( contextNotes => +"comparing values during the sort",
          subject => arrayBeingSortedId,
@@ -494,8 +497,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
+     first := identifiers( var_id ).aStorage'first;
+     last  := identifiers( var_id ).aStorage'last;
      -- do not sort an empty array
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
@@ -541,8 +544,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
+     first := identifiers( var_id ).aStorage'first;
+     last  := identifiers( var_id ).aStorage'last;
      -- do not sort an empty array
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
@@ -588,8 +591,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
     arrayBeingSortedId := var_id;
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
+     first := identifiers( var_id ).aStorage'first;
+     last  := identifiers( var_id ).aStorage'last;
      -- do not sort an empty array
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
@@ -635,8 +638,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
+     first := identifiers( var_id ).aStorage'first;
+     last  := identifiers( var_id ).aStorage'last;
      -- do not sort an empty array
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
@@ -663,7 +666,7 @@ procedure ParseArraysShuffle is
   var_id : identifier;
   newpos : long_integer;
   len    : long_integer;
-  tmp : unbounded_string;
+  tmp : storage;
   subprogramId : constant identifier := arrays_shuffle_t;
 begin
   expect( subprogramId );
@@ -683,25 +686,25 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     len   := identifiers( var_id ).avalue'length;
+     len   := identifiers( var_id ).aStorage'length;
      begin
-        for i in identifiers( var_id ).avalue'range loop
+        for i in identifiers( var_id ).aStorage'range loop
             -- unfortunately, ada random numbers are 0..1, so they can be too
             -- large if 1...repeat if that happens
             loop
                 newpos := long_integer( long_float'truncation( long_float( len ) *
                     long_float( Ada.Numerics.Float_Random.Random( random_generator
 ) ) ) );
-            newpos := newpos + identifiers( var_id ).avalue'first;
-            exit when newpos <= identifiers( var_id ).avalue'last;
+            newpos := newpos + identifiers( var_id ).aStorage'first;
+            exit when newpos <= identifiers( var_id ).aStorage'last;
             end loop;
-            tmp := identifiers( var_id ).avalue( i );
+            tmp := identifiers( var_id ).aStorage( i );
             -- Newer version of Ada will raise an exception on a no-op
             -- assignment from something to itself.
             if i /= newpos then
-               identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+               identifiers( var_id ).aStorage( i ) := identifiers( var_id ).aStorage( newpos );
             end if;
-            identifiers( var_id ).avalue( newpos ) := tmp;
+            identifiers( var_id ).aStorage( newpos ) := tmp;
         end loop;
      exception when CONSTRAINT_ERROR =>
         err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -709,8 +712,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -732,7 +735,7 @@ procedure ParseArraysFlip is
   oldpos : long_integer;
   newpos : long_integer;
   -- array_id : arrayID;
-  tmp    : unbounded_string;
+  tmp    : storage;
   subprogramId : constant identifier := arrays_flip_t;
 begin
   expect( subprogramId );
@@ -752,9 +755,9 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     first   := identifiers( var_id ).avalue'first;
-     last    := identifiers( var_id ).avalue'last;
-     len     := identifiers( var_id ).avalue'length;
+     first   := identifiers( var_id ).aStorage'first;
+     last    := identifiers( var_id ).aStorage'last;
+     len     := identifiers( var_id ).aStorage'length;
      begin
         if last > first then
            for i in 0..len/2 loop
@@ -762,9 +765,9 @@ begin
                newpos := long_integer( last - i );
                -- in newer versions of GCC Ada, assignment to oneself is an error
                if newpos /= oldpos then
-                  tmp := identifiers( var_id ).avalue( oldpos );
-                  identifiers( var_id ).avalue( oldpos ) := identifiers( var_id ).avalue( newpos );
-                  identifiers( var_id ).avalue( newpos ) := tmp;
+                  tmp := identifiers( var_id ).aStorage( oldpos );
+                  identifiers( var_id ).aStorage( oldpos ) := identifiers( var_id ).aStorage( newpos );
+                  identifiers( var_id ).aStorage( newpos ) := tmp;
                end if;
            end loop;
         end if;
@@ -774,8 +777,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -813,8 +816,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      begin
-        for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-            identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+        for i in reverse identifiers( var_id ).aStorage'first..identifiers( var_id ).aStorage'last-1 loop
+            identifiers( var_id ).aStorage( i+1 ) := identifiers( var_id ).aStorage( i );
         end loop;
      exception when CONSTRAINT_ERROR =>
         err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -822,8 +825,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -861,8 +864,8 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      begin
-        for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+        for i in identifiers( var_id ).aStorage'first..identifiers( var_id ).aStorage'last-1 loop
+            identifiers( var_id ).aStorage( i ) := identifiers( var_id ).aStorage( i+1 );
         end loop;
      exception when CONSTRAINT_ERROR =>
         err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -870,8 +873,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -889,7 +892,7 @@ end ParseArraysShiftLeft;
 
 procedure ParseArraysRotateRight is
   var_id : identifier;
-  tmp    : unbounded_string;
+  tmp    : storage;
   subprogramId : constant identifier := arrays_rotate_right_t;
 begin
   expect( subprogramId );
@@ -910,12 +913,12 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      begin
-        if identifiers( var_id ).avalue'length > 0 then
-           tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'last );
-           for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-               identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
+        if identifiers( var_id ).aStorage'length > 0 then
+           tmp := identifiers( var_id ).aStorage( identifiers( var_id ).aStorage'last );
+           for i in reverse identifiers( var_id ).aStorage'first..identifiers( var_id ).aStorage'last-1 loop
+               identifiers( var_id ).aStorage( i+1 ) := identifiers( var_id ).aStorage( i );
            end loop;
-           identifiers( var_id ).avalue( identifiers( var_id ).avalue'first ) := tmp;
+           identifiers( var_id ).aStorage( identifiers( var_id ).aStorage'first ) := tmp;
         end if;
         --moveElement( 0, 1 );
      exception when CONSTRAINT_ERROR =>
@@ -924,8 +927,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -943,7 +946,7 @@ end ParseArraysRotateRight;
 
 procedure ParseArraysRotateLeft is
   var_id : identifier;
-  tmp : unbounded_string;
+  tmp : storage;
   subprogramId : constant identifier := arrays_rotate_left_t;
 begin
   expect( subprogramId );
@@ -964,12 +967,12 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      begin
-        if identifiers( var_id ).avalue'length > 0 then
-           tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'first );
-           for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
-               identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
+        if identifiers( var_id ).aStorage'length > 0 then
+           tmp := identifiers( var_id ).aStorage( identifiers( var_id ).aStorage'first );
+           for i in identifiers( var_id ).aStorage'first..identifiers( var_id ).aStorage'last-1 loop
+               identifiers( var_id ).aStorage( i ) := identifiers( var_id ).aStorage( i+1 );
            end loop;
-           identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
+           identifiers( var_id ).aStorage( identifiers( var_id ).aStorage'last ) := tmp;
         end if;
      exception when CONSTRAINT_ERROR =>
         err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -977,8 +980,8 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." &
-                 identifiers( var_id ).avalue'last'img &
+                 identifiers( var_id ).aStorage'first'img & " .." &
+                 identifiers( var_id ).aStorage'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
         );
@@ -1003,7 +1006,7 @@ end ParseArraysRotateLeft;
 
 procedure ParseArraysToArray is
   target_var_id : identifier;
-  source_val    : unbounded_string;
+  source_st    : storage;
   source_type   : identifier;
   subprogramId : constant identifier := arrays_to_array_t;
 begin
@@ -1015,7 +1018,7 @@ begin
   end if;
   expectWritableItems( subprogramId, target_var_id );
   expectParameterComma;
-  ParseExpression( source_val, source_type );
+  ParseExpression( source_st, source_type );
   if baseTypesOK( source_type, json_string_t ) then
      expect( symbol_t, ")" );
   end if;
@@ -1030,10 +1033,10 @@ begin
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      begin
-       DoJsonToArray( target_var_id, source_val );
+       DoJsonToArray( target_var_id, source_st.value, noMetaLabel );
      exception when constraint_error =>
         err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
-               contextAltText( source_val,"decoding the JSON string" ),
+               contextAltText( source_st.value,"decoding the JSON string" ),
              subject => target_var_id,
              subjectType => identifiers( target_var_id ).kind,
              reason =>  +"the decoding failed because",
@@ -1071,7 +1074,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      DoArrayToJson( jsonString, source_var_id );
-     assignParameter( target_ref, jsonString );
+     assignParameter( target_ref, storage'(jsonString , noMetaLabel ) );
   end if;
 end ParseArraysToJSON;
 

@@ -219,26 +219,26 @@ end checkRestrictedShell;
 ----------------------------------------------------------------------------
 
 
-procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMemcacheIsValidMemcacheKey( result : out storage; kind : out identifier ) is
   -- Syntax: pegasock.is_valid_memcache_key
   -- Source: PegaSock.Memcache.isValidMemcacheKey
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := boolean_t;
   expect( memcache_is_valid_memcache_key_t );
-  ParseSingleStringParameter( memcache_is_valid_memcache_key_t, expr_val, expr_type );
+  ParseSingleStringParameter( memcache_is_valid_memcache_key_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-       result := to_spar_boolean( isValidMemcacheKey( expr_val ) );
+       result := storage'( to_spar_boolean( isValidMemcacheKey( expr.value ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
   end if;
 end ParseMemcacheIsValidMemcacheKey;
 
-procedure ParseMemcacheNewCluster( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMemcacheNewCluster( result : out storage; kind : out identifier ) is
 -- Syntax: cluster := new_cluster;
 -- Source: n/a
   cluster_entry : aMemcacheClusterEntry;
@@ -254,7 +254,7 @@ begin
         memcacheClusterIdTop := memcacheClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
-        result := to_unbounded_string( numericValue( cluster_id_value ) );
+        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -265,27 +265,27 @@ procedure ParseMemcacheRegisterServer is
 -- Syntax: register_server( cluster, host, port )
 -- Source: pegasock.memcache.register_server
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_register_server_t );
   ParseFirstInOutParameter( memcache_register_server_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_register_server_t, expr_val, expr_type );
-  ParseLastNumericParameter( memcache_register_server_t, expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( memcache_register_server_t, expr, expr_type );
+  ParseLastNumericParameter( memcache_register_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : constant natural := natural( to_numeric( expr_val2 ) );
+        port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           RegisterServer( cluster_entry.cluster, expr_val, port );
+           RegisterServer( cluster_entry.cluster, expr.value, port );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -324,14 +324,14 @@ procedure ParseMemcacheSetClusterName is
 -- Syntax: set_cluster_name( cluster, name )
 -- Source: pegasock.memcache.set_cluster_name
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_set_cluster_name_t );
   ParseFirstInOutParameter( memcache_set_cluster_name_t, cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( memcache_set_cluster_name_t, expr_val, expr_type, string_t );
+  ParseLastStringParameter( memcache_set_cluster_name_t, expr, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -340,7 +340,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           SetClusterName( cluster_entry.cluster, expr_val );
+           SetClusterName( cluster_entry.cluster, expr.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -354,7 +354,7 @@ procedure ParseMemcacheSetClusterType is
 -- Source: pegasock.memcache.set_cluster_type
 -- Example:memcache.set_cluster_type( c, memcache.memcache_cluster_type.normal )
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
   mct : aMemcacheClusterType;
@@ -362,11 +362,11 @@ begin
   checkRestrictedShell;
   expect( memcache_set_cluster_type_t );
   ParseFirstInOutParameter( memcache_set_cluster_type_t, cluster_id, memcache_cluster_t  );
-  ParseLastEnumParameter( memcache_set_cluster_type_t, expr_val, expr_type, memcache_cluster_type_t );
+  ParseLastEnumParameter( memcache_set_cluster_type_t, expr, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-        mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
+        mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
      exception when constraint_error =>
         err( +"constraint error" );
      when others =>
@@ -391,17 +391,17 @@ procedure ParseMemcacheSet is
 -- Syntax: set( cluster, key, value )
 -- Source: pegasock.memcache.set
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_set_t );
   ParseFirstInOutParameter( memcache_set_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_set_t, expr_val, expr_type );
-  ParseLastStringParameter( memcache_set_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_set_t, expr, expr_type );
+  ParseLastStringParameter( memcache_set_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -410,7 +410,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Set( cluster_entry.cluster, expr_val, expr_val2 );
+           Set( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -425,17 +425,17 @@ procedure ParseMemcacheAdd is
 -- Syntax: add( cluster, key, value )
 -- Source: pegasock.memcache.add
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_add_t );
   ParseFirstInOutParameter( memcache_add_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_add_t, expr_val, expr_type );
-  ParseLastStringParameter( memcache_add_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_add_t, expr, expr_type );
+  ParseLastStringParameter( memcache_add_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -444,7 +444,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Add( cluster_entry.cluster, expr_val, expr_val2 );
+           Add( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -459,17 +459,17 @@ procedure ParseMemcacheReplace is
 -- Syntax: replace( cluster, key, value )
 -- Source: pegasock.memcache.replace
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_replace_t );
   ParseFirstInOutParameter( memcache_replace_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_replace_t, expr_val, expr_type );
-  ParseLastStringParameter( memcache_replace_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_replace_t, expr, expr_type );
+  ParseLastStringParameter( memcache_replace_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -478,7 +478,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Replace( cluster_entry.cluster, expr_val, expr_val2 );
+           Replace( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -491,17 +491,17 @@ procedure ParseMemcacheAppend is
 -- Syntax: append( cluster, key, value )
 -- Source: pegasock.memcache.append
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_append_t );
   ParseFirstInOutParameter( memcache_append_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_append_t, expr_val, expr_type );
-  ParseLastStringParameter( memcache_append_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_append_t, expr, expr_type );
+  ParseLastStringParameter( memcache_append_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -510,7 +510,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Append( cluster_entry.cluster,expr_val, expr_val2 );
+           Append( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -523,17 +523,17 @@ procedure ParseMemcachePrepend is
 -- Syntax: prepend( cluster, key, value )
 -- Source: pegasock.memcache.prepend
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_prepend_t );
   ParseFirstInOutParameter( memcache_prepend_t, cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( memcache_prepend_t, expr_val, expr_type );
-  ParseLastStringParameter( memcache_prepend_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_prepend_t, expr, expr_type );
+  ParseLastStringParameter( memcache_prepend_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -542,7 +542,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Prepend( cluster_entry.cluster, expr_val, expr_val2 );
+           Prepend( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -551,11 +551,11 @@ begin
   end if;
 end ParseMemcachePrepend;
 
-procedure ParseMemcacheGet( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMemcacheGet( result : out storage; kind : out identifier ) is
 -- Syntax: value := get( cluster, key )
 -- Source: pegasock.memcache.get
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
@@ -563,7 +563,7 @@ begin
   checkRestrictedShell;
   expect( memcache_get_t );
   ParseFirstInOutParameter( memcache_get_t, cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( memcache_get_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_get_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -572,7 +572,8 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Get( cluster_entry.cluster, expr_val, result );
+           result := nullStorage;
+           Get( cluster_entry.cluster, expr.value, result.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -587,14 +588,14 @@ procedure ParseMemcacheDelete is
 -- Syntax: delete( cluster, key )
 -- Source: pegasock.memcache.delete
   cluster_entry : aMemcacheClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( memcache_delete_t );
   ParseFirstInOutParameter( memcache_delete_t, cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( memcache_delete_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_delete_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -603,7 +604,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Delete( cluster_entry.cluster, expr_val );
+           Delete( cluster_entry.cluster, expr.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -614,7 +615,7 @@ begin
   end if;
 end ParseMemcacheDelete;
 
-procedure ParseMemcacheStats( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMemcacheStats( result : out storage; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.stats
   cluster_entry : aMemcacheClusterEntry;
@@ -632,7 +633,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Stats( cluster_entry.cluster, result );
+           Stats( cluster_entry.cluster, result.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -641,7 +642,7 @@ begin
   end if;
 end ParseMemcacheStats;
 
-procedure ParseMemcacheVersion( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMemcacheVersion( result : out storage; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.version
   cluster_entry : aMemcacheClusterEntry;
@@ -659,7 +660,8 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           pegasock.memcache.Version( cluster_entry.cluster, result );
+           result := nullStorage;
+           pegasock.memcache.Version( cluster_entry.cluster, result.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -702,7 +704,7 @@ end ParseMemcacheFlush;
 ----------------------------------------------------------------------------
 
 
-procedure ParseHighreadNewCluster( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHighreadNewCluster( result : out storage; kind : out identifier ) is
 -- Syntax: cluster := new_cluster;
 -- Source: n/a
   cluster_entry : aMemcacheDualClusterEntry;
@@ -718,7 +720,7 @@ begin
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheDualClusterList.Queue( memcacheDualCluster, cluster_entry );
-        result := to_unbounded_string( numericValue( cluster_id_value ) );
+        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -729,27 +731,27 @@ procedure ParseHighreadRegisterAlphaServer is
 -- Syntax: register_alpha_server( cluster, host, port )
 -- Source: pegasock.memcache.highread.registerAlphaServer
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_register_alpha_server_t );
   ParseFirstInOutParameter( highread_register_alpha_server_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_register_alpha_server_t, expr_val, expr_type );
-  ParseLastNumericParameter( highread_register_alpha_server_t, expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( highread_register_alpha_server_t, expr, expr_type );
+  ParseLastNumericParameter( highread_register_alpha_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : constant natural := natural( to_numeric( expr_val2 ) );
+        port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           RegisterAlphaServer( cluster_entry.cluster, expr_val, port );
+           RegisterAlphaServer( cluster_entry.cluster, expr.value, port );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -762,27 +764,27 @@ procedure ParseHighreadRegisterBetaServer is
 -- Syntax: register_beta_server( cluster, host, port )
 -- Source: pegasock.memcache.highread.register_beta.server
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_register_beta_server_t );
   ParseFirstInOutParameter( highread_register_beta_server_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_register_beta_server_t, expr_val, expr_type );
-  ParseLastNumericParameter( highread_register_beta_server_t, expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( highread_register_beta_server_t, expr, expr_type );
+  ParseLastNumericParameter( highread_register_beta_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
         cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : constant natural := natural( to_numeric( expr_val2 ) );
+        port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           RegisterBetaServer( cluster_entry.cluster, expr_val, port );
+           RegisterBetaServer( cluster_entry.cluster, expr.value, port );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -821,14 +823,14 @@ procedure ParseHighreadSetClusterName is
 -- Syntax: set_cluster_name( cluster, name )
 -- Source: pegasock.memcache.highread.set_cluster_name
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_set_cluster_name_t );
   ParseFirstInOutParameter( highread_set_cluster_name_t, cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( highread_set_cluster_name_t, expr_val, expr_type, string_t );
+  ParseLastStringParameter( highread_set_cluster_name_t, expr, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -837,7 +839,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           SetClusterName( cluster_entry.cluster, expr_val );
+           SetClusterName( cluster_entry.cluster, expr.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -851,7 +853,7 @@ procedure ParseHighreadSetClusterType is
 -- Source: pegasock.memcache.set_cluster_type
 -- Example:memcache.highread.set_cluster_type( c, memcache.memcache_cluster_type.normal )
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
   mct : aMemcacheClusterType;
@@ -859,11 +861,11 @@ begin
   checkRestrictedShell;
   expect( highread_set_cluster_type_t );
   ParseFirstInOutParameter( highread_set_cluster_type_t, cluster_id, highread_cluster_t  );
-  ParseLastEnumParameter( highread_set_cluster_type_t, expr_val, expr_type, memcache_cluster_type_t );
+  ParseLastEnumParameter( highread_set_cluster_type_t, expr, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-        mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
+        mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
      exception when constraint_error =>
         err( +"constraint error" );
      when others =>
@@ -888,17 +890,17 @@ procedure ParseHighreadSet is
 -- Syntax: set( cluster, key, value )
 -- Source: pegasock.memcache.highread.set
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_set_t );
   ParseFirstInOutParameter( highread_set_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_set_t, expr_val, expr_type );
-  ParseLastStringParameter( highread_set_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_set_t, expr, expr_type );
+  ParseLastStringParameter( highread_set_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -907,7 +909,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Set( cluster_entry.cluster, expr_val, expr_val2 );
+           Set( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -922,17 +924,17 @@ procedure ParseHighreadAdd is
 -- Syntax: add( cluster, key, value )
 -- Source: pegasock.memcache.highread.add
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_add_t );
   ParseFirstInOutParameter( highread_add_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_add_t, expr_val, expr_type );
-  ParseLastStringParameter( highread_add_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_add_t, expr, expr_type );
+  ParseLastStringParameter( highread_add_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -941,7 +943,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Add( cluster_entry.cluster, expr_val, expr_val2 );
+           Add( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -956,17 +958,17 @@ procedure ParseHighreadReplace is
 -- Syntax: replace( cluster, key, value )
 -- Source: pegasock.memcache.highread.replace
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_replace_t );
   ParseFirstInOutParameter( highread_replace_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_replace_t, expr_val, expr_type );
-  ParseLastStringParameter( highread_replace_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_replace_t, expr, expr_type );
+  ParseLastStringParameter( highread_replace_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -975,7 +977,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Replace( cluster_entry.cluster, expr_val, expr_val2 );
+           Replace( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -988,17 +990,17 @@ procedure ParseHighreadAppend is
 -- Syntax: append( cluster, key, value )
 -- Source: pegasock.memcache.highread.append
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_append_t );
   ParseFirstInOutParameter( highread_append_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_append_t, expr_val, expr_type );
-  ParseLastStringParameter( highread_append_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_append_t, expr, expr_type );
+  ParseLastStringParameter( highread_append_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1007,7 +1009,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Append( cluster_entry.cluster,expr_val, expr_val2 );
+           Append( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -1020,17 +1022,17 @@ procedure ParseHighreadPrepend is
 -- Syntax: prepend( cluster, key, value )
 -- Source: pegasock.memcache.highread.prepend
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2 : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_prepend_t );
   ParseFirstInOutParameter( highread_prepend_t, cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( highread_prepend_t, expr_val, expr_type );
-  ParseLastStringParameter( highread_prepend_t, expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_prepend_t, expr, expr_type );
+  ParseLastStringParameter( highread_prepend_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1039,7 +1041,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Prepend( cluster_entry.cluster, expr_val, expr_val2 );
+           Prepend( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -1048,11 +1050,11 @@ begin
   end if;
 end ParseHighreadPrepend;
 
-procedure ParseHighreadGet( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHighreadGet( result : out storage; kind : out identifier ) is
 -- Syntax: value := get( cluster, key )
 -- Source: pegasock.memcache.highread.get
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
@@ -1060,7 +1062,7 @@ begin
   checkRestrictedShell;
   expect( highread_get_t );
   ParseFirstInOutParameter( highread_get_t, cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( highread_get_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_get_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1069,7 +1071,8 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Get( cluster_entry.cluster, expr_val, result );
+           result := nullStorage;
+           Get( cluster_entry.cluster, expr.value, result.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -1084,14 +1087,14 @@ procedure ParseHighreadDelete is
 -- Syntax: delete( cluster, key )
 -- Source: pegasock.memcache.highread.delete
   cluster_entry : aMemcacheDualClusterEntry;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   cluster_id : identifier;
 begin
   checkRestrictedShell;
   expect( highread_delete_t );
   ParseFirstInOutParameter( highread_delete_t, cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( highread_delete_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_delete_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1100,7 +1103,7 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Delete( cluster_entry.cluster, expr_val );
+           Delete( cluster_entry.cluster, expr.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
@@ -1111,7 +1114,7 @@ begin
   end if;
 end ParseHighreadDelete;
 
-procedure ParseHighreadStats( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHighreadStats( result : out storage; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.highread.stats
   cluster_entry : aMemcacheDualClusterEntry;
@@ -1129,7 +1132,8 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           Stats( cluster_entry.cluster, result );
+           result := nullStorage;
+           Stats( cluster_entry.cluster, result.value);
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when others =>
@@ -1138,7 +1142,7 @@ begin
   end if;
 end ParseHighreadStats;
 
-procedure ParseHighreadVersion( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHighreadVersion( result : out storage; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.highread.version
   cluster_entry : aMemcacheDualClusterEntry;
@@ -1156,7 +1160,8 @@ begin
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
-           pegasock.memcache.highread.Version( cluster_entry.cluster, result );
+           result := nullStorage;
+           pegasock.memcache.highread.Version( cluster_entry.cluster, result.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>

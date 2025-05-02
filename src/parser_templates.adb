@@ -56,18 +56,18 @@ procedure ParseTemplatesSetHTTPStatus is
   -- Set the HTTP result code (e.g. 200 OK)
   -- Syntax: templates.set_http_status( n );
   -- Ada:    N/A
-  exprVal : unbounded_string;
+  expr : storage;
   exprKind : identifier;
 begin
   expect( templates_set_http_status_t );
-  ParseSingleNumericParameter( templates_set_http_status_t, exprVal, exprKind );
+  ParseSingleNumericParameter( templates_set_http_status_t, expr, exprKind );
   baseTypesOK( exprKind, natural_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then
         err( +"HTTP header already sent" );
      else
         begin
-           templateHeader.status := httpStatusCodes( to_numeric( exprVal ) );
+           templateHeader.status := httpStatusCodes( to_numeric( expr.value ) );
         exception when constraint_error =>
            err( pl( "status code is out-of-range" &
                 httpStatusCodes'first'img & " .." &
@@ -81,20 +81,20 @@ procedure ParseTemplatesSetHTTPLocation is
   -- Set the HTTP result location field
   -- Syntax: templates.set_http_location( s );
   -- Ada:    N/A
-  exprVal : unbounded_string;
+  expr : storage;
   exprKind : identifier;
 begin
   expect( templates_set_http_location_t );
-  ParseSingleStringParameter( templates_set_http_location_t, exprVal, exprKind );
+  ParseSingleStringParameter( templates_set_http_location_t, expr, exprKind );
   baseTypesOK( exprKind, string_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then
         err( +"HTTP header already sent" );
-     elsif length( exprval ) = 0 then
+     elsif length( expr.value ) = 0 then
         err( +"HTTP location string is empty" );
      else
         begin
-           templateHeader.location := exprVal;
+           templateHeader.location := expr.value;
         exception when storage_error =>
            err( +"out of memory" );
         when others =>
@@ -120,7 +120,7 @@ begin
   end if;
 end ParseTemplatesPutTemplateHeader;
 
-procedure ParseTemplatesHasPutTemplateHeader( result : out unbounded_string;
+procedure ParseTemplatesHasPutTemplateHeader( result : out storage;
   kind : out identifier ) is
   -- Syntax: b := templates.has_put_template_header
   -- Ada:    N/A
@@ -128,7 +128,7 @@ begin
   expect( templates_has_put_template_header_t );
   kind := boolean_t;
   if isExecutingCommand then
-     result := to_spar_boolean( templateHeader.templateHeaderSent );
+     result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel );
   end if;
 end ParseTemplatesHasPutTemplateHeader;
 

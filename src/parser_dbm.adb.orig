@@ -162,17 +162,17 @@ end findConnection;
 
 procedure ParseDBMConnect is
   connectId   : identifier;
-  dbnameExpr : unbounded_string;
+  dbnameExpr : storage;
   dbnameType : identifier;
-  userExpr : unbounded_string;
+  userExpr : storage;
   userType : identifier;
   hasUser  : boolean := false;
-  pswdExpr : unbounded_string;
+  pswdExpr : storage;
   pswdType : identifier;
-  hostExpr : unbounded_string;
+  hostExpr : storage;
   hostType : identifier;
   hasHost  : boolean := false;
-  portExpr : unbounded_string;
+  portExpr : storage;
   portType : identifier;
   hasPort  : boolean := false;
   connection : resPtr;
@@ -208,41 +208,41 @@ begin
      begin
        findConnection( connectId, connection );
        begin
-         Set_DB_Name( connection.PG_C, to_string( dbnameExpr ) );
+         Set_DB_Name( connection.PG_C, to_string( dbnameExpr.value ) );
        exception when others =>
          err( pl( "Internal error: set_db_name " ) &
-              em_value( dbnameExpr ) &
+              em_value( dbnameExpr.value ) &
               pl( " failed" )
          );
        end;
        if hasUser then
           begin
-            Set_User_Password( connection.PG_C, to_string( userExpr ), to_string( pswdExpr ) );
+            Set_User_Password( connection.PG_C, to_string( userExpr.value ), to_string( pswdExpr.value ) );
           exception when others =>
              err( pl( "Internal error: set_user_password " ) &
-                  em_value( userExpr ) &
+                  em_value( userExpr.value ) &
                   pl( "/" ) &
-                  em_value( pswdExpr ) &
+                  em_value( pswdExpr.value ) &
                   pl( " failed" )
              );
           end;
        end if;
        if hasHost then
           begin
-             Set_Host_Name( connection.PG_C, to_string( hostExpr ) );
+             Set_Host_Name( connection.PG_C, to_string( hostExpr.value ) );
           exception when others =>
              err( pl( "Internal error: set_host_name " ) &
-                  em_value( hostExpr ) &
+                  em_value( hostExpr.value ) &
                   pl( " failed" )
              );
           end;
        end if;
        if hasPort then
           begin
-            Set_Port( connection.PG_C, integer( to_numeric( portExpr ) ) );
+            Set_Port( connection.PG_C, integer( to_numeric( portExpr.value ) ) );
           exception when others =>
              err( pl( "Internal error: set_port " ) &
-                  em_value( portExpr ) &
+                  em_value( portExpr.value ) &
                   pl( " failed" )
              );
           end;
@@ -282,7 +282,7 @@ begin
   err( +"postgresql support not configured" );
 end not_configured;
 
-procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+procedure not_configured( result : out storage; kind : out identifier ) is
 begin
   err( +"postgresql support not configured" );
 end not_configured;
@@ -302,7 +302,7 @@ end ParseDBMConnect;
 -- Source: APQ.Engine_Of
 -----------------------------------------------------------------------------
 
-procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMEngineOf( result : out storage; kind : out identifier ) is
   connectId   : identifier;
   connection : resPtr;
 begin
@@ -312,10 +312,10 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.PG_C ) ) ) );
-       if length( result ) > 0 then
-          if element( result, 1 ) = ' ' then
-             delete( result, 1, 1 );
+       result := storage'( to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.PG_C ) ) ) ), noMetaLabel );
+       if length( result.value ) > 0 then
+          if element( result.value, 1 ) = ' ' then
+             delete( result.value, 1, 1 );
           end if;
        end if;
      exception when others =>
@@ -326,11 +326,11 @@ end ParseDBMEngineOf;
 
 #else
 
-procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMEngineOf( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 
---procedure ParseDBIPrepare( result : out unbounded_string ) is
+--procedure ParseDBIPrepare( result : out storage ) is
 --  -- Syntax: db.prepare( sqlstmt [,after] );
 --  sqlExpr   : unbounded_string;
 --  sqlType   : identifier;
@@ -352,7 +352,7 @@ procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier
 --  end if;
 --  expect( symbol_t, ")" );
 --  if isExecutingCommand then
---     result := to_bush_boolean( true );
+--     result := storage'( to_bush_boolean( true ), noMetaLabel ;
 --     begin
 --       Clear( Q );
 --       if hasAfter then
@@ -361,7 +361,7 @@ procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier
 --          Prepare( Q, to_string( sqlExpr ) );
 --       end if;
 --     exception when others =>
---       result := to_bush_boolean( false );
+--       result := storage'( to_bush_boolean( false ), noMetaLabel ;
 --     end;
 --  end if;
 --end ParseDBIPrepare;
@@ -376,9 +376,9 @@ procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier
 -----------------------------------------------------------------------------
 
 procedure ParseDBMPrepare is
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
   queryId : identifier;
@@ -396,9 +396,9 @@ begin
      begin
        findConnection( queryId, query );
        if hasAfter then
-          Prepare( query.PG_Q, to_string( sqlExpr ), to_string( afterExpr ) );
+          Prepare( query.PG_Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Prepare( query.PG_Q, to_string( sqlExpr ) );
+          Prepare( query.PG_Q, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -421,9 +421,9 @@ procedure ParseDBMPrepare renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMAppend is
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
   queryId : identifier;
@@ -441,9 +441,9 @@ begin
      begin
        findConnection( queryId, query );
        if hasAfter then
-          Append( query.PG_Q, to_string( sqlExpr ), to_string( afterExpr ) );
+          Append( query.PG_Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Append( query.PG_Q, to_string( sqlExpr ) );
+          Append( query.PG_Q, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -466,7 +466,7 @@ procedure ParseDBMAppend renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMAppendLine is
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
   queryId : identifier;
   query : resPtr;
@@ -477,7 +477,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       Append_Line( query.PG_Q, to_string( sqlExpr ) );
+       Append_Line( query.PG_Q, to_string( sqlExpr.value ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -499,9 +499,9 @@ procedure ParseDBMAppendLine renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMAppendQuoted is
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
   queryId : identifier;
@@ -523,9 +523,9 @@ begin
        findConnection( connectId, connection );
        findConnection( queryId, query );
        if hasAfter then
-          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr ), to_string( afterExpr ) );
+          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr ) );
+          Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -588,7 +588,7 @@ procedure ParseDBMExecute renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMExecuteChecked is
-  msgExpr   : unbounded_string;
+  msgExpr   : storage;
   msgType   : identifier;
   hasMsg    : boolean := false;
   queryId : identifier;
@@ -609,7 +609,7 @@ begin
        findConnection( queryId, query );
        findConnection( connectId, connection );
        if hasMsg then
-          Execute_Checked( query.PG_Q, connection.PG_C, to_string( msgExpr ) );
+          Execute_Checked( query.PG_Q, connection.PG_C, to_string( msgExpr.value ) );
        else
           Execute_Checked( query.PG_Q, connection.PG_C );
        end if;
@@ -631,16 +631,16 @@ procedure ParseDBMExecuteChecked renames not_configured;
 
 #end if;
 
---procedure ParseDBDo( result : out unbounded_string ) is
+--procedure ParseDBDo( result : out storage ) is
 --begin
 --  expect( db_do_t );
---  result := null_unbounded_string;
+--  result := nullStorage;
 --end ParseDBDo;
 --
---procedure ParseDBFetchrow( result : out unbounded_string ) is
+--procedure ParseDBFetchrow( result : out storage ) is
 --begin
 --  expect( db_fetchrow_t );
---  result := null_unbounded_string;
+--  result := nullStorage;
 --end ParseDBFetchrow;
 #if POSTGRES
 
@@ -686,7 +686,7 @@ procedure ParseDBMDisconnect renames not_configured;
 -- Source: APQ.Is_Connected
 -----------------------------------------------------------------------------
 
-procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMIsConnected( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -696,16 +696,16 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_spar_boolean( is_connected( connection.PG_C ) );
+       result := storage'( to_spar_boolean( is_connected( connection.PG_C ) ), noMetaLabel );
      exception when others =>
-       result := to_spar_boolean( false );
+       result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseDBMIsConnected;
 
 #else
 
-procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMIsConnected( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -749,7 +749,7 @@ procedure ParseDBMReset renames not_configured;
 -- Source: APQ.Error_Message
 -----------------------------------------------------------------------------
 
-procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMErrorMessage( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -759,7 +759,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_unbounded_string( Error_Message( connection.PG_C ) );
+       result := storage'( to_unbounded_string( Error_Message( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -768,7 +768,7 @@ end ParseDBMErrorMessage;
 
 #else
 
-procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMErrorMessage( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -780,7 +780,7 @@ procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identi
 -- Source: APQ.Notice_Message
 -----------------------------------------------------------------------------
 --
-procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMNoticeMessage( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -790,7 +790,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_unbounded_string( Notice_Message( connection.PG_C ) );
+       result := storage'( to_unbounded_string( Notice_Message( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -799,7 +799,7 @@ end ParseDBMNoticeMessage;
 
 #else
 
-procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMNoticeMessage( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -811,7 +811,7 @@ procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out ident
 -- Source: APQ.In_Abort_State
 -----------------------------------------------------------------------------
 
-procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMInAbortState( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -821,7 +821,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_spar_boolean( In_Abort_State( connection.PG_C ) );
+       result := storage'( to_spar_boolean( In_Abort_State( connection.PG_C ) ), noMetaLabel );
      exception when not_connected =>
        err( +"not connected" );
      when others =>
@@ -832,7 +832,7 @@ end ParseDBMInAbortState;
 
 #else
 
-procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMInAbortState( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -844,7 +844,7 @@ procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identi
 -- Source: APQ.Options
 -----------------------------------------------------------------------------
 
-procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMOptions( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -854,7 +854,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_unbounded_string( Options( connection.PG_C ) );
+       result := storage'( to_unbounded_string( Options( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -863,7 +863,7 @@ end ParseDBMOptions;
 
 #else
 
-procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMOptions( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -876,7 +876,7 @@ procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier 
 -----------------------------------------------------------------------------
 
 procedure ParseDBMSetRollbackOnFinalize is
-  rollExpr : unbounded_string;
+  rollExpr : storage;
   rollType : identifier;
   connectId : identifier;
   connection : resPtr;
@@ -886,7 +886,7 @@ begin
   ParseLastEnumParameter( dbm_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
-       rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
+       rollback : constant boolean := rollExpr.value = to_unbounded_string( "1" );
      begin
        findConnection( connectId, connection );
        Set_Rollback_On_Finalize( connection.PG_C, rollback );
@@ -910,7 +910,7 @@ procedure ParseDBMSetRollbackOnFinalize renames not_configured;
 -- Source: APQ.Will_Rollback_On_Finalize
 -----------------------------------------------------------------------------
 
-procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMWillRollbackOnFinalize( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -920,7 +920,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_spar_boolean( Will_Rollback_On_Finalize( connection.PG_C ) );
+       result := storage'( to_spar_boolean( Will_Rollback_On_Finalize( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -929,7 +929,7 @@ end ParseDBMWillRollbackOnFinalize;
 
 #else
 
-procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMWillRollbackOnFinalize( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -942,9 +942,9 @@ procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : 
 -----------------------------------------------------------------------------
 
 procedure ParseDBMOpenDBTrace is
-  fnameExpr : unbounded_string;
+  fnameExpr : storage;
   fnameType : identifier;
-  modeExpr  : unbounded_string;
+  modeExpr  : storage;
   modeType  : identifier;
   traceMode : trace_mode_type;
   hasMode  : boolean := false;
@@ -956,7 +956,7 @@ begin
   ParseNextStringParameter( dbm_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( dbm_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
-     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
+     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr.value ) ) );
      hasMode := true;
   end if;
   expect( symbol_t, ")" );
@@ -964,9 +964,9 @@ begin
      begin
        findConnection( connectId, connection );
        if hasMode then
-          Open_DB_Trace( connection.PG_C, to_string( fnameExpr ), traceMode );
+          Open_DB_Trace( connection.PG_C, to_string( fnameExpr.value ), traceMode );
        else
-          Open_DB_Trace( connection.PG_C, to_string( fnameExpr ) );
+          Open_DB_Trace( connection.PG_C, to_string( fnameExpr.value ) );
        end if;
      exception when not_connected =>
        err( +"not connected" );
@@ -1025,7 +1025,7 @@ procedure ParseDBMCloseDBTrace renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMSetTrace is
-  traceExpr : unbounded_string;
+  traceExpr : storage;
   traceType : identifier;
   connectId : identifier;
   connection : resPtr;
@@ -1035,7 +1035,7 @@ begin
   ParseLastEnumParameter( dbm_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
-       traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
+       traceback : constant boolean := traceExpr.value = to_unbounded_string( "1" );
      begin
        findConnection( connectId, connection );
        Set_Trace( connection.PG_C, traceback );
@@ -1059,7 +1059,7 @@ procedure ParseDBMSetTrace renames not_configured;
 -- Source: APQ.Is_Trace
 -----------------------------------------------------------------------------
 
-procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMIsTrace( result : out storage; kind : out identifier ) is
   connectId : identifier;
   connection : resPtr;
 begin
@@ -1069,7 +1069,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_spar_boolean( Is_Trace( connection.PG_C ) );
+       result := storage'( to_spar_boolean( Is_Trace( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -1078,7 +1078,7 @@ end ParseDBMIsTrace;
 
 #else
 
-procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMIsTrace( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1123,7 +1123,7 @@ procedure ParseDBMClear renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMRaiseExceptions is
-  raiseExpr : unbounded_string;
+  raiseExpr : storage;
   raiseType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1133,12 +1133,12 @@ begin
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( dbm_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
-     raiseExpr := to_unbounded_string( "1" );
+     raiseExpr.value := to_unbounded_string( "1" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       raise_them : constant boolean := raiseExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := raiseExpr.value = to_unbounded_string( "1" );
      begin
        findConnection( queryId, query );
        Raise_Exceptions( query.PG_Q, raise_them );
@@ -1163,7 +1163,7 @@ procedure ParseDBMRaiseExceptions renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMReportErrors is
-  reportExpr : unbounded_string;
+  reportExpr : storage;
   reportType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1173,12 +1173,12 @@ begin
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( dbm_report_errors_t, reportExpr, reportType, boolean_t );
   else
-     reportExpr := to_unbounded_string( "1" );
+     reportExpr.value := to_unbounded_string( "1" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       report_them : constant boolean := reportExpr = to_unbounded_string( "1" );
+       report_them : constant boolean := reportExpr.value = to_unbounded_string( "1" );
      begin
        findConnection( queryId, query );
        Report_Errors( query.PG_Q, report_them );
@@ -1347,7 +1347,7 @@ procedure ParseDBMRewind renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMFetch is
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   haveIndex : boolean := false;
   queryId : identifier;
@@ -1356,7 +1356,7 @@ begin
   expect( dbm_fetch_t );
   ParseFirstInOutParameter( dbm_fetch_t, queryId, dbm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextNumericParameter( dbm_fetch_t, expr_val, expr_type, dbm_tuple_index_type_t );
+     ParseNextNumericParameter( dbm_fetch_t, expr, expr_type, dbm_tuple_index_type_t );
      haveIndex := true;
   end if;
   expect( symbol_t, ")" );
@@ -1364,7 +1364,7 @@ begin
      begin
        findConnection( queryId, query );
        if haveIndex then
-          Fetch( query.PG_Q, Tuple_Index_Type( to_numeric( expr_val ) ) );
+          Fetch( query.PG_Q, Tuple_Index_Type( to_numeric( expr.value ) ) );
        else
           Fetch( query.PG_Q );
        end if;
@@ -1392,7 +1392,7 @@ procedure ParseDBMFetch renames not_configured;
 -- Source: APQ.End_Of_Query
 -----------------------------------------------------------------------------
 
-procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMEndOfQuery( result : out storage; kind : out identifier ) is
   queryId : identifier;
   query : resPtr;
 begin
@@ -1402,7 +1402,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_spar_boolean( End_Of_Query( query.PG_Q ) );
+       result := storage'( to_spar_boolean( End_Of_Query( query.PG_Q ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -1411,7 +1411,7 @@ end ParseDBMEndOfQuery;
 
 #else
 
-procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMEndOfQuery( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1423,7 +1423,7 @@ procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifi
 -- Source: APQ.Tuple
 -----------------------------------------------------------------------------
 
-procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMTuple( result : out storage; kind : out identifier ) is
   queryId : identifier;
   query : resPtr;
 begin
@@ -1433,7 +1433,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_unbounded_string( Tuple_Index_Type'image( Tuple( query.PG_Q ) ) );
+       result := storage'( to_unbounded_string( Tuple_Index_Type'image( Tuple( query.PG_Q ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
      when others =>
@@ -1444,7 +1444,7 @@ end ParseDBMTuple;
 
 #else
 
-procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMTuple( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1456,7 +1456,7 @@ procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) 
 -- Source: APQ.Tuples
 -----------------------------------------------------------------------------
 
-procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMTuples( result : out storage; kind : out identifier ) is
   queryId : identifier;
   query : resPtr;
 begin
@@ -1466,7 +1466,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_unbounded_string( Tuple_Count_Type'image( Tuples( query.PG_Q ) ) );
+       result := storage'( to_unbounded_string( Tuple_Count_Type'image( Tuples( query.PG_Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
      when others =>
@@ -1477,7 +1477,7 @@ end ParseDBMTuples;
 
 #else
 
-procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMTuples( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1489,7 +1489,7 @@ procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier )
 -- Source: APQ.Columns
 -----------------------------------------------------------------------------
 
-procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDBMColumns( result : out storage; kind : out identifier ) is
   queryId : identifier;
   query : resPtr;
 begin
@@ -1499,7 +1499,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_unbounded_string( Natural'image( Columns( query.PG_Q ) ) );
+       result := storage'( to_unbounded_string( Natural'image( Columns( query.PG_Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
      when others =>
@@ -1510,7 +1510,7 @@ end ParseDBMColumns;
 
 #else
 
-procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMColumns( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1522,8 +1522,8 @@ procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier 
 -- Source: APQ.Column_Name;
 -----------------------------------------------------------------------------
 
-procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifier ) is
-  exprVal : unbounded_string;
+procedure ParseDBMColumnName( result : out storage; kind : out identifier ) is
+  expr : storage;
   exprType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1531,13 +1531,13 @@ begin
   kind := string_t;
   expect( dbm_column_name_t );
   ParseFirstInOutParameter( dbm_column_name_t, queryId, dbm_query_t );
-  ParseLastNumericParameter( dbm_column_name_t, exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_column_name_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_unbounded_string(
-          Column_Name( query.PG_Q, Column_Index_Type( to_numeric( exprVal ) ) )
-       );
+       result := storage'( to_unbounded_string(
+          Column_Name( query.PG_Q, Column_Index_Type( to_numeric( expr.value ) ) )
+       ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when others =>
@@ -1548,7 +1548,7 @@ end ParseDBMColumnName;
 
 #else
 
-procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMColumnName( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1560,8 +1560,8 @@ procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifi
 -- Source: APQ.Column_Index
 -----------------------------------------------------------------------------
 
-procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identifier ) is
-  exprVal : unbounded_string;
+procedure ParseDBMColumnIndex( result : out storage; kind : out identifier ) is
+  expr : storage;
   exprType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1569,13 +1569,13 @@ begin
   kind := dbm_column_index_type_t;
   expect( dbm_column_index_t );
   ParseFirstInOutParameter( dbm_column_index_t, queryId, dbm_query_t );
-  ParseLastStringParameter( dbm_column_index_t, exprVal, exprType, string_t );
+  ParseLastStringParameter( dbm_column_index_t, expr, exprType, string_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_unbounded_string( Column_Index_Type'image(
-           Column_Index( query.PG_Q, to_string( exprVal ) )
-       ) );
+       result := storage'( to_unbounded_string( Column_Index_Type'image(
+           Column_Index( query.PG_Q, to_string( expr.value ) )
+       ) ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when others =>
@@ -1586,12 +1586,12 @@ end ParseDBMColumnIndex;
 
 #else
 
-procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMColumnIndex( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
 
---procedure ParseDBColumnType( result : out unbounded_string ) is
+--procedure ParseDBColumnType( result : out storage ) is
   -- Syntax: n := db.column_type;
   -- Source: APQ.Column_Type;
   --exprVal : unbounded_string;
@@ -1626,8 +1626,8 @@ procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identif
 -- Source: APQ.Is_Null;
 -----------------------------------------------------------------------------
 
-procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier ) is
-  exprVal : unbounded_string;
+procedure ParseDBMIsNull( result : out storage; kind : out identifier ) is
+  expr : storage;
   exprType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1635,14 +1635,14 @@ begin
   kind := boolean_t;
   expect( dbm_is_null_t );
   ParseFirstInOutParameter( dbm_is_null_t, queryId, dbm_query_t );
-  ParseLastNumericParameter( dbm_is_null_t, exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_is_null_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_spar_boolean(
+       result := storage'( to_spar_boolean(
           Is_Null( query.PG_Q,
-          Column_Index_Type( to_numeric( exprVal ) ) )
-       );
+          Column_Index_Type( to_numeric( expr.value ) ) )
+       ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when no_result =>
@@ -1655,7 +1655,7 @@ end ParseDBMIsNull;
 
 #else
 
-procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMIsNull( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if POSTGRES
@@ -1667,8 +1667,8 @@ procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier )
 -- Source: APQ.Value;
 -----------------------------------------------------------------------------
 
-procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) is
-  exprVal  : unbounded_string;
+procedure ParseDBMValue( result : out storage; kind : out identifier ) is
+  expr  : storage;
   exprType : identifier;
   queryId : identifier;
   query : resPtr;
@@ -1676,11 +1676,11 @@ begin
   kind := universal_t;
   expect( dbm_value_t );
   ParseFirstInOutParameter( dbm_value_t, queryId, dbm_query_t );
-  ParseLastNumericParameter( dbm_value_t, exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_value_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := Value( query.PG_Q, Column_Index_Type( to_numeric( exprVal ) ) );
+       result := storage'( Value( query.PG_Q, Column_Index_Type( to_numeric( expr.value ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
      when null_value =>
@@ -1697,7 +1697,7 @@ end ParseDBMValue;
 
 #else
 
-procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseDBMValue( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 
@@ -2106,14 +2106,14 @@ procedure ParseDBMSchema is
   totalWidth     : integer;
   width          : integer;
   exprType       : identifier;
-  exprVal        : unbounded_string;
+  expr        : storage;
   connectId : identifier;
   connection : resPtr;
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_schema_t );
   ParseFirstInOutParameter( dbm_schema_t, connectId, dbm_connection_t );
-  ParseLastStringParameter( dbm_schema_t, exprVal, exprType, string_t );
+  ParseLastStringParameter( dbm_schema_t, expr, exprType, string_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -2126,14 +2126,14 @@ begin
                     ", a.attnotnull as " & '"' & "Not Null" & '"' &
                     ", a.atthasdef as " & '"' & "Default" & '"' &
                     "from pg_attribute a, pg_class c, pg_type t where a.attrelid = c.oid and t.oid = a.atttypid and a.attisdropped = 'f' and (a.atttypid < 26 or a.atttypid > 29) and c.relname='" &
-                     to_string( exprVal ) & "' order by a.attnum" );
+                     to_string( expr.value ) & "' order by a.attnum" );
         execute( Q, connection.PG_C );
 
         -- No result? Then table was not found.
 
         if end_of_query( Q ) then
            err( +"Did not find any relation named " &
-              unb_em( exprVal ) );
+              unb_em( expr.value ) );
            return;
         end if;
 
@@ -2307,7 +2307,7 @@ begin
      new_line_retry;
      prepare( Q, "select c.relname, i.indisprimary, i.indisunique, i.indkey from pg_index i, pg_class c" &
                  " where c.oid = i.indexrelid and i.indrelid in " &
-                 " (select i.indrelid from pg_index, pg_class c2 where i.indrelid = c2.oid and c2.relname='" & to_string( exprVal ) & "') order by c.relname" );
+                 " (select i.indrelid from pg_index, pg_class c2 where i.indrelid = c2.oid and c2.relname='" & to_string( expr.value ) & "') order by c.relname" );
      execute( Q, connection.PG_C );
      if tuples( Q ) > 0 then
         put_line_retry( "Indexes:" );
@@ -2792,7 +2792,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      declareResource( resId, postgresql_connection, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
+     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
   end if;
 end ParseDBMNewConnection;
 
@@ -2822,7 +2822,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      declareResource( resId, postgresql_query, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
+     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
   end if;
 end ParseDBMNewQuery;
 

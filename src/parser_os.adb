@@ -44,64 +44,64 @@ package body parser_os is
 
 procedure ParseOSSystem is
   -- Syntax: os.system( string );
-  expr_val   : unbounded_string;
+  expr   : storage;
   expr_type  : identifier;
 begin
   expect( os_system_t );
-  ParseSingleStringParameter( os_system_t, expr_val, expr_type, string_t );
+  ParseSingleStringParameter( os_system_t, expr, expr_type, string_t );
   if isExecutingCommand then
      begin
-        last_status:= aStatusCode( linux_system( to_string( expr_val ) & ascii.nul ) );
+        last_status:= aStatusCode( linux_system( to_string( expr.value ) & ascii.nul ) );
      exception when others =>
        err_exception_raised;
      end;
   end if;
 end ParseOSSystem;
 
-procedure ParseOSStatus( result : out unbounded_string; kind : out identifier ) is
+procedure ParseOSStatus( result : out storage; kind : out identifier ) is
   -- Syntax: os.status
 begin
   kind := integer_t;
   expect( os_status_t );
   if isExecutingCommand then
-     result := to_unbounded_string( aStatusCode'image( last_status ) );
+     result := storage'( to_unbounded_string( aStatusCode'image( last_status ) ), noMetaLabel );
   end if;
 end ParseOSStatus;
 
-procedure ParseOSPid( result : out unbounded_string; kind : out identifier ) is
+procedure ParseOSPid( result : out storage; kind : out identifier ) is
   -- Syntax: os.pid
 begin
   kind := natural_t;
   expect( os_pid_t );
   if isExecutingCommand then
-     result := to_unbounded_string( aPID'image( getpid ) );
+     result := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel );
   end if;
 end ParseOSPid;
 
-procedure ParseOSErrorString( result : out unbounded_string; kind : out identifier ) is
+procedure ParseOSErrorString( result : out storage; kind : out identifier ) is
   -- Syntax: os.error_string
-  expr_val   : unbounded_string;
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := string_t;
   expect( os_error_string_t );
-  ParseSingleNumericParameter( os_error_string_t, expr_val, expr_type, integer_t );
+  ParseSingleNumericParameter( os_error_string_t, expr, expr_type, integer_t );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( OSerror( integer( to_numeric( expr_val ) ) ) );
+        result := storage'( to_unbounded_string( OSerror( integer( to_numeric( expr.value ) ) ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
   end if;
 end ParseOSErrorString;
 
-procedure ParseOSLastChild( result : out unbounded_string; kind : out identifier ) is
+procedure ParseOSLastChild( result : out storage; kind : out identifier ) is
   -- Syntax: os.last_child
 begin
   kind := natural_t;
   expect( os_last_child_t );
   if isExecutingCommand then
-     result := to_unbounded_string( aPID'image( lastChild ) );
+     result := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel );
   end if;
 end ParseOSLastChild;
 

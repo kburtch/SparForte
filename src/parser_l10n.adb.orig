@@ -105,9 +105,9 @@ l10n_lc_time_t : identifier;
 ---------------------------------------------------------
 
 #if not L10N
-procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+procedure not_configured( result : out storage; kind : out identifier ) is
 begin
-  result := null_unbounded_string;
+  result := nullStorage;
   kind := universal_t;
   err( +"l10n support not configured" );
 end not_configured;
@@ -128,20 +128,20 @@ end not_configured;
 
 #if L10N
 procedure ParseL10NSetLocale is
-  cat_val : unbounded_string;
+  catExpr : storage;
   cat_kind :identifier;
-  loc_val : unbounded_string;
+  locExpr : storage;
   loc_kind :identifier;
 begin
   expect( l10n_setlocale_t );
-  ParseFirstNumericParameter( l10n_setlocale_t, cat_val, cat_kind, l10n_locale_category_t );
-  ParseLastStringParameter( l10n_setlocale_t, loc_val,loc_kind );
+  ParseFirstNumericParameter( l10n_setlocale_t, catExpr, cat_kind, l10n_locale_category_t );
+  ParseLastStringParameter( l10n_setlocale_t, locExpr,loc_kind );
   if isExecutingCommand then
      -- checking errno is not reliable.  On first attempt to use an invalid
      -- locale, errono will be 2 (file not found), probably because of another
      -- function called by setlocale.  However, setlocale itself does not
      -- return an error number.
-     setlocale( locale_category( to_numeric( cat_val ) ), to_string( loc_val ) );
+     setlocale( locale_category( to_numeric( catExpr.value ) ), to_string( locExpr.value ) );
   end if;
 end ParseL10NSetLocale;
 #else
@@ -157,20 +157,20 @@ procedure ParseL10NSetLocale renames not_configured;
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NGetLocale( result : out unbounded_string; kind : out identifier ) is
-  cat_val : unbounded_string;
+procedure ParseL10NGetLocale( result : out storage; kind : out identifier ) is
+  catExpr : storage;
   cat_kind :identifier;
 begin
   kind := string_t;
   expect( l10n_getlocale_t );
-  ParseSingleNumericParameter( l10n_getlocale_t, cat_val, cat_kind, l10n_locale_category_t );
+  ParseSingleNumericParameter( l10n_getlocale_t, catExpr, cat_kind, l10n_locale_category_t );
   if isExecutingCommand then
      -- setlocale does not return an error number
-     result := getlocale( locale_category( to_numeric( cat_val ) ) );
+     result := storage'( getlocale( locale_category( to_numeric( catExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseL10NGetLocale;
 #else
-procedure ParseL10NGetLocale( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NGetLocale( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 -----------------------------------------------------------------------------
@@ -181,14 +181,14 @@ procedure ParseL10NGetLocale( result : out unbounded_string; kind : out identifi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NCodeSet( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NCodeSet( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_codeset_t );
-  result := codeset;
+  result := storage'( codeset, noMetaLabel );
 end ParseL10NCodeSet;
 #else
-procedure ParseL10NCodeSet( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NCodeSet( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 -----------------------------------------------------------------------------
@@ -199,16 +199,16 @@ procedure ParseL10NCodeSet( result : out unbounded_string; kind : out identifier
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NDTFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NDTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_d_t_fmt_t );
   if isExecutingCommand then
-     result := d_t_fmt;
+     result := storage'( d_t_fmt, noMetaLabel );
   end if;
 end ParseL10NDTFmt;
 #else
-procedure ParseL10NDTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDTFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -220,16 +220,16 @@ procedure ParseL10NDTFmt( result : out unbounded_string; kind : out identifier )
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NDFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NDFmt( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_d_fmt_t );
   if isExecutingCommand then
-     result := d_fmt;
+     result := storage'( d_fmt, noMetaLabel );
   end if;
 end ParseL10NDFmt;
 #else
-procedure ParseL10NDFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -242,16 +242,16 @@ procedure ParseL10NDFmt( result : out unbounded_string; kind : out identifier ) 
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NTFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_t_fmt_t );
   if isExecutingCommand then
-     result := t_fmt;
+     result := storage'( t_fmt, noMetaLabel );
   end if;
 end ParseL10NTFmt;
 #else
-procedure ParseL10NTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NTFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -263,8 +263,8 @@ procedure ParseL10NTFmt( result : out unbounded_string; kind : out identifier ) 
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NDay( result : out unbounded_string; kind : out identifier ) is
-  dayExpr : unbounded_string;
+procedure ParseL10NDay( result : out storage; kind : out identifier ) is
+  dayExpr : storage;
   dayKind : identifier;
   day     : positive;
 begin
@@ -272,16 +272,17 @@ begin
   expect( l10n_day_t );
   ParseSingleNumericParameter( l10n_day_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
+     result := nullStorage;
      begin
-        day := positive( to_numeric( dayExpr ) );
+        day := positive( to_numeric( dayExpr.value ) );
         case day is
-        when 1 => result := day_1;
-        when 2 => result := day_2;
-        when 3 => result := day_3;
-        when 4 => result := day_4;
-        when 5 => result := day_5;
-        when 6 => result := day_6;
-        when 7 => result := day_7;
+        when 1 => result.value := day_1;
+        when 2 => result.value := day_2;
+        when 3 => result.value := day_3;
+        when 4 => result.value := day_4;
+        when 5 => result.value := day_5;
+        when 6 => result.value := day_6;
+        when 7 => result.value := day_7;
         when others =>
           err( +"day is 1..7" );
         end case;
@@ -291,7 +292,7 @@ begin
   end if;
 end ParseL10NDay;
 #else
-procedure ParseL10NDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDay( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -303,8 +304,8 @@ procedure ParseL10NDay( result : out unbounded_string; kind : out identifier ) r
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NAbDay( result : out unbounded_string; kind : out identifier ) is
-  dayExpr : unbounded_string;
+procedure ParseL10NAbDay( result : out storage; kind : out identifier ) is
+  dayExpr : storage;
   dayKind : identifier;
   day     : positive;
 begin
@@ -312,16 +313,17 @@ begin
   expect( l10n_abday_t );
   ParseSingleNumericParameter( l10n_abday_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
+     result := nullStorage;
      begin
-        day := positive( to_numeric( dayExpr ) );
+        day := positive( to_numeric( dayExpr.value ) );
         case day is
-        when 1 => result := abday_1;
-        when 2 => result := abday_2;
-        when 3 => result := abday_3;
-        when 4 => result := abday_4;
-        when 5 => result := abday_5;
-        when 6 => result := abday_6;
-        when 7 => result := abday_7;
+        when 1 => result.value := abday_1;
+        when 2 => result.value := abday_2;
+        when 3 => result.value := abday_3;
+        when 4 => result.value := abday_4;
+        when 5 => result.value := abday_5;
+        when 6 => result.value := abday_6;
+        when 7 => result.value := abday_7;
         when others =>
           err( +"day is 1..7" );
         end case;
@@ -331,7 +333,7 @@ begin
   end if;
 end ParseL10NAbDay;
 #else
-procedure ParseL10NAbDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NAbDay( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -343,8 +345,8 @@ procedure ParseL10NAbDay( result : out unbounded_string; kind : out identifier )
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NMon( result : out unbounded_string; kind : out identifier ) is
-  monExpr : unbounded_string;
+procedure ParseL10NMon( result : out storage; kind : out identifier ) is
+  monExpr : storage;
   monKind : identifier;
   mon     : positive;
 begin
@@ -352,21 +354,22 @@ begin
   expect( l10n_mon_t );
   ParseSingleNumericParameter( l10n_mon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
+     result := nullStorage;
      begin
-        mon := positive( to_numeric( monExpr ) );
+        mon := positive( to_numeric( monExpr.value ) );
         case mon is
-        when 1 => result := mon_1;
-        when 2 => result := mon_2;
-        when 3 => result := mon_3;
-        when 4 => result := mon_4;
-        when 5 => result := mon_5;
-        when 6 => result := mon_6;
-        when 7 => result := mon_7;
-        when 8 => result := mon_8;
-        when 9 => result := mon_9;
-        when 10 => result := mon_10;
-        when 11 => result := mon_11;
-        when 12 => result := mon_12;
+        when 1 => result.value := mon_1;
+        when 2 => result.value := mon_2;
+        when 3 => result.value := mon_3;
+        when 4 => result.value := mon_4;
+        when 5 => result.value := mon_5;
+        when 6 => result.value := mon_6;
+        when 7 => result.value := mon_7;
+        when 8 => result.value := mon_8;
+        when 9 => result.value := mon_9;
+        when 10 => result.value := mon_10;
+        when 11 => result.value := mon_11;
+        when 12 => result.value := mon_12;
         when others =>
           err( +"month is 1..12" );
         end case;
@@ -376,7 +379,7 @@ begin
   end if;
 end ParseL10NMon;
 #else
-procedure ParseL10NMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NMon( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -388,8 +391,8 @@ procedure ParseL10NMon( result : out unbounded_string; kind : out identifier ) r
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier ) is
-  monExpr : unbounded_string;
+procedure ParseL10NAbMon( result : out storage; kind : out identifier ) is
+  monExpr : storage;
   monKind : identifier;
   mon     : positive;
 begin
@@ -397,21 +400,22 @@ begin
   expect( l10n_abmon_t );
   ParseSingleNumericParameter( l10n_abmon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
+     result := nullStorage;
      begin
-        mon := positive( to_numeric( monExpr ) );
+        mon := positive( to_numeric( monExpr.value ) );
         case mon is
-        when 1 => result := abmon_1;
-        when 2 => result := abmon_2;
-        when 3 => result := abmon_3;
-        when 4 => result := abmon_4;
-        when 5 => result := abmon_5;
-        when 6 => result := abmon_6;
-        when 7 => result := abmon_7;
-        when 8 => result := abmon_8;
-        when 9 => result := abmon_9;
-        when 10 => result := abmon_10;
-        when 11 => result := abmon_11;
-        when 12 => result := abmon_12;
+        when 1 => result.value := abmon_1;
+        when 2 => result.value := abmon_2;
+        when 3 => result.value := abmon_3;
+        when 4 => result.value := abmon_4;
+        when 5 => result.value := abmon_5;
+        when 6 => result.value := abmon_6;
+        when 7 => result.value := abmon_7;
+        when 8 => result.value := abmon_8;
+        when 9 => result.value := abmon_9;
+        when 10 => result.value := abmon_10;
+        when 11 => result.value := abmon_11;
+        when 12 => result.value := abmon_12;
         when others =>
           err( +"month is 1..12" );
         end case;
@@ -421,7 +425,7 @@ begin
   end if;
 end ParseL10NAbMon;
 #else
-procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NAbMon( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -433,14 +437,14 @@ procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier )
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NDecimalPoint( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NDecimalPoint( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_decimal_point_t );
-  result := decimal_point;
+  result := storage'( decimal_point, noMetaLabel );
 end ParseL10NDecimalPoint;
 #else
-procedure ParseL10NDecimalPoint( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDecimalPoint( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -452,14 +456,14 @@ procedure ParseL10NDecimalPoint( result : out unbounded_string; kind : out ident
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NThousandsSep( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NThousandsSep( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_thousands_sep_t );
-  result := thousands_sep;
+  result := storage'( thousands_sep, noMetaLabel );
 end ParseL10NThousandsSep;
 #else
-procedure ParseL10NThousandsSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NThousandsSep( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -471,14 +475,14 @@ procedure ParseL10NThousandsSep( result : out unbounded_string; kind : out ident
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NYesExpr( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NYesExpr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_yesexpr_t );
-  result := yesexpr;
+  result := storage'( yesexpr, noMetaLabel );
 end ParseL10NYesExpr;
 #else
-procedure ParseL10NYesExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NYesExpr( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -490,14 +494,14 @@ procedure ParseL10NYesExpr( result : out unbounded_string; kind : out identifier
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NNoExpr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_noexpr_t );
-  result := noexpr;
+  result := storage'( noexpr, noMetaLabel );
 end ParseL10NNoExpr;
 #else
-procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNoExpr( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -509,14 +513,14 @@ procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier 
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NCurrencySymbol( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NCurrencySymbol( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_currency_symbol_t );
-  result := currency_symbol;
+  result := storage'( currency_symbol, noMetaLabel );
 end ParseL10NCurrencySymbol;
 #else
-procedure ParseL10NcurrencySymbol( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NcurrencySymbol( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -528,14 +532,14 @@ procedure ParseL10NcurrencySymbol( result : out unbounded_string; kind : out ide
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NAmStr( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NAmStr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_amstr_t );
-  result := amstr;
+  result := storage'( amstr, noMetaLabel );
 end ParseL10NAmStr;
 #else
-procedure ParseL10NAmStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NAmStr( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -547,14 +551,14 @@ procedure ParseL10NAmStr( result : out unbounded_string; kind : out identifier )
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NPmStr( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPmStr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_pmstr_t );
-  result := pmstr;
+  result := storage'( pmstr, noMetaLabel );
 end ParseL10NPmStr;
 #else
-procedure ParseL10NPmStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPmStr( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -566,14 +570,14 @@ procedure ParseL10NPmStr( result : out unbounded_string; kind : out identifier )
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NTFmtAmPm( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_t_fmt_ampm_t );
-  result := pmstr;
+  result := storage'( pmstr, noMetaLabel );
 end ParseL10NTFmtAmPm;
 #else
-procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NTFmtAmPm( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -585,14 +589,14 @@ procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifie
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NPositiveSign( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPositiveSign( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_positive_sign_t );
-  result := positive_sign;
+  result := storage'( positive_sign, noMetaLabel );
 end ParseL10NPositiveSign;
 #else
-procedure ParseL10NPositiveSign( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPositiveSign( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -604,14 +608,14 @@ procedure ParseL10NPositiveSign( result : out unbounded_string; kind : out ident
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NNegativeSign( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NNegativeSign( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_negative_sign_t );
-  result := negative_sign;
+  result := storage'( negative_sign, noMetaLabel );
 end ParseL10NNegativeSign;
 #else
-procedure ParseL10NNegativeSign( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNegativeSign( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -623,14 +627,14 @@ procedure ParseL10NNegativeSign( result : out unbounded_string; kind : out ident
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NIntCurrSymbol( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_int_curr_symbol_t );
-  result := int_curr_symbol;
+  result := storage'( int_curr_symbol, noMetaLabel );
 end ParseL10NIntCurrSymbol;
 #else
-procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NIntCurrSymbol( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -642,14 +646,14 @@ procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out iden
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NGrouping( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NGrouping( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_grouping_t );
-  result := charIntToResult( grouping );
+  result := storage'( charIntToResult( grouping ), noMetaLabel );
 end ParseL10NGrouping;
 #else
-procedure ParseL10NGrouping( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NGrouping( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -661,14 +665,14 @@ procedure ParseL10NGrouping( result : out unbounded_string; kind : out identifie
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NFracDigits( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NFracDigits( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_frac_digits_t );
-  result := charIntToResult( frac_digits );
+  result := storage'( charIntToResult( frac_digits ), noMetaLabel );
 end ParseL10NFracDigits;
 #else
-procedure ParseL10NFracDigits( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NFracDigits( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -680,14 +684,14 @@ procedure ParseL10NFracDigits( result : out unbounded_string; kind : out identif
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NIntFracDigits( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NIntFracDigits( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_int_frac_digits_t );
-  result := charIntToResult( int_frac_digits );
+  result := storage'( charIntToResult( int_frac_digits ), noMetaLabel );
 end ParseL10NIntFracDigits;
 #else
-procedure ParseL10NIntFracDigits( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NIntFracDigits( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -699,14 +703,14 @@ procedure ParseL10NIntFracDigits( result : out unbounded_string; kind : out iden
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NPCSPrecedes( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPCSPrecedes( result : out storage; kind : out identifier ) is
 begin
   kind := integer_t;
   expect( l10n_p_cs_precedes_t );
-  result := charIntToResult( p_cs_precedes );
+  result := storage'( charIntToResult( p_cs_precedes ), noMetaLabel );
 end ParseL10NPCSPrecedes;
 #else
-procedure ParseL10NPCSPrecedes( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPCSPrecedes( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -718,14 +722,14 @@ procedure ParseL10NPCSPrecedes( result : out unbounded_string; kind : out identi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NPSepBySpace( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPSepBySpace( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_p_sep_by_space_t );
-  result := charIntToResult( p_sep_by_space );
+  result := storage'( charIntToResult( p_sep_by_space ), noMetaLabel );
 end ParseL10NPSepBySpace;
 #else
-procedure ParseL10NPSepBySpace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPSepBySpace( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -737,14 +741,14 @@ procedure ParseL10NPSepBySpace( result : out unbounded_string; kind : out identi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NPSignPosn( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPSignPosn( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_p_sign_posn_t );
-  result := charIntToResult( p_sign_posn );
+  result := storage'( charIntToResult( p_sign_posn ), noMetaLabel );
 end ParseL10NPSignPosn;
 #else
-procedure ParseL10NPSignPosn( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPSignPosn( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -756,14 +760,14 @@ procedure ParseL10NPSignPosn( result : out unbounded_string; kind : out identifi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NNCSPrecedes( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NNCSPrecedes( result : out storage; kind : out identifier ) is
 begin
   kind := integer_t;
   expect( l10n_n_cs_precedes_t );
-  result := charIntToResult( n_cs_precedes );
+  result := storage'( charIntToResult( n_cs_precedes ), noMetaLabel );
 end ParseL10NNCSPrecedes;
 #else
-procedure ParseL10NNCSPrecedes( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNCSPrecedes( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -775,14 +779,14 @@ procedure ParseL10NNCSPrecedes( result : out unbounded_string; kind : out identi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NNSepBySpace( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NNSepBySpace( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_n_sep_by_space_t );
-  result := charIntToResult( n_sep_by_space );
+  result := storage'( charIntToResult( n_sep_by_space ), noMetaLabel );
 end ParseL10NNSepBySpace;
 #else
-procedure ParseL10NNSepBySpace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNSepBySpace( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -794,14 +798,14 @@ procedure ParseL10NNSepBySpace( result : out unbounded_string; kind : out identi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NNSignPosn( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NNSignPosn( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_n_sign_posn_t );
-  result := charIntToResult( n_sign_posn );
+  result := storage'( charIntToResult( n_sign_posn ), noMetaLabel );
 end ParseL10NNSignPosn;
 #else
-procedure ParseL10NNSignPosn( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNSignPosn( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -813,14 +817,14 @@ procedure ParseL10NNSignPosn( result : out unbounded_string; kind : out identifi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NMonDecimalPoint( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NMonDecimalPoint( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_mon_decimal_point_t );
-  result := mon_decimal_point;
+  result := storage'( mon_decimal_point, noMetaLabel );
 end ParseL10NMonDecimalPoint;
 #else
-procedure ParseL10NMonDecimalPoint( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NMonDecimalPoint( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -832,14 +836,14 @@ procedure ParseL10NMonDecimalPoint( result : out unbounded_string; kind : out id
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NMonThousandsSep( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NMonThousandsSep( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_mon_thousands_sep_t );
-  result := mon_thousands_sep;
+  result := storage'( mon_thousands_sep, noMetaLabel );
 end ParseL10NMonThousandsSep;
 #else
-procedure ParseL10NMonThousandsSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NMonThousandsSep( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -851,14 +855,14 @@ procedure ParseL10NMonThousandsSep( result : out unbounded_string; kind : out id
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NMonGrouping( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NMonGrouping( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_mon_grouping_t );
-  result := charIntToResult( mon_grouping );
+  result := storage'( charIntToResult( mon_grouping ), noMetaLabel );
 end ParseL10NMonGrouping;
 #else
-procedure ParseL10NMonGrouping( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NMonGrouping( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -870,14 +874,14 @@ procedure ParseL10NMonGrouping( result : out unbounded_string; kind : out identi
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NEra( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_t );
-  result := era;
+  result := storage'( era, noMetaLabel );
 end ParseL10NEra;
 #else
-procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NEra( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -889,14 +893,14 @@ procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) r
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEraYear( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NEraYear( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_year_t );
-  result := era_year;
+  result := storage'( era_year, noMetaLabel );
 end ParseL10NEraYear;
 #else
-procedure ParseL10NEraYear( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NEraYear( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -908,14 +912,14 @@ procedure ParseL10NEraYear( result : out unbounded_string; kind : out identifier
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEraDTFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NEraDTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_d_t_fmt_t );
-  result := era_d_t_fmt;
+  result := storage'( era_d_t_fmt, noMetaLabel );
 end ParseL10NEraDTFmt;
 #else
-procedure ParseL10NEraDTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NEraDTFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -927,14 +931,14 @@ procedure ParseL10NEraDTFmt( result : out unbounded_string; kind : out identifie
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEraDFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NEraDFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_d_fmt_t );
-  result := era_d_fmt;
+  result := storage'( era_d_fmt, noMetaLabel );
 end ParseL10NEraDFmt;
 #else
-procedure ParseL10NEraDFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NEraDFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -946,14 +950,14 @@ procedure ParseL10NEraDFmt( result : out unbounded_string; kind : out identifier
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEraTFmt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NEraTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_t_fmt_t );
-  result := era_d_fmt;
+  result := storage'( era_d_fmt, noMetaLabel );
 end ParseL10NEraTFmt;
 #else
-procedure ParseL10NEraTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NEraTFmt( result : out storage; kind : out identifier ) renames not_configured;
 #end if;
 
 

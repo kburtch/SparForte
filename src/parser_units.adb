@@ -94,661 +94,661 @@ units_bytes2MB_t   : identifier;
 units_MB2bytes_t   : identifier;
 
 
-procedure ParseSimpleConversion( result : out unbounded_string;
-  expr_val : in unbounded_string;
+procedure ParseSimpleConversion( result : out storage;
+  expr : in storage;
   factor   : in numericValue ) is
 -- Many conversions are simple multiplication.  Using this procedure
 -- cuts the (binary) size of this package in half.
 begin
     if isExecutingCommand then
-       result := to_unbounded_string( to_numeric( expr_val ) * factor );
+       result := storage'( to_unbounded_string( to_numeric( expr.value ) * factor ), noMetaLabel );
     end if;
 exception when others =>
     err_exception_raised;
 end ParseSimpleConversion;
 
-procedure ParseUnitsInches2mm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsInches2mm( result : out storage; kind : out identifier ) is
   -- Syntax: units.inches2mm( expr );
   -- Conversion: inches * 25.4
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_inches2mm_t );
-  ParseSingleNumericParameter( units_inches2mm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 25.4 );
+  ParseSingleNumericParameter( units_inches2mm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 25.4 );
 end ParseUnitsInches2mm;
 
-procedure ParseUnitsFeet2cm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsFeet2cm( result : out storage; kind : out identifier ) is
   -- Syntax: units.feet2cm( expr );
   -- Conversion: feet * 30.48
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_feet2cm_t );
-  ParseSingleNumericParameter( units_feet2cm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 30.48 );
+  ParseSingleNumericParameter( units_feet2cm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 30.48 );
 end ParseUnitsFeet2cm;
 
-procedure ParseUnitsYards2m( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsYards2m( result : out storage; kind : out identifier ) is
   -- Syntax: units.yards2m( expr );
   -- Conversion: yards * 0.9144
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_yards2m_t );
-  ParseSingleNumericParameter( units_yards2m_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.9144 );
+  ParseSingleNumericParameter( units_yards2m_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.9144 );
 end ParseUnitsYards2m;
 
-procedure ParseUnitsMiles2km( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsMiles2km( result : out storage; kind : out identifier ) is
   -- Syntax: units.miles2km( expr );
   -- Conversion: miles * 1.60934
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_miles2km_t );
-  ParseSingleNumericParameter( units_miles2km_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 1.60934 );
+  ParseSingleNumericParameter( units_miles2km_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 1.60934 );
 end ParseUnitsMiles2km;
 
-procedure ParseUnitsMM2Inches( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsMM2Inches( result : out storage; kind : out identifier ) is
   -- Syntax: units.mm2inches( expr );
   -- Conversion: mm * 0.03937
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_mm2inches_t );
-  ParseSingleNumericParameter( units_mm2inches_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.03937 );
+  ParseSingleNumericParameter( units_mm2inches_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.03937 );
 end ParseUnitsMM2Inches;
 
-procedure ParseUnitsCm2Inches( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsCm2Inches( result : out storage; kind : out identifier ) is
   -- Syntax: units.cm2inches( expr );
   -- Conversion: cm2 * 0.3937
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_cm2inches_t );
-  ParseSingleNumericParameter( units_cm2inches_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.3937 );
+  ParseSingleNumericParameter( units_cm2inches_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.3937 );
 end ParseUnitsCm2Inches;
 
-procedure ParseUnitsM2Yards( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsM2Yards( result : out storage; kind : out identifier ) is
   -- Syntax: units.m2yards( expr );
   -- Conversion:  m * 1.0936
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_m2yards_t );
-  ParseSingleNumericParameter( units_m2yards_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 1.0936 );
+  ParseSingleNumericParameter( units_m2yards_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 1.0936 );
 end ParseUnitsM2Yards;
 
-procedure ParseUnitsKm2Miles( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsKm2Miles( result : out storage; kind : out identifier ) is
   -- Syntax: units.km2miles( expr );
   -- Conversion: km * 0.62137
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_km2miles_t );
-  ParseSingleNumericParameter( units_km2miles_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.62137 );
+  ParseSingleNumericParameter( units_km2miles_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.62137 );
 end ParseUnitsKm2Miles;
 
-procedure ParseUnitsSqIn2SqCm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqIn2SqCm( result : out storage; kind : out identifier ) is
   -- Syntax: units.km2miles( expr );
   -- Conversion: sq in * 6.4516
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqin2sqcm_t );
-  ParseSingleNumericParameter( units_sqin2sqcm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 6.4516 );
+  ParseSingleNumericParameter( units_sqin2sqcm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 6.4516 );
 end ParseUnitsSqIn2SqCm;
 
-procedure ParseUnitsSqFt2SqM( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqFt2SqM( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqft2sqm( expr );
   -- Conversion: sq ft * 0.092903
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqft2sqm_t );
-  ParseSingleNumericParameter( units_sqft2sqm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.092903 );
+  ParseSingleNumericParameter( units_sqft2sqm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.092903 );
 end ParseUnitsSqFt2SqM;
 
-procedure ParseUnitsSqYd2SqM( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqYd2SqM( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqyd2sqm( expr );
   -- Conversion: sq yd * 0.836127
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqyd2sqm_t );
-  ParseSingleNumericParameter( units_sqyd2sqm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.836127 );
+  ParseSingleNumericParameter( units_sqyd2sqm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.836127 );
 end ParseUnitsSqYd2SqM;
 
-procedure ParseUnitsAcres2Hectares( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsAcres2Hectares( result : out storage; kind : out identifier ) is
   -- Syntax: units.acres2hectares( expr );
   -- Conversion: acres * 0.40486
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_acres2hectares_t );
-  ParseSingleNumericParameter( units_acres2hectares_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.40486 );
+  ParseSingleNumericParameter( units_acres2hectares_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.40486 );
 end ParseUnitsAcres2Hectares;
 
-procedure ParseUnitsSqCm2SqIn( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqCm2SqIn( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqcm2sqin( expr );
   -- Conversion: sq cm * 0.155
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqcm2sqin_t );
-  ParseSingleNumericParameter( units_sqcm2sqin_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.155 );
+  ParseSingleNumericParameter( units_sqcm2sqin_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.155 );
 end ParseUnitsSqCm2SqIn;
 
-procedure ParseUnitsSqM2SqFt( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqM2SqFt( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqm2sqft( expr );
   -- Conversion: sq m * 10.7639
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqm2sqft_t );
-  ParseSingleNumericParameter( units_sqm2sqft_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 10.7639 );
+  ParseSingleNumericParameter( units_sqm2sqft_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 10.7639 );
 end ParseUnitsSqM2SqFt;
 
-procedure ParseUnitsSqM2SqYd( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqM2SqYd( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqm2sqyd( expr );
   -- Conversion: sq m * 1.19599
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqm2sqyd_t );
-  ParseSingleNumericParameter( units_sqm2sqyd_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 1.19599 );
+  ParseSingleNumericParameter( units_sqm2sqyd_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 1.19599 );
 end ParseUnitsSqM2SqYd;
 
-procedure ParseUnitsSqKm2SqMiles( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsSqKm2SqMiles( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqkm2sqmiles( expr );
   -- Conversion: sq km * 0.38611
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_sqkm2sqmiles_t );
-  ParseSingleNumericParameter( units_sqkm2sqmiles_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.38611 );
+  ParseSingleNumericParameter( units_sqkm2sqmiles_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.38611 );
 end ParseUnitsSqKm2SqMiles;
 
-procedure ParseUnitsHectares2Acres( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsHectares2Acres( result : out storage; kind : out identifier ) is
   -- Syntax: units.sqkm2sqm( expr );
   -- Conversion: hectares * 2.471
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_hectares2acres_t );
-  ParseSingleNumericParameter( units_hectares2acres_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 2.471 );
+  ParseSingleNumericParameter( units_hectares2acres_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 2.471 );
 end ParseUnitsHectares2Acres;
 
-procedure ParseUnitsLy2Pc( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsLy2Pc( result : out storage; kind : out identifier ) is
   -- Syntax: units.Ly2Pc( expr );
   -- Conversion: ly * 0.3066
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_ly2pc_t );
-  ParseSingleNumericParameter( units_ly2pc_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.3066 );
+  ParseSingleNumericParameter( units_ly2pc_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.3066 );
 end ParseUnitsLy2Pc;
 
-procedure ParseUnitsPc2Ly( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsPc2Ly( result : out storage; kind : out identifier ) is
   -- Syntax: units.Pc2Ly( expr );
   -- Conversion: pc * 3.2616
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_pc2ly_t );
-  ParseSingleNumericParameter( units_pc2ly_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 3.2616 );
+  ParseSingleNumericParameter( units_pc2ly_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 3.2616 );
 end ParseUnitsPc2Ly;
 
-procedure ParseUnitsOz2Grams( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsOz2Grams( result : out storage; kind : out identifier ) is
   -- Syntax: units.oz2grams( expr );
   -- Conversion: oz * 28.349
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_oz2grams_t );
-  ParseSingleNumericParameter( units_oz2grams_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 28.349 );
+  ParseSingleNumericParameter( units_oz2grams_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 28.349 );
 end ParseUnitsOz2Grams;
 
-procedure ParseUnitsLb2Kg( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsLb2Kg( result : out storage; kind : out identifier ) is
   -- Syntax: units.lb2kg( expr );
   -- Conversion: lb * 0.45359
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_lb2kg_t );
-  ParseSingleNumericParameter( units_lb2kg_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.45359 );
+  ParseSingleNumericParameter( units_lb2kg_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.45359 );
 end ParseUnitsLb2Kg;
 
-procedure ParseUnitsTons2Tonnes( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsTons2Tonnes( result : out storage; kind : out identifier ) is
   -- Syntax: units.tons2tonnes( expr );
   -- Conversion: tons * 1.01605
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_tons2tonnes_t );
-  ParseSingleNumericParameter( units_tons2tonnes_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 1.01605 );
+  ParseSingleNumericParameter( units_tons2tonnes_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 1.01605 );
 end ParseUnitsTons2Tonnes;
 
-procedure ParseUnitsGrams2Oz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsGrams2Oz( result : out storage; kind : out identifier ) is
   -- Syntax: units.tons2tonnes( expr );
   -- Conversion: grams * 0.3527
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_grams2oz_t );
-  ParseSingleNumericParameter( units_grams2oz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.3527 );
+  ParseSingleNumericParameter( units_grams2oz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.3527 );
 end ParseUnitsGrams2Oz;
 
-procedure ParseUnitsKg2Lb( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsKg2Lb( result : out storage; kind : out identifier ) is
   -- Syntax: units.kg2lb( expr );
   -- Conversion: kg * 2.2046
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_kg2lb_t );
-  ParseSingleNumericParameter( units_kg2lb_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 2.2046 );
+  ParseSingleNumericParameter( units_kg2lb_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 2.2046 );
 end ParseUnitsKg2Lb;
 
-procedure ParseUnitsTonnes2Tons( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsTonnes2Tons( result : out storage; kind : out identifier ) is
   -- Syntax: units.tonnes2tons( expr );
   -- Conversion: tonnes * 0.9842
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_tonnes2tons_t );
-  ParseSingleNumericParameter( units_tonnes2tons_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.9842 );
+  ParseSingleNumericParameter( units_tonnes2tons_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.9842 );
 end ParseUnitsTonnes2Tons;
 
-procedure ParseUnitsFlOz2Ml( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsFlOz2Ml( result : out storage; kind : out identifier ) is
   -- Syntax: units.floz2ml( expr );
   -- Conversion: fl oz * 28.4131
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_floz2ml_t );
-  ParseSingleNumericParameter( units_floz2ml_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 28.4131 );
+  ParseSingleNumericParameter( units_floz2ml_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 28.4131 );
 end ParseUnitsFlOz2Ml;
 
-procedure ParseUnitsUSFlOz2Ml( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsUSFlOz2Ml( result : out storage; kind : out identifier ) is
   -- Syntax: units.usfloz2ml( expr );
   -- Conversion: U.S. fl oz * 29.57
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_usfloz2ml_t );
-  ParseSingleNumericParameter( units_usfloz2ml_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 29.57 );
+  ParseSingleNumericParameter( units_usfloz2ml_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 29.57 );
 end ParseUnitsUSFlOz2Ml;
 
-procedure ParseUnitsUSFlOz2FlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsUSFlOz2FlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.usfloz2oz( expr );
   -- Conversion: U.S. fl oz * 1.041
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_usfloz2floz_t );
-  ParseSingleNumericParameter( units_usfloz2floz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 1.041 );
+  ParseSingleNumericParameter( units_usfloz2floz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 1.041 );
 end ParseUnitsUSFlOz2FlOz;
 
-procedure ParseUnitsPints2L( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsPints2L( result : out storage; kind : out identifier ) is
   -- Syntax: units.pints2l( expr );
   -- Conversion: pints * 0.568
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_pints2l_t );
-  ParseSingleNumericParameter( units_pints2l_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.568 );
+  ParseSingleNumericParameter( units_pints2l_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.568 );
 end ParseUnitsPints2L;
 
-procedure ParseUnitsGal2L( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsGal2L( result : out storage; kind : out identifier ) is
   -- Syntax: units.gal2l( expr );
   -- Conversion: gal * 4.546
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_gal2l_t );
-  ParseSingleNumericParameter( units_gal2l_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 4.546 );
+  ParseSingleNumericParameter( units_gal2l_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 4.546 );
 end ParseUnitsGal2L;
 
-procedure ParseUnitsMl2FlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsMl2FlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.ml2floz( expr );
   -- Conversion: ml * 0.03519
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_ml2floz_t );
-  ParseSingleNumericParameter( units_ml2floz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.03519 );
+  ParseSingleNumericParameter( units_ml2floz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.03519 );
 end ParseUnitsMl2FlOz;
 
-procedure ParseUnitsMl2USFlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsMl2USFlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.ml2usfloz( expr );
   -- Conversion: ml * 0.033815
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_ml2usfloz_t );
-  ParseSingleNumericParameter( units_ml2usfloz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.033815 );
+  ParseSingleNumericParameter( units_ml2usfloz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.033815 );
 end ParseUnitsMl2USFlOz;
 
-procedure ParseUnitsFlOz2USFlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsFlOz2USFlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.floz2usfloz( expr );
   -- Conversion: ml * 0.961
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_floz2usfloz_t );
-  ParseSingleNumericParameter( units_floz2usfloz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.961 );
+  ParseSingleNumericParameter( units_floz2usfloz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.961 );
 end ParseUnitsFlOz2USFlOz;
 
-procedure ParseUnitsL2Quarts( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsL2Quarts( result : out storage; kind : out identifier ) is
   -- Syntax: units.l2quarts( expr );
   -- Conversion: l * 0.8795
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_l2quarts_t );
-  ParseSingleNumericParameter( units_l2quarts_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.8795 );
+  ParseSingleNumericParameter( units_l2quarts_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.8795 );
 end ParseUnitsL2Quarts;
 
-procedure ParseUnitsL2Gal( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsL2Gal( result : out storage; kind : out identifier ) is
   -- Syntax: units.l2gal( expr );
   -- Conversion: l * 0.21997
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_l2gal_t );
-  ParseSingleNumericParameter( units_l2gal_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.21997 );
+  ParseSingleNumericParameter( units_l2gal_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.21997 );
 end ParseUnitsL2Gal;
 
-procedure ParseUnitsF2C( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsF2C( result : out storage; kind : out identifier ) is
   -- Syntax: units.f2c( expr );
   -- Conversion: f = 5/9*(c-32)
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_f2c_t );
-  ParseSingleNumericParameter( units_f2c_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_f2c_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr_val ) - 32.0 ) );
+       result := storage'( to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr.value ) - 32.0 ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseUnitsF2C;
 
-procedure ParseUnitsC2F( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsC2F( result : out storage; kind : out identifier ) is
   -- Syntax: units.c2f( expr );
   -- Conversion: c = 9/5f+32
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_c2f_t );
-  ParseSingleNumericParameter( units_c2f_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_c2f_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( 9.0 / 5.0 * to_numeric( expr_val ) + 32.0 );
+       result := storage'( to_unbounded_string( 9.0 / 5.0 * to_numeric( expr.value ) + 32.0 ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseUnitsC2F;
 
-procedure ParseUnitsK2C( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsK2C( result : out storage; kind : out identifier ) is
   -- Syntax: units.k2c( expr );
   -- Conversion: c = k-273.15
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_k2c_t );
-  ParseSingleNumericParameter( units_k2c_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_k2c_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( to_numeric( expr_val ) - 273.15 );
+       result := storage'( to_unbounded_string( to_numeric( expr.value ) - 273.15 ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseUnitsK2C;
 
-procedure ParseUnitsC2K( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsC2K( result : out storage; kind : out identifier ) is
   -- Syntax: units.c2f( expr );
   -- Conversion: k = c+273.15
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_c2k_t );
-  ParseSingleNumericParameter( units_c2k_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_c2k_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( to_numeric( expr_val ) + 273.15 );
+       result := storage'( to_unbounded_string( to_numeric( expr.value ) + 273.15 ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseUnitsC2K;
 
-procedure ParseUnitsUSDryGal2L( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsUSDryGal2L( result : out storage; kind : out identifier ) is
   -- Syntax: units.usdrygal2l( expr );
   -- Conversion: dg * 4.4049
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_usdrygal2l_t );
-  ParseSingleNumericParameter( units_usdrygal2l_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 4.4049 );
+  ParseSingleNumericParameter( units_usdrygal2l_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 4.4049 );
 end ParseUnitsUSDryGal2L;
 
-procedure ParseUnitsL2USDryGal( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsL2USDryGal( result : out storage; kind : out identifier ) is
   -- Syntax: units.l2usdrygal( expr );
   -- Conversion: liters * 0.22702
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_l2usdrygal_t );
-  ParseSingleNumericParameter( units_l2usdrygal_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.22702 );
+  ParseSingleNumericParameter( units_l2usdrygal_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.22702 );
 end ParseUnitsL2USDryGal;
 
-procedure ParseUnitsUSLiqGal2L( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsUSLiqGal2L( result : out storage; kind : out identifier ) is
   -- Syntax: units.usliqgal2l( expr );
   -- Conversion: lg * 3.7854
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_usliqgal2l_t );
-  ParseSingleNumericParameter( units_usliqgal2l_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 3.7854 );
+  ParseSingleNumericParameter( units_usliqgal2l_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 3.7854 );
 end ParseUnitsUSLiqGal2L;
 
-procedure ParseUnitsL2USLiqGal( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsL2USLiqGal( result : out storage; kind : out identifier ) is
   -- Syntax: units.l2usliqgal( expr );
   -- Conversion: l * 0.26417
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_l2usliqgal_t );
-  ParseSingleNumericParameter( units_l2usliqgal_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.26417 );
+  ParseSingleNumericParameter( units_l2usliqgal_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.26417 );
 end ParseUnitsL2USLiqGal;
 
-procedure ParseUnitsTrOz2G( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsTrOz2G( result : out storage; kind : out identifier ) is
   -- Syntax: units.troz2g( expr );
   -- Conversion: toz * 31.1035
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_troz2g_t );
-  ParseSingleNumericParameter( units_troz2g_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 31.1035 );
+  ParseSingleNumericParameter( units_troz2g_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 31.1035 );
 end ParseUnitsTrOz2G;
 
-procedure ParseUnitsG2TrOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsG2TrOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.g2troz( expr );
   -- Conversion: g * 0.03215
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_g2troz_t );
-  ParseSingleNumericParameter( units_g2troz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.03215 );
+  ParseSingleNumericParameter( units_g2troz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.03215 );
 end ParseUnitsG2TrOz;
 
-procedure ParseUnitsCuCm2FlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsCuCm2FlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.cucm2floz( expr );
   -- Conversion: cucm * 0.03519
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_cucm2floz_t );
-  ParseSingleNumericParameter( units_cucm2floz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.03519 );
+  ParseSingleNumericParameter( units_cucm2floz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.03519 );
 end ParseUnitsCuCm2FlOz;
 
-procedure ParseUnitsFlOz2CuCm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsFlOz2CuCm( result : out storage; kind : out identifier ) is
   -- Syntax: units.floz2cucm( expr );
   -- Conversion: oz * 28.413
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_floz2cucm_t );
-  ParseSingleNumericParameter( units_floz2cucm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 28.413 );
+  ParseSingleNumericParameter( units_floz2cucm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 28.413 );
 end ParseUnitsFlOz2CuCm;
 
-procedure ParseUnitsCuCm2USFlOz( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsCuCm2USFlOz( result : out storage; kind : out identifier ) is
   -- Syntax: units.cucm2usfloz( expr );
   -- Conversion: cucm * 0.3381
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_cucm2usfloz_t );
-  ParseSingleNumericParameter( units_cucm2usfloz_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 0.3381 );
+  ParseSingleNumericParameter( units_cucm2usfloz_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 0.3381 );
 end ParseUnitsCuCm2USFlOz;
 
-procedure ParseUnitsUSFlOz2CuCm( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsUSFlOz2CuCm( result : out storage; kind : out identifier ) is
   -- Syntax: units.usfloz2cucm( expr );
   -- Conversion: floz * 29.5735
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_usfloz2cucm_t );
-  ParseSingleNumericParameter( units_usfloz2cucm_t, expr_val, expr_type );
-  ParseSimpleConversion( result, expr_val, 29.5735 );
+  ParseSingleNumericParameter( units_usfloz2cucm_t, expr, expr_type );
+  ParseSimpleConversion( result, expr, 29.5735 );
 end ParseUnitsUSFlOz2CuCm;
 
-procedure ParseUnitsBytes2MB( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsBytes2MB( result : out storage; kind : out identifier ) is
   -- Syntax: units.bytes2mb( expr );
   -- Conversion: bytes / 1024 / 1024
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_bytes2mb_t );
-  ParseSingleNumericParameter( units_bytes2mb_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_bytes2mb_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( to_numeric( expr_val )/1024.0/1024.0 );
+       result := storage'( to_unbounded_string( to_numeric( expr.value )/1024.0/1024.0 ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseUnitsBytes2MB;
 
-procedure ParseUnitsMB2Bytes( result : out unbounded_string; kind : out identifier ) is
+procedure ParseUnitsMB2Bytes( result : out storage; kind : out identifier ) is
   -- Syntax: units.mb2bytes( expr );
   -- Conversion: mb * 1024 * 1024
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := long_float_t;
   expect( units_mb2bytes_t );
-  ParseSingleNumericParameter( units_mb2bytes_t, expr_val, expr_type );
+  ParseSingleNumericParameter( units_mb2bytes_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( to_numeric( expr_val ) *1024.0*1024.0 );
+       result := storage'( to_unbounded_string( to_numeric( expr.value ) *1024.0*1024.0 ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;

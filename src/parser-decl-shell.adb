@@ -62,6 +62,18 @@ type defaultModes is (none, minus, plus, question, var_slice, var_replace );
 --
 -----------------------------------------------------------------------------
 
+-- Functions required to create a generic list
+
+function ">" (left, right : anExpandedShellWord ) return boolean is
+begin
+   return left.value > right.value;
+end ">";
+
+function "=" (left, right : anExpandedShellWord ) return boolean is
+begin
+   return left.value = right.value;
+end "=";
+
 
 -----------------------------------------------------------------------------
 --  PARSE TILDE
@@ -77,10 +89,10 @@ begin
    -- value of $HOME, the user's home directory.
 
    if length( globPattern ) > 1 and then element( globPattern, 2 ) /= directory_delimiter then
-      globPattern := replace_slice( globPattern, 1, 1, "/home/" );
+      globPattern.value := replace_slice( globPattern.value, 1, 1, "/home/" );
    else
       findIdent( to_unbounded_string( "HOME" ), home_id );
-      globPattern := replace_slice( globPattern, 1, 1, to_string( identifiers( home_id ).value.all ) );
+      globPattern.value := replace_slice( globPattern.value, 1, 1, to_string( identifiers( home_id ).value.all ) );
    end if;
 end parseTilde;
 
@@ -123,13 +135,13 @@ procedure doPathnameExpansion(
          globPos := globPos + 1;
          ch := element( originalGlobPattern, globPos );
       end if;
-      expandedWord := expandedWord & ch;
+      expandedWord.value := expandedWord.value & ch;
       globPos := globPos + 1;
     end loop;
     return expandedWord;
   exception when others =>
     err( pl( "internal error: cannot remove escapes from globbing pattern " ) &
-         em_value( unbounded_string( originalGlobPattern ) )
+         em_value( unbounded_string( originalGlobPattern.value ) )
     );
     return anExpandedShellWord( originalGlobPattern );
   end globPatternWithoutEscapes;
@@ -160,7 +172,7 @@ procedure doPathnameExpansion(
        if pos <= originalGlobPatternLen then
           if element( originalGlobPattern, pos ) = directory_delimiter then
              -- this is just a /
-             nextSegment := nextSegment & directory_delimiter;
+             nextSegment.value := nextSegment.value & directory_delimiter;
              finish := 1;
              return;
           end if;
@@ -186,7 +198,7 @@ procedure doPathnameExpansion(
        else
           inBackslash := false;
        end if;
-       nextSegment := nextSegment & ch;
+       nextSegment.value := nextSegment.value & ch;
        pos := pos + 1;
     end loop;
 
@@ -230,15 +242,15 @@ procedure doPathnameExpansion(
 
      splitNextGlobSegment( nextSegment, start, finish );
       if trace then -- DEBUG
-         put_trace( "next path segment is '" & toSecureData( to_string( nextSegment ) ) & "'" );
+         put_trace( "next path segment is '" & toSecureData( to_string( nextSegment.value ) ) & "'" );
       end if;
 
      -- A leading slash is an absolute path.  There's no need to check
      -- the slash.  Just make it the parent and go continue walking.
 
-     if candidateParentPath = nullExpandedShellWord then
-        if nextSegment = "" & directory_delimiter then
-           newCandidatePath := newCandidatePath & directory_delimiter;
+     if candidateParentPath.value = nullExpandedShellWord.value then
+        if nextSegment.value = "" & directory_delimiter then
+           newCandidatePath.value := newCandidatePath.value & directory_delimiter;
            walkSegment( newCandidatePath, finish+1 );
            return;
         end if;
@@ -246,7 +258,7 @@ procedure doPathnameExpansion(
 
      -- otherwise, prepare to glob the current directory
 
-     globCriteria := Compile( to_string( nextSegment ), Glob => true, Case_Sensitive => true );
+     globCriteria := Compile( to_string( nextSegment.value ), Glob => true, Case_Sensitive => true );
 
      -- open the parent directory
      --
@@ -256,7 +268,7 @@ procedure doPathnameExpansion(
        if candidateParentPath = nullExpandedShellWord then
           open( parentDir, "." );
        else
-          open( parentDir, to_string( candidateParentPath ) );
+          open( parentDir, to_string( candidateParentPath.value ) );
        end if;
        isOpen := true;
      exception when others =>
@@ -271,7 +283,7 @@ procedure doPathnameExpansion(
 
      if trace then
         if verboseOpt then
-           put_trace( "walking path '" & toSecureData( to_string( candidateParentPath ) ) & "'" );
+           put_trace( "walking path '" & toSecureData( to_string( candidateParentPath.value ) ) & "'" );
         end if;
      end if;
 
@@ -284,9 +296,9 @@ procedure doPathnameExpansion(
 --put_line( filename(1..fileNameLen) ); -- DEBUG
         exit when fileNameLen = 0;
         segmentFound := false;
-        if filename( 1..fileNameLen ) = "." and nextSegment = "." then
+        if filename( 1..fileNameLen ) = "." and nextSegment.value = "." then
            segmentFound := true;
-        elsif filename( 1..fileNameLen ) = ".." and nextSegment = ".." then
+        elsif filename( 1..fileNameLen ) = ".." and nextSegment.value = ".." then
            segmentFound := true;
         elsif filename( 1..fileNameLen ) = "." then
            null;
@@ -306,12 +318,12 @@ procedure doPathnameExpansion(
            -- is one.
 
            if candidateParentPath = nullExpandedShellWord then
-              newCandidatePath := to_unbounded_string( filename( 1..fileNameLen ) );
-           elsif candidateParentPath = "" & directory_delimiter then
-              newCandidatePath := candidateParentPath &
+              newCandidatePath.value := to_unbounded_string( filename( 1..fileNameLen ) );
+           elsif candidateParentPath.value = "" & directory_delimiter then
+              newCandidatePath.value := candidateParentPath.value &
                  to_unbounded_string( filename( 1..fileNameLen ) );
            else
-              newCandidatePath := candidateParentPath & directory_delimiter &
+              newCandidatePath.value := candidateParentPath.value & directory_delimiter &
                  to_unbounded_string( filename( 1..fileNameLen ) );
            end if;
 
@@ -357,7 +369,7 @@ procedure doPathnameExpansion(
        close( parentDir );
     end if;
   when DIRECTORY_ERROR =>
-    err( pl( "directory error on directory " & toSecureData(to_string( candidateParentPath))));
+    err( pl( "directory error on directory " & toSecureData(to_string( candidateParentPath.value ))));
   when program_error =>
     err( +"program_error exception raised" );
   when others =>
@@ -420,7 +432,7 @@ procedure doGlobPattern(
    globPattern : aGlobShellWord := aGlobShellWord( originalGlobPattern );
 begin
    if trace then
-      put_trace( "globbing with pattern '" & to_string( originalGlobPattern ) & "'" );
+      put_trace( "globbing with pattern '" & to_string( originalGlobPattern.value ) & "'" );
    end if;
 
    -- Tilde handling
@@ -429,12 +441,12 @@ begin
    -- If a leading "\~", remove the backslash leaving the tilde.
 
    if globLen > 0 then
-      if element( globPattern, globPos ) = '~' then
+      if element( globPattern.value, globPos ) = '~' then
          parseTilde( globPattern );
-      elsif element( globPattern, globPos ) = '\' then
+      elsif element( globPattern.value, globPos ) = '\' then
          if globPos < globLen then
-            if element( globPattern, globPos+1 ) = '~' then
-               delete( globPattern, globPos, globPos );
+            if element( globPattern.value, globPos+1 ) = '~' then
+               delete( globPattern.value, globPos, globPos );
             end if;
          end if;
       end if;
@@ -572,7 +584,7 @@ begin
    while pos < length( subword ) loop
       ch := element( subword, pos );
       if ch = ' ' or ch = ASCII.HT then
-         globPattern := globPattern & aGlobShellWord( unbounded_slice( subword, last_pos, pos-1 ) );
+         globPattern.value := globPattern.value & unbounded_slice( subword.value, last_pos, pos-1 );
          --put_line( "addSubwordWithWordSplitting: globPattern = " & to_string( globPattern ) );
          doGlobPattern( globPattern, bourneShellWordList );
          -- bourneShellWordLists.Queue( bourneShellWordList, expandedWord );
@@ -581,7 +593,7 @@ begin
        end if;
        pos := pos + 1;
    end loop;
-   globPattern := globPattern & aGlobShellWord( unbounded_slice( subword, last_pos, length( subword ) ) );
+   globPattern.value := globPattern.value & unbounded_slice( subword.value, last_pos, length( subword.value ) );
    -- put_line( "addSubwordWithWordSplitting: final globPattern = " & to_string( globPattern ) ); -- DEBUG
 end addSubwordWithWordSplitting;
 
@@ -752,20 +764,20 @@ begin
      when '*' =>
         -- in a bareword, * is not escaped.  In double quotes, it is.
         if whitespaceOption = keep then
-           escapedWord := escapedWord & '\' & ch;
+           escapedWord.value := escapedWord.value & '\' & ch;
         else
-           escapedWord := escapedWord & ch;
+           escapedWord.value := escapedWord.value & ch;
         end if;
      when '[' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when '?' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when '~' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when '\' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when others =>
-        escapedWord := escapedWord & ch;
+        escapedWord.value := escapedWord.value & ch;
      end case;
      p := p + 1;
    end loop;
@@ -790,18 +802,18 @@ begin
      ch := element( unescapedWord, p );
      case ch is
      -- when '*' =>
-     --   -- in a bareword, * is not escaped.  In double quotes, it is.
+     --   -- in a bareword, * is not escGaped.  In double quotes, it is.
      --   if whitespaceOption = keep then
      --      escapedWord := escapedWord & '\' & ch;
      --   else
      --      escapedWord := escapedWord & ch;
      --   end if;
      when '\' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when '"' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value& '\' & ch;
      when others =>
-        escapedWord := escapedWord & ch;
+        escapedWord.value := escapedWord.value & ch;
      end case;
      p := p + 1;
    end loop;
@@ -826,11 +838,11 @@ begin
      ch := element( unescapedWord, p );
      case ch is
      when '\' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when ''' =>
-        escapedWord := escapedWord & '\' & ch;
+        escapedWord.value := escapedWord.value & '\' & ch;
      when others =>
-        escapedWord := escapedWord & ch;
+        escapedWord.value := escapedWord.value & ch;
      end case;
      p := p + 1;
    end loop;
@@ -965,6 +977,7 @@ procedure doVariableExpansion(
 
    subword      : unbounded_string;
    globSubword  : aGlobShellWord;
+   escapeResult : aGlobShellWord;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
 
@@ -1004,9 +1017,11 @@ begin
    -- for SQL than for Bourne shell globbing.
 
    if globOption = sqlDoubleNoGlob then
-      globPattern := globPattern & sqlDoubleBackslashEscape( subword );
+      escapeResult := sqlDoubleBackslashEscape( subword );
+      globPattern.value := globPattern.value & escapeResult.value;
    elsif globOption = sqlSingleNoGlob then
-      globPattern := globPattern & sqlSingleBackslashEscape( subword );
+      escapeResult := sqlSingleBackslashEscape( subword );
+      globPattern.value := globPattern.value & escapeResult.value;
    else
       globSubword := globBackslashEscape( subword, whitespaceOption );
    end if;
@@ -1025,7 +1040,7 @@ begin
          bourneShellWordList,
          globSubword );
    else
-      globPattern := globPattern & globSubword;
+      globPattern.value := globPattern.value & globSubword.value;
       --put_line( "doVariableExpansion: expandedWord = " & to_string( globPattern ) ); -- DEBUG
    end if;
 end doVariableExpansion;
@@ -1048,8 +1063,8 @@ begin
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
 
-   globPattern := globPattern & aGlobShellWord( Ada.Strings.Unbounded.trim(
-      to_unbounded_string( length( subword )'img ), Ada.Strings.Both ) );
+   globPattern.value := globPattern.value & Ada.Strings.Unbounded.trim(
+      to_unbounded_string( length( subword )'img ), Ada.Strings.Both );
 end doVariableLengthExpansion;
 
 
@@ -1070,7 +1085,7 @@ begin
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
 
-   globPattern := globPattern & aGlobShellWord( ToUpper( subword ) );
+   globPattern.value := globPattern.value & ToUpper( subword );
 end doVariableUppercaseExpansion;
 
 
@@ -1090,7 +1105,7 @@ begin
    -- Perform the expansion
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
-   globPattern := globPattern & aGlobShellWord( ToProper( subword ) );
+   globPattern.value := globPattern.value & ToProper( subword );
 end doVariableProperExpansion;
 
 
@@ -1110,7 +1125,7 @@ begin
    -- Perform the expansion
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
-   globPattern := globPattern & aGlobShellWord( ToLower( subword ) );
+   globPattern.value := globPattern.value & ToLower( subword );
 end doVariableLowercaseExpansion;
 
 
@@ -1159,7 +1174,7 @@ begin
       end if;
    end if;
 
-   globPattern := globPattern & aGlobShellWord( absValue );
+   globPattern.value := globPattern.value & absValue;
 
 end doVariableAbsoluteValueExpansion;
 
@@ -1209,7 +1224,7 @@ begin
       end if;
    end if;
 
-   globPattern := globPattern & aGlobShellWord( roundValue );
+   globPattern.value := globPattern.value & roundValue;
 
 end doVariableRoundingExpansion;
 
@@ -1261,7 +1276,7 @@ begin
       end if;
    end if;
 
-   globPattern := globPattern & aGlobShellWord( ceilingValue );
+   globPattern.value := globPattern.value & ceilingValue;
 
 end doVariableCeilingExpansion;
 
@@ -1313,7 +1328,7 @@ begin
       end if;
    end if;
 
-   globPattern := globPattern & aGlobShellWord( floorValue );
+   globPattern.value := globPattern.value & floorValue;
 
 end doVariableFloorExpansion;
 
@@ -1325,9 +1340,9 @@ end doVariableFloorExpansion;
 -- the standard output results.
 -----------------------------------------------------------------------------
 
-function doCommandSubstitution( originalCommands : unbounded_string ) return unbounded_string is
+function doCommandSubstitution( originalCommands : unbounded_string ) return aGlobShellWord is
    commands : unbounded_string := originalCommands;
-   commandsOutput : unbounded_string;
+   commandsOutput : aGlobShellWord;
 begin
    -- put_line( "commands = " & to_string( commands ) );
    if commands = "" or commands = " " then
@@ -1348,16 +1363,16 @@ begin
 
       -- Run the command and attach the output to the word we are
       -- assembling.
-      CompileRunAndCaptureOutput( commands, commandsOutput );
+      CompileRunAndCaptureOutput( commands, storage( commandsOutput ) );
       if trace then
          declare
             fragment : unbounded_string;
          begin
-           if length( commandsOutput ) > 70 then
-              fragment := head( commandsOutput, 70 );
+           if length( commandsOutput.value ) > 70 then
+              fragment := head( commandsOutput.value, 70 );
               put_trace( "output '" & to_string( toEscaped( fragment ) ) & "'..." );
            else
-              put_trace( "output '" & to_string( toEscaped( commandsOutput ) ) & "'" );
+              put_trace( "output '" & to_string( toEscaped( commandsOutput.value ) ) & "'" );
            end if;
          end;
       end if;
@@ -1450,7 +1465,7 @@ procedure parseDollarBraceExpansion(
              wordPos,
              globPattern,
              bourneShellWordList );
-             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern.value );
        when '"' =>
           parseDoubleQuotedShellSubword(
              rawWordValue,
@@ -1458,7 +1473,7 @@ procedure parseDollarBraceExpansion(
              wordPos,
              globPattern,
              bourneShellWordList );
-             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern.value );
        exit when ch = '}';
        when '`' =>
           parseBackQuotedShellSubword(
@@ -1468,7 +1483,7 @@ procedure parseDollarBraceExpansion(
              globPattern,
              trim,
              bourneShellWordList );
-             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern.value );
        when '\' =>
           parseBackslash(
              rawWordValue,
@@ -1476,7 +1491,7 @@ procedure parseDollarBraceExpansion(
              wordPos,
              globPattern,
              bourneShellWordList );
-             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern.value );
        when others =>
           defaultValue := defaultValue & ch;
           getNextChar( wordLen, wordPos );
@@ -1513,7 +1528,7 @@ begin
       -- wordPos is always one position ahead.
 
       if firstPos < wordPos then
-         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 );
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue.value ), firstPos, wordPos-1 );
       else
          -- this may not happen
          expansionVar := null_unbounded_string;
@@ -1664,6 +1679,7 @@ procedure parseDollarProcessExpansion(
       globOption : globOptions ) is
    commands     : unbounded_string;
    expansionResult : aGlobShellWord;
+   substitutionResults : aGlobShellWord;
    ch           : character;
 begin
    --put_line( "parseDollarProcessExpansion" ); -- DEBUG
@@ -1674,13 +1690,13 @@ begin
     expectChar( '(', rawWordValue, wordLen, wordPos );
 
       while wordPos <= wordLen loop
-        ch := element( rawWordValue, wordPos );
+        ch := element( rawWordValue.value, wordPos );
         exit when ch = ')';
         if ch = '$' then
            expansionResult := nullGlobShellWord;
            parseDollarExpansion( rawWordValue, wordLen, wordPos,
               expansionResult, bourneShellWordList, keep );
-           commands := commands & unbounded_string( expansionResult );
+           commands := commands & unbounded_string( expansionResult.value );
         else
           commands := commands & ch;
           exit when wordPos = wordLen;
@@ -1693,7 +1709,9 @@ begin
    -- The string returned may have special characters that need to be escaped
    -- for a glob pattern (such as a \).
 
-   globPattern := globPattern & globBackslashEscape( doCommandSubstitution( commands ), whitespaceOption );
+   substitutionResults := doCommandSubstitution( commands );
+   substitutionResults := globBackslashEscape( substitutionResults.value, whitespaceOption );
+   globPattern.value := globPattern.value & substitutionResults.value;
 
 end parseDollarProcessExpansion;
 
@@ -1720,8 +1738,8 @@ begin
    expectChar( '$', rawWordValue, wordLen, wordPos );
 
    ch := ASCII.NUL;
-   if length( rawWordvalue ) >= wordPos then
-      ch := element( rawWordvalue, wordPos );
+   if length( rawWordvalue.value ) >= wordPos then
+      ch := element( rawWordvalue.value, wordPos );
    end if;
 
    if ch = '{' then
@@ -1742,9 +1760,9 @@ begin
       -- wordPos is always one position ahead.
 
       if endOfShellWord then
-         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos );
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue.value ), firstPos, wordPos );
       elsif firstPos < wordPos then
-         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 );
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue.value ), firstPos, wordPos-1 );
       else
          expansionVar := null_unbounded_string;
       end if;
@@ -1780,8 +1798,8 @@ begin
    expectChar( '$', rawWordValue, wordLen, wordPos );
 
    ch := ASCII.NUL;
-   if length( rawWordvalue ) >= wordPos then
-      ch := element( rawWordvalue, wordPos );
+   if length( rawWordvalue.value ) >= wordPos then
+      ch := element( rawWordvalue.value, wordPos );
    end if;
 
    if ch = '{' then
@@ -1801,9 +1819,9 @@ begin
       -- wordPos is always one position ahead.
 
       if endOfShellWord then
-         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos );
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue.value ), firstPos, wordPos );
       elsif firstPos < wordPos then
-         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 );
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue.value ), firstPos, wordPos-1 );
       else
          expansionVar := null_unbounded_string;
       end if;
@@ -1839,7 +1857,7 @@ begin
    if endOfShellWord then
       err_shell( +"missing character after backslash", wordPos );
    else
-     globPattern := globPattern & "\" & element( rawWordValue, wordPos );
+     globPattern.value := globPattern.value & "\" & element( rawWordValue.value, wordPos );
      getNextChar( wordLen, wordPos );
    end if;
 end parseBackslash;
@@ -1892,7 +1910,7 @@ begin
    expectChar( ''', rawWordValue, wordLen, wordPos );
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
 
       -- However, we have to escape characters for the globbing pattern.
       -- there are no backslash escapes in single quotes
@@ -1904,17 +1922,17 @@ begin
       --   parseSingleQuotedBackslash(
       --      rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
                                                       -- is a glob char?
-      when '~' => globPattern := globPattern & "\~";  -- escape \
+      when '~' => globPattern.value := globPattern.value & "\~";  -- escape \
          getNextChar( wordLen, wordPos );
-      when '\' => globPattern := globPattern & "\\";  -- escape \
+      when '\' => globPattern.value := globPattern.value & "\\";  -- escape \
          getNextChar( wordLen, wordPos );
-      when '*' => globPattern := globPattern & "\*";  -- escape *
+      when '*' => globPattern.value := globPattern.value & "\*";  -- escape *
          getNextChar( wordLen, wordPos );
-      when '[' => globPattern := globPattern & "\[";  -- escape [
+      when '[' => globPattern.value := globPattern.value & "\[";  -- escape [
          getNextChar( wordLen, wordPos );
-      when '?' => globPattern := globPattern & "\?";  -- escape ?
+      when '?' => globPattern.value := globPattern.value & "\?";  -- escape ?
          getNextChar( wordLen, wordPos );
-      when others => globPattern := globPattern & ch; -- others? no esc
+      when others => globPattern.value := globPattern.value & ch; -- others? no esc
          getNextChar( wordLen, wordPos );
       end case;
    end loop;
@@ -1939,23 +1957,23 @@ procedure parseDoubleQuotedBackslash(
    ch : character;
 begin
    expectChar( '\', rawWordValue, wordLen, wordPos );
-   ch := element( rawWordValue, wordPos );
+   ch := element( rawWordValue.value, wordPos );
    if endOfShellWord then
       err_shell( +"missing character after backslash", wordPos );
    elsif ch = '"' then
-     globPattern := globPattern & "\" & ch;
+     globPattern.value := globPattern.value & "\" & ch;
      getNextChar( wordLen, wordPos );
    elsif ch = '$' then
-     globPattern := globPattern & "\" & ch;
+     globPattern.value := globPattern.value & "\" & ch;
      getNextChar( wordLen, wordPos );
    elsif ch = '`' then
-     globPattern := globPattern & "\" & ch;
+     globPattern.value := globPattern.value & "\" & ch;
      getNextChar( wordLen, wordPos );
    elsif ch = '\' then
-     globPattern := globPattern & "\" & ch;
+     globPattern.value := globPattern.value & "\" & ch;
      getNextChar( wordLen, wordPos );
    else
-     globPattern := globPattern & "\\";
+     globPattern.value := globPattern.value & "\\";
    end if;
 end parseDoubleQuotedBackslash;
 
@@ -1978,7 +1996,7 @@ begin
    expectChar( '"', rawWordValue, wordLen, wordPos );
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
 
       -- However, we have to escape characters for the globbing pattern.
 
@@ -1995,15 +2013,15 @@ begin
          parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
             keep, bourneShellWordList );
                                                       -- is a glob char?
-      when '~' => globPattern := globPattern & "\~";  -- escape \
+      when '~' => globPattern.value := globPattern.value & "\~";  -- escape \
          getNextChar( wordLen, wordPos );
-      when '*' => globPattern := globPattern & "\*";  -- escape *
+      when '*' => globPattern.value := globPattern.value & "\*";  -- escape *
          getNextChar( wordLen, wordPos );
-      when '[' => globPattern := globPattern & "\[";  -- escape [
+      when '[' => globPattern.value := globPattern.value & "\[";  -- escape [
          getNextChar( wordLen, wordPos );
-      when '?' => globPattern := globPattern & "\?";  -- escape ?
+      when '?' => globPattern.value := globPattern.value & "\?";  -- escape ?
          getNextChar( wordLen, wordPos );
-      when others => globPattern := globPattern & ch; -- others? no esc
+      when others => globPattern.value := globPattern.value & ch; -- others? no esc
          getNextChar( wordLen, wordPos );
       end case;
    end loop;
@@ -2028,10 +2046,10 @@ procedure parseDoubleQuotedSQLSubword(
    ch : character;
 begin
    expectChar( '"', rawWordValue, wordLen, wordPos );
-   globPattern := globPattern & '"';
+   globPattern.value := globPattern .value& '"';
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
 
       -- However, we have to escape characters for the globbing pattern.
 
@@ -2049,13 +2067,13 @@ begin
       --    -- This is permitted in double quotes in a Bourne shell
       --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
       --       keep, bourneShellWordList );
-      when others => globPattern := globPattern & ch; -- others? no esc
+      when others => globPattern.value := globPattern.value & ch; -- others? no esc
          getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
    expectChar( '"', rawWordValue, wordLen, wordPos );
-   globPattern := globPattern & '"';
+   globPattern.value := globPattern.value & '"';
 end parseDoubleQuotedSQLSubword;
 
 
@@ -2076,10 +2094,10 @@ procedure parseSingleQuotedSQLSubword(
    ch : character;
 begin
    expectChar( ''', rawWordValue, wordLen, wordPos );
-   globPattern := globPattern & ''';
+   globPattern.value := globPattern.value & ''';
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
 
       -- However, we have to escape characters for the globbing pattern.
 
@@ -2097,13 +2115,13 @@ begin
       --    -- This is permitted in double quotes in a Bourne shell
       --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
       --       keep, bourneShellWordList );
-      when others => globPattern := globPattern & ch; -- others? no esc
+      when others => globPattern.value := globPattern.value & ch; -- others? no esc
          getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
    expectChar( ''', rawWordValue, wordLen, wordPos );
-   globPattern := globPattern & ''';
+   globPattern.value := globPattern.value & ''';
 end parseSingleQuotedSQLSubword;
 
 
@@ -2138,18 +2156,20 @@ procedure parseBackQuotedShellSubword(
       whitespaceOption : whitespaceOptions;
       bourneShellWordList : in out bourneShellWordLists.List ) is
    ch : character;
-   commands     : unbounded_string;
+   commands     : aGlobShellWord;
+   substitutionResults : aGlobShellWord;
 begin
    --put_line( "parseBackQuotedShellSubword" ); -- DEBUG
    expectChar( '`', rawWordValue, wordLen, wordPos );
+   commands.metaLabel := noMetaLabel;
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
       exit when ch = '`';
       if ch = '\' then
-         parseBackslash( rawWordValue, wordLen, wordPos, aGlobShellWord( commands ), bourneShellWordList );
+         parseBackslash( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
       else
-         commands := commands & ch;
+         commands.value := commands.value & ch;
          getNextChar( wordLen, wordPos );
       end if;
    end loop;
@@ -2160,7 +2180,9 @@ begin
    -- The string returned may have special characters that need to be escaped
    -- for a glob pattern (such as a \).
 
-   globPattern := globPattern & globBackslashEscape( doCommandSubstitution( commands ), whitespaceOption ) ;
+   substitutionResults := doCommandSubstitution( commands.value );
+   substitutionResults := globBackslashEscape( substitutionResults.value, whitespaceOption );
+   globPattern.value := globPattern.value & substitutionResults.value;
    -- put_line( "end of back quotes, expanded word is = " & to_string( globPattern ) );
 end parseBackQuotedShellSubword;
 
@@ -2183,7 +2205,7 @@ begin
    -- handle word and backslash characters
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
-      ch := element( rawWordValue, wordPos );
+      ch := element( rawWordValue.value, wordPos );
       exit when ch = ASCII.HT or ch = ' ' or ch = '"' or ch = ''';
       if ch = '\' then
          parseBackslash( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
@@ -2193,7 +2215,7 @@ begin
          --end if;
          parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, trim );
       else
-         globPattern := globPattern & ch;
+         globPattern.value := globPattern.value & ch;
          getNextChar( wordLen, wordPos );
       end if;
    end loop;
@@ -2211,8 +2233,8 @@ procedure parseDollarAtSign(bourneShellWordList : in out bourneShellWordLists.Li
 begin
    if isExecutingCommand then
       for i in optionOffset+1..Argument_Count loop
-           bourneShellWordLists.Queue( bourneShellWordList, to_unbounded_string(
-             Argument( i ) ) );
+           bourneShellWordLists.Queue( bourneShellWordList, anExpandedShellWord'(
+             to_unbounded_string( Argument( i ) ), noMetaLabel ) );
       end loop;
    end if;
 end parseDollarAtSign;
@@ -2241,19 +2263,19 @@ begin
    -- quoted.
 
    if token = word_t then
-      shellWord := aRawShellWord( identifiers( token ).value.all );
-      len := length( shellWord );
+      shellWord := aRawShellWord'( identifiers( token ).value.all, noMetaLabel );
+      len := length( shellWord.value );
       if len > 0 then
          -- $@ is a special case because the word splitting is not done
          -- the normal way.  We don't allow it to be combined with other
          -- subwords.
-         if shellWord = "$@" then
+         if shellWord.value = "$@" then
             err_shell( +"$@ should be in double quotes", wordPos);
-         elsif shellWord = ASCII.Quotation & "$@" & ASCII.Quotation then
+         elsif shellWord.value = ASCII.Quotation & "$@" & ASCII.Quotation then
             parseDollarAtSign( bourneShellWordList );
          else
             while wordPos <= len and not error_found and not endOfShellWord  loop
-               first_ch := element( shellWord, wordPos );
+               first_ch := element( shellWord.value, wordPos );
                if first_ch = '"' then
                   parseDoubleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
                elsif first_ch = ''' then
@@ -2272,11 +2294,11 @@ begin
    elsif token = sql_word_t then
       -- An SQL word is a shell word with spaces in it containing the
       -- SQL command except for the first keywrod.
-      shellWord := aRawShellWord( identifiers( token ).value.all );
-      len := length( shellWord );
+      shellWord := aRawShellWord'( identifiers( token ).value.all, noMetaLabel );
+      len := length( shellWord.value );
       if len > 0 then
          while wordPos <= len and not error_found and not endOfShellWord loop
-            first_ch := element( shellWord, wordPos );
+            first_ch := element( shellWord.value, wordPos );
             if first_ch = '"' then
                parseDoubleQuotedSQLSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             elsif first_ch = ''' then
@@ -2285,14 +2307,14 @@ begin
                parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, trim, bourneShellWordList );
             elsif first_ch = ' ' or first_ch = ASCII.HT then
                -- unlike shell words, sql words have whitespace in them
-               globPattern := globPattern & first_ch;
+               globPattern.value := globPattern.value & first_ch;
                getNextChar( len, wordPos );
             else
                parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             end if;
          end loop;
          -- SQL word is not globbed
-         if length( globPattern ) > 0 then
+         if length( globPattern.value ) > 0 then
             bourneShellWordLists.Queue( bourneShellWordList, anExpandedShellWord( globPattern ) );
          end if;
       end if;
@@ -2303,11 +2325,11 @@ begin
    elsif identifiers( token ).kind = new_t then
       -- If there's any kind of quotation, it will be a word not an identifier.
       -- This will always be a bareword.
-      shellWord := aRawShellWord( identifiers( token ).name );
-      len := length( shellWord );
+      shellWord := aRawShellWord'( identifiers( token ).name, noMetaLabel );
+      len := length( shellWord.value );
       discardUnusedIdentifier( token );
       parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-      if length( globPattern ) > 0 then
+      if length( globPattern.value ) > 0 then
          bourneShellWordLists.Queue( bourneShellWordList, anExpandedShellWord( globPattern ) );
       end if;
    -- The following may never happen...but are included here to catch the unexpected.
@@ -2344,7 +2366,7 @@ begin
         end if;
         for i in 1..bourneShellWordLists.length( bourneShellWordList ) loop
             bourneShellWordLists.Find( bourneShellWordList, i, theWord );
-            put_trace( to_string( toEscaped( unbounded_string( theWord ) ) ) );
+            put_trace( to_string( toEscaped( unbounded_string( theWord.value ) ) ) );
         end loop;
       end;
    end if;
@@ -2397,7 +2419,7 @@ end parseUniqueShellWord;
 procedure addAdaScriptValue( wordList : in out bourneShellWordLists.List;
   unbounded_val : unbounded_string ) is
 begin
-  bourneShellWordLists.Queue( wordList, anExpandedShellWord( unbounded_val ) );
+  bourneShellWordLists.Queue( wordList, anExpandedShellWord'( unbounded_val, noMetaLabel ) );
 end addAdaScriptValue;
 
 

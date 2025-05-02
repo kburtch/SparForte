@@ -159,26 +159,26 @@ index_set_t     : identifier;
 -- Source: GNAT.RegExp.Match
 ------------------------------------------------------------------------------
 
-procedure ParseStringsGlob( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseStringsGlob( result : out storage; kind : out identifier ) is
+  expr  : storage;
   expr_type : identifier;
-  pat_val   : unbounded_string;
+  patExpr   : storage;
   pat_type  : identifier;
   re        : regexp;
   b         : boolean;
 begin
   kind := boolean_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( glob_t );
-  ParseFirstStringParameter( glob_t, pat_val, pat_type );
-  ParseLastStringParameter( glob_t, expr_val, expr_type );
+  ParseFirstStringParameter( glob_t, patExpr, pat_type );
+  ParseLastStringParameter( glob_t, expr, expr_type );
   if isExecutingCommand then
      begin
-       re := compile( to_string( pat_val ), glob => true,
+       re := compile( to_string( patExpr.value ), glob => true,
              case_sensitive => true );
-       b := match( to_string( expr_val ), re );
+       b := match( to_string( expr.value ), re );
      exception when expression_error =>
-       err( pl( "bad globbing expression '" & to_string( pat_val ) & "'" ) );
+       err( pl( "bad globbing expression '" & to_string( patExpr.value ) & "'" ) );
        b := false;
      when storage_error =>
        err( +"formula too complex (storage_error exception)" );
@@ -189,9 +189,9 @@ begin
      end;
      if not error_found then
         if b then
-           result := to_unbounded_string( "1" );
+           result := storage'( to_unbounded_string( "1" ), noMetaLabel );
         else
-           result := to_unbounded_string( "0" );
+           result := storage'( to_unbounded_string( "0" ), noMetaLabel );
         end if;
      end if;
   end if;
@@ -205,23 +205,23 @@ end ParseStringsGlob;
 -- Source: GNAT.RegPat.Match
 ------------------------------------------------------------------------------
 
-procedure ParseStringsMatch( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseStringsMatch( result : out storage; kind : out identifier ) is
+  expr  : storage;
   expr_type : identifier;
-  pat_val   : unbounded_string;
+  patExpr   : storage;
   pat_type  : identifier;
   b         : boolean;
 begin
   kind := boolean_t;
-  result := null_unbounded_string;
+  result := nullStorage;
   expect( match_t ); --getNextToken;
-  ParseFirstStringParameter( match_t, pat_val, pat_type );
-  ParseLastStringParameter( match_t, expr_val, expr_type );
+  ParseFirstStringParameter( match_t, patExpr, pat_type );
+  ParseLastStringParameter( match_t, expr, expr_type );
   if isExecutingCommand then
      begin
-       b := match( to_string( pat_val ), to_string( expr_val ) );
+       b := match( to_string( patExpr.value ), to_string( expr.value ) );
      exception when expression_error =>
-       err( pl( "bad regular expression '" & to_string( pat_val ) & "'" ) );
+       err( pl( "bad regular expression '" & to_string( patExpr.value ) & "'" ) );
        b := false;
      when storage_error =>
        err( pl( "formula too complex (storage_error exception)" ) );
@@ -235,20 +235,20 @@ begin
      end;
      if not error_found then
         if b then
-           result := to_unbounded_string( "1" );
+           result := storage'( to_unbounded_string( "1" ), noMetaLabel );
         else
-           result := to_unbounded_string( "0" );
+           result := storage'( to_unbounded_string( "0" ), noMetaLabel );
         end if;
         if trace then
            if b then
-              put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
+              put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
                          "' pattern matches string '" &
-                         toSecureData( to_string( toEscaped( expr_val ) ) ) &
+                         toSecureData( to_string( toEscaped( expr.value ) ) ) &
                          "'" );
            else
-              put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
+              put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
                          "' pattern does not match string '" &
-                         toSecureData( to_string( toEscaped( expr_val ) ) ) &
+                         toSecureData( to_string( toEscaped( expr.value ) ) ) &
                          "'" );
            end if;
         end if;
@@ -264,20 +264,20 @@ end ParseStringsMatch;
 -- Source: Ada.Strings.Unbounded.Element
 ------------------------------------------------------------------------------
 
-procedure ParseStringsElement( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsElement( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
-  index_val : unbounded_string;
+  indexExpr : storage;
   index_type : identifier;
 begin
   kind := character_t;
   expect( element_t );
-  ParseFirstStringParameter( element_t, str_val, str_type, Uni_String_T );
-  ParseLastNumericParameter( element_t, index_val, index_type, positive_t );
+  ParseFirstStringParameter( element_t, strExpr, str_type, Uni_String_T );
+  ParseLastNumericParameter( element_t, indexExpr, index_type, positive_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( "" &
-           Element( str_val, positive( to_numeric( index_val ) ) ) );
+        result := storage'( to_unbounded_string( "" &
+           Element( strExpr.value, positive( to_numeric( indexExpr.value ) ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -292,26 +292,26 @@ end ParseStringsElement;
 -- Source: Ada.Strings.Unbounded.Slice
 ------------------------------------------------------------------------------
 
-procedure ParseStringsSlice( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsSlice( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  low_val  : unbounded_string;
+  lowExpr  : storage;
   low_type : identifier;
-  hi_val   : unbounded_string;
+  hiExpr   : storage;
   hi_type  : identifier;
 begin
   kind := uni_string_t;
   expect( slice_t );
-  ParseFirstStringParameter( slice_t, str_val, str_type );
-  ParseNextNumericParameter( slice_t, low_val, low_type, positive_t );
-  ParseLastNumericParameter( slice_t, hi_val,  hi_type,  natural_t );
+  ParseFirstStringParameter( slice_t, strExpr, str_type );
+  ParseNextNumericParameter( slice_t, lowExpr, low_type, positive_t );
+  ParseLastNumericParameter( slice_t, hiExpr,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string(
-           Slice( str_val,
-             positive( to_numeric( low_val ) ),
-             natural( to_numeric( hi_val ) )
-           ) );
+        result := storage'( to_unbounded_string(
+           Slice( strExpr.value,
+             positive( to_numeric( lowExpr.value ) ),
+             natural( to_numeric( hiExpr.value ) )
+           ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -326,30 +326,30 @@ end ParseStringsSlice;
 -- Source: Ada.Strings.Unbounded.Index
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIndex( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsIndex( result : out storage; kind : out identifier ) is
   use ada.strings;
-  str_val : unbounded_string;
+  strExpr : storage;
   str_type : identifier;
-  pat_val : unbounded_string;
+  patExpr : storage;
   pat_type : identifier;
-  dir_val : unbounded_string;
+  dirExpr : storage;
   dir_type : identifier;
   dir    : direction := forward;
 begin
   kind := natural_t;
   expect( index_t );
-  ParseFirstStringParameter( index_t, str_val, str_type );
-  ParseNextStringParameter( index_t, pat_val, pat_type, Uni_String_T );
+  ParseFirstStringParameter( index_t, strExpr, str_type );
+  ParseNextStringParameter( index_t, patExpr, pat_type, Uni_String_T );
   -- no value if syntax check
   if isExecutingCommand then
-     if length( pat_val ) = 0 then
+     if length( patExpr.value ) = 0 then
         err( +"search string is empty" );
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( index_t, dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
-        case natural( to_numeric( dir_val ) ) is
+        case natural( to_numeric( dirExpr.value ) ) is
         when 0 => dir := forward;
         when 1 => dir := backward;
         when others =>
@@ -361,7 +361,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( Index( str_val, to_string( pat_val ), Going => dir )'img );
+        result := storage'( to_unbounded_string( Index( strExpr.value, to_string( patExpr.value ), Going => dir )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -376,21 +376,21 @@ end ParseStringsIndex;
 -- Source: Ada.Strings.Unbounded.Index_Non_Blank
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIndexNonBlank( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsIndexNonBlank( result : out storage; kind : out identifier ) is
   use ada.strings;
-  str_val : unbounded_string;
+  strExpr : storage;
   str_type : identifier;
-  dir_val : unbounded_string;
+  dirExpr : storage;
   dir_type : identifier;
   dir    : direction := forward;
 begin
   kind := natural_t;
   expect( index_non_blank_t );
-  ParseFirstStringParameter( index_non_blank_t, str_val, str_type );
+  ParseFirstStringParameter( index_non_blank_t, strExpr, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( index_non_blank_t, dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_non_blank_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
-        case natural( to_numeric( dir_val ) ) is
+        case natural( to_numeric( dirExpr.value ) ) is
         when 0 => dir := forward;
         when 1 => dir := backward;
         when others =>
@@ -402,7 +402,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( Index_Non_Blank( str_val, dir )'img );
+        result := storage'( to_unbounded_string( Index_Non_Blank( strExpr.value, dir )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -417,42 +417,42 @@ end ParseStringsIndexNonBlank;
 -- Source: Ada.Strings.Unbounded.Index
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIndexSet( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsIndexSet( result : out storage; kind : out identifier ) is
   use ada.strings;
-  str_val    : unbounded_string;
+  strExpr    : storage;
   str_type   : identifier;
-  set_val    : unbounded_string;
+  setExpr    : storage;
   set_type   : identifier;
-  first_val  : unbounded_string;
+  firstExpr  : storage;
   first_type : identifier;
-  test_val   : unbounded_string;
+  testExpr   : storage;
   test_type  : identifier;
   test       : membership := inside;
-  dir_val    : unbounded_string;
+  dirExpr    : storage;
   dir_type   : identifier;
   dir        : direction := forward;
 begin
   kind := natural_t;
   expect( index_set_t );
-  ParseFirstStringParameter( index_set_t, str_val, str_type );
-  ParseNextStringParameter( index_set_t, set_val, set_type, uni_string_t );
+  ParseFirstStringParameter( index_set_t, strExpr, str_type );
+  ParseNextStringParameter( index_set_t, setExpr, set_type, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( index_set_t, first_val, first_type, positive_t );
+     ParseNextStringParameter( index_set_t, firstExpr, first_type, positive_t );
   else
-     first_val := to_unbounded_string("1" );
+     firstExpr.value := to_unbounded_string("1" );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( index_set_t, test_val, test_type, strings_membership_t );
+     ParseNextStringParameter( index_set_t, testExpr, test_type, strings_membership_t );
      if isExecutingCommand then
-        if to_string( test_val ) = "1" then -- 1 is outside; TODO: cleaner way?
+        if to_string( testExpr.value ) = "1" then -- 1 is outside; TODO: cleaner way?
            test := outside;
         end if;
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( index_set_t, dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_set_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
-        case natural( to_numeric( dir_val ) ) is
+        case natural( to_numeric( dirExpr.value ) ) is
         when 0 => dir := forward;
         when 1 => dir := backward;
         when others =>
@@ -466,10 +466,10 @@ begin
      map : character_set;
      first : positive;
   begin
-     map := to_set( to_string( set_val ) );
-     first := positive( to_numeric( first_val ) );
+     map := to_set( to_string( setExpr.value ) );
+     first := positive( to_numeric( firstExpr.value ) );
      if isExecutingCommand then
-        result := to_unbounded_string( Index( str_val, map, first, test, Going => dir )'img );
+        result := storage'( to_unbounded_string( Index( strExpr.value, map, first, test, Going => dir )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -484,20 +484,20 @@ end ParseStringsIndexSet;
 -- Source: Ada.Strings.Unbounded.Count
 ------------------------------------------------------------------------------
 
-procedure ParseStringsCount( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsCount( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
-  pat_val : unbounded_string;
+  patExpr : storage;
   pat_type : identifier;
 begin
   kind := natural_t;
   expect( count_t );
-  ParseFirstStringParameter( count_t, str_val, str_type );
-  ParseLastStringParameter( count_t, pat_val, pat_type, Uni_String_T );
+  ParseFirstStringParameter( count_t, strExpr, str_type );
+  ParseLastStringParameter( count_t, patExpr, pat_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( Ada.Strings.Unbounded.Count( str_val,
-           to_string( pat_val ) )'img );
+        result := storage'( to_unbounded_string( Ada.Strings.Unbounded.Count( strExpr.value,
+           to_string( patExpr.value ) )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -512,29 +512,29 @@ end ParseStringsCount;
 -- Source: Ada.Strings.Unbounded.Replace_Slice
 ------------------------------------------------------------------------------
 
-procedure ParseStringsReplaceSlice( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsReplaceSlice( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
-  low_val : unbounded_string;
+  lowExpr : storage;
   low_type : identifier;
-  hi_val : unbounded_string;
+  hiExpr : storage;
   hi_type : identifier;
-  by_val : unbounded_string;
+  byExpr : storage;
   by_type : identifier;
 begin
   kind := uni_string_t;
   expect( replace_slice_t );
-  ParseFirstStringParameter( replace_slice_t, str_val, str_type );
-  ParseNextNumericParameter( replace_slice_t, low_val, low_type, positive_t );
-  ParseNextNumericParameter( replace_slice_t, hi_val,  hi_type,  natural_t );
-  ParseLastStringParameter(  replace_slice_t, by_val,  by_type, Uni_String_T );
+  ParseFirstStringParameter( replace_slice_t, strExpr, str_type );
+  ParseNextNumericParameter( replace_slice_t, lowExpr, low_type, positive_t );
+  ParseNextNumericParameter( replace_slice_t, hiExpr,  hi_type,  natural_t );
+  ParseLastStringParameter(  replace_slice_t, byExpr,  by_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        result := Replace_Slice( str_val,
-           positive( to_numeric( low_val ) ),
-           natural( to_numeric( hi_val ) ),
-           to_string( by_val )
-        );
+        result := storage'( Replace_Slice( strExpr.value,
+           positive( to_numeric( lowExpr.value ) ),
+           natural( to_numeric( hiExpr.value ) ),
+           to_string( byExpr.value )
+        ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -549,33 +549,33 @@ end ParseStringsReplaceSlice;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsReplaceAll( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsReplaceAll( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
-  needle_val : unbounded_string;
+  needleExpr : storage;
   needle_type : identifier;
-  newstr_val : unbounded_string;
+  newstrExpr : storage;
   newstr_type : identifier;
-  sensitivity_val : unbounded_string;
+  sensitivityExpr : storage;
   sensitivity_type : identifier;
 begin
   kind := uni_string_t;
   expectAdaScript( subject => replace_all_t );
-  ParseFirstStringParameter( replace_all_t, str_val, str_type );
-  ParseNextStringParameter( replace_all_t, needle_val, needle_type );
-  ParseNextStringParameter( replace_all_t, newstr_val, newstr_type );
+  ParseFirstStringParameter( replace_all_t, strExpr, str_type );
+  ParseNextStringParameter( replace_all_t, needleExpr, needle_type );
+  ParseNextStringParameter( replace_all_t, newstrExpr, newstr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( replace_all_t, sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( replace_all_t, sensitivityExpr,  sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
-    sensitivity_val := to_unbounded_string( "1" );
+    sensitivityExpr.value := to_unbounded_string( "1" );
   end if;
   begin
      if isExecutingCommand then
-        if length( needle_val ) = 0 then
+        if length( needleExpr.value ) = 0 then
            err( +"search substring is an empty string" );
         else
-           result := replaceAll( str_val, needle_val, newstr_val, sensitivity_val = "1" );
+           result := storage'( replaceAll( strExpr.value, needleExpr.value, newstrExpr.value, sensitivityExpr.value = "1" ), noMetaLabel );
         end if;
      end if;
   exception when others =>
@@ -591,25 +591,25 @@ end ParseStringsReplaceAll;
 -- Source: Ada.Strings.Unbounded.Replace_Slice
 ------------------------------------------------------------------------------
 
-procedure ParseStringsInsert( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsInsert( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
-  before_val : unbounded_string;
+  beforeExpr : storage;
   before_type : identifier;
-  new_val : unbounded_string;
+  newExpr : storage;
   new_type : identifier;
 begin
   kind := uni_string_t;
   expect( strings_insert_t );
-  ParseFirstStringParameter( strings_insert_t, str_val, str_type );
-  ParseNextNumericParameter( strings_insert_t, before_val, before_type, positive_t );
-  ParseLastStringParameter( strings_insert_t, new_val, new_type, uni_string_T );
+  ParseFirstStringParameter( strings_insert_t, strExpr, str_type );
+  ParseNextNumericParameter( strings_insert_t, beforeExpr, before_type, positive_t );
+  ParseLastStringParameter( strings_insert_t, newExpr, new_type, uni_string_T );
   begin
      if isExecutingCommand then
-        result := Insert( str_val,
-           positive( to_numeric( before_val ) ),
-           to_string( new_val )
-        );
+        result := storage'( Insert( strExpr.value,
+           positive( to_numeric( beforeExpr.value ) ),
+           to_string( newExpr.value )
+        ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -624,25 +624,25 @@ end ParseStringsInsert;
 -- Source: Ada.Strings.Unbounded.Overwrite
 ------------------------------------------------------------------------------
 
-procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsOverwrite( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  pos_val  : unbounded_string;
+  posExpr  : storage;
   pos_type : identifier;
-  new_val  : unbounded_string;
+  newExpr  : storage;
   new_type : identifier;
 begin
   kind := uni_string_t;
   expect( overwrite_t );
-  ParseFirstStringParameter( overwrite_t, str_val, str_type );
-  ParseNextNumericParameter( overwrite_t, pos_val, pos_type, positive_t );
-  ParseLastStringParameter( overwrite_t, new_val, new_type, Uni_String_T );
+  ParseFirstStringParameter( overwrite_t, strExpr, str_type );
+  ParseNextNumericParameter( overwrite_t, posExpr, pos_type, positive_t );
+  ParseLastStringParameter( overwrite_t, newExpr, new_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        result := Overwrite( str_val,
-           positive( to_numeric( pos_val ) ),
-           to_string( new_val )
-        );
+        result := storage'( Overwrite( strExpr.value,
+           positive( to_numeric( posExpr.value ) ),
+           to_string( newExpr.value )
+        ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -657,25 +657,25 @@ end ParseStringsOverwrite;
 -- Source: Ada.Strings.Unbounded.Delete
 ------------------------------------------------------------------------------
 
-procedure ParseStringsDelete( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsDelete( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  low_val  : unbounded_string;
+  lowExpr  : storage;
   low_type : identifier;
-  hi_val   : unbounded_string;
+  hiExpr   : storage;
   hi_type  : identifier;
 begin
   kind := uni_string_t;
   expect( sdelete_t );
-  ParseFirstStringParameter( sdelete_t, str_val, str_type );
-  ParseNextNumericParameter( sdelete_t, low_val, low_type, positive_t );
-  ParseLastNumericParameter( sdelete_t, hi_val,  hi_type,  natural_t );
+  ParseFirstStringParameter( sdelete_t, strExpr, str_type );
+  ParseNextNumericParameter( sdelete_t, lowExpr, low_type, positive_t );
+  ParseLastNumericParameter( sdelete_t, hiExpr,  hi_type,  natural_t );
   if isExecutingCommand then
      begin
-        result := Delete( str_val,
-           positive( to_numeric( low_val ) ),
-           natural( to_numeric( hi_val ) )
-        );
+        result := storage'( Delete( strExpr.value,
+           positive( to_numeric( lowExpr.value ) ),
+           natural( to_numeric( hiExpr.value ) )
+        ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -690,27 +690,27 @@ end ParseStringsDelete;
 -- Source: Ada.Strings.Unbounded.Trim
 ------------------------------------------------------------------------------
 
-procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsTrim( result : out storage; kind : out identifier ) is
   use ada.strings;
-  str_val : unbounded_string;
+  strExpr : storage;
   str_type : identifier;
-  trim_end_val : unbounded_string;
+  trim_endExpr : storage;
   trim_end_type : identifier;
   the_trim_end : trim_end := both;
   has_end : boolean := false;
 begin
   kind := uni_string_t;
   expect( trim_t );
-  ParseFirstStringParameter( trim_t, str_val, str_type );
+  ParseFirstStringParameter( trim_t, strExpr, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      has_end := true;
-     ParseLastEnumParameter( trim_t, trim_end_val, trim_end_type, strings_trim_end_t );
+     ParseLastEnumParameter( trim_t, trim_endExpr, trim_end_type, strings_trim_end_t );
   else
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
      if has_end then
-        case natural( to_numeric( trim_end_val ) ) is
+        case natural( to_numeric( trim_endExpr.value ) ) is
         when 0 => the_trim_end := left;
         when 1 => the_trim_end := right;
         when 2 => the_trim_end := both;
@@ -721,7 +721,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := trim( str_val, the_trim_end );
+        result := storage'( trim( strExpr.value, the_trim_end ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -736,16 +736,16 @@ end ParseStringsTrim;
 -- Source: Ada.Strings.Unbounded.Trim
 ------------------------------------------------------------------------------
 
-procedure ParseStringsLength( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsLength( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
 begin
   kind := natural_t;
   expect( length_t );
-  ParseSingleStringParameter( length_t, str_val, str_type );
+  ParseSingleStringParameter( length_t, strExpr, str_type );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( length( str_val )'img );
+        result := storage'( to_unbounded_string( length( strExpr.value )'img ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -760,23 +760,23 @@ end ParseStringsLength;
 -- Source: Ada.Strings.Unbounded.Head
 ------------------------------------------------------------------------------
 
-procedure ParseStringsHead( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsHead( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  pad_val  : unbounded_string;
+  padExpr  : storage;
   pad_type : identifier;
   pad_char : character := ' ';
 begin
   kind := uni_string_t;
   expect( head_t );
-  ParseFirstStringParameter( head_t, str_val, str_type );
-  ParseNextNumericParameter( head_t, cnt_val, cnt_type, natural_t );
+  ParseFirstStringParameter( head_t, strExpr, str_type );
+  ParseNextNumericParameter( head_t, cntExpr, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( head_t, pad_val, pad_type, character_t );
+     ParseLastStringParameter( head_t, padExpr, pad_type, character_t );
      begin
-        pad_char := element( pad_val, 1 );
+        pad_char := element( padExpr.value, 1 );
      exception when others =>
         err_exception_raised;
      end;
@@ -785,8 +785,8 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := head( str_val, natural( to_numeric( cnt_val ) ),
-            pad_char );
+        result := storage'( head( strExpr.value, natural( to_numeric( cntExpr.value ) ),
+            pad_char ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -801,23 +801,23 @@ end ParseStringsHead;
 -- Source: Ada.Strings.Unbounded.Tail
 ------------------------------------------------------------------------------
 
-procedure ParseStringsTail( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsTail( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  pad_val  : unbounded_string;
+  padExpr  : storage;
   pad_type : identifier;
   pad_char : character := ' ';
 begin
   kind := uni_string_t;
   expect( tail_t );
-  ParseFirstStringParameter( tail_t, str_val, str_type );
-  ParseNextNumericParameter( tail_t, cnt_val, cnt_type, natural_t );
+  ParseFirstStringParameter( tail_t, strExpr, str_type );
+  ParseNextNumericParameter( tail_t, cntExpr, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( tail_t, pad_val, pad_type, character_t );
+     ParseLastStringParameter( tail_t, padExpr, pad_type, character_t );
      begin
-        pad_char := element( pad_val, 1 );
+        pad_char := element( padExpr.value, 1 );
      exception when others =>
         err_exception_raised;
      end;
@@ -826,8 +826,8 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := tail( str_val, natural( to_numeric( cnt_val ) ),
-          pad_char );
+        result := storage'( tail( strExpr.value, natural( to_numeric( cntExpr.value ) ),
+          pad_char ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -842,33 +842,33 @@ end ParseStringsTail;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsStartsWith( result : out unbounded_string; kind : out identifier ) is
-  str_val   : unbounded_string;
+procedure ParseStringsStartsWith( result : out storage; kind : out identifier ) is
+  strExpr   : storage;
   str_type  : identifier;
-  head_val  : unbounded_string;
+  headExpr  : storage;
   head_type : identifier;
-  sensitivity_val  : unbounded_string;
+  sensitivityExpr  : storage;
   sensitivity_type : identifier;
 begin
   kind := boolean_t;
   expectAdaScript( subject => starts_with_t );
-  ParseFirstStringParameter( starts_with_t, str_val, str_type );
-  ParseNextStringParameter( starts_with_t, head_val, head_type );
+  ParseFirstStringParameter( starts_with_t, strExpr, str_type );
+  ParseNextStringParameter( starts_with_t, headExpr, head_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( starts_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( starts_with_t, sensitivityExpr, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
-    sensitivity_val := to_unbounded_string( "1" );
+    sensitivityExpr.value := to_unbounded_string( "1" );
   end if;
   begin
      if isExecutingCommand then
-        if length( head_val ) = 0 then
+        if length( headExpr.value ) = 0 then
            err( +"head substring is an empty string" );
         else
-           if sensitivity_val = "1"  then
-              result := to_spar_boolean( head( str_val, length( head_val ) ) = head_val );
+           if sensitivityExpr.value = "1"  then
+              result := storage'( to_spar_boolean( head( strExpr.value, length( headExpr.value ) ) = headExpr.value ), noMetaLabel );
            else
-              result := to_spar_boolean( head( ToUpper( str_val ), length( head_val ) ) = ToUpper( head_val ) );
+              result := storage'( to_spar_boolean( head( ToUpper( strExpr.value ), length( headExpr.value ) ) = ToUpper( headExpr.value ) ), noMetaLabel );
            end if;
         end if;
      end if;
@@ -885,33 +885,37 @@ end ParseStringsStartsWith;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsEndsWith( result : out unbounded_string; kind : out identifier ) is
-  str_val   : unbounded_string;
+procedure ParseStringsEndsWith( result : out storage; kind : out identifier ) is
+  strExpr   : storage;
   str_type  : identifier;
-  tail_val  : unbounded_string;
+  tailExpr  : storage;
   tail_type : identifier;
-  sensitivity_val  : unbounded_string;
+  sensitivityExpr  : storage;
   sensitivity_type : identifier;
 begin
   kind := boolean_t;
   expectAdaScript( subject => ends_with_t );
-  ParseFirstStringParameter( ends_with_t, str_val, str_type );
-  ParseNextStringParameter( ends_with_t, tail_val, tail_type );
+  ParseFirstStringParameter( ends_with_t, strExpr, str_type );
+  ParseNextStringParameter( ends_with_t, tailExpr, tail_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( ends_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( ends_with_t, sensitivityExpr, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
-    sensitivity_val := to_unbounded_string( "1" );
+    sensitivityExpr.value := to_unbounded_string( "1" );
   end if;
   begin
      if isExecutingCommand then
-        if length( tail_val ) = 0 then
+        if length( tailExpr.value ) = 0 then
            err( +"tail substring is an empty string" );
         else
-           if sensitivity_val = "1"  then
-              result := to_spar_boolean( tail( str_val, length( tail_val ) ) = tail_val );
+           if sensitivityExpr.value = "1"  then
+              result := storage'( to_spar_boolean( tail( strExpr.value, length( tailExpr.value ) ) = tailExpr.value ), noMetaLabel );
            else
-              result := to_spar_boolean( tail( ToUpper( str_val ), length( tail_val ) ) = ToUpper( tail_val ) );
+              result := storage'(
+                 to_spar_boolean(
+                  tail( ToUpper( strExpr.value ), length( tailExpr.value ) ) = ToUpper( tailExpr.value )
+                 ),
+                 noMetaLabel );
            end if;
         end if;
      end if;
@@ -928,24 +932,24 @@ end ParseStringsEndsWith;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsField( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsField( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  del_val  : unbounded_string;
+  delExpr  : storage;
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
   kind := uni_string_t;
   expectAdaScript( subject => field_t );
-  ParseFirstStringParameter( field_t, str_val, str_type );
-  ParseNextNumericParameter( field_t, cnt_val, cnt_type, natural_t );
+  ParseFirstStringParameter( field_t, strExpr, str_type );
+  ParseNextNumericParameter( field_t, cntExpr, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( field_t, del_val, del_type, character_t );
+     ParseLastStringParameter( field_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
-          delim := element( del_val, 1 );
+          delim := element( delExpr.value, 1 );
         exception when others =>
           err_exception_raised;
         end;
@@ -955,7 +959,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := stringField( str_val, delim, natural( to_numeric( cnt_val ) ) );
+        result := storage'( stringField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -970,38 +974,38 @@ end ParseStringsField;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsCSVField( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsCSVField( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  del_val  : unbounded_string;
+  delExpr  : storage;
   del_type : identifier;
   delim    : character := ',';
-  squotes_val  : unbounded_string;
+  squotesExpr  : storage;
   squotes_type : identifier;
   squotes : boolean := false;
 begin
   kind := uni_string_t;
   expectAdaScript( subject => csv_field_t );
-  ParseFirstStringParameter( csv_field_t, str_val, str_type );
-  ParseNextNumericParameter( csv_field_t, cnt_val, cnt_type, natural_t );
+  ParseFirstStringParameter( csv_field_t, strExpr, str_type );
+  ParseNextNumericParameter( csv_field_t, cntExpr, cnt_type, natural_t );
   -- Optional delimiter
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( csv_field_t, del_val, del_type, character_t );
+     ParseNextStringParameter( csv_field_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
-          delim := element( del_val, 1 );
+          delim := element( delExpr.value, 1 );
         exception when others =>
           err_exception_raised;
         end;
      end if;
      -- Optional single quotes flag
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastEnumParameter( csv_field_t, squotes_val, squotes_type, boolean_t );
+        ParseLastEnumParameter( csv_field_t, squotesExpr, squotes_type, boolean_t );
         if isExecutingCommand then
            begin
-             squotes := to_string( squotes_val ) = "1";
+             squotes := to_string( squotesExpr.value ) = "1";
            exception when others =>
              err_exception_raised;
            end;
@@ -1014,7 +1018,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := stringCSVField( str_val, delim, natural( to_numeric( cnt_val ) ), squotes );
+        result := storage'( stringCSVField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ), squotes ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1029,20 +1033,20 @@ end ParseStringsCSVField;
 -- Source: SparForte builtin
 ------------------------------------------------------------------------------
 
-procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifier ) is
-  str_val : unbounded_string;
+procedure ParseStringsMkTemp( result : out storage; kind : out identifier ) is
+  strExpr : storage;
   str_type : identifier;
   mkstemp_result : aFileDescriptor;
   closeResult : int;
 begin
   kind := uni_string_t;
   expectAdaScript( subject => mktemp_t );
-  ParseSingleStringParameter( mktemp_t, str_val, str_type );
+  ParseSingleStringParameter( mktemp_t, strExpr, str_type );
   if isExecutingCommand then
      declare
-       LinuxPath : string := to_string( str_val ) & "XXXXXX" & ASCII.NUL;
+       LinuxPath : string := to_string( strExpr.value ) & "XXXXXX" & ASCII.NUL;
      begin
-       result := null_unbounded_string;
+       result := nullStorage;
        mkstemp( mkstemp_result, LinuxPath );
        if mkstemp_result < 0 then
           err( pl( "mkstemp failed " & OSError( C_errno ) ) );
@@ -1055,9 +1059,10 @@ begin
                 goto retry;
              end if;
           end if;
+          result.metaLabel := noMetaLabel;
           for i in aLinuxPath'range loop
               exit when LinuxPath( i ) = ASCII.NUL;
-              result := result & LinuxPath( i );
+              result.value := result.value & LinuxPath( i );
           end loop;
        end if;
      end;
@@ -1072,16 +1077,16 @@ end ParseStringsMkTemp;
 -- Source: Ada 'val attribute
 ------------------------------------------------------------------------------
 
-procedure ParseStringsVal( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsVal( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := character_t;
   expect( val_t );
-  ParseSingleNumericParameter( val_t, expr_val, expr_type, natural_t );
+  ParseSingleNumericParameter( val_t, expr, expr_type, natural_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( "" & character'val( natural( to_numeric( expr_val ) ) ) );
+       result := storage'( to_unbounded_string( "" & character'val( natural( to_numeric( expr.value ) ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1096,8 +1101,8 @@ end ParseStringsVal;
 -- Source: Ada 'image attribute
 ------------------------------------------------------------------------------
 
-procedure ParseStringsImage( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsImage( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
   temp       : unbounded_string;
   isEnum     : boolean := false;
@@ -1108,7 +1113,7 @@ begin
   -- Parse the Expression
 
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
 
   -- Determine if it's an enumerated, numeric or neither
@@ -1127,12 +1132,12 @@ begin
   begin
     if isExecutingCommand then
        if isEnum then
-          -- In newer versions of GCC Ada, can't use expr_val for both
+          -- In newer versions of GCC Ada, can't use expr for both
           -- parameters.
-          findEnumImage( expr_val, expr_type, temp );
-          expr_val := temp;
+          findEnumImage( expr.value, expr_type, temp );
+          expr.value:= temp;
        end if;
-       result := expr_val;
+       result := expr;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1147,12 +1152,12 @@ end ParseStringsImage;
 -- Source: Ada.Strings.Unbounded.To_String
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToString( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsToString( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
   baseType   : identifier;
 
-  procedure DoBase64ToString( result : out unbounded_string; expr_val : unbounded_string ) is
+  procedure DoBase64ToString( result : out storage; expr : storage ) is
     rawFile : ada.streams.stream_io.file_type;
     base64file : ada.text_io.file_type;
   begin
@@ -1162,7 +1167,7 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
     -- Barnes' documentation is a bit sketchy.  I am faking this.  There may
     -- be a cleaner and more efficient way to do this.
     ada.text_io.create( base64File );
-    ada.text_io.put( base64File, to_string( expr_val ) );
+    ada.text_io.put( base64File, to_string( expr.value ) );
     ada.text_io.reset( base64File, ada.text_io.in_file );
     ada.streams.stream_io.create( rawFile );
     Decode_Stream( From => base64File, To => rawFile  );
@@ -1171,10 +1176,11 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
        rawStream : ada.streams.stream_io.stream_access;
        ch : character;
     begin
+       result.metaLabel := noMetaLabel;
        rawStream := ada.streams.stream_io.Stream( rawFile );
        while not ada.streams.stream_io.end_of_file( rawFile ) loop
           character'read( rawStream, ch );
-          result := result & ch;
+          result.value := result.value & ch;
        end loop;
      end;
      ada.streams.stream_io.delete( rawFile );
@@ -1194,20 +1200,20 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
 begin
   kind := string_t;
   expect( to_string_t );
-  ParseSingleStringParameter( to_string_t, expr_val, expr_type );
+  ParseSingleStringParameter( to_string_t, expr, expr_type );
   baseType := getBaseType( expr_type );
   if baseType /= unbounded_string_t and baseType /= json_string_t and
      baseType /= base64_string_t then
-     err( +"unbounded_string, json_string or strings.base64_string expected" );
+     err( +"storage, json_string or strings.base64_string expected" );
   end if;
   begin
     if isExecutingCommand then
        if baseType = unbounded_string_t then
-          result := expr_val;
+          result := expr;
        elsif baseType = json_string_t then
-          DoJsonToString( result, expr_val );
+          DoJsonToString( result.value, expr.value );
        else
-          DoBase64ToString( result, expr_val );
+          DoBase64ToString( result, expr );
        end if;
     end if;
   exception when others =>
@@ -1223,16 +1229,16 @@ end ParseStringsToString;
 -- Source: Ada.Strings.Unbounded.To_Unbounded_String
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToUString( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsToUString( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := unbounded_string_t;
   expect( to_u_string_t );
-  ParseSingleStringParameter( to_u_string_t, expr_val, expr_type );
+  ParseSingleStringParameter( to_u_string_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := expr_val;
+       result := storage'( expr.value, noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1247,24 +1253,24 @@ end ParseStringsToUString;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsLookup( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsLookup( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
-  tar_val  : unbounded_string;
+  tarExpr  : storage;
   tar_type : identifier;
-  del_val  : unbounded_string;
+  delExpr  : storage;
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
   kind := uni_string_t;
   expect( lookup_t );
-  ParseFirstStringParameter( lookup_t, src_val, src_type );
-  ParseNextStringParameter( lookup_t, tar_val, tar_type );
+  ParseFirstStringParameter( lookup_t, srcExpr, src_type );
+  ParseNextStringParameter( lookup_t, tarExpr, tar_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( lookup_t, del_val, del_type, character_t );
+     ParseLastStringParameter( lookup_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
-          delim := element( del_val, 1 );
+          delim := element( delExpr.value, 1 );
         exception when others =>
           err_exception_raised;
         end;
@@ -1274,7 +1280,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        result := stringLookup( src_val, tar_val, delim );
+        result := storage'( stringLookup( srcExpr.value, tarExpr.value, delim ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1291,26 +1297,26 @@ end ParseStringsLookup;
 
 procedure ParseStringsReplace is
   src_ref  : reference;
-  tar_val  : unbounded_string;
+  tarExpr  : storage;
   tar_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  del_val  : unbounded_string;
+  delExpr  : storage;
   del_type : identifier;
   delim    : character := defaultDelimiter;
-  tempStr  : unbounded_string;
+  tempStr  : storage;
 begin
   expect( replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, Uni_String_T ) then
-     ParseNextNumericParameter( replace_t, cnt_val, cnt_type, natural_t );
-     ParseNextStringParameter( replace_t, tar_val, tar_type, Uni_String_T );
+     ParseNextNumericParameter( replace_t, cntExpr, cnt_type, natural_t );
+     ParseNextStringParameter( replace_t, tarExpr, tar_type, Uni_String_T );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastStringParameter( replace_t, del_val, del_type, character_t );
+        ParseLastStringParameter( replace_t, delExpr, del_type, character_t );
         if isExecutingCommand then
            begin
-             delim := element( del_val, 1 );
+             delim := element( delExpr.value, 1 );
            exception when others =>
              err_exception_raised;
            end;
@@ -1322,10 +1328,10 @@ begin
   begin
      if isExecutingCommand then
         getParameterValue( src_ref, tempStr );
-        replaceField( tempStr,
+        replaceField( tempStr.value,
            delim,
-           natural( to_numeric( cnt_val ) ),
-           to_string( tar_val ) );
+           natural( to_numeric( cntExpr.value ) ),
+           to_string( tarExpr.value ) );
         AssignParameter( src_ref, tempStr );
      end if;
   exception when others =>
@@ -1343,39 +1349,39 @@ end ParseStringsReplace;
 
 procedure ParseStringsCSVReplace is
   src_ref  : reference;
-  tar_val  : unbounded_string;
+  tarExpr  : storage;
   tar_type : identifier;
-  cnt_val  : unbounded_string;
+  cntExpr  : storage;
   cnt_type : identifier;
-  del_val  : unbounded_string;
+  delExpr  : storage;
   del_type : identifier;
   delim    : character := ',';
-  squotes_val  : unbounded_string;
+  squotesExpr  : storage;
   squotes_type : identifier;
   squotes : boolean := false;
-  tempStr  : unbounded_string;
+  tempStr  : storage;
 begin
   expectAdaScript( subject => csv_replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, Uni_String_t ) then
-     ParseNextNumericParameter( csv_replace_t, cnt_val, cnt_type, natural_t );
-     ParseNextStringParameter( csv_replace_t, tar_val, tar_type );
+     ParseNextNumericParameter( csv_replace_t, cntExpr, cnt_type, natural_t );
+     ParseNextStringParameter( csv_replace_t, tarExpr, tar_type );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseNextStringParameter( csv_replace_t, del_val, del_type, character_t );
+        ParseNextStringParameter( csv_replace_t, delExpr, del_type, character_t );
         if isExecutingCommand then
            begin
-             delim := element( del_val, 1 );
+             delim := element( delExpr.value, 1 );
            exception when others =>
              err_exception_raised;
            end;
         end if;
         -- Optional single quotes flag
         if token = symbol_t and identifiers( token ).value.all = "," then
-           ParseLastEnumParameter( csv_replace_t, squotes_val, squotes_type, boolean_t );
+           ParseLastEnumParameter( csv_replace_t, squotesExpr, squotes_type, boolean_t );
            if isExecutingCommand then
               begin
-                squotes := to_string( squotes_val ) = "1";
+                squotes := to_string( squotesExpr.value ) = "1";
               exception when others =>
                 err_exception_raised;
               end;
@@ -1390,10 +1396,10 @@ begin
   begin
      if isExecutingCommand then
         getParameterValue( src_ref, tempStr );
-        replaceCSVField( tempStr,
+        replaceCSVField( tempStr.value,
            delim,
-           natural( to_numeric( cnt_val ) ),
-           to_string( tar_val ),
+           natural( to_numeric( cntExpr.value ) ),
+           to_string( tarExpr.value ),
            squotes );
         assignParameter( src_ref, tempStr );
      end if;
@@ -1410,15 +1416,15 @@ end ParseStringsCSVReplace;
 -- Source: Ada.Characters.Handling.To_Upper
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToUpper( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsToUpper( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
 begin
   expect( to_upper_t );
-  ParseSingleStringParameter( to_upper_t, src_val, src_type );
+  ParseSingleStringParameter( to_upper_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToUpper( src_val );
+     result := storage'( ToUpper( srcExpr.value ), noMetaLabel );
   end if;
 end ParseStringsToUpper;
 
@@ -1430,15 +1436,15 @@ end ParseStringsToUpper;
 -- Source: Ada.Characters.Handling.To_Lower
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToLower( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsToLower( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
 begin
   expect( to_lower_t );
-  ParseSingleStringParameter( to_lower_t, src_val, src_type );
+  ParseSingleStringParameter( to_lower_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToLower( src_val );
+     result := storage'( ToLower( srcExpr.value ), noMetaLabel );
   end if;
 end ParseStringsToLower;
 
@@ -1450,15 +1456,15 @@ end ParseStringsToLower;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToProper( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsToProper( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
 begin
   expect( to_proper_t );
-  ParseSingleStringParameter( to_proper_t, src_val, src_type );
+  ParseSingleStringParameter( to_proper_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToProper( src_val );
+     result := storage'( ToProper( srcExpr.value ), noMetaLabel );
   end if;
 end ParseStringsToProper;
 
@@ -1470,15 +1476,15 @@ end ParseStringsToProper;
 -- Source: Ada.Characters.Handling.To_Basic
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToBasic( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsToBasic( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
 begin
   expect( to_basic_t );
-  ParseSingleStringParameter( to_basic_t, src_val, src_type );
+  ParseSingleStringParameter( to_basic_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToBasic( src_val );
+     result := storage'( ToBasic( srcExpr.value ), noMetaLabel );
   end if;
 end ParseStringsToBasic;
 
@@ -1490,16 +1496,16 @@ end ParseStringsToBasic;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToEscaped( result : out unbounded_string; kind : out identifier ) is
-  src_val  : unbounded_string;
+procedure ParseStringsToEscaped( result : out storage; kind : out identifier ) is
+  srcExpr  : storage;
   src_type : identifier;
 begin
   expectAdaScript( subject => to_escaped_t );
-  ParseSingleStringParameter( to_escaped_t, src_val, src_type );
+  ParseSingleStringParameter( to_escaped_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
      begin
-        result := ToEscaped( src_val );
+        result := storage'( ToEscaped( srcExpr.value ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -1515,24 +1521,24 @@ end ParseStringsToEscaped;
 ------------------------------------------------------------------------------
 
 procedure ParseStringsSplit is
-  src_val  : unbounded_string;
+  srcExpr  : storage;
   src_type : identifier;
   left_ref : reference;
   right_ref: reference;
-  field_val: unbounded_string;
+  fieldExpr: storage;
   field_type : identifier;
-  leftStr  : unbounded_string;
-  rightStr : unbounded_string;
+  leftStr  : storage;
+  rightStr : storage;
 begin
   expectAdaScript( subject => split_t );
-  ParseFirstStringParameter( split_t, src_val, src_type );
+  ParseFirstStringParameter( split_t, srcExpr, src_type );
   ParseNextOutParameter( split_t, left_ref, Uni_String_T );
   ParseNextOutParameter( split_t, right_ref, Uni_String_T );
-  ParseLastNumericParameter( split_t, field_val, field_type, natural_t );
+  ParseLastNumericParameter( split_t, fieldExpr, field_type, natural_t );
   begin
      if isExecutingCommand then
-        split( src_val, leftStr, rightStr,
-               natural( to_numeric( field_val ) ) );
+        split( srcExpr.value, leftStr.value, rightStr.value,
+               natural( to_numeric( fieldExpr.value ) ) );
         assignParameter( left_ref, leftStr );
         assignParameter( right_ref, rightStr );
      end if;
@@ -1549,16 +1555,16 @@ end ParseStringsSplit;
 -- Source: Ada.Characters.Handling.Is_Control (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsControl( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsControl( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_control_t );
-  ParseSingleStringParameter( is_control_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_control_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_control( expr_val ) );
+       result := storage'( to_spar_boolean( is_control( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1573,16 +1579,16 @@ end ParseStringsIsControl;
 -- Source: Ada.Characters.Handling.Is_Graphic (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsGraphic( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsGraphic( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_graphic_t );
-  ParseSingleStringParameter( is_graphic_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_graphic_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_graphic( expr_val ) );
+       result := storage'( to_spar_boolean( is_graphic( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1597,16 +1603,16 @@ end ParseStringsIsGraphic;
 -- Source: Ada.Characters.Handling.Is_Letter (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsLetter( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsLetter( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_letter_t );
-  ParseSingleStringParameter( is_letter_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_letter_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_letter( expr_val ) );
+       result := storage'( to_spar_boolean( is_letter( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1621,16 +1627,16 @@ end ParseStringsIsLetter;
 -- Source: Ada.Characters.Handling.Is_Lower (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsLower( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsLower( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_lower_t );
-  ParseSingleStringParameter( is_lower_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_lower_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_lower( expr_val ) );
+       result := storage'( to_spar_boolean( is_lower( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1645,16 +1651,16 @@ end ParseStringsIsLower;
 -- Source: Ada.Characters.Handling.Is_Upper (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsUpper( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsUpper( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_upper_t );
-  ParseSingleStringParameter( is_upper_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_upper_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_upper( expr_val ) );
+       result := storage'( to_spar_boolean( is_upper( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1669,16 +1675,16 @@ end ParseStringsIsUpper;
 -- Source: Ada.Characters.Handling.Is_Basic (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsBasic( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsBasic( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_basic_t );
-  ParseSingleStringParameter( is_basic_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_basic_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_basic( expr_val ) );
+       result := storage'( to_spar_boolean( is_basic( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1693,16 +1699,16 @@ end ParseStringsIsBasic;
 -- Source: Ada.Characters.Handling.Is_Digit (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsDigit( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsDigit( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_digit_t );
-  ParseSingleStringParameter( is_digit_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_digit_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_digit( expr_val ) );
+       result := storage'( to_spar_boolean( is_digit( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1717,16 +1723,16 @@ end ParseStringsIsDigit;
 -- Source: Ada.Characters.Handling.Is_Hexadecimal_Digit (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsHexDigit( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsHexDigit( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_hex_digit_t );
-  ParseSingleStringParameter( is_hex_digit_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_hex_digit_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_hexadecimal_digit( expr_val ) );
+       result := storage'( to_spar_boolean( is_hexadecimal_digit( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1741,16 +1747,16 @@ end ParseStringsIsHexDigit;
 -- Source: Ada.Characters.Handling.Is_Alphanumeric (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsAlphanumeric( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsAlphanumeric( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_alphanumeric_t );
-  ParseSingleStringParameter( is_alphanumeric_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_alphanumeric_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_alphanumeric( expr_val ) );
+       result := storage'( to_spar_boolean( is_alphanumeric( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1765,16 +1771,16 @@ end ParseStringsIsAlphanumeric;
 -- Source: Ada.Characters.Handling.Is_Special (except for string)
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsSpecial( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsSpecial( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_special_t );
-  ParseSingleStringParameter( is_special_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_special_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_special( expr_val ) );
+       result := storage'( to_spar_boolean( is_special( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1789,16 +1795,16 @@ end ParseStringsIsSpecial;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsSlashedDate( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsSlashedDate( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expectAdaScript( subject => is_slashed_date_t );
-  ParseSingleStringParameter( is_slashed_date_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_slashed_date_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_date( expr_val ) );
+       result := storage'( to_spar_boolean( is_date( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1813,16 +1819,16 @@ end ParseStringsIsSlashedDate;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsFixed( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsIsFixed( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := boolean_t;
   expect( is_fixed_t );
-  ParseSingleStringParameter( is_fixed_t, expr_val, expr_type );
+  ParseSingleStringParameter( is_fixed_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( is_fixed( expr_val ) );
+       result := storage'( to_spar_boolean( is_fixed( expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1837,15 +1843,15 @@ end ParseStringsIsFixed;
 -- Source: base64.encode_stream
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToBase64( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsToBase64( result : out storage; kind : out identifier ) is
   rawFile : ada.streams.stream_io.file_type;
   base64file : ada.text_io.file_type;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
 begin
   kind := base64_string_t;
   expectAdaScript( subject => to_base64_t );
-  ParseSingleStringParameter( to_base64_t, expr_val, expr_type );
+  ParseSingleStringParameter( to_base64_t, expr, expr_type );
   begin
     if isExecutingCommand then
        -- The AdaPower base64 package requires streams and/or files.  It
@@ -1856,7 +1862,7 @@ begin
        ada.streams.stream_io.create( rawFile );
        declare
           rawStream : ada.streams.stream_io.stream_access;
-          s : constant string := to_string( expr_val );
+          s : constant string := to_string( expr.value );
        begin
           rawStream := ada.streams.stream_io.Stream( rawFile );
           string'write( rawStream, s );
@@ -1866,8 +1872,9 @@ begin
        Encode_Stream( From => rawFile, To => base64File  );
        ada.text_io.reset( base64File, ada.text_io.in_file );
        -- TODO: loop
+       result.metaLabel := noMetaLabel;
        while not ada.text_io.end_of_file( base64File ) loop
-          result := result & get_line( base64File );
+          result.value := result.value & get_line( base64File );
        end loop;
        ada.streams.stream_io.delete( rawFile );
        ada.text_io.delete( base64file );
@@ -1893,19 +1900,19 @@ end ParseStringsToBase64;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identifier ) is
-  expr1_val   : unbounded_string;
+procedure ParseStringsIsTypoOf( result : out storage; kind : out identifier ) is
+  expr1Expr   : storage;
   expr1_type  : identifier;
-  expr2_val   : unbounded_string;
+  expr2Expr   : storage;
   expr2_type  : identifier;
 begin
   kind := boolean_t;
   expectAdaScript( subject => is_typo_of_t );
-  ParseFirstStringParameter( is_typo_of_t, expr1_val, expr1_type );
-  ParseLastStringParameter( is_typo_of_t, expr2_val, expr2_type );
+  ParseFirstStringParameter( is_typo_of_t, expr1Expr, expr1_type );
+  ParseLastStringParameter( is_typo_of_t, expr2Expr, expr2_type );
   begin
     if isExecutingCommand then
-       result := to_spar_boolean( typoOf( expr1_val, expr2_val ) );
+       result := storage'( to_spar_boolean( typoOf( expr1Expr.value, expr2Expr.value ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1920,26 +1927,26 @@ end ParseStringsIsTypoOf;
 -- Source: Ada.Strings.Unbounded.Unbounded_Slice
 ------------------------------------------------------------------------------
 
-procedure ParseStringsUnboundedSlice( result : out unbounded_string; kind : out identifier ) is
-  str_val  : unbounded_string;
+procedure ParseStringsUnboundedSlice( result : out storage; kind : out identifier ) is
+  strExpr  : storage;
   str_type : identifier;
-  low_val  : unbounded_string;
+  lowExpr  : storage;
   low_type : identifier;
-  hi_val   : unbounded_string;
+  hiExpr   : storage;
   hi_type  : identifier;
 begin
   kind := unbounded_string_t;
   expect( unbounded_slice_t );
-  ParseFirstStringParameter( unbounded_slice_t, str_val, str_type );
-  ParseNextNumericParameter( unbounded_slice_t, low_val, low_type, positive_t );
-  ParseLastNumericParameter( unbounded_slice_t, hi_val,  hi_type,  natural_t );
+  ParseFirstStringParameter( unbounded_slice_t, strExpr, str_type );
+  ParseNextNumericParameter( unbounded_slice_t, lowExpr, low_type, positive_t );
+  ParseLastNumericParameter( unbounded_slice_t, hiExpr,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string(
-           Slice( str_val,
-             positive( to_numeric( low_val ) ),
-             natural( to_numeric( hi_val ) )
-           ) );
+        result := storage'( to_unbounded_string(
+           Slice( strExpr.value,
+             positive( to_numeric( lowExpr.value ) ),
+             natural( to_numeric( hiExpr.value ) )
+           ) ), noMetaLabel );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1951,24 +1958,24 @@ end ParseStringsUnboundedSlice;
 --  PARSE STRINGS SET UNBOUNDED STRING
 --
 -- Syntax: strings.set_unbounded_string( u, s );
--- Source: ada.strings.unbounded.set_unbounded_string
+-- Source: ada.strings.unbounded.set_storage
 -- Ada 2005
 ------------------------------------------------------------------------------
 
 procedure ParseStringsSetUnboundedString is
   src_ref  : reference;
-  str_val  : unbounded_string;
+  strExpr  : storage;
   str_type : identifier;
 begin
   expect( set_unbounded_string_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, unbounded_string_t ) then
-     ParseLastStringParameter( set_unbounded_string_t, str_val, str_type );
+     ParseLastStringParameter( set_unbounded_string_t, strExpr, str_type );
   end if;
   begin
      if isExecutingCommand then
-        AssignParameter( src_ref, str_val );
+        AssignParameter( src_ref, strExpr );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1983,16 +1990,16 @@ end ParseStringsSetUnboundedString;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToJSON( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsToJSON( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := json_string_t;
   expectAdaScript( subject => strings_to_json_t );
-  ParseSingleStringParameter( strings_to_json_t, expr_val, expr_type );
+  ParseSingleStringParameter( strings_to_json_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       result := DoStringToJSON( expr_val  );
+       result := storage'( DoStringToJSON( expr.value ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
@@ -2007,7 +2014,7 @@ end ParseStringsToJSON;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsPerlMatch( result : out unbounded_string; kind : out identifier ) is
+procedure ParseStringsPerlMatch( result : out storage; kind : out identifier ) is
 begin
   parser_strings_pcre.ParseStringsPerlMatch( result, kind );
 end ParseStringsPerlMatch;
@@ -2020,31 +2027,31 @@ end ParseStringsPerlMatch;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out identifier ) is
-  expr_val   : unbounded_string;
+procedure ParseStringsToHexDigits( result : out storage; kind : out identifier ) is
+  expr   : storage;
   expr_type  : identifier;
 begin
   kind := string_t;
   expectAdaScript( subject => to_hex_digits_t );
-  ParseSingleNumericParameter( to_hex_digits_t, expr_val, expr_type, natural_t );
+  ParseSingleNumericParameter( to_hex_digits_t, expr, expr_type, natural_t );
   if baseTypesOK( expr_type, natural_t ) then
      declare
-       expr  : natural;
+       exprAsNum  : natural;
        digit : natural;
      begin
        if isExecutingCommand then
-          expr  := natural'value( to_string( expr_val ) );
-          if expr = 0 then
-             result := to_unbounded_string( "0" );
+          exprAsNum  := natural'value( to_string( expr.value ) );
+          if exprAsNum = 0 then
+             result := storage'( to_unbounded_string( "0" ), noMetaLabel );
           else
-             while expr > 0 loop
-                digit := expr mod 16;
+             while exprAsNum > 0 loop
+                digit := exprAsNum mod 16;
                 if digit < 10 then
-                   result := character'val( 48 + digit ) & result;
+                   result := storage'( character'val( 48 + digit ) & result.value, noMetaLabel );
                 else
-                   result := character'val( 65 + digit - 10 ) & result;
+                   result := storage'( character'val( 65 + digit - 10 ) & result.value, noMetaLabel );
                 end if;
-                expr  := expr / 16;
+                exprAsNum  := exprAsNum / 16;
              end loop;
           end if;
        end if;
@@ -2062,20 +2069,20 @@ end ParseStringsToHexDigits;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsLevenshtein( result : out unbounded_string; kind : out identifier ) is
-   str1_val  : unbounded_string;
+procedure ParseStringsLevenshtein( result : out storage; kind : out identifier ) is
+   str1Expr  : storage;
    str1_type : identifier;
-   str2_val  : unbounded_string;
+   str2Expr  : storage;
    str2_type : identifier;
 begin
   kind := natural_t;
   expectAdaScript( subject => levenshtein_t );
-  ParseFirstStringParameter( levenshtein_t, str1_val, str1_type );
-  ParseLastStringParameter( levenshtein_t, str2_val, str2_type );
+  ParseFirstStringParameter( levenshtein_t, str1Expr, str1_type );
+  ParseLastStringParameter( levenshtein_t, str2Expr, str2_type );
   if baseTypesOK( str1_type, str2_type ) then
      if isExecutingCommand then
         begin
-           result := to_unbounded_string( natural'image( Levenshtein_Distance( to_string( str1_val ), to_string( str2_val ) ) ) );
+           result := storage'( to_unbounded_string( natural'image( Levenshtein_Distance( to_string( str1Expr.value ), to_string( str2Expr.value ) ) ) ), noMetaLabel );
         exception when others =>
            err_exception_raised;
         end;
@@ -2091,16 +2098,16 @@ end ParseStringsLevenshtein;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsSoundex( result : out unbounded_string; kind : out identifier ) is
-   str_val  : unbounded_string;
+procedure ParseStringsSoundex( result : out storage; kind : out identifier ) is
+   strExpr  : storage;
    str_type : identifier;
 begin
   kind := string_t;
   expectAdaScript( subject => soundex_t );
-  ParseSingleStringParameter( soundex_t, str_val, str_type );
+  ParseSingleStringParameter( soundex_t, strExpr, str_type );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( Soundex( to_string( str_val ) ) );
+        result := storage'( to_unbounded_string( Soundex( to_string( strExpr.value ) ) ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -2115,16 +2122,16 @@ end ParseStringsSoundex;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsWordCount( result : out unbounded_string; kind : out identifier ) is
-   str_val  : unbounded_string;
+procedure ParseStringsWordCount( result : out storage; kind : out identifier ) is
+   strExpr  : storage;
    str_type : identifier;
 begin
   kind := natural_t;
   expectAdaScript( subject => word_count_t );
-  ParseSingleStringParameter( word_count_t, str_val, str_type );
+  ParseSingleStringParameter( word_count_t, strExpr, str_type );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( WordCount( str_val )'img );
+        result := storage'( to_unbounded_string( WordCount( strExpr.value )'img ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -2139,59 +2146,59 @@ end ParseStringsWordCount;
 -- Source: N/A
 ------------------------------------------------------------------------------
 
-procedure ParseStringsCompare( result : out unbounded_string; kind : out identifier ) is
-  first_val  : unbounded_string;
+procedure ParseStringsCompare( result : out storage; kind : out identifier ) is
+  firstExpr  : storage;
   first_type : identifier;
-  last_val   : unbounded_string;
+  lastExpr   : storage;
   last_type  : identifier;
-  sensitivity_val  : unbounded_string;
+  sensitivityExpr  : storage;
   sensitivity_type : identifier;
-  len_val    : unbounded_string;
+  lenExpr    : storage;
   len_type   : identifier;
   compare_len : natural;
 begin
   kind := integer_t;
   compare_len := natural'last;
   expectAdaScript( subject => compare_t );
-  ParseFirstStringParameter( compare_t, first_val, first_type );
-  ParseNextStringParameter( compare_t, last_val, last_type );
+  ParseFirstStringParameter( compare_t, firstExpr, first_type );
+  ParseNextStringParameter( compare_t, lastExpr, last_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextEnumParameter( compare_t, sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+     ParseNextEnumParameter( compare_t, sensitivityExpr,  sensitivity_type, strings_sensitivity_t );
   else
-    sensitivity_val := to_unbounded_string( "1" );
+    sensitivityExpr.value := to_unbounded_string( "1" );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( compare_t, len_val, len_type, natural_t );
+     ParseLastNumericParameter( compare_t, lenExpr, len_type, natural_t );
   else
     expect( symbol_t, ")" );
     compare_len := natural'last;
   end if;
   if isExecutingCommand then
      -- get the length, if there is one
-     if len_val /= null_unbounded_string then
-        compare_len := natural( to_numeric( len_val ) );
+     if lenExpr.value /= null_unbounded_string then
+        compare_len := natural( to_numeric( lenExpr.value ) );
      end if;
      -- If there is a maximum length, reduce the two strings to that length
      if compare_len < natural'last then
-        if length( first_val ) > compare_len then
-           first_val := head( first_val, compare_len );
+        if length( firstExpr.value ) > compare_len then
+           firstExpr.value := head( firstExpr.value, compare_len );
         end if;
-        if length( last_val ) > compare_len then
-           last_val := head( last_val, compare_len );
+        if length( lastExpr.value ) > compare_len then
+           lastExpr.value := head( lastExpr.value, compare_len );
         end if;
      end if;
      -- if the test is insensitive, convert the strings to lower case
-     if sensitivity_val = to_unbounded_string( "1" ) then
-        first_val := ToLower( first_val );
-        last_val := ToLower( last_val );
+     if sensitivityExpr.value = to_unbounded_string( "1" ) then
+        firstExpr.value := ToLower( firstExpr.value );
+        lastExpr.value := ToLower( lastExpr.value );
      end if;
      -- The compare is less than, greater than or equals test
-     if first_val < last_val then
-        result := to_unbounded_string( "-1" );
-     elsif first_val > last_val then
-        result := to_unbounded_string( " 1" );
+     if firstExpr.value < lastExpr.value then
+        result := storage'( to_unbounded_string( "-1" ), noMetaLabel );
+     elsif firstExpr.value > lastExpr.value then
+        result := storage'( to_unbounded_string( " 1" ), noMetaLabel );
      else
-        result := to_unbounded_string( " 0" );
+        result := storage'( to_unbounded_string( " 0" ), noMetaLabel );
      end if;
   end if;
 end ParseStringsCompare;

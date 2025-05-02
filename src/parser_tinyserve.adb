@@ -96,7 +96,7 @@ begin
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
+     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
   end if;
 end ParseTSNewSocketServer;
 
@@ -104,21 +104,21 @@ procedure ParseTSStartUp is
   -- Syntax: tinyserve.startup( server, host, port, recv, send, queue, linger
   -- secs, usecs );
   serverId   : identifier;
-  hostExpr   : unbounded_string;
+  hostExpr   : storage;
   hostKind   : identifier;
-  portExpr   : unbounded_string;
+  portExpr   : storage;
   portKind   : identifier;
-  recvExpr   : unbounded_string;
+  recvExpr   : storage;
   recvKind   : identifier;
-  sendExpr   : unbounded_string;
+  sendExpr   : storage;
   sendKind   : identifier;
-  queueExpr  : unbounded_string;
+  queueExpr  : storage;
   queueKind  : identifier;
-  lingerExpr : unbounded_string;
+  lingerExpr : storage;
   lingerKind : identifier;
-  secsExpr   : unbounded_string;
+  secsExpr   : storage;
   secsKind   : identifier;
-  usecsExpr  : unbounded_string;
+  usecsExpr  : storage;
   usecsKind  : identifier;
   server     : resPtr := null;
 begin
@@ -144,14 +144,14 @@ begin
            -- TODO: number conversion could throw exception
            pegasock.tinyserve.startupTinyServe(
              socket_data => server.tinyserve_server,
-             host => to_string( hostExpr ),
-             port => integer( to_numeric( portExpr ) ),
-             min_recv_buffer_size => integer( to_numeric( recvExpr ) ),
-             min_send_buffer_size => integer( to_numeric( sendExpr ) ),
-             socket_queue_length => integer( to_numeric( queueExpr ) ),
-             socket_linger_seconds => integer( to_numeric( lingerExpr ) ),
-             timeout_secs => integer( to_numeric( secsExpr ) ),
-             timeout_usecs => integer( to_numeric( usecsExpr ) )
+             host => to_string( hostExpr.value ),
+             port => integer( to_numeric( portExpr.value ) ),
+             min_recv_buffer_size => integer( to_numeric( recvExpr.value ) ),
+             min_send_buffer_size => integer( to_numeric( sendExpr.value ) ),
+             socket_queue_length => integer( to_numeric( queueExpr.value ) ),
+             socket_linger_seconds => integer( to_numeric( lingerExpr.value ) ),
+             timeout_secs => integer( to_numeric( secsExpr.value ) ),
+             timeout_usecs => integer( to_numeric( usecsExpr.value ) )
         );
         end if;
      end if;
@@ -186,7 +186,7 @@ begin
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      manageConnections( server.tinyserve_server, client );
-     assignParameter( clientRef, to_unbounded_string( client'img ) );
+     assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
   end if;
 end ParseTSManageConnections;
 
@@ -204,7 +204,7 @@ begin
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then
         getNextClient( server.tinyserve_server, client );
-        assignParameter( clientRef, to_unbounded_string( client'img ) );
+        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
      end if;
   end if;
 end ParseTSGetNextClient;
@@ -223,12 +223,12 @@ begin
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then
         getListenerSocket( server.tinyserve_server, client );
-        assignParameter( clientRef, to_unbounded_string( client'img ) );
+        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
      end if;
   end if;
 end ParseTSGetListenerSocket;
 
-procedure ParseTSCountClients( result : out unbounded_string; kind : out identifier ) is
+procedure ParseTSCountClients( result : out storage; kind : out identifier ) is
   -- Syntax: count := tinyserve.count_clients( server )
   serverId   : identifier;
   server     : resPtr := null;
@@ -241,26 +241,26 @@ begin
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then
         clients := countClients( server.tinyserve_server );
-        result := to_unbounded_string( clients'img );
+        result := storage'( to_unbounded_string( clients'img ), noMetaLabel );
      end if;
   end if;
 end ParseTSCountClients;
 
-procedure ParseTSGetFDSetSize( result : out unbounded_string; kind : out identifier ) is
+procedure ParseTSGetFDSetSize( result : out storage; kind : out identifier ) is
   fdsize : interfaces.C.int;
 begin
   kind := integer_t;
   expect( tinyserve_get_fdset_size_t );
   if isExecutingCommand then
      fdsize := getFDSetSize;
-     result := to_unbounded_string( fdsize'img );
+     result := storage'( to_unbounded_string( fdsize'img ), nometaLabel );
   end if;
 end ParseTSGetFDSetSize;
 
-procedure ParseTSClientMightNotBlockOnWrite( result : out unbounded_string; kind : out identifier ) is
+procedure ParseTSClientMightNotBlockOnWrite( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
-  result := null_unbounded_string;
+  result := nullStorage;
 end ParseTSClientMightNotBlockOnWrite;
 
 procedure ParseTSEstablish is
@@ -268,10 +268,10 @@ begin
   null;
 end ParseTSEstablish;
 
-procedure ParseTSIsTimeout( result : out unbounded_string; kind : out identifier ) is
+procedure ParseTSIsTimeout( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
-  result := null_unbounded_string;
+  result := nullStorage;
 end ParseTSIsTimeout;
 
 procedure ParseTSClose is

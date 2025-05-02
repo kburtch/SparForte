@@ -493,7 +493,7 @@ type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constantUsage 
 -- with null storage.
 ------------------------------------------------------------------------------
 
-noMetaLevel     : constant identifier := identifier'first;
+noMetaLabel     : constant identifier := identifier'first;
 
 ------------------------------------------------------------------------------
 --
@@ -507,7 +507,8 @@ type storage is record
     value      : aliased unbounded_string;
     metaLabel  : identifier;  -- TODO: just one for now
 end record;
-nullStorage : constant storage := ( null_unbounded_string, noMetaLevel );
+nullStorage : constant storage := ( null_unbounded_string, noMetaLabel );
+undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel );
 
 -- A storage for a variable is an array of storage elements, possibly with
 -- zero or only one element.
@@ -646,7 +647,7 @@ err_exception    : declaration;           -- the exception else eof_t for none
 -- The run-time security level.
 ------------------------------------------------------------------------------
 
-metaLevel       : identifier := noMetaLevel;             -- the security level
+metaLevel       : identifier := noMetaLabel;             -- the security level
 
 ------------------------------------------------------------------------------
 -- Symbol Table

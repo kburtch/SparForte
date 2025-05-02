@@ -490,10 +490,10 @@ end ParseCopiesPart;
 -- Syntax: assign-part = " := default_value_expression"
 -----------------------------------------------------------------------------
 
-procedure ParseAssignPart( expr_se : out storage; expr_type : out identifier ) is
+procedure ParseAssignPart( expr : out storage; expr_type : out identifier ) is
 begin
   expect( symbol_t, ":=" );
-  ParseExpression( expr_se, expr_type );
+  ParseExpression( expr, expr_type );
 end ParseAssignPart;
 
 
@@ -511,7 +511,7 @@ end ParseAssignPart;
 
 procedure ParseArrayAssignPart( array_id : identifier ) is
 -- procedure ParseArrayAssignPart( array_id : identifier; array_id2: arrayID ) is
-  expr_se : storage;
+  expr       : storage;
   expr_type  : identifier;
   arrayIndex : long_integer;
   lastIndex  : long_integer;
@@ -530,10 +530,10 @@ begin
         lastIndex := identifiers( base_type ).lastBound;
      end if;
      loop                                                      -- read values
-       ParseExpression( expr_se, expr_type );               -- next element
+       ParseExpression( expr, expr_type );               -- next element
        if isExecutingCommand then                              -- not on synchk
              begin
-               identifiers( array_id ).astorage( arrayIndex ) := expr_se;
+               identifiers( array_id ).astorage( arrayIndex ) := expr;
              exception when CONSTRAINT_ERROR =>
                err( contextNotes => pl( "assigning the array values" ),
                   subjectNotes => em( "array position" & arrayIndex'img ),
@@ -658,13 +658,13 @@ end ParseArrayAssignPart;
 procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
   -- array_id    : arrayID;           -- array table index for array variable
   -- type_id     : arrayID;           -- array table index for anon array type
-  ab1_se      : storage;    -- first array bound
-  kind1       : identifier;        -- type of first array bound
-  ab2_se      : storage;    -- last array bound
-  kind2       : identifier;        -- type of last array bound
-  elementType : identifier;        -- array elements type
-  elementBaseType : identifier;        -- base type of array elements type
-  anonType    : identifier := eof_t;   -- identifier for anonymous array type
+  ab1Expr     : storage;              -- first array bound
+  kind1       : identifier;           -- type of first array bound
+  ab2Expr     : storage;              -- last array bound
+  kind2       : identifier;           -- type of last array bound
+  elementType : identifier;           -- array elements type
+  elementBaseType : identifier;       -- base type of array elements type
+  anonType    : identifier := eof_t;  -- identifier for anonymous array type
   b : boolean;
 begin
   -- To create an anonymous array, we have to add a fake array type
@@ -675,7 +675,7 @@ begin
      contextNotes => +"in the anonymous array declaration",
      subjectNotes => +"the start of the index range"
   );
-  ParseExpression( ab1_se, kind1 );                          -- low bound
+  ParseExpression( ab1Expr, kind1 );                          -- low bound
   -- should really be a constant expression but we can't handle that
   if getUniType( kind1 ) = uni_string_t then                 -- must be scalar
      err( contextNotes => +"in the anonymous array declaration",
@@ -707,13 +707,13 @@ begin
         contextNotes => +"in the anonymous array declaration",
         subjectNotes => +"the index range"
      );
-     ParseExpression( ab2_se, kind2 );                            -- high bound
+     ParseExpression( ab2Expr, kind2 );                            -- high bound
      if token = symbol_t and identifiers( token ).value.all = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
-           if ab1_se.value = null_unbounded_string then
+           if ab1Expr.value = null_unbounded_string then
               err( contextNotes => +"in the anonymous array declaration",
                    subjectNotes => em( "the low bound of the array index range" ),
                    reason => em( "has no value" ),
@@ -722,7 +722,7 @@ begin
                    seeAlso => docArrays
               );
 
-           elsif ab2_se.value = null_unbounded_string then
+           elsif ab2Expr.value = null_unbounded_string then
               err( contextNotes => +"in the anonymous array declaration",
                    subjectNotes => em( "the high bound of the array index range" ),
                    reason => em( "has no value" ),
@@ -730,9 +730,9 @@ begin
                    remedy => +"a numeric variable was not assigned a value",
                    seeAlso => docArrays
               );
-           elsif to_numeric( ab1_se.value ) > to_numeric( ab2_se.value ) then    -- bound backwd?
-              if long_integer( to_numeric( ab1_se.value ) ) /= 1 and    -- only 1..0
-                 long_integer( to_numeric( ab2_se.value) ) /= 0 then   -- allowed
+           elsif to_numeric( ab1Expr.value ) > to_numeric( ab2Expr.value ) then    -- bound backwd?
+              if long_integer( to_numeric( ab1Expr.value ) ) /= 1 and    -- only 1..0
+                 long_integer( to_numeric( ab2Expr.value) ) /= 0 then   -- allowed
                  err( contextNotes => +"in the anonymous array declaration",
                       subjectNotes => em( "the low bound of the array index range" ),
                       reason => em( "is greater than" ),
@@ -792,8 +792,8 @@ begin
         if type_checks_done or else class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            if isExecutingCommand and not syntax_check then
               identifiers( anonType ).value.all := null_unbounded_string;
-              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1_se.value ) );
-              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2_se.value ) );
+              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1Expr.value ) );
+              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2Expr.value ) );
               identifiers( anonType ).genKind    := kind1;
            end if;
         end if;
@@ -807,8 +807,8 @@ begin
 
   if isExecutingCommand then
      identifiers( id ).value.all := null_unbounded_string;
-     identifiers( id ).astorage := findStorage( long_integer( to_numeric( ab1_se.value ) ),
-        long_integer( to_numeric( ab2_se.value ) ) );
+     identifiers( id ).astorage := findStorage( long_integer( to_numeric( ab1Expr.value ) ),
+        long_integer( to_numeric( ab2Expr.value ) ) );
      identifiers( id ).genKind := kind1;
   end if;
 
@@ -942,11 +942,11 @@ end ParseArrayDeclaration;
 -----------------------------------------------------------------------------
 
 procedure ParseRecordAssignPart( id : identifier; recType : identifier ) is
-  field_no : integer;
-  expr_se    : storage;
-  expr_type  : identifier;
-  found      : boolean;
-  expected_fields : integer;
+  field_no         : integer;
+  expr             : storage;
+  expr_type        : identifier;
+  found            : boolean;
+  expected_fields  : integer;
   second_record_id : identifier;
 begin
 --put_line( "REC ASSIGN PART " & to_string( identifiers( id ).name ) ); -- DEBUG
@@ -960,7 +960,7 @@ begin
        expected_fields := 0;
      end;
      loop                                                      -- read values
-       ParseExpression( expr_se, expr_type );                  -- next element
+       ParseExpression( expr, expr_type );                  -- next element
        found := false;
        for j in 1..identifiers_top-1 loop
            if identifiers( j ).field_of = recType then
@@ -997,11 +997,11 @@ begin
                     else
                        if type_checks_done or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
-                             identifiers( field_t ).value.all := expr_se.value;
+                             identifiers( field_t ).value.all := expr.value;
                              if trace then
                                 put_trace(
                                   to_string( fieldName ) & " := " &
-                                  toSecureData( to_string( toEscaped( expr_se.value) ) ) );
+                                  toSecureData( to_string( toEscaped( expr.value) ) ) );
                              end if;
                           end if;
                        end if;
@@ -1298,8 +1298,8 @@ end ParseRecordDeclaration;
 
 procedure ParseExceptionDeclarationPart( id : in out identifier ) is
   var_name : unbounded_string;
-  default_message_se : storage;
-  exception_status_se : storage;
+  defaultMessageExpr : storage;
+  exceptionStatusExpr : storage;
   exception_status_code : anExceptionStatusCode := 1;
   messageType : identifier;
   statusType  : identifier;
@@ -1317,10 +1317,10 @@ begin
               seeAlso => docSubprograms
          );
       end if;
-      ParseExpression( default_message_se, messageType );
+      ParseExpression( defaultMessageExpr, messageType );
       if type_checks_done or else uniTypesOK( messageType, uni_string_t ) then
          expect( use_t );
-         ParseExpression( exception_status_se, statusType );
+         ParseExpression( exceptionStatusExpr, statusType );
          if type_checks_done or else baseTypesOK( statusType, natural_t ) then
             null;
          end if;
@@ -1328,11 +1328,11 @@ begin
       -- expression value has no meaning except as run-time
       if isExecutingCommand then
          begin
-           exception_status_code := anExceptionStatusCode'value( to_string( exception_status_se.value ) );
+           exception_status_code := anExceptionStatusCode'value( to_string( exceptionStatusExpr.value ) );
          exception when others =>
            err( contextNotes => +"in the exception declaration",
                 subjectNotes => pl( "the exception status code " ) &
-                   unb_em( trim( exception_status_se.value, ada.strings.both ) ),
+                   unb_em( trim( exceptionStatusExpr.value, ada.strings.both ) ),
                 reason => pl( "is not in the range" ),
                 obstructorNotes => em( "0..255" ),
                 seeAlso => docSubprograms
@@ -1363,7 +1363,7 @@ begin
    if not error_found then
       findException( var_name, id );
       if id = eof_t then
-         declareException( id, var_name, default_message_se.value, exception_status_code ); -- declare var
+         declareException( id, var_name, defaultMessageExpr.value, exception_status_code ); -- declare var
          identifiers( id ).declaredAt := getLineNo;
          identifiers( id ).declaredFile := getSourceFileName;
       else
@@ -1764,7 +1764,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- CONST SPECS
     type_token    : identifier;
     right_type    : identifier;
-    expr_se       : storage;
+    expr          : storage;
     new_const_id  : identifier;
     oldSpec       : declaration;
 
@@ -1872,7 +1872,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
     if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
 --put_line( "verify: AssignPart should not run for aggregates"); -- DEBUG
-       ParseAssignPart( expr_se, right_type );            -- do := part
+       ParseAssignPart( expr, right_type );            -- do := part
        baseTypesOK( type_token, right_type );
     end if;
 
@@ -1917,24 +1917,24 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        if trace then
           put_trace( "Completing constant specification for " & to_string( oldSpec.name ) );
        end if;
-       expr_se.value := castToType( expr_se.value, type_token );
+       expr.value := castToType( expr.value, type_token );
        -- Contracts only run on scalars currently
        if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
           if type_token /= right_type then
-             DoContracts( identifiers( new_const_id ).kind, expr_se );
+             DoContracts( identifiers( new_const_id ).kind, expr );
           end if;
        end if;
-       identifiers( new_const_id ).value.all := expr_se.value;
+       identifiers( new_const_id ).value.all := expr.value;
        if trace then
            put_trace(
               to_string( identifiers( new_const_id ).name ) & " := """ &
-              toSecureData( to_string( ToEscaped( expr_se.value ) ) ) & """" );
+              toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
        end if;
     end if;
   end VerifyConstantSpec;
 
   type_token    : identifier;
-  expr_se       : storage;
+  expr          : storage;
   right_type    : identifier;
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
@@ -2441,7 +2441,7 @@ begin
 
        -- Calculate the assignment (i.e. using any previous variable i)
 
-       ParseAssignPart( expr_se, right_type );          -- do := part
+       ParseAssignPart( expr, right_type );                -- do := part
 
        -- Redeclare temporarily destroyed identifier (i.e. declare new i)
        -- and assign its type
@@ -2479,7 +2479,7 @@ begin
        begin
           if baseTypesOK( uni_string_t, right_type ) then
              type_token := uni_string_t; -- pretend it's a string
-             scriptDir := dirname( expr_se.value );
+             scriptDir := dirname( expr.value );
              if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
@@ -2488,18 +2488,18 @@ begin
                      obstructorNotes => +"is either not readable, is world writable, is not a directory"
                 );
              end if;
-             if not File_Exists( to_string( expr_se.value ) ) then
+             if not File_Exists( to_string( expr.value ) ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
-                     subjectNotes => em( '"' & to_string( toEscaped( expr_se.value ) ) & '"' ),
+                     subjectNotes => em( '"' & to_string( toEscaped( expr.value ) ) & '"' ),
                      reason => +"is not a path to an",
                      obstructorNotes => em( "executable file" ),
                      remedy => +"the path is wrong or the file is missing"
                 );
-             elsif not C_is_executable_file( to_string( expr_se.value ) & ASCII.NUL ) then
+             elsif not C_is_executable_file( to_string( expr.value ) & ASCII.NUL ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
-                     subjectNotes => em( '"' & to_string( toEscaped( expr_se.value ) ) & '"' ),
+                     subjectNotes => em( '"' & to_string( toEscaped( expr.value ) ) & '"' ),
                      reason => +"is not a path to an",
                      obstructorNotes => em( "executable file" ),
                      remedy => +"the path is not a regular file or does not have execute permission"
@@ -2520,15 +2520,15 @@ begin
      -- perform assignment
 
      if isExecutingCommand then
-        expr_se.value := castToType( expr_se.value, type_token );
+        expr.value := castToType( expr.value, type_token );
         if type_token /= right_type then
-           DoContracts( identifiers( id ).kind, expr_se );
+           DoContracts( identifiers( id ).kind, expr );
         end if;
-        identifiers( id ).value.all := expr_se.value;
+        identifiers( id ).value.all := expr.value;
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
-               toSecureData( to_string( ToEscaped( expr_se.value ) ) ) & """" );
+               toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
         end if;
      else
         -- At compile time, constants may have assigned values.
@@ -2538,12 +2538,12 @@ begin
         -- KLUDGE: For constants, we may at compile-time and the
         -- variables are not defined.  Contracts cannot be run.
         if identifiers( id ).usage = constantUsage then
-           if expr_se.value /= null_unbounded_string then
-              expr_se.value := castToType( expr_se.value, type_token );
+           if expr.value /= null_unbounded_string then
+              expr.value := castToType( expr.value, type_token );
               if getUniType( type_token ) = uni_string_t then
                  -- put_line(to_string( identifiers(id).name));
                  -- put_line(maybe_secret( identifiers(id).name, expr_value )'img );
-                 if maybe_secret( identifiers(id).name, expr_se.value ) then
+                 if maybe_secret( identifiers(id).name, expr.value ) then
                     err(
                       contextNotes => +"In your declaration",
                       subject => id,
@@ -2553,7 +2553,7 @@ begin
                  );
                  end if;
               end if;
-              identifiers( id ).value.all := expr_se.value;
+              identifiers( id ).value.all := expr.value;
            end if;
         end if;
      end if;
@@ -2673,10 +2673,10 @@ end ParseRecordTypePart;
 
 procedure ParseArrayTypePart( newtype_id : identifier ) is
    --type_id     : arrayID;
-   ab1_se          : storage; -- low array bound (array bound 1)
+   ab1Expr         : storage; -- low array bound (array bound 1)
    kind1           : identifier;
    ab1_as_longint  : long_integer;
-   ab2_se          : storage; -- high array bound (array bound 2)
+   ab2Expr         : storage; -- high array bound (array bound 2)
    kind2           : identifier;
    ab2_as_longint  : long_integer;
    elementType : identifier;
@@ -2689,7 +2689,7 @@ begin
 
    expect( array_t );
    expect( symbol_t, "(" );
-   ParseExpression( ab1_se, kind1 );
+   ParseExpression( ab1Expr, kind1 );
    -- should be constant expression but we can't handle those yet
    if getUniType( kind1 ) = uni_string_t or
       identifiers( kind1 ).list then
@@ -2701,11 +2701,11 @@ begin
       );
    end if;
    expect( symbol_t, ".." );
-   ParseExpression( ab2_se, kind2 );
+   ParseExpression( ab2Expr, kind2 );
    if token = symbol_t and identifiers( token ).value.all = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
-   elsif ab1_se.value = null_unbounded_string then
+   elsif ab1Expr.value = null_unbounded_string then
       err( contextNotes => pl( "declaring the array type " ) &
               unb_em( identifiers( newtype_id ).name ),
               subjectNotes => em( "the low bound of the array index range" ),
@@ -2714,7 +2714,7 @@ begin
               remedy => +"a numeric variable was not assigned a value",
               seeAlso => docArrays
       );
-   elsif ab2_se.value = null_unbounded_string then
+   elsif ab2Expr.value = null_unbounded_string then
       err( contextNotes => pl( "declaring the array type " ) &
               unb_em( identifiers( newtype_id ).name ),
               subjectNotes => em( "the high bound of the array index range" ),
@@ -2726,26 +2726,26 @@ begin
    elsif type_checks_done or else baseTypesOK(kind1, kind2 ) then
       if isExecutingCommand and not syntax_check then  -- ab1/2 undef on synchk
          begin
-            ab1_as_longint := long_integer( to_numeric( ab1_se.value ) );
+            ab1_as_longint := long_integer( to_numeric( ab1Expr.value ) );
          exception when constraint_error =>
             err( contextNotes => pl( "declaring the array type " ) &
                     unb_em( identifiers( newtype_id ).name ),
                  subjectNotes => em( "the low bound of the array index range" ),
                  reason => +"has a value that is too large",
-                 obstructorNotes => em_value( ab1_se.value ),
+                 obstructorNotes => em_value( ab1Expr.value ),
                  obstructorType => kind1,
                  seeAlso => seeTypes
             );
             ab1_as_longint := 0;
          end;
          begin
-            ab2_as_longint := long_integer( to_numeric( ab2_se.value ) );
+            ab2_as_longint := long_integer( to_numeric( ab2Expr.value ) );
          exception when constraint_error =>
             err( contextNotes => pl( "declaring the array type " ) &
                     unb_em( identifiers( newtype_id ).name ),
                  subjectNotes => em( "the high bound of the array index range" ),
                  reason => +"has a value that is too large",
-                 obstructorNotes => em_value( ab2_se.value ),
+                 obstructorNotes => em_value( ab2Expr.value ),
                  obstructorType => kind2,
                  seeAlso => seeTypes
             );

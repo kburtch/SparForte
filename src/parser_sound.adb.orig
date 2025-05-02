@@ -44,18 +44,18 @@ package body parser_sound is
 alreadyStarted : boolean := false;
 
 procedure ParsePlay is
-  expr_val  : unbounded_string;
+  expr  : storage;
   expr_type : identifier;
-  pri_val   : unbounded_string := to_unbounded_string( integer'image( integer'last ) );
+  priExpr   : storage := undefinedStorage;
   pri_type  : identifier;
 begin
   expect( sound_play_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   if uniTypesOK( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseExpression( pri_val, pri_type );
+        ParseExpression( priExpr, pri_type );
         if uniTypesOK( pri_type, uni_numeric_t ) then
            null;
         end if;
@@ -65,13 +65,13 @@ begin
   if isExecutingCommand then
 #if SOUND
      -- play must have full path (gstreamer requirement)
-     if length( expr_val ) > 0 then
-        if element( expr_val, 1 ) /= '/' then
-           expr_val := current_working_directory & "/" & expr_val;
+     if length( expr.value ) > 0 then
+        if element( expr.value, 1 ) /= '/' then
+           expr.value := current_working_directory & "/" & expr.value;
         end if;
      end if;
      declare
-       path : constant string := to_string( expr_val );
+       path : constant string := to_string( expr.value );
        msg : unbounded_string;
        f : file_type;
        res : integer;
@@ -111,20 +111,20 @@ begin
 end ParsePlay;
 
 procedure ParsePlayCD is
-  dev_name : unbounded_string := null_unbounded_string;
+  devNameExpr : storage := nullStorage;
   dev_kind : identifier;
 begin
   expect( sound_playcd_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
-     ParseExpression( dev_name, dev_kind );
+     ParseExpression( devNameExpr, dev_kind );
      if baseTypesOK( dev_kind, string_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
   if isExecutingCommand then
 #if SOUND
-     PlayCD( dev_name );
+     PlayCD( devNameExpr.value );
 #else
       err( +"sound support not installed" );
 #end if;

@@ -292,7 +292,7 @@ begin
   featureNotImplemented( "Berkeley DB support" );
 end not_configured;
 
-procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+procedure not_configured( result : out storage; kind : out identifier ) is
 begin
   featureNotImplemented( "Berkeley DB support" );
 end not_configured;
@@ -356,18 +356,18 @@ procedure ParseBTreeClear renames not_configured;
 procedure ParseBTreeRecover is
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
   subprogramId : constant identifier := btree_recover_t;
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
   ParseFirstFileParameter( subprogramId, fileId );
-  ParseLastStringParameter( subprogramId, fname_val, fname_type, string_t );
+  ParseLastStringParameter( subprogramId, fnameExpr, fname_type, string_t );
 
   if isExecutingCommand then
      declare
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -434,13 +434,13 @@ procedure ParseBTreeRecover renames not_configured;
 procedure ParseBTreeCreate is
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
-  keyLenExpr : unbounded_string;
+  keyLenExpr : storage;
   keyLenType : identifier;
   valLen     : interfaces.C.size_t;
-  valLenExpr : unbounded_string;
+  valLenExpr : storage;
   valLenType : identifier;
   subprogramId : constant identifier := btree_create_t;
 begin
@@ -449,24 +449,24 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextStringParameter( subprogramId, fname_val, fname_type, string_t );
+  ParseNextStringParameter( subprogramId, fnameExpr, fname_type, string_t );
   ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( subprogramId, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
-        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
+        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr.value ) );
      exception when others =>
         err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
-        valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
+        valLen := Interfaces.C.size_t'value( to_string( valLenExpr.value ) );
      exception when others =>
         err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
-        filename : constant string := base_name( to_string( fname_val ) );
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fnameExpr.value ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -527,7 +527,7 @@ begin
 
            if not error_found then
               theFile.btree.isOpen := true;
-              theFile.btree.name := fname_val;
+              theFile.btree.name := fnameExpr.value;
               declare
                  cnt : natural;
               begin
@@ -604,13 +604,13 @@ procedure ParseBTreeClose renames not_configured;
 procedure ParseBTreeOpen is
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
-  keyLenExpr : unbounded_string;
+  keyLenExpr : storage;
   keyLenType : identifier;
   valLen     : interfaces.C.size_t;
-  valLenExpr : unbounded_string;
+  valLenExpr : storage;
   valLenType : identifier;
   subprogramId : constant identifier := btree_open_t;
 begin
@@ -618,25 +618,25 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextStringParameter( subprogramId, fname_val, fname_type, string_t );
+  ParseNextStringParameter( subprogramId, fnameExpr, fname_type, string_t );
   -- TODO: can this be dynamic?
   ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( subprogramId, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
-        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
+        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr.value ) );
      exception when others =>
         err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
-        valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
+        valLen := Interfaces.C.size_t'value( to_string( valLenExpr.value ) );
      exception when others =>
         err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
-        filename : constant string := base_name( to_string( fname_val ) );
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fnameExpr.value ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -696,7 +696,7 @@ begin
               begin
                  open( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
                  theFile.btree.isOpen := true;
-                 theFile.btree.name := fname_val;
+                 theFile.btree.name := fnameExpr.value;
               exception when msg: berkeley_error =>
                  err( pl( exception_message( msg ) & " on opening the data file" ) );
               end;
@@ -720,7 +720,7 @@ procedure ParseBTreeOpen renames not_configured;
 -- Ada:    N/A
 -----------------------------------------------------------------------------
 
-procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
+procedure ParseBTreeIsOpen( result : out storage; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
   subprogramId : constant identifier := btree_is_open_t;
@@ -731,16 +731,16 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_spar_boolean( theFile.btree.isOpen );
+        result := storage'( to_spar_boolean( theFile.btree.isOpen ), noMetaLabel );
      exception when berkeley_error =>
-        result := to_spar_boolean( false );
+        result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseBTreeIsOpen;
 
 #else
 
-procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseBTreeIsOpen( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -752,7 +752,7 @@ procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier
 -- Ada:    N/A
 -----------------------------------------------------------------------------
 
-procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseBTreeName( result : out storage; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
   subprogramId : constant identifier := btree_name_t;
@@ -763,20 +763,20 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := theFile.btree.name;
+        result := storage'( theFile.btree.name, noMetaLabel );
      end;
   end if;
 end ParseBTreeName;
 
 #else
 
-procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseBTreeName( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
 
 -----------------------------------------------------------------------------
---  PARSE BTREE NAME
+--  PARSE BTREE DELETE
 --
 -- Syntax: btree.delete( f );
 -- Ada:    btree_io.delete( f );
@@ -926,9 +926,9 @@ procedure ParseBTreeDelete renames not_configured;
 procedure ParseBTreeSet is
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
-  valExpr    : unbounded_string;
+  valExpr    : storage;
   valType    : identifier;
   valId      : identifier;
   isRecord   : boolean := false;
@@ -966,7 +966,7 @@ begin
               jsonString : unbounded_string;
            begin
               DoRecordToJson( jsonString, valId );
-              put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+              put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
@@ -980,7 +980,7 @@ begin
               jsonString : unbounded_string;
            begin
               DoArrayToJson( jsonString, valId );
-              put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+              put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
@@ -992,7 +992,7 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
-              put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
+              put( theFile.btree.session, to_string( keyExpr.value ), to_string( valExpr.value ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
@@ -1025,7 +1025,7 @@ procedure ParseBTreeSet renames not_configured;
 procedure ParseBTreeGet is
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
   itemRef    : reference;
   isRecord   : boolean := false;
@@ -1085,7 +1085,7 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              get( theFile.btree.session, to_string( keyExpr ), jsonString );
+              get( theFile.btree.session, to_string( keyExpr.value ), jsonString );
               DoJsonToRecord( itemRef.id, jsonString );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
@@ -1105,8 +1105,8 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              get( theFile.btree.session, to_string( keyExpr ), jsonString );
-              DoJsonToArray( itemRef.id, jsonString );
+              get( theFile.btree.session, to_string( keyExpr.value ), jsonString );
+              DoJsonToArray( itemRef.id, jsonString, noMetaLabel );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1125,8 +1125,8 @@ begin
            declare
               result : unbounded_string;
            begin
-              get( theFile.btree.session, to_string( keyExpr ), result );
-              AssignParameter( itemRef, result );
+              get( theFile.btree.session, to_string( keyExpr.value ), result );
+              AssignParameter( itemRef, storage'( result, noMetaLabel ) );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1155,10 +1155,10 @@ procedure ParseBTreeGet renames not_configured;
 -- Ada:    bdb.exists( f, k );
 -----------------------------------------------------------------------------
 
-procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseBTreeHasElement( result : out storage; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
   subprogramId : constant identifier := btree_has_element_t;
 begin
@@ -1170,10 +1170,10 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
-           exists( theFile.btree.session, to_string( keyExpr ) );
-           result := to_spar_boolean( true );
+           exists( theFile.btree.session, to_string( keyExpr.value ) );
+           result := storage'( to_spar_boolean( true ), noMetaLabel );
         exception when berkeley_error =>
-           result := to_spar_boolean( false );
+           result := storage'( to_spar_boolean( false ), noMetaLabel );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         when others =>
@@ -1185,7 +1185,7 @@ end ParseBTreeHasElement;
 
 #else
 
-procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseBTreeHasElement( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -1202,7 +1202,7 @@ procedure ParseBTreeRemove is
   theFile    : resPtr;
   cursId     : identifier := eof_t;
   theCurs    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
   subprogramId : constant identifier := btree_remove_t;
 begin
@@ -1230,7 +1230,7 @@ begin
            end;
         else
            begin
-              delete( theFile.btree.session, to_string( keyExpr ) );
+              delete( theFile.btree.session, to_string( keyExpr.value ) );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1262,9 +1262,9 @@ procedure ParseBTreeRemove renames not_configured;
 procedure ParseBtreeIncrement is
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  amtExpr  : unbounded_string;
+  amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
@@ -1290,14 +1290,14 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
-          get( theFile.btree.session, to_string( keyExpr ), oldItem );
+          get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
           -- berkeley throws exception on not found
           --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.btree.session, to_string( keyExpr.value ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) ) ) ) );
           else
-             put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
+             put( theFile.btree.session, to_string( keyExpr.value ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
          --end if;
         exception when storage_error =>
@@ -1334,9 +1334,9 @@ procedure ParseBTreeIncrement renames not_configured;
 procedure ParseBtreeDecrement is
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  amtExpr  : unbounded_string;
+  amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
@@ -1362,14 +1362,14 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
        begin
-         get( theFile.btree.session, to_string( keyExpr ), oldItem );
+         get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
          -- berkeley throws exception on not found
          --if oldItem /= null_unbounded_string then
             oldItemValue := to_numeric( oldItem );
             if hasAmt then
-               put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
+               put( theFile.btree.session, to_string( keyExpr.value ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) ) ) );
             else
-               put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
+               put( theFile.btree.session, to_string( keyExpr.value ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
             end if;
          --end if;
        exception when storage_error =>
@@ -1406,9 +1406,9 @@ procedure ParseBTreeDecrement renames not_configured;
 procedure ParseBtreeAdd is
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   itemId     : identifier;
   isRecord   : boolean := false;
@@ -1446,14 +1446,14 @@ begin
               jsonString : unbounded_string;
            begin
               findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-              exists( theFile.btree.session, to_string( keyExpr ) );
+              exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
                    DoRecordToJson( jsonString, itemId );
-                   put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                   put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
                    err( +"constraint_error: value too big" );
                 end;
@@ -1470,14 +1470,14 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              exists( theFile.btree.session, to_string( keyExpr ) );
+              exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
                    DoArrayToJson( jsonString, itemId );
-                   put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                   put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
                    err( +"constraint_error: value too big" );
                 end;
@@ -1491,13 +1491,13 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
-              exists( theFile.btree.session, to_string( keyExpr ) );
+              exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
-                   put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+                   put( theFile.btree.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
                 exception when CONSTRAINT_ERROR =>
                    err( +"constraint_error: value too big" );
                 end;
@@ -1528,9 +1528,9 @@ procedure ParseBTreeAdd renames not_configured;
 procedure ParseBtreeReplace is
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   itemId     : identifier;
   isRecord   : boolean := false;
@@ -1590,7 +1590,7 @@ begin
                    DoRecordToJson( jsonString, itemId );
                    put( theFile.btree.session,
                       theCurs.btree_cur.cursor,
-                      keyExpr, -- this is ignored
+                      keyExpr.value, -- this is ignored
                       jsonString,
                       DB_C_PUT_CURRENT );
                 end if;
@@ -1620,7 +1620,7 @@ begin
                    DoArrayToJson( jsonString, itemId );
                    put( theFile.btree.session,
                         theCurs.btree_cur.cursor,
-                        keyExpr, -- this is ignored
+                        keyExpr.value, -- this is ignored
                         jsonString,
                         DB_C_PUT_CURRENT );
                 end if;
@@ -1648,8 +1648,8 @@ begin
                if last_error( theFile.btree.session ) = DB_OK then
                   put( theFile.btree.session,
                        theCurs.btree_cur.cursor,
-                       keyExpr, -- this is ignored
-                       itemExpr,
+                       keyExpr.value, -- this is ignored
+                       itemExpr.value,
                        DB_C_PUT_CURRENT );
                end if;
              exception when msg: berkeley_error =>
@@ -1669,9 +1669,9 @@ begin
               declare
                  jsonString : unbounded_string;
               begin
-                exists( theFile.btree.session, to_string( keyExpr ) );
+                exists( theFile.btree.session, to_string( keyExpr.value ) );
                 DoRecordToJson( jsonString, itemId );
-                put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
               exception when storage_error =>
                 err( +"storage error raised" );
               when msg: berkeley_error =>
@@ -1690,9 +1690,9 @@ begin
               declare
                  jsonString : unbounded_string;
               begin
-                exists( theFile.btree.session, to_string( keyExpr ) );
+                exists( theFile.btree.session, to_string( keyExpr.value ) );
                 DoArrayToJson( jsonString, itemId );
-                put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.btree.session, to_string( keyExpr.value ), to_string( jsonString ) );
               exception when storage_error =>
                 err( +"storage error raised" );
               when msg: berkeley_error =>
@@ -1709,8 +1709,8 @@ begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
              begin
-               exists( theFile.btree.session, to_string( keyExpr ) );
-               put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+               exists( theFile.btree.session, to_string( keyExpr.value ) );
+               put( theFile.btree.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
              exception when storage_error =>
                err( +"storage error raised" );
              when msg: berkeley_error =>
@@ -1745,9 +1745,9 @@ procedure ParseBTreeReplace renames not_configured;
 procedure ParseBtreeAppend is
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   oldItem  : unbounded_string;
   subprogramId : constant identifier := btree_append_t;
@@ -1764,8 +1764,8 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
-          get( theFile.btree.session, to_string( keyExpr ), oldItem );
-          put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
+          get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
+          put( theFile.btree.session, to_string( keyExpr.value ), to_string( oldItem & itemExpr.value ) );
         exception when storage_error =>
           err( +"storage error raised" );
         when msg: berkeley_error =>
@@ -1796,9 +1796,9 @@ procedure ParseBTreeAppend renames not_configured;
 procedure ParseBtreePrepend is
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   oldItem  : unbounded_string;
   subprogramId : constant identifier := btree_prepend_t;
@@ -1815,8 +1815,8 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
-          get( theFile.btree.session, to_string( keyExpr ), oldItem );
-          put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
+          get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
+          put( theFile.btree.session, to_string( keyExpr.value ), to_string( itemExpr.value & oldItem ) );
         exception when storage_error =>
           err( +"storage error raised" );
         when msg: berkeley_error =>
@@ -2118,7 +2118,7 @@ begin
                    jsonString,
                    DB_C_GET_FIRST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2149,8 +2149,8 @@ begin
                    jsonString,
                    DB_C_GET_FIRST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -2180,8 +2180,8 @@ begin
                    data,
                    DB_C_GET_FIRST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -2279,7 +2279,7 @@ begin
                    jsonString,
                    DB_C_GET_NEXT );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2310,8 +2310,8 @@ begin
                    jsonString,
                    DB_C_GET_NEXT );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2341,8 +2341,8 @@ begin
                    data,
                    DB_C_GET_NEXT );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2448,7 +2448,7 @@ begin
                    jsonString,
                    DB_C_GET_LAST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2479,8 +2479,8 @@ begin
                    jsonString,
                    DB_C_GET_LAST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2510,8 +2510,8 @@ begin
                    data,
                    DB_C_GET_LAST );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2609,7 +2609,7 @@ begin
                    jsonString,
                    DB_C_GET_PREV );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key , noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2640,8 +2640,8 @@ begin
                    jsonString,
                    DB_C_GET_PREV );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2671,8 +2671,8 @@ begin
                    data,
                    DB_C_GET_PREV );
                  if last_error( theFile.btree.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2700,7 +2700,7 @@ procedure ParseBTreeGetPrevious renames not_configured;
 -- Ada:    N/A
 -----------------------------------------------------------------------------
 
-procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
+procedure ParseBTreeWillRaise( result : out storage; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
   subprogramId : constant identifier := btree_will_raise_t;
@@ -2712,17 +2712,17 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-           result := to_spar_boolean( will_raise( theFile.btree.session ) );
+           result := storage'( to_spar_boolean( will_raise( theFile.btree.session ) ), noMetaLabel );
         end if;
      exception when berkeley_error =>
-        result := to_spar_boolean( false );
+        result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseBTreeWillRaise;
 
 #else
 
-procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseBTreeWillRaise( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2734,7 +2734,7 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
 -- Ada:    N/A
 -----------------------------------------------------------------------------
 
-procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
+procedure ParseBTreeLastError( result : out storage; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
   subprogramId : constant identifier := btree_last_error_t;
@@ -2746,7 +2746,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-          result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
+          result := storage'( to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) ), noMetaLabel );
        end if;
      exception when msg: berkeley_error =>
         err( pl( exception_message( msg ) ) );
@@ -2758,7 +2758,7 @@ end ParseBTreeLastError;
 
 #else
 
-procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseBTreeLastError( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2774,7 +2774,7 @@ procedure ParseBTreeLastError( result : out unbounded_string; kind : out identif
 procedure ParseBTreeRaiseExceptions is
   fileId     : identifier;
   theFile    : resPtr;
-  boolExpr   : unbounded_string;
+  boolExpr   : storage;
   boolType   : identifier;
   subprogramId : constant identifier := btree_raise_exceptions_t;
 begin
@@ -2783,7 +2783,7 @@ begin
   ParseLastEnumParameter( subprogramId, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
-       raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := boolExpr.value = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then

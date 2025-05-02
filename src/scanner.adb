@@ -153,6 +153,27 @@ use  ada.text_io,
 
 package body scanner is
 
+-- Shell Word Convenience functions
+
+function Element( word : aRawShellWord; pos : positive ) return character is
+begin
+   return Element( word.value, pos );
+end Element;
+
+function Length( word : aRawShellWord) return natural is
+begin
+   return Length( word.value );
+end Length;
+
+function Element( word : aGlobShellWord; pos : positive ) return character is
+begin
+   return Element( word.value, pos );
+end Element;
+
+function Length( word : aGlobShellWord) return natural is
+begin
+   return Length( word.value );
+end Length;
 
 -----------------------------------------------------------------------------
 --  PUT TOKEN
@@ -462,7 +483,7 @@ begin
         put_retry( "of ");
         if ident.kind = eof_t then
            put_retry( " unknown" );
-        elsif ident.kind = noMetaLevel then
+        elsif ident.kind = noMetaLabel then
            put_retry( "root value meta label" );
         else
            put_retry( identifiers( identifiers( ident.kind ).kind ).name );
@@ -2720,7 +2741,7 @@ begin
   -- VALUE META LABELS
   -- Set the default run-time security level
 
-  metaLevel := noMetaLevel;
+  metaLevel := noMetaLabel;
 end resetScanner;
 
 
@@ -2917,7 +2938,7 @@ begin
         if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
            DoJsonToString( identifiers( id ).value.all, importedStringValue );
         elsif identifiers( id ).list then                           -- array
-           DoJsonToArray( id, importedStringValue, noMetaLevel );   -- VALUE META LABEL: TODO: assign the correct level
+           DoJsonToArray( id, importedStringValue, noMetaLabel );   -- VALUE META LABEL: TODO: assign the correct level
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
            DoJsonToRecord( id, importedStringValue );
         elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number

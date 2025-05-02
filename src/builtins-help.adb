@@ -147,7 +147,7 @@ package body builtins.help is
        end ParsePragmaKindAsHelp;
 
        procedure ParsePragmaStatementAsHelp( pragmaKind : unbounded_string ) is
-         exprVal  : unbounded_string;
+         expr : storage;
          exprType : identifier;
          annotationKind : unbounded_string;
        begin
@@ -174,8 +174,8 @@ package body builtins.help is
                info := identifiers( token ).name; -- name
                getNextToken;
                expectPragmaComma;
-               ParseStaticExpression( exprVal, exprType );
-               info := info & "," & ToCSV( exprVal ); -- message
+               ParseStaticExpression( expr, exprType );
+               info := info & "," & ToCSV( expr.value ); -- message
                expectPragmaComma;
                info := info & "," & identifiers( token ).name; -- measure
                measure := token;
@@ -277,8 +277,8 @@ package body builtins.help is
                info := info & "," & identifiers( token ).name; -- name
                getNextToken;
                expectPragmaComma;
-               ParseStaticExpression( exprVal, exprType );
-               info := info & "," & ToCSV( exprVal ); -- message
+               ParseStaticExpression( expr, exprType );
+               info := info & "," & ToCSV( expr.value ); -- message
                expect( symbol_t, ")" );
                if CollabOutput then
                   put_line_retry( to_string( info ) );
@@ -291,11 +291,11 @@ package body builtins.help is
                discardUnusedIdentifier( token );
                getNextToken;
                expectPragmaComma;
-               ParseStaticExpression( exprVal, exprType );
+               ParseStaticExpression( expr, exprType );
                if annotationKind = accounts_str then
-                  accounts( e, to_string(exprVal)  );
+                  accounts( e, to_string(expr.value)  );
                elsif annotationKind = author_str then
-                  author( e, to_string(exprVal)  );
+                  author( e, to_string(expr.value)  );
                   -- handle a teams.member variable for an author
                   -- declarations don't happen so this doesn't work.
                   --if token /= strlit_t then
@@ -306,43 +306,43 @@ package body builtins.help is
                   --   end if;
                   --end if;
                elsif annotationKind = bugs_str then
-                  bugs( e, to_string(exprVal)  );
+                  bugs( e, to_string(expr.value)  );
                elsif annotationKind = created_str then
-                  createdOn( e, to_string(exprVal)  );
+                  createdOn( e, to_string(expr.value)  );
                elsif annotationKind = category_str then
-                  category( e, to_string(exprVal)  );
+                  category( e, to_string(expr.value)  );
                elsif annotationKind = content_str then
-                  content( e, to_string(exprVal)  );
+                  content( e, to_string(expr.value)  );
                elsif annotationKind = description_str then
-                  description( e, to_string(exprVal)  );
+                  description( e, to_string(expr.value)  );
                elsif annotationKind = errors_str then
-                  errors( e, to_string(exprVal)  );
+                  errors( e, to_string(expr.value)  );
                elsif annotationKind = examples_str then
-                  examples( e, to_string(exprVal)  );
+                  examples( e, to_string(expr.value)  );
                elsif annotationKind = exceptions_str then
-                  exceptions( e, to_string(exprVal)  );
+                  exceptions( e, to_string(expr.value)  );
                elsif annotationKind = footer_str then
-                  footer( e, to_string(exprVal)  );
+                  footer( e, to_string(expr.value)  );
                elsif annotationKind = icon_str then
-                  icon( e, to_string(exprVal)  );
+                  icon( e, to_string(expr.value)  );
                elsif annotationKind = modified_str then
-                  modified( e, to_string(exprVal)  );
+                  modified( e, to_string(expr.value)  );
                elsif annotationKind = param_str then
-                  params( e, to_string(exprVal)  );
+                  params( e, to_string(expr.value)  );
                elsif annotationKind = return_str then
-                  returns( e, to_string(exprVal)  );
+                  returns( e, to_string(expr.value)  );
                elsif annotationKind = rationale_str then
-                  rationale( e, to_string(exprVal)  );
+                  rationale( e, to_string(expr.value)  );
                elsif annotationKind = screenshot_str then
-                  screenshot( e, to_string(exprVal)  );
+                  screenshot( e, to_string(expr.value)  );
                elsif annotationKind = see_also_str then
-                  seeAlso( e, to_string(exprVal)  );
+                  seeAlso( e, to_string(expr.value)  );
                elsif annotationKind = summary_str then
-                  summary( e, to_string(exprVal)  );
+                  summary( e, to_string(expr.value)  );
                elsif annotationKind = todos_str then
-                  todos( e, to_string(exprVal)  );
+                  todos( e, to_string(expr.value)  );
                elsif annotationKind = version_str then
-                  releaseVersion( e, to_string(exprVal)  );
+                  releaseVersion( e, to_string(expr.value)  );
                else
                   info := null_unbounded_string;
                end if;

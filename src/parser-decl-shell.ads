@@ -30,6 +30,9 @@ package parser.decl.shell is
 
 shellWord : aShellWord;
 
+function ">" (left, right : anExpandedShellWord ) return boolean;
+function "=" (left, right : anExpandedShellWord ) return boolean;
+
 package bourneShellWordLists is new pegasoft.gen_list( anExpandedShellWord, ">","=" );
 
 

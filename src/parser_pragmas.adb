@@ -149,7 +149,7 @@ type aPragmaKind is (
 usingTextTestReport : boolean := false; -- TODO: if we must do this, use enum.
 myTextTestReport : textTestReport;
 myXmlTestReport  : xmlTestReport;
-reportPath       : unbounded_string;
+reportPath       : storage;
 
 
 -----------------------------------------------------------------------------
@@ -291,7 +291,7 @@ end parsePragmaKind;
 
 procedure ParseAnnotateKind is
   name : constant string := to_string( identifiers( token ).name );
-  exprVal  : unbounded_string;
+  expr  : storage;
   exprType : identifier;
 begin
   annotationsFound := true;
@@ -328,7 +328,7 @@ begin
   end if;
   -- A team.member variable for the author doesn't work because variables
   -- aren't declared when help runs.
-  ParseStaticExpression( exprVal, exprType );
+  ParseStaticExpression( expr, exprType );
   baseTypesOK( exprType, uni_string_t );
 end ParseAnnotateKind;
 
@@ -462,71 +462,71 @@ end ParseExportKind;
 -- Check the current token for the kind of license and advance the scanner.
 -----------------------------------------------------------------------------
 
-procedure ParseLicenseKind( expr_val : out unbounded_string ) is
+procedure ParseLicenseKind( expr : out storage ) is
   name_unbounded : unbounded_string;
 
   procedure ParseLicenseExtra is
   begin
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        expr_val := expr_val & ": " & identifiers( token ).value.all;
+        expr.value := expr.value & ": " & identifiers( token ).value.all;
         expect( strlit_t );
      end if;
   end ParseLicenseExtra;
 
 begin
   ParsePragmaIdentifier( name_unbounded );
-  expr_val := null_unbounded_string;
+  expr := nullStorage;
   declare
      name : constant string := to_string( name_unbounded );
   begin
      if name = "unrestricted" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "gpl" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "gplv2" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "gplv3" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "agpl" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "bsd_original" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "bsd_revised" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "artistic" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "mit" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "apache" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "apache_2" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "freeware" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "shareware" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "public_domain" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "commercial" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      elsif name = "restricted" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
         ParseLicenseExtra;
      else
         err( +"unknown license " & em( name ) );
@@ -541,7 +541,7 @@ end ParseLicenseKind;
 -- Check the current token for the kind of model and advance the scanner.
 -----------------------------------------------------------------------------
 
-procedure ParseSoftwareModelName( expr_val : out unbounded_string ) is
+procedure ParseSoftwareModelName( expr : out storage ) is
   name_unbounded : unbounded_string;
 begin
   -- special case: package is a keyword and will cause an error with
@@ -555,55 +555,55 @@ begin
   declare
      name : constant string := to_string( name_unbounded );
   begin
-     expr_val := null_unbounded_string;
+     expr := nullStorage;
      if name = "application_desktop" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "application_mobile" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "application_realtime" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "application_realtime_ravenscar" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "daemon" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "daemon_proxy" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_framework" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_service_external" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_service_internal" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_site_external" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_site_internal" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_proxy" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "http_form" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "package" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "shell_batch" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "shell_filter_script" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "shell_report_script" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "shell_script" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "multimedia" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "etl" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "monitor" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "driver" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      elsif name = "nonstandard" then
-        expr_val := name_unbounded;
+        expr.value := name_unbounded;
      end if;
-     if length( expr_val ) = 0 then
+     if length( expr.value ) = 0 then
         err( +"unknown software model " & em( name ) );
      end if;
   end;
@@ -769,7 +769,7 @@ procedure run_test_case( testScript, testCaseName : unbounded_string; manual_tes
    --savershOpt : commandLineOption := rshOpt;
    save_error_found : constant boolean := error_found;
    isTesting_old : constant boolean := isTesting;
-   results     : unbounded_string;
+   results     : storage;
 begin
 
    -- If this is the first test, we need to initialize JUnit support
@@ -781,7 +781,7 @@ begin
            if usingTextTestReport then
               startJunit( myTextTestReport );
            else
-              startJunit( myXmlTestReport, reportPath );
+              startJunit( myXmlTestReport, reportPath.value );
            end if;
          exception when others =>
            err( +"exception while creating test result file" );
@@ -836,7 +836,7 @@ begin
         -- a syntax check, do nothing.
 
         if not syntax_check then
-           put( results );
+           put( results.value );
            if error_found then
               if usingTextTestReport then
                  testCaseError( myTextTestReport );
@@ -1375,9 +1375,9 @@ end declareAffinity;
 
 procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   pragmaKind  : aPragmaKind := thePragmaKind; -- TODO: Hack
-  expr_val    : unbounded_string;
-  expr_val2   : unbounded_string;
-  expr_val3   : unbounded_string;
+  expr    : storage;
+  expr2   : storage;
+  expr3   : storage;
   expr_type   : identifier;
   --results     : unbounded_string;
   var_id      : identifier;
@@ -1387,7 +1387,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   newValue    : unbounded_string;
   test_result_status : boolean := false;
   test_message : unbounded_string;
-  testCaseName : unbounded_string;
+  testCaseName : storage;
   constraintMode : designconstraintmodes;
   affinityMode : designaffinitymodes;
 begin
@@ -1415,21 +1415,21 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when affinity =>                           -- pragma affinity
-     ParseDesignPragmaAffinityIdentifier( expr_val );
+     ParseDesignPragmaAffinityIdentifier( expr.value );
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val3, var_id );
+        ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
      else
-        expr_val3 := to_unbounded_string( "0.0" );
+        expr3.value := to_unbounded_string( "0.0" );
      end if;
   when asserting =>                          -- pragma assert
-     ParseExpression( expr_val, var_id );
+     ParseExpression( expr, var_id );
   when annotate =>                           -- pragma annotate
      ParseAnnotateKind;
   when assumption =>                         -- pragma assumption
@@ -1441,7 +1441,7 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
@@ -1452,82 +1452,82 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when colour_messages =>
      null;
   when constraint =>                         -- pragma constraint
-     ParseDesignPragmaConstraintIdentifier( expr_val );
+     ParseDesignPragmaConstraintIdentifier( expr.value );
      expectPragmaComma;
      if token = strlit_t then
-        expr_val2 := identifiers( token ).value.all;
+        expr2.value := identifiers( token ).value.all;
         getNextToken;
      else
-        ParsePragmaIdentifier ( expr_val2 );
+        ParsePragmaIdentifier ( expr2.value );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val3, var_id );
+        ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
      else
-        expr_val3 := to_unbounded_string( "0.0" );
+        expr3.value := to_unbounded_string( "0.0" );
      end if;
   when debug =>                              -- pragma debug
-     expr_val := identifiers( token ).value.all;
+     expr.value := identifiers( token ).value.all;
      expect( backlit_t );
   when debug_on =>                              -- pragma debug (no param)
      null;
   when declare_affinity =>                      -- pragma declare_affinity
-     ParseDesignPragmaAffinityModeIdentifier( expr_val );
-     affinityMode := toAffinityMode( expr_val );
+     ParseDesignPragmaAffinityModeIdentifier( expr.value );
+     affinityMode := toAffinityMode( expr.value );
      expectPragmaComma;
-     ParseDesignPragmaAffinityIdentifier( expr_val );
+     ParseDesignPragmaAffinityIdentifier( expr.value );
      -- expect( symbol_t, "," );
      -- if token = strlit_t then
      --    if identifiers( token ).value.all = "" then
      --       err( "affinity name should not be an empty string" );
      --    else
-     --       expr_val2 := identifiers( token ).value.all;
+     --       expr2.value := identifiers( token ).value.all;
      --    end if;
      --    getNextToken;
      -- else
-     --    ParsePragmaIdentifier( expr_val2 );
+     --    ParsePragmaIdentifier( expr2 );
      -- end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val3, var_id );
+        ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
      else
-        expr_val3 := to_unbounded_string( "0.0" );
+        expr3.value := to_unbounded_string( "0.0" );
      end if;
   when declare_constraint =>                    -- pragma declare_constraint
-     ParseDesignPragmaModeIdentifier( expr_val );
-     constraintMode := toConstraintMode( expr_val );
+     ParseDesignPragmaModeIdentifier( expr.value );
+     constraintMode := toConstraintMode( expr.value );
      expectPragmaComma;
-     ParseDesignPragmaConstraintIdentifier( expr_val );
+     ParseDesignPragmaConstraintIdentifier( expr.value );
      expectPragmaComma;
      if token = strlit_t then
         if identifiers( token ).value.all = "" then
            err( +"constraint name should not be an empty string" );
         else
-           expr_val2 := identifiers( token ).value.all;
+           expr2.value := identifiers( token ).value.all;
         end if;
         getNextToken;
      else
-        ParsePragmaIdentifier( expr_val2 );
+        ParsePragmaIdentifier( expr2.value );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val3, var_id );
+        ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
      else
-        expr_val3 := to_unbounded_string( "0.0" );
+        expr3.value := to_unbounded_string( "0.0" );
      end if;
   when depreciated =>                           -- pragma depreciated
-     expr_val := identifiers( token ).value.all;
-     ParseStaticExpression( expr_val, var_id );
+     expr.value := identifiers( token ).value.all;
+     ParseStaticExpression( expr, var_id );
      baseTypesOK( var_id, uni_string_t );
   when dispute =>                               -- pragma dispute
      ParseIdentifier( var_id );
@@ -1536,12 +1536,12 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when error =>                                 -- pragma error
-     ParseStaticExpression( expr_val, var_id );
+     ParseStaticExpression( expr, var_id );
      baseTypesOK( var_id, uni_string_t );
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
@@ -1564,31 +1564,31 @@ begin
         ParseStaticExpression( testCaseName, var_id );  -- test name/subject
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- test objective
+        ParseStaticExpression( expr, var_id );  -- test objective
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- test description
+        ParseStaticExpression( expr, var_id );  -- test description
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- test environment
+        ParseStaticExpression( expr, var_id );  -- test environment
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- test category
+        ParseStaticExpression( expr, var_id );  -- test category
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- preconditions
+        ParseStaticExpression( expr, var_id );  -- preconditions
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- steps/expected results
+        ParseStaticExpression( expr, var_id );  -- steps/expected results
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
+        ParseStaticExpression( expr, var_id );  -- postconditions/cleanup
         baseTypesOK( var_id, uni_string_t );
         expectPragmaComma;
         ParseWorkEstimate( work_estimate_unknown ); -- work estimate
         ParseWorkPriority( work_estimate_unknown, is_todo => false ); -- work priority
         expectPragmaComma;
-        ParseStaticExpression( expr_val, var_id );  -- work ticket / user story
+        ParseStaticExpression( expr, var_id );  -- work ticket / user story
         baseTypesOK( var_id, uni_string_t );
      else
         err( +"team.member expected" );
@@ -1597,17 +1597,17 @@ begin
       ParseIdentifier( var_id );                -- tester
       if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );  -- date
+           ParseStaticExpression( expr, var_id );  -- date
            baseTypesOK( var_id, uni_string_t );
-           test_message := "Date: " & expr_val;
+           test_message := "Date: " & expr.value;
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );  -- notes
+           ParseStaticExpression( expr, var_id );  -- notes
            baseTypesOK( var_id, uni_string_t );
-           test_message := test_message & "; Notes: " & expr_val;
+           test_message := test_message & "; Notes: " & expr.value;
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );  -- screenshots
+           ParseStaticExpression( expr, var_id );  -- screenshots
            baseTypesOK( var_id, uni_string_t );
-           test_message := test_message & "; Screenshots: " & expr_val;
+           test_message := test_message & "; Screenshots: " & expr.value;
            expectPragmaComma;
            -- TODO: status is false when test succeeded.
            if token = true_t then
@@ -1621,9 +1621,9 @@ begin
            end if;
           if token = symbol_t and identifiers( token ).value.all = "," then
              getNextToken;
-             ParseStaticExpression( expr_val, var_id );  -- defect id
+             ParseStaticExpression( expr, var_id );  -- defect id
              baseTypesOK( var_id, uni_string_t );
-             test_message := test_message & "; Ticket: " & expr_val;
+             test_message := test_message & "; Ticket: " & expr.value;
           end if;
      else
         err( +"team.member expected" );
@@ -1641,17 +1641,17 @@ begin
      if rshOpt then                          -- security precaution
         err( +"prompt scripts cannot be used in a restricted shell" );
      else
-        expr_val := identifiers( token ).value.all;
-        if expr_val /= null_unbounded_string then
-           if tail( expr_val, 1 ) = " " or
-              tail( expr_val, 1 ) = "" & ASCII.HT then
+        expr.value := identifiers( token ).value.all;
+        if expr.value /= null_unbounded_string then
+           if tail( expr.value, 1 ) = " " or
+              tail( expr.value, 1 ) = "" & ASCII.HT then
               err( contextNotes => +"in pragma prompt_script",
                    subjectNotes => pl( qp( "the backquoted commands" ) ),
                    reason => +"have " & em( "trailing whitespace" ),
                    obstructorNotes => nullMessageStrings
               );
-           elsif tail( expr_val, 1 ) /= ";" then
-              expr_val := expr_val & ";";
+           elsif tail( expr.value, 1 ) /= ";" then
+              expr.value := expr.value & ";";
            end if;
         end if;
         expect( backlit_t );
@@ -1660,10 +1660,10 @@ begin
      if rshOpt then                          -- security precaution
         err( +"prompt scripts cannot be used in a restricted shell" );
      else
-        expr_val := identifiers( token ).value.all;
-        if expr_val /= null_unbounded_string then
-           if tail( expr_val, 1 ) /= ";" then
-              expr_val := expr_val & ";";
+        expr.value := identifiers( token ).value.all;
+        if expr.value /= null_unbounded_string then
+           if tail( expr.value, 1 ) /= ";" then
+              expr.value := expr.value & ";";
            end if;
         end if;
         expect( backlit_t );
@@ -1672,7 +1672,7 @@ begin
      if rshOpt then                          -- security precaution
         err( +"prompt scripts cannot be used in a restricted shell" );
      else
-        ParseStaticExpression( expr_val, var_id );
+        ParseStaticExpression( expr, var_id );
         baseTypesOK( var_id, duration_t );
      end if;
   when propose =>                           -- pragma refactor
@@ -1682,7 +1682,7 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
@@ -1693,39 +1693,39 @@ begin
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expectPragmaComma;
-           ParseStaticExpression( expr_val, var_id );
+           ParseStaticExpression( expr, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
   when register_memcache_server =>           -- pragma register_memcache_server
-     expr_val := identifiers( token ).value.all;
+     expr.value := identifiers( token ).value.all;
      expect( strlit_t );
      expectPragmaComma;
-     expr_val2 := identifiers( token ).value.all;
+     expr2.value := identifiers( token ).value.all;
      expect( number_t );
   when restriction =>                        -- pragma restriction
-     ParsePragmaIdentifier( expr_val );
-     if expr_val = "no_auto_declarations" then
+     ParsePragmaIdentifier( expr.value );
+     if expr.value = "no_auto_declarations" then
         pragmaKind := restriction_auto;
-     elsif expr_val = "no_annotate_todos" then
+     elsif expr.value = "no_annotate_todos" then
         pragmaKind := restriction_todos;
-     elsif expr_val = "annotations_not_optional" then
+     elsif expr.value = "annotations_not_optional" then
         pragmaKind := restriction_annotations;
-     elsif expr_val = "no_external_commands" then
+     elsif expr.value = "no_external_commands" then
         pragmaKind := restriction_external;
-     elsif expr_val = "no_memcache" then
+     elsif expr.value = "no_memcache" then
         pragmaKind := restriction_memcache;
-     elsif expr_val = "no_mysql_database" then
+     elsif expr.value = "no_mysql_database" then
         pragmaKind := restriction_mysql;
-     elsif expr_val = "no_postgresql_database" then
+     elsif expr.value = "no_postgresql_database" then
         pragmaKind := restriction_postgresql;
-     elsif expr_val = "no_unused_identifiers" then
+     elsif expr.value = "no_unused_identifiers" then
         pragmaKind := restriction_unused;
-     elsif expr_val = "no_volatiles" then
+     elsif expr.value = "no_volatiles" then
         pragmaKind := restriction_volatiles;
-     elsif expr_val = "no_declarations_in_executable_statements" then
+     elsif expr.value = "no_declarations_in_executable_statements" then
         pragmaKind := restriction_declarations;
-     elsif expr_val = "no_prompt_history" then
+     elsif expr.value = "no_prompt_history" then
         pragmaKind := restriction_history;
      else
         err( +"unknown restriction" );
@@ -1740,30 +1740,30 @@ begin
      end if;
      ParseIdentifier( var_id );
   when license =>                            -- pragma license
-     ParseLicenseKind( expr_val );
+     ParseLicenseKind( expr );
   when software_model =>                     -- pragma software_model
-     ParseSoftwareModelName( expr_val );
+     ParseSoftwareModelName( expr );
   when session_export_script =>              -- pragma session_export_script
      if rshOpt then                          -- security precaution
         err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
-     expr_val := identifiers( token ).value.all;
+     expr.value := identifiers( token ).value.all;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
      if rshOpt then                          -- security precaution
         err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
-     expr_val := identifiers( token ).value.all;
+     expr.value := identifiers( token ).value.all;
      expect( backlit_t );
   when suppress =>                           -- pragma restriction
-     ParsePragmaIdentifier( expr_val );
-     if expr_val = "word_quoting" then
+     ParsePragmaIdentifier( expr.value );
+     if expr.value = "word_quoting" then
         pragmaKind := suppress_word_quoting;
-     elsif expr_val = "low_priority_todos_for_release" then
+     elsif expr.value = "low_priority_todos_for_release" then
         pragmaKind := suppress_low_priority_todos;
-     elsif expr_val = "all_todos_for_release" then
+     elsif expr.value = "all_todos_for_release" then
         pragmaKind := suppress_all_todos;
-     elsif expr_val = "no_empty_command_substitutions" then
+     elsif expr.value = "no_empty_command_substitutions" then
         pragmaKind := suppress_no_empty_command_subs;
      else
         err( +"unknown error type" );
@@ -1777,7 +1777,7 @@ begin
         if rshOpt then
            err( +"templates cannot be used in a restricted shell" );
         else
-           ParsePragmaIdentifier( expr_val );
+           ParsePragmaIdentifier( expr.value );
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
               -- it is possible for this to fail with a syntax error
@@ -1803,61 +1803,61 @@ begin
            if var_id = eof_t then
               templateHeader.templateType := htmlTemplate;
            -- http://www.webmaster-toolkit.com/mime-types.shtml
-           elsif expr_val = "html" then
+           elsif expr.value = "html" then
               templateHeader.templateType := htmlTemplate;
-           elsif expr_val = "css" then
+           elsif expr.value = "css" then
               templateHeader.templateType := cssTemplate;
-           elsif expr_val = "js" then
+           elsif expr.value = "js" then
               templateHeader.templateType := jsTemplate;
-           elsif expr_val = "json" then
+           elsif expr.value = "json" then
               templateHeader.templateType := jsonTemplate;
-           elsif expr_val = "text" then
+           elsif expr.value = "text" then
               templateHeader.templateType := textTemplate;
-           elsif expr_val = "toml" then
+           elsif expr.value = "toml" then
               templateHeader.templateType := tomlTemplate;
-           elsif expr_val = "wml" then
+           elsif expr.value = "wml" then
               templateHeader.templateType := wmlTemplate;
-           elsif expr_val = "xml" then
+           elsif expr.value = "xml" then
               templateHeader.templateType := xmlTemplate; -- text/xml
-           elsif expr_val = "yaml" then
+           elsif expr.value = "yaml" then
               templateHeader.templateType := yamlTemplate;
            else
-              err( +"unknown template type '" & pl( to_string( expr_val ) ) &
+              err( +"unknown template type '" & pl( to_string( expr.value ) ) &
                   pl( "'" ) );
            end if;
         end if;
      end;
   when test =>                               -- pragma test
-     expr_val := identifiers( token ).value.all;
+     expr.value := identifiers( token ).value.all;
      expect( backlit_t );
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
         expect( strlit_t );
-        expr_val2 := identifiers( strlit_t ).value.all;
+        expr2.value := identifiers( strlit_t ).value.all;
      else
-        expr_val2 := null_unbounded_string;
+        expr2 := nullStorage;
      end if;
   when test_report =>                        -- pragma test_report
-     expr_val := identifiers( token ).name;
+     expr.value := identifiers( token ).name;
      discardUnusedIdentifier( token );
-     if expr_val = "text" then
+     if expr.value = "text" then
         getNextToken;
-     elsif expr_val = "xml" then
+     elsif expr.value = "xml" then
         getNextToken;
      else
-        err( pl( "unknown test report type '" & to_string( expr_val ) & "'" ) );
+        err( pl( "unknown test report type '" & to_string( expr.value ) & "'" ) );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
         ParseStaticExpression( reportPath, expr_type );
         baseTypesOK( expr_type, uni_string_t );
-        if expr_val = "text" and length( reportPath ) > 0 then
+        if expr.value = "text" and length( reportPath.value ) > 0 then
            err( +"text reports currently cannot be written to a file" );
-        elsif expr_val = "xml" and length( reportPath ) = 0 then
+        elsif expr.value = "xml" and length( reportPath.value ) = 0 then
            err( +"file path is empty" );
         end if;
      else
-        reportPath := null_unbounded_string;
+        reportPath := nullStorage;
      end if;
   when test_result =>                        -- pragma test_result
      declare
@@ -1869,19 +1869,19 @@ begin
         if not testOpt then
            save_syntax := syntax_check;
            syntax_check := true;
-           ParseExpression( expr_val, var_id );
+           ParseExpression( expr, var_id );
            syntax_check := save_syntax;
         else
-           ParseExpression( expr_val, var_id );
-           test_result_status := expr_val = "0";
+           ParseExpression( expr, var_id );
+           test_result_status := expr.value = "0";
         end if;
         -- Optional description string
         --if token = symbol_t and identifiers( token ).value.all = "," then
         --   expect( symbol_t, "," );
-        --   expr_val2 := identifiers( token ).value.all;
+        --   expr.value2 := identifiers( token ).value.all;
         --   expect( strlit_t );
         --else
-        --   expr_val2 := null_unbounded_string;
+        --   expr2 := null_unbounded_string;
         --end if;
      end;
   when todo =>                               -- pragma to-do
@@ -1897,7 +1897,7 @@ begin
        ParseIdentifier( var_id );              -- the person
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
        expectPragmaComma;
-       ParseStaticExpression( expr_val, var_id );
+       ParseStaticExpression( expr, var_id );
        baseTypesOK( var_id, uni_string_t );
        expectPragmaComma;
 
@@ -1917,10 +1917,10 @@ begin
         err( +"pragma restriction( no_volatiles ) does not allow pragma volatile" );
      end if;
      ParseIdentifier( var_id );
-     expr_val := null_unbounded_string;
+     expr := nullStorage;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val, expr_type );
+        ParseStaticExpression( expr, expr_type );
         baseTypesOK( expr_type, duration_t );
      end if;
   when unchecked_volatile =>                 -- pragma volatile
@@ -1928,10 +1928,10 @@ begin
         err( +"pragma restriction( no_volatiles ) does not allow pragma unchecked_volatile" );
      end if;
      ParseIdentifier( var_id );
-     expr_val := null_unbounded_string;
+     expr := nullStorage;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        ParseStaticExpression( expr_val, expr_type );
+        ParseStaticExpression( expr, expr_type );
         baseTypesOK( expr_type, duration_t );
      end if;
   when others =>
@@ -1961,8 +1961,8 @@ begin
               declare
                 limit : float;
               begin
-                limit := float( to_numeric( expr_val3 ) );
-                EnforceAffinity( expr_val, limit );
+                limit := float( to_numeric( expr3.value ) );
+                EnforceAffinity( expr.value, limit );
               end;
            end if;
         end if;
@@ -1998,8 +1998,8 @@ begin
               declare
                 weight : float;
               begin
-                weight := float( to_numeric( expr_val3 ) );
-                EnforceConstraint( expr_val, expr_val2, weight );
+                weight := float( to_numeric( expr3.value ) );
+                EnforceConstraint( expr.value, expr2.value, weight );
               end;
            end if;
         end if;
@@ -2009,10 +2009,10 @@ begin
               declare
                 limit : float := 0.0;
               begin
-                if expr_val3 /= null_unbounded_string then
-                   limit := float( to_numeric( expr_val3 ) );
+                if expr3.value /= null_unbounded_string then
+                   limit := float( to_numeric( expr3.value ) );
                 end if;
-                DeclareAffinity( affinityMode, expr_val, limit );
+                DeclareAffinity( affinityMode, expr.value, limit );
               end;
            end if;
         end if;
@@ -2022,10 +2022,10 @@ begin
               declare
                 limit : float := 0.0;
               begin
-                if expr_val3 /= null_unbounded_string then
-                   limit := float( to_numeric( expr_val3 ) );
+                if expr3.value /= null_unbounded_string then
+                   limit := float( to_numeric( expr3.value ) );
                 end if;
-                DeclareConstraint( constraintMode, expr_val, expr_val2, limit );
+                DeclareConstraint( constraintMode, expr.value, expr2.value, limit );
               end;
            end if;
         end if;
@@ -2055,7 +2055,7 @@ begin
               err( +"test cannot be used in an interactive session" );
            --elsif not syntax_check then
            else
-              run_test_case( expr_val, expr_val2, manual_test => false );
+              run_test_case( expr.value, expr2.value, manual_test => false );
            end if;
         end if;
      -- Pragma volatile is checked at syntax check time because volatiles
@@ -2070,9 +2070,9 @@ begin
         if identifiers( var_id ).usage /= limitedUsage then
            identifiers( var_id ).wasFactor := true;
         end if;
-        if expr_val /= "" then
+        if expr.value /= "" then
            begin
-             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr.value ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
                 err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
@@ -2091,9 +2091,9 @@ begin
         if identifiers( var_id ).usage /= limitedUsage then
            identifiers( var_id ).wasFactor := true;
         end if;
-        if expr_val /= "" then
+        if expr.value /= "" then
            begin
-             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr.value ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
                 err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
@@ -2120,7 +2120,7 @@ begin
         if debugOpt or testOpt then
            if not syntax_check then   -- has no meaning during syntax check
               if baseTypesOk( boolean_t, var_id ) then
-                 if expr_val = "0" then
+                 if expr.value = "0" then
                     err( +"assertion failed" );
                  end if;
               end if;
@@ -2151,7 +2151,7 @@ begin
               begin
                  lineNo := getLineNo;
                  rshOpt := true;            -- force restricted shell mode
-                 CompileAndRun( commands => expr_val, firstLineNo => lineNo, fragment => false );
+                 CompileAndRun( commands => expr.value, firstLineNo => lineNo, fragment => false );
                  rshOpt := savershOpt;
               end;
            end if;
@@ -2170,7 +2170,7 @@ begin
         -- TODO: this should create a list of depreciation message
         -- for now, only the entire script is depreciated
         -- It is an error in the design phase to run a deprecated script.
-        depreciatedMsg := "This script made obsolete by " & expr_val & '.';
+        depreciatedMsg := "This script made obsolete by " & expr.value & '.';
         if designOpt then
            err( unb_pl( depreciatedMsg ) );
            depreciatedMsg := null_unbounded_string;
@@ -2178,7 +2178,7 @@ begin
      when dispute =>
         null;
      when error =>
-        err( pl( "error: " & to_string( expr_val )) );
+        err( pl( "error: " & to_string( expr.value )) );
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;
@@ -2330,7 +2330,7 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).value.all, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue );
+                           DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
@@ -2383,7 +2383,7 @@ begin
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                             DoJsonToString( identifiers( var_id ).value.all, importValue );
                          elsif identifiers( var_id ).list then                           -- array
-                            DoJsonToArray( var_id, importValue );
+                            DoJsonToArray( var_id, importValue, noMetaLabel );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                             DoJsonToRecord( var_id, importValue );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
@@ -2429,7 +2429,7 @@ begin
           begin
             findIdent( to_unbounded_string( "System.Script_License" ), id );
             if id /= eof_t then
-               identifiers( id ).value.all := expr_val;
+               identifiers( id ).value.all := expr.value;
                licenseSet := true;
             end if;
           exception when others =>
@@ -2445,7 +2445,7 @@ begin
               err( +"manual_test cannot be used in an interactive session" );
            elsif not syntax_check then
               -- for a manual test case, there's nothing to run
-              run_test_case( null_unbounded_string, testCaseName, manual_test => true );
+              run_test_case( null_unbounded_string, testCaseName.value, manual_test => true );
            end if;
         end if;
      when manual_test_result =>
@@ -2477,8 +2477,8 @@ begin
          checkAndInitializeDistributedMemcacheCluster;
          begin
             RegisterServer( distributedMemcacheCluster,
-               expr_val,
-               natural'value( ' ' & to_string( expr_val2 ) ) );
+               expr.value,
+               natural'value( ' ' & to_string( expr2.value ) ) );
          exception when name_error =>
             err( +"server already registered or too many servers registered" );
          when others =>
@@ -2508,18 +2508,18 @@ begin
         restriction_no_prompt_history := true;
      when promptChange =>
         if not error_found then
-           promptScript := expr_val;
+           promptScript := expr.value;
         end if;
      when promptIdleChange =>
         if not error_found then
-           promptIdleScript := expr_val;
+           promptIdleScript := expr.value;
         end if;
      when promptIdleSpeed =>
         if not error_found then
            declare
               v : duration;
            begin
-              v := duration( to_numeric( expr_val ) );
+              v := duration( to_numeric( expr.value ) );
               if v < 0.0 then
                  err( +"interval must be a natural number" );
               end if;
@@ -2531,7 +2531,7 @@ begin
      when session_export_script =>
         if not error_found then
            if length( sessionExportScript ) = 0 then
-              sessionExportScript := expr_val;
+              sessionExportScript := expr.value;
            else
               err( +"session_export_script is already defined" );
            end if;
@@ -2539,7 +2539,7 @@ begin
      when session_import_script =>
         if not error_found then
            if length( sessionImportScript ) = 0 then
-              sessionImportScript := expr_val;
+              sessionImportScript := expr.value;
            else
               err( +"session_import_script is already defined" );
            end if;
@@ -2553,7 +2553,7 @@ begin
            begin
              findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
              if id /= eof_t then
-                identifiers( id ).value.all := expr_val;
+                identifiers( id ).value.all := expr.value;
                 softwareModelSet := true;
              end if;
            exception when others =>
@@ -2601,19 +2601,19 @@ begin
               err( +"test cannot be used in an interactive session" );
            --elsif not syntax_check then
            else
-              run_test_case( expr_val, expr_val2, manual_test => false );
+              run_test_case( expr.value, expr2.value, manual_test => false );
            end if;
         end if;
      when test_report =>
         -- TODO: should be a syntax-time tests, not a run-time test.
         if isJunitStarted then
            err( +"test report has already been started" );
-        elsif expr_val = "text" then
+        elsif expr.value = "text" then
            usingTextTestReport := true;
-        elsif expr_val = "xml" then
+        elsif expr.value = "xml" then
            usingTextTestReport := false;
         else
-           err( pl( gnat.source_info.source_location & ": internal error: unexpected test report type '" & to_string( expr_val ) & "'" ) );
+           err( pl( gnat.source_info.source_location & ": internal error: unexpected test report type '" & to_string( expr.value ) & "'" ) );
         end if;
      when test_result =>
         if testOpt then
@@ -2720,7 +2720,7 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).value.all, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue );
+                           DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
@@ -2774,9 +2774,9 @@ begin
        if identifiers( var_id ).usage /= limitedUsage then
           identifiers( var_id ).wasFactor := true;
        end if;
-        if expr_val /= "" then
+        if expr.value /= "" then
            begin
-             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr.value ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
                 err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
@@ -2795,9 +2795,9 @@ begin
        if identifiers( var_id ).usage /= limitedUsage then
           identifiers( var_id ).wasFactor := true;
        end if;
-        if expr_val /= "" then
+        if expr.value /= "" then
            begin
-             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr.value ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
                 err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then

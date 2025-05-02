@@ -240,7 +240,7 @@ end checkVarUsageQualifier;
 -----------------------------------------------------------------------------
 
 procedure ParseIfBlock is
-  expr_st : storage;
+  expr      : storage;
   expr_type : identifier;
   b : boolean := false;
   handled : boolean := false;
@@ -254,13 +254,13 @@ begin
   if token = if_t then                                     -- this error is
      err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
-  ParseExpression( expr_st, expr_type );                   -- expression
+  ParseExpression( expr, expr_type );                      -- expression
   if type_checks_done then
-     b := expr_st.value = "1";                             -- to real Boolean
+     b := expr.value = "1";                                -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_st.value = "1";                             -- to real Boolean
+     b := expr.value = "1";                                -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -287,13 +287,13 @@ begin
      if token = elsif_t then                               -- this error is
         err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
-     ParseExpression( expr_st, expr_type );                -- expression
+     ParseExpression( expr, expr_type );                   -- expression
      if type_checks_done then
-        b := expr_st.value = "1";                          -- to real Boolean
+        b := expr.value = "1";                             -- to real Boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then    -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_st.value = "1";                          -- to real Boolean
+        b := expr.value = "1";                             -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -413,10 +413,10 @@ end SkipStaticBlock;
 
 procedure ParseStaticIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
-  expr_st : storage;
+  expr      : storage;
   expr_type : identifier;
-  b : boolean := false;
-  handled : boolean := false;
+  b         : boolean := false;
+  handled   : boolean := false;
   backup_sc : boolean;
 begin
 
@@ -433,13 +433,13 @@ begin
   if token = if_t then                                     -- this error is
      err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
-  ParseStaticExpression( expr_st, expr_type );            -- expression
+  ParseStaticExpression( expr, expr_type );               -- expression
   if type_checks_done then
-     b := expr_st.value= "1";                              -- to real Boolean
+     b := expr.value= "1";                                 -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_st.value = "1";                              -- to real Boolean
+     b := expr.value = "1";                                -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -466,13 +466,13 @@ begin
      if token = elsif_t then                               -- this error is
         err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
-     ParseStaticExpression( expr_st, expr_type );          -- expression
+     ParseStaticExpression( expr, expr_type );             -- expression
      if type_checks_done then
-        b := expr_st.value = "1";                          -- to real Boolean
+        b := expr.value = "1";                             -- to real Boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then    -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_st.value= "1";                           -- to real Boolean
+        b := expr.value= "1";                              -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -1667,8 +1667,8 @@ end ParseLoopBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseWhileBlock is
-  expr_st: storage;
-  expr_type : identifier;
+  expr           : storage;
+  expr_type      : identifier;
   old_exit_block : constant boolean := exit_block;
 begin
   pushBlock( newScope => false, newName => "while loop" ); -- start new scope
@@ -1678,7 +1678,7 @@ begin
      if token = while_t then                               -- this is from
         err( +"redundant " & em( "while" ) );              -- GNAT
      end if;
-     ParseExpression( expr_st, expr_type );                -- expression
+     ParseExpression( expr, expr_type );                   -- expression
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( +"boolean expression expected" );
      end if;
@@ -1689,13 +1689,13 @@ begin
 
   loop
      expect( while_t );                                    -- "while"
-     ParseExpression( expr_st, expr_type );                 -- expression
+     ParseExpression( expr, expr_type );                   -- expression
      -- The type of the while expression can only change during a while loop
      -- with a typeset at the command prompt.
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( +"boolean expression expected" );
         exit;
-     elsif expr_st.value /= "1" or error_found or exit_block then -- skipping?
+     elsif expr.value /= "1" or error_found or exit_block then -- skipping?
         expect( loop_t );                                  -- "loop"
         SkipBlock;                                         -- skip while block
         exit;                                              -- and quit
@@ -1733,9 +1733,9 @@ end ParseWhileBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseForBlock is
-  expr1_st  : storage;
+  expr1Expr  : storage;
   expr1_type : identifier;
-  expr2_st  : storage;
+  expr2Expr  : storage;
   expr2_type : identifier;
   expr2_num  : numericValue;
   for_var    : identifier;
@@ -1780,9 +1780,9 @@ begin
         isReverse := true;
         expect( reverse_t );
      end if;
-     ParseExpression( expr1_st, expr1_type );           -- low range
+     ParseExpression( expr1Expr, expr1_type );          -- low range
      expect( symbol_t, ".." );                          -- ".."
-     ParseExpression( expr2_st, expr2_type );           -- high range
+     ParseExpression( expr2Expr, expr2_type );          -- high range
      -- declare for var down here in case older var with same name
      -- used in for loop range (so that for k in k..k+1 is legit)
      declareIdent( for_var, for_name, uni_numeric_t);   -- declare for var
@@ -1838,11 +1838,11 @@ begin
            isReverse := true;
            expect( reverse_t );
         end if;
-        ParseExpression( expr1_st, expr1_type );           -- low range
+        ParseExpression( expr1Expr, expr1_type );          -- low range
         expect( symbol_t, ".." );                          -- ".."
-        ParseExpression( expr2_st, expr2_type );           -- high range
+        ParseExpression( expr2Expr, expr2_type );          -- high range
         if verboseOpt then
-           put_trace( "in " & toSecureData( to_string( toEscaped( expr1_st.value ) ) ) & ".." & toSecureData( to_string( toEscaped( expr2_st.value ) ) ) );
+           put_trace( "in " & toSecureData( to_string( toEscaped( expr1Expr.value ) ) ) & ".." & toSecureData( to_string( toEscaped( expr2Expr.value ) ) ) );
         end if;
 
         --if error_found then                              -- errors?
@@ -1861,20 +1861,20 @@ begin
            end if;
            if not error_found then
               if isReverse then
-                 identifiers( for_var ).value.all := expr2_st.value; -- for var is
+                 identifiers( for_var ).value.all := expr2Expr.value; -- for var is
                  identifiers( for_var ).kind := expr2_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
-                    expr2_num := to_numeric( expr1_st.value );
+                    expr2_num := to_numeric( expr1Expr.value );
                  end if;
               else
-                 identifiers( for_var ).value.all := expr1_st.value; -- for var is
+                 identifiers( for_var ).value.all := expr1Expr.value; -- for var is
                  identifiers( for_var ).kind := expr1_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
-                    expr2_num := to_numeric( expr2_st.value );
+                    expr2_num := to_numeric( expr2Expr.value );
                  end if;
               end if;
            end if;
@@ -1955,20 +1955,20 @@ end ParseForBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseDelay is
-  expr_st: storage;
+  expr      : storage;
   expr_type : identifier;
 begin
   expect( delay_t );
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
   if type_checks_done or else baseTypesOK( expr_type, duration_t ) then
      if isExecutingCommand then
         begin
-          delay duration( to_numeric( expr_st.value ) );
+          delay duration( to_numeric( expr.value ) );
         exception when others =>
           err_exception_raised;
         end;
         if trace then
-           put_trace( "duration := " & toSecureData( to_string( toEscaped( expr_st.value ) ) ) );
+           put_trace( "duration := " & toSecureData( to_string( toEscaped( expr.value ) ) ) );
         end if;
      end if;
   end if;
@@ -2173,14 +2173,14 @@ end ParseDeclarations;
 -----------------------------------------------------------------------------
 
 procedure ParseWhenClause( when_true : out boolean ) is
-  expr_st    : storage;
+  expr        : storage;
   expr_type   : identifier;
 begin
   expect( when_t );
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
   if type_checks_done or else baseTypesOK( boolean_t, expr_type ) then
      if isExecutingCommand then
-        when_true :=  expr_st.value = "1";
+        when_true :=  expr.value = "1";
         if trace then
            if when_true then
               put_trace( "when condition is true" );
@@ -3679,7 +3679,7 @@ end updateRenamedRecordParameter;
   ----------------------------------------------------------------------------
 
 procedure parseUsableInModeParameter( formalParamId : identifier; paramName     : unbounded_string ) is
-   expr_st      : storage;
+   expr          : storage;
    expr_type     : identifier;
    usableParamId : identifier;
    typesOK       : boolean;
@@ -3689,7 +3689,7 @@ begin
   -- (when the scanner creates a "new" type identifier for it).
   -- However, we're in an error state at that point so it may not
   -- matter.
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
 
   if type_checks_done then
      typesOK := true;
@@ -3715,13 +3715,13 @@ begin
      --   to_string( expr_value ) );
      if isExecutingCommand then
         if identifiers( formalParamId ).kind /= expr_type then
-           DoContracts( identifiers( formalParamId ).kind, expr_st);
+           DoContracts( identifiers( formalParamId ).kind, expr);
         end if;
-        identifiers( usableParamId ).value.all := expr_st.value;
+        identifiers( usableParamId ).value.all := expr.value;
         if trace then
            put_trace(
               to_string( identifiers( usableParamId ).name ) & " := " &
-              toSecureData( to_string( toEscaped( expr_st.value) ) ) );
+              toSecureData( to_string( toEscaped( expr.value) ) ) );
         end if;
      end if;
      -- DoContract may create a variable so we delay until here to move the
@@ -4792,7 +4792,7 @@ end DoUserDefinedCaseProcedure;
 procedure ParseShellCommand is
   cmdNameToken : identifier;
   cmdName    : unbounded_string;
-  expr_st   : storage;
+  expr       : storage;
   expr_type  : identifier;
   ap         : argumentListPtr;          -- list of parameters to the cmd
   --paramCnt   : natural;                  -- number of parameters in ap
@@ -4969,8 +4969,8 @@ procedure ParseShellCommand is
      ap := new argumentList( 1..len );
      for i in 1..len loop
          bourneShellWordLists.Find( list, long_integer( i ), theWord );
-         ap( i ) := new string( 1..positive( length( theWord ) + 1 ) );
-         ap( i ).all := to_string( theWord ) & ASCII.NUL;
+         ap( i ) := new string( 1..positive( length( theWord.value ) + 1 ) );
+         ap( i ).all := to_string( theWord.value ) & ASCII.NUL;
      end loop;
   end externalCommandParameters;
 
@@ -5046,7 +5046,7 @@ begin
   elsif pipe2Next then
      err( pl( "> file should only be after the last pipeline command" ) );
   elsif isExecutingCommand then
-<<retry1>> redirectedOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+<<retry1>> redirectedOutputFd := open( to_string( targetPath.value ) & ASCII.NUL,
               O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
      -- Linux applies the umask to open()
      if redirectedOutputFd < 0 then
@@ -5082,7 +5082,7 @@ begin
   if pipeFromLast then
      err( +"< file should only be after the first pipeline command" );
   elsif isExecutingCommand then
-<<retry4>> redirectedInputFd := open( to_string( targetPath ) & ASCII.NUL, O_RDONLY, 8#644# );
+<<retry4>> redirectedInputFd := open( to_string( targetPath.value ) & ASCII.NUL, O_RDONLY, 8#644# );
      if redirectedInputFd < 0 then
         if C_errno = EINTR then
            goto retry4;
@@ -5118,7 +5118,7 @@ begin
   elsif pipe2Next then
      err( +">> file should only be after the last pipeline command" );
   elsif isExecutingCommand then
-<<retry7>> redirectedAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+<<retry7>> redirectedAppendFd := open( to_string( targetPath.value ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
      -- Linux applies the umask to open()
      if redirectedAppendFd < 0 then
         if C_errno = EINTR then
@@ -5167,7 +5167,7 @@ begin
      -- is a race condition, but I don't know an easy way to
      -- guarantee a file isn't reused as multiple paths may lead
      -- to the same file.
-<<retry12>> redirectedErrOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+<<retry12>> redirectedErrOutputFd := open( to_string( targetPath.value ) & ASCII.NUL,
                O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
      -- Linux applies the umask to open()
      if redirectedErrOutputFd < 0 then
@@ -5215,7 +5215,7 @@ begin
       redirectedErrOutputFD := 0;
       err( +"cannot redirect using both 2> and 2>>" );
   elsif isExecutingCommand then
-<<retry17>> redirectedErrAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+<<retry17>> redirectedErrAppendFd := open( to_string( targetPath.value ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
       -- Linux applies the umask to open()
       if redirectedErrAppendFd < 0 then
          if C_errno = EINTR then
@@ -5348,7 +5348,7 @@ begin
         getNextToken;
      else
         parseUniqueShellWord( shellWord );
-        cmdName := unbounded_string( shellWord );
+        cmdName := unbounded_string( shellWord.value );
      end if;
 
      itself := cmdName;                                    -- this is new @
@@ -5367,10 +5367,10 @@ begin
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
      while not error_found and token /= eof_t loop       -- count parameters
-        ParseExpression( expr_st, expr_type );
+        ParseExpression( expr, expr_type );
         -- shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
         -- bourneShellWordLists.Queue( wordList, anExpandedShellWord( expr_val ) );
-        addAdaScriptValue( wordList, expr_st.value);
+        addAdaScriptValue( wordList, expr.value);
         --paramCnt := paramCnt + 1;
         if Token = symbol_t and then identifiers( Token ).value.all = "," then
            getNextToken;
@@ -5938,7 +5938,7 @@ end ParseStep;
 -----------------------------------------------------------------------------
 
 procedure ParseReturn is
-  expr_st    : storage;
+  expr        : storage;
   expr_type   : identifier;
   return_id   : identifier;
   must_return : boolean;
@@ -5993,7 +5993,7 @@ begin
               err( +"procedures cannot return a value" );
            else
            -- no type checking on the function result!
-              ParseExpression( expr_st, expr_type );
+              ParseExpression( expr, expr_type );
               -- At this point, we don't know the function id.  Maybe we can
               -- check the block name but the function's identifier is not
               -- currently recorded there.  The return value should have
@@ -6003,19 +6003,19 @@ begin
                  -- typecast where appropriate
                  u := getUniType( identifiers( return_id ).kind );
                  if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-                    expr_st.value:= castToType( expr_st.value, identifiers( return_id ).kind );
+                    expr.value:= castToType( expr.value, identifiers( return_id ).kind );
                  end if;
-                 identifiers( return_id ).value.all := expr_st.value;
+                 identifiers( return_id ).value.all := expr.value;
                  -- Unlike a regular variable, we do not mark this as read or
                  -- written.
                  if trace then
-                    put_trace( "returning """ & toSecureData( to_string( toEscaped( expr_st.value ) ) ) & """" );
+                    put_trace( "returning """ & toSecureData( to_string( toEscaped( expr.value ) ) ) & """" );
                  end if;
               end if;
            end if;
         else
            -- for syntax checking, we need to walk the expression
-           ParseExpression( expr_st, expr_type );
+           ParseExpression( expr, expr_type );
         end if;
      end if;
 
@@ -6069,9 +6069,9 @@ end ParseReturn;
 procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   var_id     : identifier;
   var_kind   : identifier;
-  expr_st   : storage;
+  expr       : storage;
   right_type : identifier;
-  index_st  : storage;
+  indexExpr  : storage;
   index_kind : identifier;
   -- array_id   : arrayID;
   arrayIndex : long_integer;
@@ -6115,7 +6115,7 @@ begin
   -- Array element
   elsif identifiers( var_id ).list then
      expect( symbol_t, "(" );
-     ParseExpression( index_st, index_kind );
+     ParseExpression( indexExpr, index_kind );
      if getUniType( index_kind ) = uni_string_t or identifiers( index_kind ).list then
         err( +"scalar expression expected" );
      end if;
@@ -6123,16 +6123,16 @@ begin
      expect( symbol_t, ")" );
 
      if isExecutingCommand then
-        arrayIndex := long_integer( to_numeric( index_st.value ) );
+        arrayIndex := long_integer( to_numeric( indexExpr.value ) );
         if identifiers( var_id ).astorage = null then
            err( pl( gnat.source_info.source_location &
                 ": internal error: target array storage unexpectedly null" ) );
         elsif identifiers( var_id ).astorage'first > arrayIndex then
-           err( pl( "array index " & to_string( trim( index_st.value, ada.strings.both ) ) &
+           err( pl( "array index " & to_string( trim( indexExpr.value, ada.strings.both ) ) &
                 " not in" & identifiers( var_id ).astorage'first'img & " .." &
                 identifiers( var_id ).astorage'last'img ) );
         elsif identifiers( var_id ).astorage'last < arrayIndex then
-           err( pl( "array index " &  to_string( trim( index_st.value, ada.strings.both ) ) &
+           err( pl( "array index " &  to_string( trim( indexExpr.value, ada.strings.both ) ) &
                 " not in" & identifiers( var_id ).astorage'first'img & " .." &
                 identifiers( var_id ).astorage'last'img ) );
         end if;
@@ -6155,7 +6155,7 @@ begin
 
   targetExpression := lastExpressionInstruction;
 
-  ParseAssignPart( expr_st, right_type );
+  ParseAssignPart( expr, right_type );
 
   lastExpressionInstruction := targetExpression;
 
@@ -6187,7 +6187,7 @@ begin
         identifiers( var_kind ).wasCastTo := true;
      end if;
      if isExecutingCommand then
-        expr_st.value := castToType( expr_st.value, var_kind );
+        expr.value := castToType( expr.value, var_kind );
      end if;
   end if;
 
@@ -6252,7 +6252,7 @@ begin
      -- Programming-by-contract
 
      if var_kind /= right_type then
-        DoContracts( var_kind, expr_st);
+        DoContracts( var_kind, expr );
      end if;
 
      if identifiers( var_id ).list then
@@ -6271,7 +6271,7 @@ begin
            --elsif identifiers( var_id ).astorage'last < arrayIndex then
            --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).astorage'first'img & " .. " & identifiers( var_id ).astorage'last'img );
            --elsif not error_found then
-           identifiers( var_id ).astorage( arrayIndex ) := expr_st; -- NEWARRAY
+           identifiers( var_id ).astorage( arrayIndex ) := expr; -- NEWARRAY
            --end if;
         exception when CONSTRAINT_ERROR =>
           err( pl( "constraint_error : index out of range " & identifiers( var_id ).astorage'first'img & " .." &
@@ -6283,21 +6283,21 @@ begin
            put_trace(
               to_string( identifiers( var_id ).name ) &
               "(" &
-              toSecureData( to_string( ToEscaped( index_st.value) ) ) &
+              toSecureData( to_string( ToEscaped( indexExpr.value) ) ) &
               ")" &
               " := """ &
-              toSecureData( to_string( ToEscaped( expr_st.value ) ) ) &
+              toSecureData( to_string( ToEscaped( expr.value ) ) ) &
                  """" );
         end if;
      else
-        identifiers( var_id ).value.all := expr_st.value;
+        identifiers( var_id ).value.all := expr.value;
         if trace then
            -- builtins.env( ident ) would be better if a value is
            -- returned
            put_trace(
               to_string( identifiers( var_id ).name ) &
               " := """ &
-              toSecureData( to_string( ToEscaped( expr_st.value ) ) ) &
+              toSecureData( to_string( ToEscaped( expr.value ) ) ) &
               """" );
         end if;
      end if;

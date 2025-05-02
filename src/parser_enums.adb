@@ -52,7 +52,7 @@ enums_succ_t         : identifier;
 -- PARSE THE ENUMS PACKAGE
 ---------------------------------------------------------
 
-procedure ParseEnumsFirst( f : out unbounded_string; kind : out identifier ) is
+procedure ParseEnumsFirst( result : out storage; kind : out identifier ) is
   -- Syntax: enums.first( arraytypeorvar );
   -- Source: enumtype'first
   var_id   : identifier;
@@ -73,13 +73,13 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      -- first item in an enumerated type is always value 0
-     f := to_unbounded_string( "0" );
+     result := storage'( to_unbounded_string( "0" ), noMetaLabel );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   end if;
 end ParseEnumsFirst;
 
-procedure ParseEnumsLast( f : out unbounded_string; kind : out identifier ) is
+procedure ParseEnumsLast( result : out storage; kind : out identifier ) is
   -- Syntax: enums.last( arraytypeorvar );
   -- Source: enumtype'last
   var_id   : identifier;
@@ -117,14 +117,14 @@ begin
         s : constant string := best'img;
      begin
         --f := to_unbounded_string( s(2..s'last) );
-        f := to_unbounded_string( s );
+        result := storage'( to_unbounded_string( s ), noMetaLabel );
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   end if;
 end ParseEnumsLast;
 
-procedure ParseEnumsPred( f : out unbounded_string; kind : out identifier ) is
+procedure ParseEnumsPred( result: out storage; kind : out identifier ) is
 --  -- Syntax: enums.prev( arraytypeorvar );
 --  -- Source: enumvar'prev
   var_id   : identifier;
@@ -152,7 +152,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           f := to_unbounded_string( s );
+           result := storage'( to_unbounded_string( s ), noMetaLabel );
         end;
      exception when others =>
         err_exception_raised;
@@ -162,7 +162,7 @@ begin
   end if;
 end ParseEnumsPred;
 
-procedure ParseEnumsSucc( f : out unbounded_string; kind : out identifier ) is
+procedure ParseEnumsSucc( result : out storage; kind : out identifier ) is
   -- Syntax: enums.succ( arraytypeorvar );
   -- Source: enumvar'succ
   var_id   : identifier;
@@ -208,7 +208,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           f := to_unbounded_string( s );
+           result := storage'( to_unbounded_string( s ), noMetaLabel );
         end;
      exception when others =>
         err( +"exception thrown" );

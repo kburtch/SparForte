@@ -82,7 +82,7 @@ procedure ParseEndOfFile( result : out storage; kind : out identifier ) is
   file_kind : identifier;
 begin
   kind := boolean_t;
-  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLevel );
+  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
   ParseOpenFileOrSocket( file_ref, file_kind );
@@ -105,7 +105,7 @@ procedure ParseEndOfLine( result : out storage; kind : out identifier ) is
   file_ref : reference;
 begin
   kind := boolean_t;
-  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLevel );
+  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
@@ -121,7 +121,7 @@ procedure ParseLine( result : out storage; kind : out identifier ) is
   file_ref : reference;
 begin
   kind := integer_t;   -- TODO: probably should be something more specific
-  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLevel );
+  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
@@ -184,7 +184,7 @@ begin
      --if wasSIGINT then
      --   null;
      --end if;
-     result := storage'( to_unbounded_string( ch & "" ), noMetaLevel );
+     result := storage'( to_unbounded_string( ch & "" ), noMetaLabel );
   end if;
 end ParseInkey;
 
@@ -733,7 +733,7 @@ procedure ParseOpen( create : boolean := false ) is
   mode : identifier;
   name : unbounded_string;
   kind : identifier;
-  expr_st  : storage;
+  expr     : storage;
   exprType : identifier;
 begin
   if create then
@@ -761,9 +761,9 @@ begin
         makeTempFile( name );
      else
         expectParameterComma;
-        ParseExpression( expr_st, exprType );
+        ParseExpression( expr, exprType );
         if uniTypesOk( exprType, uni_string_t ) then
-           name := expr_st.value;
+           name := expr.value;
            if length( name ) = 0 and then not syntax_check then
               err( +"pathname should not be null" );
            end if;
@@ -796,18 +796,18 @@ begin
                  err( +"sockets don't have a mode" );
                end if;
            end if;
-           ParseExpression( expr_st, exprType );
+           ParseExpression( expr, exprType );
            if uniTypesOk( exprType, uni_string_t ) then
-              name := expr_st.value;
+              name := expr.value;
               if length( name ) = 0 and then not syntax_check then
                  err( +"hostname should not be null" );
               end if;
               expect( symbol_t, ")" );
            end if;
         else
-           ParseExpression( expr_st, exprType );
+           ParseExpression( expr, exprType );
            if uniTypesOk( exprType, uni_string_t ) then
-              name := expr_st.value;
+              name := expr.value;
               if length( name ) = 0 and then not syntax_check then
                  err( +"pathname should not be null" );
               end if;
@@ -1068,7 +1068,7 @@ begin
            err( +"end of file" );
         else
            ch := Element( fileInfo.value, 1 );
-           AssignParameter( id_ref, storage'( to_unbounded_string( "" & ch ), noMetaLevel ) );
+           AssignParameter( id_ref, storage'( to_unbounded_string( "" & ch ), noMetaLabel ) );
            AssignParameter( file_ref, fileInfo );
            DoGet( file_ref );
         end if;
@@ -1084,7 +1084,7 @@ begin
          elsif result = 0 then
             err( +"end of file" );
          else
-            AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLevel ) );
+            AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLabel ) );
          end if;
       end if;
       if ch = ASCII.LF then -- not stdin (or error)?
@@ -1103,7 +1103,7 @@ procedure ParsePutLine is
   -- Source: Ada.Text_IO.Put_Line
   target_ref: reference;
   kind      : identifier := file_type_t;
-  expr_st   : storage;
+  expr      : storage;
   expr_type : identifier;
   temp      : unbounded_string;
   result    : size_t;
@@ -1133,12 +1133,12 @@ begin
   else
      target_ref.id := standard_output_t;
   end if;
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
   -- this sould be moved to an image function
   if getUniType( expr_type ) = root_enumerated_t then
      -- In newer versions of GCC Ada, expr_val cannot be used twice
-     findEnumImage( expr_st.value, expr_type, temp );
-     expr_st.value := temp;
+     findEnumImage( expr.value, expr_type, temp );
+     expr.value := temp;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -1148,7 +1148,7 @@ begin
         loop
           retry := false;
           begin
-            Put_Line( standard_error, expr_st.value );
+            Put_Line( standard_error, expr.value );
           exception when msg: device_error =>
             if exception_message( msg ) = "interrupted system call" then
                retry := true;
@@ -1164,7 +1164,7 @@ begin
         loop
           retry := false;
           begin
-            Put_Line( expr_st.value );
+            Put_Line( expr.value );
           exception when msg: device_error =>
             if exception_message( msg ) = "interrupted system call" then
                retry := true;
@@ -1174,12 +1174,12 @@ begin
           end;
         exit when not retry;
         end loop;
-        last_output := expr_st.value;
+        last_output := expr.value;
         last_output_type := expr_type;
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
-        for i in 1..length( expr_st.value ) loop
-            ch := Element( expr_st.value, i );
+        for i in 1..length( expr.value ) loop
+            ch := Element( expr.value, i );
 <<rewrite>> writechar( result, fd, ch, 1 );
             if result < 0 or result = size_t'last then
                if C_errno = EAGAIN or C_errno = EINTR then
@@ -1209,7 +1209,7 @@ end ParsePutLine;
 procedure ParseQuestion is
   -- Syntax: "?" expression
   -- Source: SparForte built-in
-  expr_st   : storage;
+  expr      : storage;
   expr_type : identifier;
   temp      : unbounded_string;
   uni_type  : identifier;
@@ -1220,7 +1220,7 @@ begin
       err( em( "pragma ada_95" ) & pl( " doesn't allow ?" ) );
       return;
   end if;
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
   -- If an error occurred when parsing the expression, the expression and
   -- type may not be valid.  There's nothing to print.
   if error_found then
@@ -1229,8 +1229,8 @@ begin
      -- this will work during the syntax check but we don't need it
      if isExecutingCommand then
         -- In newer versions of GCC Ada, expr_val cannot be used twice
-        findEnumImage( expr_st.value, expr_type, temp );
-        expr_st.value := temp;
+        findEnumImage( expr.value, expr_type, temp );
+        expr.value := temp;
      end if;
   -- pretty formating for ? and time values
   elsif getBaseType( expr_type ) = cal_time_t then
@@ -1284,18 +1284,18 @@ begin
 
      begin
         if isExecutingCommand then
-           Split( time( to_numeric( expr_st.value ) ), year, month, day, seconds );
+           Split( time( to_numeric( expr.value ) ), year, month, day, seconds );
 
            hours := duration( float'truncation( float( seconds / (60 * 60) ) ) );
            seconds := seconds - hours * (60* 60);
            minutes := duration( float'truncation( float( seconds / ( 60 ) ) ) );
            seconds := seconds - (minutes * 60);
-           expr_st.value := get_4_digits( year'img ) &  "/";
-           expr_st.value := expr_st.value & get_2_digits( month'img ) &  "/";
-           expr_st.value := expr_st.value & get_2_digits( day'img ) & " ";
-           expr_st.value := expr_st.value & get_2_digits( hours'img ) & ":";
-           expr_st.value := expr_st.value & get_2_digits( minutes'img ) & ":";
-           expr_st.value := expr_st.value & drop_leading_space( seconds'img );
+           expr.value := get_4_digits( year'img ) &  "/";
+           expr.value := expr.value & get_2_digits( month'img ) &  "/";
+           expr.value := expr.value & get_2_digits( day'img ) & " ";
+           expr.value := expr.value & get_2_digits( hours'img ) & ":";
+           expr.value := expr.value & get_2_digits( minutes'img ) & ":";
+           expr.value := expr.value & drop_leading_space( seconds'img );
         end if;
      end;
   end if;
@@ -1304,21 +1304,21 @@ begin
      uni_type := getUniType( expr_type );
      if uni_type = root_enumerated_t then
         -- In newer versions of GCC Ada, expr_val cannot be used twice.
-        findEnumImage( expr_st.value, expr_type, temp );
-        expr_st.value := temp;
+        findEnumImage( expr.value, expr_type, temp );
+        expr.value := temp;
      elsif uni_type = uni_numeric_t then
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
         declare
            val : numericValue; -- := to_numeric( expr_val );
         begin
-           val := to_numeric( expr_st.value );
+           val := to_numeric( expr.value );
            -- Within the range of a SparForte integer and no decimal (e.g.
            -- casting results in the same value?
            if val >= numericValue( integerOutputType'first+0.9 ) and
               val <= maxInteger then
               if val = numericValue'floor( val ) then
-                 expr_st.value := to_unbounded_string( val );
+                 expr.value := to_unbounded_string( val );
               end if;
            end if;
         exception when ada.strings.index_error =>
@@ -1327,7 +1327,7 @@ begin
            err( +"numeric variable has no value" );
         when constraint_error =>
            err( pl( "constraint_error in question command - value " &
-             to_string( toEscaped( expr_st.value ) ) & -- KB: 25/03/30 - should be protected
+             to_string( toEscaped( expr.value ) ) & -- KB: 25/03/30 - should be protected
              " may not be numeric" ) );
         when others =>
            err_exception_raised;
@@ -1342,7 +1342,7 @@ begin
         loop
            retry := false;
            begin
-             Put_Line( expr_st.value );
+             Put_Line( expr.value );
            exception when msg: device_error =>
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
@@ -1353,7 +1353,7 @@ begin
         exit when not retry;
         end loop;
      end if;
-     last_output := expr_st.value;
+     last_output := expr.value;
      last_output_type := expr_type;
      replaceField( standard_output_t, line_field,
         long_integer'image( long_integer'value(
@@ -1366,13 +1366,13 @@ procedure ParsePut is
   -- Source: Ada.Text_IO.Editing.Put
   target_ref: reference;
   kind      : identifier;
-  expr_st   : storage;
+  expr      : storage;
   expr_type : identifier;
   result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
   pic       : Picture;
-  pic_st    : storage;
+  picExpr   : storage;
   pic_type  : identifier;
   retry     : boolean;
   temp      : unbounded_string;
@@ -1398,29 +1398,29 @@ begin
   else
      target_ref.id := standard_output_t;
   end if;
-  ParseExpression( expr_st, expr_type );
+  ParseExpression( expr, expr_type );
   if getUniType( expr_type ) = root_enumerated_t then
      -- newer versions of GCC Ada do not like two expr_val params
-     findEnumImage( expr_st.value, expr_type, temp );
-     expr_st.value := temp;
+     findEnumImage( expr.value, expr_type, temp );
+     expr.value := temp;
   end if;
   -- apply optional numeric formatting
   if token = symbol_t and identifiers( token ).value.all = "," then
      getNextToken;
-     ParseExpression( pic_st, pic_type );
+     ParseExpression( picExpr, pic_type );
      if getUniType( pic_type ) /= uni_string_t then
         err( +"number format picture string expected" );
-     elsif not valid( to_string( pic_st.value ) ) then
+     elsif not valid( to_string( picExpr.value ) ) then
         err( +"number not a valid format picture" );
      elsif getUniType( expr_type ) /= uni_numeric_t then
         err( +"only numeric types can use a format picture" );
      else
         if isExecutingCommand then
-           pic := to_picture( to_string( pic_st.value) );
+           pic := to_picture( to_string( picExpr.value) );
            begin
-              expr_st.value := to_unbounded_string( image( decimal_output_type( to_numeric( expr_st.value ) ), pic ) );
+              expr.value := to_unbounded_string( image( decimal_output_type( to_numeric( expr.value ) ), pic ) );
            exception when LAYOUT_ERROR =>
-              err( pl( "incorrect image picture " & ASCII.Quotation & to_string( toEscaped( pic_st.value) ) & ASCII.Quotation ) );
+              err( pl( "incorrect image picture " & ASCII.Quotation & to_string( toEscaped( picExpr.value) ) & ASCII.Quotation ) );
            end;
         end if;
         last_output_type := uni_string_t;
@@ -1436,7 +1436,7 @@ begin
         loop
            retry := false;
            begin
-             Put( standard_error, expr_st.value );
+             Put( standard_error, expr.value );
            exception when msg: device_error =>
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
@@ -1452,7 +1452,7 @@ begin
         loop
            retry := false;
            begin
-             Put( expr_st.value );
+             Put( expr.value );
            exception when msg: device_error =>
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
@@ -1462,11 +1462,11 @@ begin
            end;
         exit when not retry;
         end loop;
-        last_output := expr_st.value;
+        last_output := expr.value;
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
-        for i in 1..length( expr_st.value ) loop
-            ch := Element( expr_st.value, i );
+        for i in 1..length( expr.value ) loop
+            ch := Element( expr.value, i );
             writechar( result, fd, ch, 1 );
 <<rewrite>> if result < 0 or result = size_t'last then
                if C_errno = EAGAIN or C_errno = EINTR then
@@ -1679,14 +1679,14 @@ begin
               --   null;
               --end if;
               -- when non-blocking, Control-D indicates nothing read
-              AssignParameter( avail_ref, storage'(to_spar_boolean( ch = ASCII.EOT ), noMetaLevel ) );
+              AssignParameter( avail_ref, storage'(to_spar_boolean( ch = ASCII.EOT ), noMetaLabel ) );
            else
               getKey( ch );
               --if wasSIGINT then
               --   null;
               --end if;
            end if;
-           AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLevel ) );
+           AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLabel ) );
         else
            err( +"only implemented for a tty/terminal" );
         end if;

@@ -127,17 +127,17 @@ C : Connection_Type;
 
 procedure ParseMySQLConnect is
   -- Syntax: mysql.connect( dbname [,user ,passwd [,host [,port ] ] ] );
-  dbnameExpr : unbounded_string;
+  dbnameExpr : storage;
   dbnameType : identifier;
-  userExpr : unbounded_string;
+  userExpr : storage;
   userType : identifier;
   hasUser  : boolean := false;
-  pswdExpr : unbounded_string;
+  pswdExpr : storage;
   pswdType : identifier;
-  hostExpr : unbounded_string;
+  hostExpr : storage;
   hostType : identifier;
   hasHost  : boolean := false;
-  portExpr : unbounded_string;
+  portExpr : storage;
   portType : identifier;
   hasPort  : boolean := false;
 begin
@@ -170,41 +170,41 @@ begin
      end if;
      begin
        begin
-         Set_DB_Name( C, to_string( dbnameExpr ) );
+         Set_DB_Name( C, to_string( dbnameExpr.value ) );
        exception when others =>
          err( pl( "Internal error: set_db_name " ) &
-              em_value( dbnameExpr ) &
+              em_value( dbnameExpr.value ) &
               pl( " failed" )
          );
        end;
        if hasUser then
           begin
-            Set_User_Password( C, to_string( userExpr ), to_string( pswdExpr ) );
+            Set_User_Password( C, to_string( userExpr.value ), to_string( pswdExpr.value ) );
           exception when others =>
              err( pl( "Internal error: set_user_password " ) &
-                  em_value( userExpr ) &
+                  em_value( userExpr.value ) &
                   pl( "/" ) &
-                  em_value( pswdExpr ) &
+                  em_value( pswdExpr.value ) &
                   pl( " failed" )
              );
           end;
        end if;
        if hasHost then
           begin
-             Set_Host_Name( C, to_string( hostExpr ) );
+             Set_Host_Name( C, to_string( hostExpr.value ) );
           exception when others =>
              err( pl( "Internal error: set_host_name " ) &
-                  em_value( hostExpr ) &
+                  em_value( hostExpr.value ) &
                   pl( " failed" )
              );
           end;
        end if;
        if hasPort then
           begin
-            Set_Port( C, integer( to_numeric( portExpr ) ) );
+            Set_Port( C, integer( to_numeric( portExpr.value ) ) );
           exception when others =>
              err( pl( "Internal error: set_port " ) &
-                  em_value( portExpr ) &
+                  em_value( portExpr.value ) &
                   pl( " failed" )
              );
           end;
@@ -241,7 +241,7 @@ begin
   err( +"mysql support not configured" );
 end not_configured;
 
-procedure not_configured( result : out unbounded_string ) is
+procedure not_configured( result : out storage ) is
 begin
   err( +"mysql support not configured" );
 end not_configured;
@@ -251,7 +251,7 @@ begin
   err( +"mysql support not configured" );
 end not_configured_do;
 
-procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+procedure not_configured( result : out storage; kind : out identifier ) is
 begin
   err( +"mysql support not configured" );
 end not_configured;
@@ -261,7 +261,7 @@ procedure ParseMySQLConnect renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLEngineOf( result : out storage; kind : out identifier ) is
   -- Syntax: b := mysql.engine_of;
   -- Source: APQ.Engine_Of
 begin
@@ -269,10 +269,10 @@ begin
   expect( mysql_engine_of_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( C ) ) ) );
-       if length( result ) > 0 then
-          if element( result, 1 ) = ' ' then
-             delete( result, 1, 1 );
+       result := storage'( to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( C ) ) ) ), noMetaLabel );
+       if length( result.value ) > 0 then
+          if element( result.value, 1 ) = ' ' then
+             delete( result.value, 1, 1 );
           end if;
        end if;
      exception when others =>
@@ -283,17 +283,17 @@ end ParseMySQLEngineOf;
 
 #else
 
-procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLEngineOf( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
 -- TODO: this is not visible
-procedure ParseMySQLPrepare( result : out unbounded_string ) is
+procedure ParseMySQLPrepare( result : out storage ) is
   -- Syntax: mysql.prepare( sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
 begin
@@ -311,32 +311,32 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := to_spar_boolean( true );
+     result := storage'( to_spar_boolean( true ), noMetaLabel );
      begin
        Clear( Q );
        if hasAfter then
-          Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
+          Prepare( Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Prepare( Q, to_string( sqlExpr ) );
+          Prepare( Q, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
-       result := to_spar_boolean( false );
+       result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseMySQLPrepare;
 
 #else
 
-procedure ParseMySQLPrepare( result : out unbounded_string ) renames not_configured;
+procedure ParseMySQLPrepare( result : out storage ) renames not_configured;
 
 #end if;
 #if MYSQL
 
 procedure ParseMySQLPrepare is
   -- Syntax: mysql.prepare( sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
 begin
@@ -351,9 +351,9 @@ begin
   if isExecutingCommand then
      begin
        if hasAfter then
-          Prepare( Q, to_string( sqlExpr ), to_string( afterExpr ) );
+          Prepare( Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Prepare( Q, to_string( sqlExpr ) );
+          Prepare( Q, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -370,9 +370,9 @@ procedure ParseMySQLPrepare renames not_configured;
 
 procedure ParseMySQLAppend is
   -- Syntax: mysql.append( sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
 begin
@@ -387,9 +387,9 @@ begin
   if isExecutingCommand then
      begin
        if hasAfter then
-          Append( Q, to_string( sqlExpr ), to_string( afterExpr ) );
+          Append( Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Append( Q, to_string( sqlExpr ) );
+          Append( Q, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -406,7 +406,7 @@ procedure ParseMySQLAppend renames not_configured;
 
 procedure ParseMySQLAppendLine is
   -- Syntax: mysql.append_line( sqlstmt );
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
 begin
   expect( mysql_append_line_t );
@@ -414,7 +414,7 @@ begin
 
   if isExecutingCommand then
      begin
-       Append_Line( Q, to_string( sqlExpr ) );
+       Append_Line( Q, to_string( sqlExpr.value ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -430,9 +430,9 @@ procedure ParseMySQLAppendLine renames not_configured;
 
 procedure ParseMySQLAppendQuoted is
   -- Syntax: mysql.append_quoted( sqlstmt [,after] );
-  sqlExpr   : unbounded_string;
+  sqlExpr   : storage;
   sqlType   : identifier;
-  afterExpr : unbounded_string;
+  afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
 begin
@@ -447,9 +447,9 @@ begin
   if isExecutingCommand then
      begin
        if hasAfter then
-          Append_Quoted( Q, C, to_string( sqlExpr ), to_string( afterExpr ) );
+          Append_Quoted( Q, C, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
-          Append_Quoted( Q, C, to_string( sqlExpr ) );
+          Append_Quoted( Q, C, to_string( sqlExpr.value ) );
        end if;
      exception when others =>
        err_exception_raised;
@@ -491,7 +491,7 @@ procedure ParseMySQLExecute renames not_configured;
 
 procedure ParseMySQLExecuteChecked is
   -- Syntax: mysql.execute_checked( [ msg ] );
-  msgExpr   : unbounded_string;
+  msgExpr   : storage;
   msgType   : identifier;
   hasMsg    : boolean := false;
 begin
@@ -504,7 +504,7 @@ begin
   if isExecutingCommand then
      begin
        if hasMsg then
-          Execute_Checked( Q, C, to_string( msgExpr ) );
+          Execute_Checked( Q, C, to_string( msgExpr.value ) );
        else
           Execute_Checked( Q, C );
        end if;
@@ -526,16 +526,16 @@ procedure ParseMySQLExecuteChecked renames not_configured;
 
 #end if;
 
---procedure ParseDBDo( result : out unbounded_string ) is
+--procedure ParseDBDo( result : out storage ) is
 --begin
 --  expect( db_do_t );
---  result := null_unbounded_string;
+--  result := nullStorage;
 --end ParseDBDo;
 --
---procedure ParseDBFetchrow( result : out unbounded_string ) is
+--procedure ParseDBFetchrow( result : out storage ) is
 --begin
 --  expect( db_fetchrow_t );
---  result := null_unbounded_string;
+--  result := nullStorage;
 --end ParseDBFetchrow;
 
 #if MYSQL
@@ -565,23 +565,23 @@ procedure ParseMySQLDisconnect renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLIsConnected( result : out storage; kind : out identifier ) is
   -- Syntax: mysql.is_connected
 begin
   kind := boolean_t;
   expect( mysql_is_connected_t );
   if isExecutingCommand then
      begin
-       result := to_spar_boolean( is_connected( C ) );
+       result := storage'( to_spar_boolean( is_connected( C ) ), noMetaLabel );
      exception when others =>
-       result := to_spar_boolean( false );
+       result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseMySQLIsConnected;
 
 #else
 
-procedure ParseMySQLIsConnected( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLIsConnected( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -607,7 +607,7 @@ procedure ParseMySQLReset renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLErrorMessage( result : out storage; kind : out identifier ) is
   -- Syntax: s := mysql.error_message
   -- Source: APQ.Error_Message
 begin
@@ -615,7 +615,7 @@ begin
   expect( mysql_error_message_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Error_Message( C ) );
+       result := storage'( to_unbounded_string( Error_Message( C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -624,11 +624,11 @@ end ParseMySQLErrorMessage;
 
 #else
 
-procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLErrorMessage( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 
--- procedure ParseMySQLNoticeMessage( result : out unbounded_string ) is
+-- procedure ParseMySQLNoticeMessage( result : out storage ) is
 --   -- Syntax: mysql.notice_message
 --   -- Source: APQ.Notice_Message
 -- begin
@@ -644,7 +644,7 @@ procedure ParseMySQLErrorMessage( result : out unbounded_string; kind : out iden
 
 #if MYSQL
 
-procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLInAbortState( result : out storage; kind : out identifier ) is
   -- Syntax: mysql.in_abort_state
   -- Source: APQ.In_Abort_State
 begin
@@ -652,7 +652,7 @@ begin
   expect( mysql_in_abort_state_t );
   if isExecutingCommand then
      begin
-       result := to_spar_boolean( In_Abort_State( C ) );
+       result := storage'( to_spar_boolean( In_Abort_State( C ) ), noMetaLabel );
      exception when not_connected =>
        err( +"not connected" );
      when others =>
@@ -663,12 +663,12 @@ end ParseMySQLInAbortState;
 
 #else
 
-procedure ParseMySQLInAbortState( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLInAbortState( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLOptions( result : out storage; kind : out identifier ) is
   -- Syntax: mysql.options
   -- Source: APQ.Options
 begin
@@ -676,7 +676,7 @@ begin
   expect( mysql_options_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Options( C ) );
+       result := storage'( to_unbounded_string( Options( C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -685,7 +685,7 @@ end ParseMySQLOptions;
 
 #else
 
-procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLOptions( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -693,14 +693,14 @@ procedure ParseMySQLOptions( result : out unbounded_string; kind : out identifie
 procedure ParseMySQLSetRollbackOnFinalize is
   -- Syntax: mysql.set_rollback_on_finalize( b );
   -- Source: APQ.Set_Rollback_On_Finalize
-  rollExpr : unbounded_string;
+  rollExpr : storage;
   rollType : identifier;
 begin
   expect( mysql_set_rollback_on_finalize_t );
   ParseSingleEnumParameter( mysql_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
-       rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
+       rollback : constant boolean := rollExpr.value = to_unbounded_string( "1" );
      begin
        Set_Rollback_On_Finalize( C, rollback );
      exception when others =>
@@ -716,7 +716,7 @@ procedure ParseMySQLSetRollbackOnFinalize renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLWillRollbackOnFinalize( result : out storage; kind : out identifier ) is
   -- Syntax: mysql.will_rollback_on_finalize( b );
   -- Source: APQ.Will_Rollback_On_Finalize
 begin
@@ -724,7 +724,7 @@ begin
   expect( mysql_will_rollback_on_finalize_t );
   if isExecutingCommand then
     begin
-      result := to_spar_boolean( Will_Rollback_On_Finalize( C ) );
+      result := storage'( to_spar_boolean( Will_Rollback_On_Finalize( C ) ), noMetaLabel );
     exception when others =>
       err_exception_raised;
     end;
@@ -733,7 +733,7 @@ end ParseMySQLWillRollbackOnFinalize;
 
 #else
 
-procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLWillRollbackOnFinalize( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -741,9 +741,9 @@ procedure ParseMySQLWillRollbackOnFinalize( result : out unbounded_string; kind 
 procedure ParseMySQLOpenDBTrace is
   -- Syntax: mysql.open_db_trace( f [,m] );
   -- Source: APQ.Open_DB_Trace
-  fnameExpr : unbounded_string;
+  fnameExpr : storage;
   fnameType : identifier;
-  modeExpr  : unbounded_string;
+  modeExpr  : storage;
   modeType  : identifier;
   traceMode : trace_mode_type;
   hasMode  : boolean := false;
@@ -752,7 +752,7 @@ begin
   ParseFirstStringParameter( mysql_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
-     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
+     traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr.value ) ) );
      hasMode := true;
   end if;
   expect( symbol_t, ")" );
@@ -760,9 +760,9 @@ begin
   if isExecutingCommand then
      begin
        if hasMode then
-          Open_DB_Trace( C, to_string( fnameExpr ), traceMode );
+          Open_DB_Trace( C, to_string( fnameExpr.value ), traceMode );
        else
-          Open_DB_Trace( C, to_string( fnameExpr ) );
+          Open_DB_Trace( C, to_string( fnameExpr.value ) );
        end if;
      exception when not_connected =>
        err( +"not connected" );
@@ -807,14 +807,14 @@ procedure ParseMySQLCloseDBTrace renames not_configured;
 procedure ParseMySQLSetTrace is
   -- Syntax: mysql.set_trace( b );
   -- Source: APQ.Set_Trace
-  traceExpr : unbounded_string;
+  traceExpr : storage;
   traceType : identifier;
 begin
   expect( mysql_set_trace_t );
   ParseSingleEnumParameter( mysql_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
-       traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
+       traceback : constant boolean := traceExpr.value = to_unbounded_string( "1" );
      begin
        Set_Trace( C, traceback );
      exception when others =>
@@ -830,7 +830,7 @@ procedure ParseMySQLSetTrace renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLIsTrace( result : out storage; kind : out identifier ) is
   -- Syntax: mysql.is_trace( b );
   -- Source: APQ.Is_Trace
 begin
@@ -838,7 +838,7 @@ begin
   expect( mysql_is_trace_t );
   if isExecutingCommand then
     begin
-      result := to_spar_boolean( Is_Trace( C ) );
+      result := storage'( to_spar_boolean( Is_Trace( C ) ), noMetaLabel );
     exception when others =>
       err_exception_raised;
     end;
@@ -847,7 +847,7 @@ end ParseMySQLIsTrace;
 
 #else
 
-procedure ParseMySQLIsTrace( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLIsTrace( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -878,18 +878,18 @@ procedure ParseMySQLClear renames not_configured;
 procedure ParseMySQLRaiseExceptions is
   -- Syntax: mysql.raise_exceptions( [ b ] );
   -- Source: APQ.Raise_Exceptions
-  raiseExpr : unbounded_string;
+  raiseExpr : storage;
   raiseType : identifier;
 begin
   expect( mysql_raise_exceptions_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleEnumParameter( mysql_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
-     raiseExpr := to_unbounded_string( "1" );
+     raiseExpr.value := to_unbounded_string( "1" );
   end if;
   if isExecutingCommand then
      declare
-       raise_them : constant boolean := raiseExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := raiseExpr.value = to_unbounded_string( "1" );
      begin
        Raise_Exceptions( Q, raise_them );
      exception when others =>
@@ -908,18 +908,18 @@ procedure ParseMySQLRaiseExceptions renames not_configured;
 procedure ParseMySQLReportErrors is
   -- Syntax: mysql.report_errors( b );
   -- Source: APQ.Report_Errors
-  reportExpr : unbounded_string;
+  reportExpr : storage;
   reportType : identifier;
 begin
   expect( mysql_report_errors_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseSingleStringParameter( mysql_report_errors_t, reportExpr, reportType, boolean_t );
   else
-     reportExpr := to_unbounded_string( "1" );
+     reportExpr.value := to_unbounded_string( "1" );
   end if;
   if isExecutingCommand then
      declare
-       report_them : constant boolean := reportExpr = to_unbounded_string( "1" );
+       report_them : constant boolean := reportExpr.value = to_unbounded_string( "1" );
      begin
        Report_Errors( Q, report_them );
      exception when others =>
@@ -1034,19 +1034,19 @@ procedure ParseMySQLRewind renames not_configured;
 procedure ParseMySQLFetch is
   -- Syntax: mysql.fetch;
   -- Source: APQ.Fetch
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type : identifier;
   haveIndex : boolean := false;
 begin
   expect( mysql_fetch_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleNumericParameter( mysql_fetch_t, expr_val, expr_type, mysql_tuple_index_type_t );
+     ParseSingleNumericParameter( mysql_fetch_t, expr, expr_type, mysql_tuple_index_type_t );
      haveIndex := true;
   end if;
   if isExecutingCommand then
      begin
        if haveIndex then
-          Fetch( Q, Tuple_Index_Type( to_numeric( expr_val ) ) );
+          Fetch( Q, Tuple_Index_Type( to_numeric( expr.value ) ) );
        else
           Fetch( Q );
        end if;
@@ -1067,7 +1067,7 @@ procedure ParseMySQLFetch renames not_configured;
 #end if;
 #if MYSQL
 
-procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLEndOfQuery( result : out storage; kind : out identifier ) is
   -- Syntax: b := mysql.end_of_query;
   -- Source: APQ.End_Of_Query
 begin
@@ -1075,7 +1075,7 @@ begin
   expect( mysql_end_of_query_t );
   if isExecutingCommand then
      begin
-       result := to_spar_boolean( End_Of_Query( Q ) );
+       result := storage'( to_spar_boolean( End_Of_Query( Q ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;
@@ -1084,12 +1084,12 @@ end ParseMySQLEndOfQuery;
 
 #else
 
-procedure ParseMySQLEndOfQuery( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLEndOfQuery( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLTuple( result : out storage; kind : out identifier ) is
   -- Syntax: t := mysql.tuple;
   -- Source: APQ.Tuple
 begin
@@ -1097,7 +1097,7 @@ begin
   expect( mysql_tuple_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Tuple_Index_Type'image( Tuple( Q ) ) );
+       result := storage'( to_unbounded_string( Tuple_Index_Type'image( Tuple( Q ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
      when others =>
@@ -1108,12 +1108,12 @@ end ParseMySQLTuple;
 
 #else
 
-procedure ParseMySQLTuple( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLTuple( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLTuples( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.tuples;
   -- Source: APQ.Tuples
 begin
@@ -1121,7 +1121,7 @@ begin
   expect( mysql_tuples_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Tuple_Count_Type'image( Tuples( Q ) ) );
+       result := storage'( to_unbounded_string( Tuple_Count_Type'image( Tuples( Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
      when others =>
@@ -1132,12 +1132,12 @@ end ParseMySQLTuples;
 
 #else
 
-procedure ParseMySQLTuples( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLTuples( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLColumns( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.columns;
   -- Source: APQ.Columns
 begin
@@ -1145,7 +1145,7 @@ begin
   expect( mysql_columns_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Natural'image( Columns( Q ) ) );
+       result := storage'( to_unbounded_string( Natural'image( Columns( Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
      when others =>
@@ -1156,25 +1156,25 @@ end ParseMySQLColumns;
 
 #else
 
-procedure ParseMySQLColumns( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLColumns( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLColumnName( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.column_Name;
   -- Source: APQ.Column_Name;
-  exprVal : unbounded_string;
+  expr : storage;
   exprType : identifier;
 begin
   kind := string_t;
   expect( mysql_column_name_t );
-  ParseSingleNumericParameter( mysql_column_name_t, exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_column_name_t, expr, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string(
-          Column_Name( Q, Column_Index_Type( to_numeric( exprVal ) ) )
-       );
+       result := storage'( to_unbounded_string(
+          Column_Name( Q, Column_Index_Type( to_numeric( expr.value ) ) )
+       ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when others =>
@@ -1185,25 +1185,25 @@ end ParseMySQLColumnName;
 
 #else
 
-procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLColumnName( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLColumnIndex( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.column_index;
   -- Source: APQ.Column_Index
-  exprVal : unbounded_string;
+  expr : storage;
   exprType : identifier;
 begin
   kind := mysql_column_index_type_t;
   expect( mysql_column_index_t );
-  ParseSingleStringParameter( mysql_column_index_t, exprVal, exprType, string_t );
+  ParseSingleStringParameter( mysql_column_index_t, expr, exprType, string_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( Column_Index_Type'image(
-           Column_Index( Q, to_string( exprVal ) )
-       ) );
+       result := storage'( to_unbounded_string( Column_Index_Type'image(
+           Column_Index( Q, to_string( expr.value ) )
+       ) ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when others =>
@@ -1214,11 +1214,11 @@ end ParseMySQLColumnIndex;
 
 #else
 
-procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLColumnIndex( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 
---procedure ParseDBColumnType( result : out unbounded_string ) is
+--procedure ParseDBColumnType( result : out storage ) is
   -- Syntax: n := db.column_type;
   -- Source: APQ.Column_Type;
   --exprVal : unbounded_string;
@@ -1248,21 +1248,21 @@ procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out ident
 
 #if MYSQL
 
-procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLIsNull( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.is_null( c );
   -- Source: APQ.Is_Null;
-  exprVal : unbounded_string;
+  expr : storage;
   exprType : identifier;
 begin
   kind := boolean_t;
   expect( mysql_is_null_t );
-  ParseSingleNumericParameter( mysql_is_null_t, exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_is_null_t, expr, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
-       result := to_spar_boolean(
+       result := storage'( to_spar_boolean(
           Is_Null( Q,
-          Column_Index_Type( to_numeric( exprVal ) ) )
-       );
+          Column_Index_Type( to_numeric( expr.value ) ) )
+       ), noMetaLabel );
      exception when no_column =>
        err( +"no column" );
      when no_result =>
@@ -1275,23 +1275,23 @@ end ParseMySQLIsNull;
 
 #else
 
-procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLIsNull( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
 
-procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMySQLValue( result : out storage; kind : out identifier ) is
   -- Syntax: n := mysql.value;
   -- Source: APQ.Value;
-  exprVal  : unbounded_string;
+  expr  : storage;
   exprType : identifier;
 begin
   kind := universal_t;
   expect( mysql_value_t );
-  ParseSingleNumericParameter( mysql_value_t, exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_value_t, expr, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
-       result := Value( Q, Column_Index_Type( to_numeric( exprVal ) ) );
+       result := storage'( Value( Q, Column_Index_Type( to_numeric( expr.value ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
      when null_value =>
@@ -1308,7 +1308,7 @@ end ParseMySQLValue;
 
 #else
 
-procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseMySQLValue( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if MYSQL
@@ -1712,11 +1712,11 @@ procedure ParseMySQLSchema is
   totalWidth     : integer;
   width          : integer;
   exprType       : identifier;
-  exprVal        : unbounded_string;
+  expr        : storage;
 begin
   expect( mysql_schema_t );
   expect( symbol_t, "(" );
-  ParseExpression( exprVal, exprType );
+  ParseExpression( expr, exprType );
   if baseTypesOK( exprType, string_t ) then
      expect( symbol_t, ")" );
   end if;
@@ -1734,7 +1734,7 @@ begin
         --            "from pg_attribute a, pg_class c, pg_type t where a.attrelid = c.oid and t.oid = a.atttypid and a.attisdropped = 'f' and (a.atttypid < 26 or a.atttypid > 29) and c.relname='" &
         --             to_string( exprVal ) & "' order by a.attnum" );
 
-        prepare( Q, "show column_name, data_type, is_nullable, column_default from information_schema.columns where table_name = '" & to_string( exprVal ) & "'" );
+        prepare( Q, "show column_name, data_type, is_nullable, column_default from information_schema.columns where table_name = '" & to_string( expr.value ) & "'" );
 
         -- MySQL 5.0.x has information_schema.  Older versions must fall back
         -- to a show query.
@@ -1742,7 +1742,7 @@ begin
         begin
            execute( Q, C );
         exception when others =>
-           prepare( Q, "show columns from " & to_string( exprVal ) );
+           prepare( Q, "show columns from " & to_string( expr.value ) );
            execute( Q, C );
         end;
 
@@ -1750,7 +1750,7 @@ begin
 
         if end_of_query( Q ) then
            err( +"Did not find any relation named " &
-              unb_em( exprVal ) );
+              unb_em( expr.value ) );
            return;
         end if;
 
@@ -1925,7 +1925,7 @@ begin
 
      -- List of indexes: not available yet through information_schema
 
-     prepare( Q, "show index from " & to_string( exprVal ) );
+     prepare( Q, "show index from " & to_string( expr.value ) );
      execute( Q, C );
 
      if tuples( Q ) > 0 then

@@ -77,27 +77,27 @@ dirops_close_t          : identifier;
 dirops_is_open_t        : identifier;
 dirops_read_t          : identifier;
 
---procedure ParseSingleDirNameStrExpression( expr_val : out unbounded_string;
+--procedure ParseSingleDirNameStrExpression( expr : out unbounded_string;
 --  expr_type : out identifier ) is
 --begin
 --  expect( symbol_t, "(" );
---  ParseExpression( expr_val, expr_type );
+--  ParseExpression( expr, expr_type );
 --  if baseTypesOk( expr_type, dirops_dir_name_str_t ) then
 --     expect( symbol_t, ")" );
 --  end if;
 --end ParseSingleDirNameStrExpression;
 --
---procedure ParseSinglePathNameExpression( expr_val : out unbounded_string;
+--procedure ParseSinglePathNameExpression( expr : out unbounded_string;
 --  expr_type : out identifier ) is
 --begin
 --  expect( symbol_t, "(" );
---  ParseExpression( expr_val, expr_type );
+--  ParseExpression( expr, expr_type );
 --  if baseTypesOk( expr_type, dirops_path_name_t ) then
 --     expect( symbol_t, ")" );
 --  end if;
 --end ParseSinglePathNameExpression;
 
-procedure ParseDirOpsDirSeparator( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsDirSeparator( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
 begin
@@ -105,7 +105,7 @@ begin
   expect( dirops_dir_separator_t );
   begin
     if isExecutingCommand then
-       result := null_unbounded_string & dir_separator;
+       result := storage'( null_unbounded_string & dir_separator, noMetaLabel );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -117,14 +117,14 @@ end ParseDirOpsDirSeparator;
 procedure ParseDirOpsChangeDir is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   expect( dirops_change_dir_t );
-  ParseSingleStringParameter( dirops_change_dir_t, expr_val, expr_type, dirops_dir_name_str_t );
+  ParseSingleStringParameter( dirops_change_dir_t, expr, expr_type, dirops_dir_name_str_t );
   begin
     if isExecutingCommand then
-       Change_Dir( dir_name_str( to_string( expr_val ) ) );
+       Change_Dir( dir_name_str( to_string( expr.value ) ) );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -136,14 +136,14 @@ end ParseDirOpsChangeDir;
 procedure ParseDirOpsMakeDir is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   expect( dirops_make_dir_t );
-  ParseSingleStringParameter( dirops_make_dir_t, expr_val, expr_type, dirops_dir_name_str_t );
+  ParseSingleStringParameter( dirops_make_dir_t, expr, expr_type, dirops_dir_name_str_t );
   begin
     if isExecutingCommand then
-       Make_Dir( dir_name_str( to_string( expr_val ) ) );
+       Make_Dir( dir_name_str( to_string( expr.value ) ) );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -155,23 +155,23 @@ end ParseDirOpsMakeDir;
 procedure ParseDirOpsRemoveDir is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2: identifier;
 begin
   expect( dirops_remove_dir_t );
-  ParseFirstStringParameter( dirops_remove_dir_t, expr_val, expr_type, dirops_dir_name_str_t );
+  ParseFirstStringParameter( dirops_remove_dir_t, expr, expr_type, dirops_dir_name_str_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dirops_remove_dir_t, expr_val2, expr_type2, boolean_t );
+     ParseLastEnumParameter( dirops_remove_dir_t, expr2, expr_type2, boolean_t );
   else
      expect( symbol_t, ")" );
   end if;
   declare
-    recursive : constant boolean := expr_val2 = to_unbounded_string( "1" );
+    recursive : constant boolean := expr2.value = to_unbounded_string( "1" );
   begin
     if isExecutingCommand then
-       Remove_Dir( dir_name_str( to_string( expr_val ) ), recursive);
+       Remove_Dir( dir_name_str( to_string( expr.value ) ), recursive);
     end if;
   exception when directory_error =>
     err( +"directory cannot be removed" );
@@ -180,7 +180,7 @@ begin
   end;
 end ParseDirOpsRemoveDir;
 
-procedure ParseDirOpsGetCurrentDir( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsGetCurrentDir( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
 begin
@@ -188,7 +188,7 @@ begin
   expect( dirops_get_current_dir_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( get_current_dir );
+       result := storage'( to_unbounded_string( get_current_dir ), noMetaLabel );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -197,116 +197,117 @@ begin
   end;
 end ParseDirOpsGetCurrentDir;
 
-procedure ParseDirOpsAbsoluteDirName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsAbsoluteDirName( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   kind := dirops_absolute_dir_name_str_t;
   expect( dirops_absolute_dir_name_t );
-  ParseSingleStringParameter( dirops_absolute_dir_name_t, expr_val, expr_type, dirops_path_name_t );
+  ParseSingleStringParameter( dirops_absolute_dir_name_t, expr, expr_type, dirops_path_name_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( Containing_Directory (Full_Name( path_name( to_string( expr_val)))));
+       result := storage'( to_unbounded_string( Containing_Directory (
+          Full_Name( path_name( to_string( expr.value ))))), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseDirOpsAbsoluteDirName;
 
-procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsDirName( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   kind := dirops_dir_name_str_t;
   expect( dirops_dir_name_t );
-  ParseSingleStringParameter( dirops_dir_name_t, expr_val, expr_type, dirops_path_name_t );
+  ParseSingleStringParameter( dirops_dir_name_t, expr, expr_type, dirops_path_name_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( dir_name( path_name( to_string( expr_val ) ) ) );
+       result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseDirOpsDirName;
 
-procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsBaseName( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2: identifier;
 begin
   kind := string_t;
   expect( dirops_base_name_t );
-  ParseFirstStringParameter( dirops_base_name_t, expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_base_name_t, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( dirops_base_name_t, expr_val2, expr_type2, string_t );
+     ParseLastStringParameter( dirops_base_name_t, expr2, expr_type2, string_t );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( base_name( path_name( to_string( expr_val ) ), to_string( expr_val2 ) ) );
+       result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseDirOpsBaseName;
 
-procedure ParseDirOpsFileExtension( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsFileExtension( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   kind := string_t;
   expect( dirops_file_extension_t );
-  ParseSingleStringParameter( dirops_file_extension_t, expr_val, expr_type, dirops_path_name_t );
+  ParseSingleStringParameter( dirops_file_extension_t, expr, expr_type, dirops_path_name_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( file_extension( path_name( to_string( expr_val ) ) ) );
+       result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseDirOpsFileExtension;
 
-procedure ParseDirOpsFileName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsFileName( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
 begin
   kind := string_t;
   expect( dirops_file_name_t );
-  ParseSingleStringParameter( dirops_file_name_t, expr_val, expr_type, dirops_path_name_t );
+  ParseSingleStringParameter( dirops_file_name_t, expr, expr_type, dirops_path_name_t );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( file_name( path_name( to_string( expr_val ) ) ) );
+       result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
     end if;
   exception when others =>
     err_exception_raised;
   end;
 end ParseDirOpsFileName;
 
-procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsFormatPathname( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2: identifier;
 begin
   kind := dirops_path_name_t;
   expect( dirops_format_pathname_t );
-  ParseFirstStringParameter( dirops_format_pathname_t, expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_format_pathname_t, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dirops_format_pathname_t, expr_val2, expr_type2, dirops_path_style_t );
+     ParseLastEnumParameter( dirops_format_pathname_t, expr2, expr_type2, dirops_path_style_t );
   else
      expect( symbol_t, ")" );
   end if;
@@ -315,14 +316,14 @@ begin
   begin
     if isExecutingCommand then
        -- not very elegant
-       if expr_val2 = to_unbounded_string( "0" ) then
+       if expr2.value = to_unbounded_string( "0" ) then
           style := UNIX;
-       elsif expr_val2 = to_unbounded_string( "1" ) then
+       elsif expr2.value = to_unbounded_string( "1" ) then
           style := DOS;
-       elsif expr_val2 = to_unbounded_string( "2" ) then
+       elsif expr2.value = to_unbounded_string( "2" ) then
           style := System_Default;
        end if;
-       result := to_unbounded_string( format_pathname( path_name( to_string( expr_val ) ), style ) );
+       result := storage'( to_unbounded_string( format_pathname( path_name( to_string( expr.value ) ), style ) ), noMetaLabel );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -331,19 +332,19 @@ begin
   end;
 end ParseDirOpsFormatPathname;
 
-procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsExpandPath( result : out storage; kind : out identifier ) is
   -- Syntax:
   -- Source:
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
-  expr_val2 : unbounded_string;
+  expr2 : storage;
   expr_type2: identifier;
 begin
   kind := dirops_path_name_t;
   expect( dirops_expand_path_t );
-  ParseFirstStringParameter( dirops_expand_path_t, expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_expand_path_t, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dirops_expand_path_t, expr_val2, expr_type2, dirops_env_style_t );
+     ParseLastEnumParameter( dirops_expand_path_t, expr2, expr_type2, dirops_env_style_t );
   else
      expect( symbol_t, ")" );
   end if;
@@ -352,16 +353,16 @@ begin
   begin
     if isExecutingCommand then
        -- not very elegant
-       if expr_val2 = to_unbounded_string( "0" ) then
+       if expr2.value= to_unbounded_string( "0" ) then
           style := UNIX;
-       elsif expr_val2 = to_unbounded_string( "1" ) then
+       elsif expr2.value = to_unbounded_string( "1" ) then
           style := DOS;
-       elsif expr_val2 = to_unbounded_string( "2" ) then
+       elsif expr2.value = to_unbounded_string( "2" ) then
           style := Both;
-       elsif expr_val2 = to_unbounded_string( "3" ) then
+       elsif expr2.value = to_unbounded_string( "3" ) then
           style := System_Default;
        end if;
-       result := to_unbounded_string( expand_path( path_name( to_string( expr_val ) ), style ) );
+       result := storage'( to_unbounded_string( expand_path( path_name( to_string( expr.value ) ), style ) ), noMetaLabel );
     end if;
   exception when directory_error =>
     err( +"directory not accessible" );
@@ -393,27 +394,27 @@ procedure ParseDirOpsOpen is
   -- Source: Open (Dir : out Dir_Type; Dir_Name : Dir_Name_Str);
   resId : resHandleId;
   ref : reference;
-  expr_val : unbounded_string;
+  expr : storage;
   expr_type: identifier;
   theDir : resPtr;
 begin
   expect( dirops_open_t );
   ParseFirstOutParameter( dirops_open_t, ref, dirops_dir_type_t );
   if baseTypesOK( ref.kind, dirops_dir_type_t ) then
-     ParseLastStringParameter( dirops_open_t, expr_val, expr_type, string_t );
+     ParseLastStringParameter( dirops_open_t, expr, expr_type, string_t );
   end if;
   if isExecutingCommand then
      begin
        if not identifiers( ref.id ).resource then
           identifiers( ref.id ).resource := true;
           declareResource( resId, directory, getIdentifierBlock( ref.id ) );
-          AssignParameter( ref, to_unbounded_string( resId ) );
+          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
           findResource( resId, theDir );
        else
           -- Reuse existing resource
           findResource( to_resource_id( identifiers( ref.id ).value.all ), theDir );
        end if;
-       Open( theDir.dir, to_string( expr_val ) );
+       Open( theDir.dir, to_string( expr.value ) );
      exception when DIRECTORY_ERROR =>
        err( +"directory does not exist" );
      when others =>
@@ -446,7 +447,7 @@ begin
   end if;
 end ParseDirOpsClose;
 
-procedure ParseDirOpsIsOpen( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDirOpsIsOpen( result : out storage; kind : out identifier ) is
   -- Syntax: dirops.is_open( d )
   -- Source: Is_Open (Dir : Dir_Type) return Boolean;
   dirId : identifier;
@@ -459,13 +460,13 @@ begin
      if identifiers( dirId ).resource then
         begin
           findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
-          result := to_spar_boolean( Is_Open( theDir.dir ) );
+          result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaLabel );
         exception when others =>
           err_exception_raised;
         end;
      else
         -- probably not open
-        result := to_spar_boolean( false );
+        result := storage'( to_spar_boolean( false ), noMetaLabel );
      end if;
   end if;
 end ParseDirOpsIsOpen;
@@ -491,7 +492,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
        Read( theDir.dir, s, last );
-       AssignParameter( strRef, to_unbounded_string( s(1..Last) ) );
+       AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ), noMetaLabel ) );
        --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
      exception when DIRECTORY_ERROR =>
        err( +"directory is not open" );

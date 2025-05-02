@@ -164,7 +164,7 @@ end getLineNo;
 -- from Put_Line.
 ------------------------------------------------------------------------------
 
-procedure writeCurrentError( expr_val : unbounded_string ) is
+procedure writeCurrentError( expr : unbounded_string ) is
   ref       : reference;
   result    : size_t;
   ch        : character;
@@ -188,7 +188,7 @@ begin
      loop
         retry := false;
         begin
-          put_line_retry( standard_error, to_string( expr_val ) );
+          put_line_retry( standard_error, to_string( expr ) );
         exception when msg: device_error =>
           if exception_message( msg ) = "interrupted system call" then
              retry := true;
@@ -203,8 +203,8 @@ begin
 
   else
      fd := aFileDescriptor'value( to_string( stringField( ref, fd_field ) ) );
-     for i in 1..length( expr_val ) loop
-         ch := Element( expr_val, i );
+     for i in 1..length( expr ) loop
+         ch := Element( expr, i );
 <<logwrite>> writechar( result, fd, ch, 1 );
          if result < 0 then
             if C_errno = EAGAIN or C_errno = EINTR then
@@ -504,7 +504,7 @@ begin
   ParseSingleOutParameter( logs_level_begin_t, ref, log_level_t );
   if isExecutingCommand then
      begin
-        AssignParameter(ref, to_unbounded_string( numericValue( level ) ) );
+        AssignParameter(ref, storage'( to_unbounded_string( numericValue( level ) ), noMetaLabel ) );
         level := level + 1;
      exception when constraint_error =>
         err( +"constraint_error raised" );
@@ -532,7 +532,7 @@ begin
 end ParseLevelEnd;
 
 procedure ParseOK is
-  msgExpr    : unbounded_string;
+  msgExpr    : storage;
   msgType    : identifier;
   cc         : chain_contexts := none;
 begin
@@ -556,11 +556,11 @@ begin
   if isExecutingCommand then
      begin
         get_entity( entity );
-        log_clean_message( msgExpr );
+        log_clean_message( msgExpr.value );
         if cc = none then
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
            log_first_part( "OK" );
-           log_last_part( msgExpr );
+           log_last_part( msgExpr.value );
            begin
               currentMetrics.ok_count := currentMetrics.ok_count + 1;
            exception when others => null;
@@ -569,11 +569,11 @@ begin
            case cc is
            when first =>
               log_first_part( "OK" );
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when middle =>
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when last =>
-              log_last_part( msgExpr );
+              log_last_part( msgExpr.value );
               begin
                  currentMetrics.ok_count := currentMetrics.ok_count + 1;
               exception when others => null;
@@ -593,7 +593,7 @@ begin
 end ParseOK;
 
 procedure ParseInfo is
-  msgExpr    : unbounded_string;
+  msgExpr    : storage;
   msgType    : identifier;
   cc         : chain_contexts := none;
 begin
@@ -617,11 +617,11 @@ begin
   if isExecutingCommand then
      begin
         get_entity( entity );
-        log_clean_message( msgExpr );
+        log_clean_message( msgExpr.value );
         if cc = none then
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
            log_first_part( "INFO" );
-           log_last_part( msgExpr );
+           log_last_part( msgExpr.value );
            begin
               currentMetrics.info_count := currentMetrics.info_count + 1;
            exception when others => null;
@@ -631,11 +631,11 @@ begin
            when first =>
               -- log_first_part( msgExpr, "INFO" );
               log_first_part( "INFO" );
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when middle =>
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when last =>
-              log_last_part( msgExpr );
+              log_last_part( msgExpr.value );
               begin
                  currentMetrics.info_count := currentMetrics.info_count + 1;
               exception when others => null;
@@ -655,7 +655,7 @@ begin
 end ParseInfo;
 
 procedure ParseWarning is
-  msgExpr    : unbounded_string;
+  msgExpr    : storage;
   msgType    : identifier;
   cc         : chain_contexts := none;
 begin
@@ -679,11 +679,11 @@ begin
   if isExecutingCommand then
      begin
         get_entity( entity );
-        log_clean_message( msgExpr );
+        log_clean_message( msgExpr.value );
         if cc = none then
            -- log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
            log_first_part( "WARNING" );
-           log_last_part( msgExpr );
+           log_last_part( msgExpr.value );
            begin
               currentMetrics.warning_count := currentMetrics.warning_count + 1;
            exception when others => null;
@@ -693,11 +693,11 @@ begin
            when first =>
               -- log_first_part( msgExpr, "WARNING" );
               log_first_part( "WARNING" );
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when middle =>
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when last =>
-              log_last_part( msgExpr );
+              log_last_part( msgExpr.value );
               begin
                  currentMetrics.warning_count := currentMetrics.warning_count + 1;
               exception when others => null;
@@ -717,7 +717,7 @@ begin
 end ParseWarning;
 
 procedure ParseError is
-  msgExpr    : unbounded_string;
+  msgExpr    : storage;
   msgType    : identifier;
   cc         : chain_contexts := none;
 begin
@@ -741,11 +741,11 @@ begin
   if isExecutingCommand then
      begin
         get_entity( entity );
-        log_clean_message( msgExpr );
+        log_clean_message( msgExpr.value );
         if cc = none then
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
            log_first_part( "ERROR" );
-           log_last_part( msgExpr );
+           log_last_part( msgExpr.value );
            begin
               currentMetrics.error_count := currentMetrics.error_count + 1;
            exception when others => null;
@@ -755,11 +755,11 @@ begin
            when first =>
               --log_first_part( msgExpr, "ERROR" );
               log_first_part( "ERROR" );
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when middle =>
-              log_middle_part( msgExpr );
+              log_middle_part( msgExpr.value );
            when last =>
-              log_last_part( msgExpr );
+              log_last_part( msgExpr.value );
               begin
                  currentMetrics.error_count := currentMetrics.error_count + 1;
               exception when others => null;
@@ -783,11 +783,11 @@ procedure ParseOpen is
   -- This does not actually open the file.  It sets the paramters for the
   -- log file, which will be open and closed when required.
   -- In a restricted shell, you cannot create logs.
-  pathExpr : unbounded_string;
+  pathExpr : storage;
   pathType : identifier;
-  modeExpr : unbounded_string;
+  modeExpr : storage;
   modeType : identifier;
-  widthExpr: unbounded_string;
+  widthExpr: storage;
   widthType: identifier;
   sourceFile : unbounded_string;
 begin
@@ -795,7 +795,7 @@ begin
   ParseFirstStringParameter( logs_open_t, pathExpr, pathType, string_t );
   ParseNextEnumParameter( logs_open_t, modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).value.all = ")" then
-     widthExpr:= to_unbounded_string( defaultWidth'img );
+     widthExpr := storage'( to_unbounded_string( defaultWidth'img ), noMetaLabel );
      expect( symbol_t, ")" );
   else
      ParseLastNumericParameter( logs_open_t, widthExpr, widthType, positive_t );
@@ -805,21 +805,21 @@ begin
      if log_is_open then
         err( +"log is already open" );
      -- Except for stderr, we need a file path
-     elsif modeExpr /= "0" and length( pathExpr ) = 0 then
+     elsif modeExpr.value /= "0" and length( pathExpr.value ) = 0 then
         err( +"log path is an empty string" );
-     elsif modeExpr = "0" and length( pathExpr ) > 0 then
+     elsif modeExpr.value = "0" and length( pathExpr.value ) > 0 then
         err( +"log path should be an empty string" );
-     elsif Is_Directory( to_string( pathExpr ) & ASCII.NUL ) then
+     elsif Is_Directory( to_string( pathExpr.value ) & ASCII.NUL ) then
         err( +"log path is a directory" );
      else
         get_entity( entity );
         sourceFile := basename( getSourceFileName );
         log_clean_message( sourceFile );
         level := 0;
-        width := positive( to_numeric( widthExpr ) );
-        log_path := pathExpr;
+        width := positive( to_numeric( widthExpr.value ) );
+        log_path := pathExpr.value;
         lock_file_path := log_path & ".lck";
-        log_mode := log_modes'val( integer( to_numeric( modeExpr ) ) );
+        log_mode := log_modes'val( integer( to_numeric( modeExpr.value ) ) );
         log_is_open := true;
         log_open_time := clock;
         --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
@@ -843,28 +843,31 @@ begin
   resetLog;
 end ParseClose;
 
-procedure ParseIsOpen( result : out unbounded_string; kind : out identifier ) is
+procedure ParseIsOpen( result : out storage; kind : out identifier ) is
   -- Syntax: b := logs.is_open
 begin
-  result := null_unbounded_string;
+  result := nullStorage;
   kind := boolean_t;
   expect( logs_is_open_t );
   if isExecutingCommand then
-     result := to_spar_boolean( log_is_open );
+     result := storage'( to_spar_boolean( log_is_open ), noMetaLabel );
   end if;
 end ParseIsOpen;
 
-procedure ParseMode( result : out unbounded_string; kind : out identifier ) is
+procedure ParseMode( result : out storage; kind : out identifier ) is
   -- Syntax: m := logs.mode
 begin
-  result := trim( to_unbounded_string( natural'image( log_modes'pos( log_mode ) ) ), left );
+  result := storage'(
+     trim( to_unbounded_string( natural'image( log_modes'pos( log_mode ) ) ), left ),
+     noMetaLabel
+);
   kind := log_modes_t;
   expect( logs_mode_t );
 end ParseMode;
 
 -- Note: disabled because logs.level is limited so can't be returned in an
 -- expression
---procedure ParseLevel( result : out unbounded_string; kind : out identifier ) is
+--procedure ParseLevel( result : out storage; kind : out identifier ) is
 --  -- Syntax: l := logs.level
 --begin
 --  result :=to_unbounded_string( natural'image( level ) );
@@ -872,10 +875,10 @@ end ParseMode;
 --  expect( logs_level_t );
 --end ParseLevel;
 
-procedure ParseWidth( result : out unbounded_string; kind : out identifier ) is
+procedure ParseWidth( result : out storage; kind : out identifier ) is
   -- Syntax: w := logs.width
 begin
-  result :=to_unbounded_string( positive'image( width ) );
+  result := storage'( to_unbounded_string( positive'image( width ) ), noMetaLabel );
   kind := positive_t;
   expect( logs_width_t );
 end ParseWidth;
@@ -910,14 +913,14 @@ begin
   end if;
 end ParseRotateEnd;
 
-procedure ParseIsRotating( result : out unbounded_string; kind : out identifier ) is
+procedure ParseIsRotating( result : out storage; kind : out identifier ) is
   -- Syntax: b := logs.is_rotating
 begin
-  result := null_unbounded_string;
+  result := nullStorage;
   kind := boolean_t;
   expect( logs_is_rotating_t );
   if isExecutingCommand then
-     result := to_spar_boolean( log_is_rotating );
+     result := storage'( to_spar_boolean( log_is_rotating ), noMetaLabel );
   end if;
 end ParseIsRotating;
 
@@ -935,13 +938,13 @@ begin
   ParseLastOutParameter(  logs_metrics_t, error_ref, natural_t );
   if isExecutingCommand then
      assignParameter( ok_ref,
-        to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ) );
+        storage'( to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ), noMetaLabel ) );
      assignParameter( info_ref,
-        to_unbounded_string( numericValue( checkpointMetrics.info_count ) ) );
+        storage'( to_unbounded_string( numericValue( checkpointMetrics.info_count ) ), noMetaLabel ) );
      assignParameter( warning_ref,
-        to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ) );
+        storage'( to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ), noMetaLabel ) );
      assignParameter( error_ref,
-        to_unbounded_string( numericValue( checkpointMetrics.error_count ) ) );
+        storage'( to_unbounded_string( numericValue( checkpointMetrics.error_count ) ), noMetaLabel ) );
   end if;
 end ParseMetrics;
 

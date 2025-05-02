@@ -50,32 +50,32 @@ locks_unlock_t    : identifier;
 procedure ParseLockLockFile is
   -- Syntax: Lock_File( dir, file [,wait [,retry] ) or
   --         Lock_File( file, [,wait [,retry] ] )
-  expr_val   : unbounded_string;
+  expr   : storage;
   expr_type  : identifier;
-  dir_val    : unbounded_string;
-  file_val   : unbounded_string;
-  wait_val   : unbounded_string := to_unbounded_string( "1.0" );
-  retry_val  : unbounded_string := to_unbounded_string( natural'last'img );
+  dirExpr    : storage;
+  fileExpr   : storage;
+  waitExpr   : storage := storage'( to_unbounded_string( "1.0" ), noMetaLabel );
+  retryExpr  : storage := storage'( to_unbounded_string( natural'last'img ), noMetaLabel );
 begin
   expect( locks_lock_t );
   expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, string_t ) then
      if token = symbol_t and identifiers( token ).value.all = ")" then
-        file_val := expr_val;
+        fileExpr := expr;
      else
         expectParameterComma;
-        ParseExpression( file_val, expr_type );
+        ParseExpression( fileExpr, expr_type );
         -- first variation: dir, file [,wait [,retry] ]
         if getUniType( expr_type ) = uni_string_t then
-           dir_val := expr_val;
+           dirExpr := expr;
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
-              ParseExpression( wait_val, expr_type );
+              ParseExpression( waitExpr, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
                  if token = symbol_t and identifiers( token ).value.all = "," then
                     getNextToken;
-                    ParseExpression( retry_val, expr_type );
+                    ParseExpression( retryExpr, expr_type );
                     if baseTypesOk( expr_type, duration_t ) then
                        null;
                     end if;
@@ -85,11 +85,11 @@ begin
         elsif baseTypesOk( expr_type, duration_t ) then
            -- TODO: could be cleaner...
            -- second variation: file [,wait [,retry] ]
-           wait_val := file_val; -- what we read was wait time
-           file_val := expr_val; -- and first param is file
+           waitExpr := fileExpr; -- what we read was wait time
+           fileExpr := expr; -- and first param is file
            if token = symbol_t and identifiers( token ).value.all = "," then
               getNextToken;
-              ParseExpression( retry_val, expr_type );
+              ParseExpression( retryExpr, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
                   null;
               end if;
@@ -100,16 +100,16 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       if length( dir_val ) > 0 then
-          Lock_File( to_string( dir_val ),
-            to_string( file_val ),
-            duration( to_numeric( wait_val ) ),
-            natural( to_numeric( retry_val ) )
+       if length( dirExpr.value ) > 0 then
+          Lock_File( to_string( dirExpr.value ),
+            to_string( fileExpr.value ),
+            duration( to_numeric( waitExpr.value ) ),
+            natural( to_numeric( retryExpr.value ) )
           );
        else
-          Lock_File( to_string( file_val ),
-            duration( to_numeric( wait_val ) ),
-            natural( to_numeric( retry_val ) )
+          Lock_File( to_string( fileExpr.value ),
+            duration( to_numeric( waitExpr.value ) ),
+            natural( to_numeric( retryExpr.value ) )
           );
        end if;
      exception when lock_error =>
@@ -123,18 +123,18 @@ end ParseLockLockFile;
 procedure ParseLockUnlockFile is
   -- Syntax: unlock_file( file ) or
   --         unlock_file( dir, file )
-  dir_val    : unbounded_string := null_unbounded_string;
-  file_val   : unbounded_string;
+  dirExpr    : storage := nullStorage;
+  fileExpr   : storage;
   expr_type  : identifier;
 begin
   expect( locks_unlock_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, expr_type );
+  ParseExpression( fileExpr, expr_type );
   if baseTypesOk( expr_type, string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
-        dir_val := file_val;
-        ParseExpression( file_val, expr_type );
+        dirExpr := fileExpr;
+        ParseExpression( fileExpr, expr_type );
         if baseTypesOk( expr_type, string_t ) then
            null;
         end if;
@@ -142,11 +142,11 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if length( dir_val ) > 0 then
-        Unlock_File( to_string( dir_val ),
-          to_string( file_val ) );
+     if length( dirExpr.value ) > 0 then
+        Unlock_File( to_string( dirExpr.value ),
+          to_string( fileExpr.value ) );
      else
-        Unlock_File( to_string( file_val ) );
+        Unlock_File( to_string( fileExpr.value ) );
      end if;
   end if;
 end ParseLockUnlockFile;

@@ -79,284 +79,284 @@ files_last_accessed_t    : identifier;
 ---------------------------------------------------------
 
 
-procedure ParseFileExists( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFileExists( result : out storage; kind : out identifier ) is
   -- Syntax: files.file_exists( path );
   -- Source: GNAT.IO_Aux.File_Exists
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_exists_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( File_Exists( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( File_Exists( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseFileExists;
 
-procedure ParseIsAbsolutePath( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsAbsolutePath( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_absolute_path( path );
   -- Source: GNAT.OS_Lib.Is_Absolute_Path
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_absolute_path_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( Is_Absolute_Path( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( Is_Absolute_Path( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseIsAbsolutePath;
 
-procedure ParseIsRegularFile( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsRegularFile( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_regular_file( path );
   -- Source: GNAT.OS_Lib.Is_Regular_File
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_regular_file_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( Is_Regular_File( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( Is_Regular_File( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseIsRegularFile;
 
-procedure ParseIsDirectory( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsDirectory( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_directory( path );
   -- Source: GNAT.OS_Lib.Is_Directory
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_directory_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( Is_Directory( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( Is_Directory( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseIsDirectory;
 
-procedure ParseIsWritableFile( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsWritableFile( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_writable_file( path );
   -- Source: GNAT.OS_Lib.Is_Writable_File + Is_Regular_File
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_writable_file_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( Is_Writable_File( to_string( file_val ) )
-          and Is_Regular_File( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( Is_Writable_File( to_string( fileExpr.value ) )
+          and Is_Regular_File( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseIsWritableFile;
 
-procedure ParseIsWritable( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsWritable( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_writable( path );
   -- Source: GNAT.OS_Lib.Is_Writable_File
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_writable_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( Is_Writable_File( to_string( file_val ) ) );
+     result := storage'( to_spar_boolean( Is_Writable_File( to_string( fileExpr.value ) ) ), noMetaLabel );
   end if;
 end ParseIsWritable;
 
-procedure ParseIsExecutableFile( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsExecutableFile( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_executable_file( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_executable_file_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( C_Is_Executable_File( to_string( file_val ) & ASCII.NUL ) );
+     result := storage'( to_spar_boolean( C_Is_Executable_File( to_string( fileExpr.value ) & ASCII.NUL ) ), noMetaLabel );
   end if;
 end ParseIsExecutableFile;
 
-procedure ParseIsExecutable( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsExecutable( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_executable( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_executable_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( C_Is_Executable( to_string( file_val ) & ASCII.NUL ) );
+     result := storage'( to_spar_boolean( C_Is_Executable( to_string( fileExpr.value ) & ASCII.NUL ) ), noMetaLabel );
   end if;
 end ParseIsExecutable;
 
-procedure ParseIsReadableFile( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsReadableFile( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_readable_file( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_readable_file_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( C_Is_Readable_File( to_string( file_val ) & ASCII.NUL ) );
+     result := storage'( to_spar_boolean( C_Is_Readable_File( to_string( fileExpr.value ) & ASCII.NUL ) ), noMetaLabel );
   end if;
 end ParseIsReadableFile;
 
-procedure ParseIsReadable( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsReadable( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_readable( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_readable_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( C_Is_Readable( to_string( file_val ) & ASCII.NUL ) );
+     result := storage'( to_spar_boolean( C_Is_Readable( to_string( fileExpr.value ) & ASCII.NUL ) ), noMetaLabel );
   end if;
 end ParseIsReadable;
 
-procedure ParseFileSize( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFileSize( result : out storage; kind : out identifier ) is
   -- Syntax: files.size( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
   filesize  : long_integer;
 begin
   kind := long_integer_t;
   expect( files_size_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     filesize := C_File_Length( to_string( file_val ) & ASCII.NUL );
+     filesize := C_File_Length( to_string( fileExpr.value ) & ASCII.NUL );
      if filesize >= 0 then
-        f := to_unbounded_string( long_integer'image( filesize ) );
+        result := storage'( to_unbounded_string( long_integer'image( filesize ) ), noMetaLabel );
      else
         err( pl( "unable to get file size: " & OSError( spar_os.C_errno ) ) );
      end if;
   end if;
 end ParseFileSize;
 
-procedure ParseBasename( f : out unbounded_string; kind : out identifier ) is
+procedure ParseBasename( result : out storage; kind : out identifier ) is
   -- Syntax: files.basename( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := string_t;
   expect( files_basename_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := basename( file_val );
+     result := storage'( basename( fileExpr.value ), noMetaLabel );
   end if;
 end ParseBasename;
 
-procedure ParseDirname( f : out unbounded_string; kind : out identifier ) is
+procedure ParseDirname( result : out storage; kind : out identifier ) is
   -- Syntax: files.dirname( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := string_t;
   expect( files_dirname_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := dirname( file_val );
+     result := storage'( dirname( fileExpr.value ), noMetaLabel );
   end if;
 end ParseDirname;
 
-procedure ParseIsWaitingFile( f : out unbounded_string; kind : out identifier ) is
+procedure ParseIsWaitingFile( result : out storage; kind : out identifier ) is
   -- Syntax: files.is_waiting_file( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
 begin
   kind := boolean_t;
   expect( files_is_waiting_file_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_spar_boolean( C_Is_Waiting_File( to_string( file_val ) & ASCII.NUL ) );
+     result := storage'( to_spar_boolean( C_Is_Waiting_File( to_string( fileExpr.value ) & ASCII.NUL ) ), noMetaLabel );
   end if;
 end ParseIsWaitingFile;
 
-procedure ParseFileLastModified( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFileLastModified( result : out storage; kind : out identifier ) is
   -- Syntax: files.last_modified( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
   kind := cal_time_t;
   expect( files_last_modified_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     C_File_Modify_Time( to_string( file_val ) & ASCII.NUL, year, month, day, seconds );
+     C_File_Modify_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
      if year >= 0 then
         begin -- exception is possible but very unlikely
-           f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
+           result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ), noMetaLabel );
         exception when others =>
            err( +"execption raised when getting file modified time" );
         end;
@@ -366,25 +366,25 @@ begin
   end if;
 end ParseFileLastModified;
 
-procedure ParseFileLastChanged( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFileLastChanged( result : out storage; kind : out identifier ) is
   -- Syntax: files.last_changed( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
   kind := cal_time_t;
   expect( files_last_changed_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     C_File_Change_Time( to_string( file_val ) & ASCII.NUL, year, month, day, seconds );
+     C_File_Change_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
      if year >= 0 then
         begin -- exception is possible but very unlikely
-           f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
+           result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ), noMetaLabel );
         exception when others =>
            err( +"execption raised when getting file modified time" );
         end;
@@ -394,25 +394,25 @@ begin
   end if;
 end ParseFileLastChanged;
 
-procedure ParseFileLastAccessed( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFileLastAccessed( result : out storage; kind : out identifier ) is
   -- Syntax: files.last_accessed( path );
   -- Source: N/A
-  file_val  : unbounded_string;
+  fileExpr  : storage;
   file_type : identifier;
   year, month, day, seconds : integer;
 begin
   kind := cal_time_t;
   expect( files_last_accessed_t );
   expect( symbol_t, "(" );
-  ParseExpression( file_val, file_type );
+  ParseExpression( fileExpr, file_type );
   if baseTypesOK( file_type, string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     C_File_Access_Time( to_string( file_val ) & ASCII.NUL, year, month, day, seconds );
+     C_File_Access_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
      if year >= 0 then
         begin -- exception is possible but very unlikely
-           f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
+           result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ), noMetaLabel );
         exception when others =>
            err( +"execption raised when getting file modified time" );
         end;

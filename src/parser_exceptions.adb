@@ -46,7 +46,7 @@ exceptions_exception_name_t : identifier;
 exceptions_exception_info_t : identifier;
 exceptions_exception_status_code_t : identifier;
 
-procedure ParseExceptionsExceptionName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseExceptionsExceptionName( result : out storage; kind : out identifier ) is
   -- Syntax: s := exceptions.exception_name
   -- Ada:    s := exceptions.exception_name( id/occur )
 begin
@@ -54,14 +54,14 @@ begin
   expect( exceptions_exception_name_t );
   if isExecutingCommand then
      if err_exception.deleted then
-        result := null_unbounded_string;
+        result := nullStorage;
      else
-        result := err_exception.name;
+        result := storage'( err_exception.name, noMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionName;
 
-procedure ParseExceptionsExceptionInfo( result : out unbounded_string; kind : out identifier ) is
+procedure ParseExceptionsExceptionInfo( result : out storage; kind : out identifier ) is
   -- Syntax: s := Exception_info();
   -- Ada:    s := exceptions.exception_info( occur )
 begin
@@ -69,14 +69,14 @@ begin
   expect( exceptions_exception_info_t );
   if isExecutingCommand then
      if err_exception.deleted then
-        result := null_unbounded_string;
+        result := nullStorage;
      else
-        result := fullErrorMessage.gccMessage;
+        result := storage'( fullErrorMessage.gccMessage, noMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionInfo;
 
-procedure ParseExceptionsExceptionStatusCode( result : out unbounded_string; kind : out identifier ) is
+procedure ParseExceptionsExceptionStatusCode( result : out storage; kind : out identifier ) is
   -- Syntax: s := exceptions.exception_status_code
   -- Ada:    N/A
 begin
@@ -84,9 +84,9 @@ begin
   expect( exceptions_exception_status_code_t );
   if isExecutingCommand then
      if err_exception.deleted then
-        result := to_unbounded_string( "0" );
+        result := storage'( to_unbounded_string( "0" ), noMetaLabel );
      else
-        result := to_unbounded_string( numericValue( character'pos( element( err_exception.value.all, 1 ) ) ) );
+        result := storage'( to_unbounded_string( numericValue( character'pos( element( err_exception.value.all, 1 ) ) ) ), noMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionStatusCode;

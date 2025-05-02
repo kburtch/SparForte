@@ -270,7 +270,7 @@ begin
   err( +"Berkeley DB support not configured" );
 end not_configured;
 
-procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+procedure not_configured( result : out storage; kind : out identifier ) is
 begin
   err( +"Berkeley DB support not configured" );
 end not_configured;
@@ -321,7 +321,7 @@ procedure ParseHashClear renames not_configured;
 procedure ParseHashRecover is
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
 begin
   if rshOpt then
@@ -329,12 +329,12 @@ begin
   end if;
   expect( hash_recover_t );
   ParseFirstFileParameter( hash_recover_t, fileId );
-  ParseLastStringParameter( hash_recover_t, fname_val, fname_type, string_t );
+  ParseLastStringParameter( hash_recover_t, fnameExpr, fname_type, string_t );
 
 
   if isExecutingCommand then
      declare
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -389,13 +389,13 @@ procedure ParseHashCreate is
   -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
-  keyLenExpr : unbounded_string;
+  keyLenExpr : storage;
   keyLenType : identifier;
   valLen     : interfaces.C.size_t;
-  valLenExpr : unbounded_string;
+  valLenExpr : storage;
   valLenType : identifier;
 begin
   if rshOpt then
@@ -405,25 +405,25 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( hash_create_t, fileId );
-  ParseNextStringParameter( hash_create_t, fname_val, fname_type, string_t );
+  ParseNextStringParameter( hash_create_t, fnameExpr, fname_type, string_t );
   ParseNextNumericParameter( hash_create_t, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( hash_create_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
-        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
+        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr.value ) );
      exception when others =>
         err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
-        valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
+        valLen := Interfaces.C.size_t'value( to_string( valLenExpr.value ) );
      exception when others =>
         err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
         -- GNAT 7.4 incorrectly states filename is not used
-        filename : constant string := base_name( to_string( fname_val ) );
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fnameExpr.value ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -484,7 +484,7 @@ begin
 
            if not error_found then
               theFile.hash.isOpen := true;
-              theFile.hash.name := fname_val;
+              theFile.hash.name := fnameExpr.value;
               declare
                  cnt : natural;
               begin
@@ -550,39 +550,39 @@ procedure ParseHashOpen is
   -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
-  fname_val  : unbounded_string;
+  fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
-  keyLenExpr : unbounded_string;
+  keyLenExpr : storage;
   keyLenType : identifier;
   valLen     : interfaces.C.size_t;
-  valLenExpr : unbounded_string;
+  valLenExpr : storage;
   valLenType : identifier;
 begin
   expect( hash_open_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( hash_open_t, fileId );
-  ParseNextStringParameter( hash_open_t, fname_val, fname_type, string_t );
+  ParseNextStringParameter( hash_open_t, fnameExpr, fname_type, string_t );
   -- TODO: can this be dynamic?
   ParseNextNumericParameter( hash_open_t, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( hash_open_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
-        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
+        keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr.value ) );
      exception when others =>
         err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
-        valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
+        valLen := Interfaces.C.size_t'value( to_string( valLenExpr.value ) );
      exception when others =>
         err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
         -- GNAT 7.4 incorrectly states filename is not used
-        filename : constant string := base_name( to_string( fname_val ) );
-        dirname  : constant string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fnameExpr.value ) );
+        dirname  : constant string := dir_name( to_string( fnameExpr.value ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -642,7 +642,7 @@ begin
               begin
                  open( theFile.hash.session, filename, "", DB_HASH, 0, 0 );
                  theFile.hash.isOpen := true;
-                 theFile.hash.name := fname_val;
+                 theFile.hash.name := fnameExpr.value;
               exception when msg: berkeley_error =>
                  err( pl( exception_message( msg ) & " on opening the data file" ) );
               end;
@@ -659,7 +659,7 @@ procedure ParseHashOpen renames not_configured;
 #end if;
 #if BDB
 
-procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashIsOpen( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.is_open( f );
   -- Ada:    N/A
   fileId     : identifier;
@@ -671,21 +671,21 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_spar_boolean( theFile.hash.isOpen );
+        result := storage'( to_spar_boolean( theFile.hash.isOpen ), noMetaLabel );
      exception when berkeley_error =>
-        result := to_spar_boolean( false );
+        result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseHashIsOpen;
 
 #else
 
-procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseHashIsOpen( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashName( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashName( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.name( f );
   -- Ada:    N/A
   fileId     : identifier;
@@ -697,14 +697,14 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := theFile.hash.name;
+        result := storage'( theFile.hash.name, noMetaLabel );
      end;
   end if;
 end ParseHashName;
 
 #else
 
-procedure ParseHashName( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseHashName( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -819,9 +819,9 @@ procedure ParseHashSet is
   -- Ada:    bdb.put( f, key, value );
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
-  valExpr    : unbounded_string;
+  valExpr    : storage;
   valType    : identifier;
   valId      : identifier;
   isRecord   : boolean := false;
@@ -860,7 +860,7 @@ begin
               jsonString : unbounded_string;
            begin
               DoRecordToJson( jsonString, valId );
-              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+              put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
@@ -874,7 +874,7 @@ begin
               jsonString : unbounded_string;
            begin
               DoArrayToJson( jsonString, valId );
-              put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+              put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
@@ -886,7 +886,7 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then
            begin
-              put( theFile.hash.session, to_string( keyExpr ), to_string( valExpr ) );
+              put( theFile.hash.session, to_string( keyExpr.value ), to_string( valExpr.value ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
@@ -914,7 +914,7 @@ procedure ParseHashGet is
   -- from a function)
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
   itemRef    : reference;
   isRecord   : boolean := false;
@@ -973,7 +973,7 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              get( theFile.hash.session, to_string( keyExpr ), jsonString );
+              get( theFile.hash.session, to_string( keyExpr.value ), jsonString );
               DoJsonToRecord( itemRef.id, jsonString );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
@@ -991,8 +991,8 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              get( theFile.hash.session, to_string( keyExpr ), jsonString );
-              DoJsonToArray( itemRef.id, jsonString );
+              get( theFile.hash.session, to_string( keyExpr.value ), jsonString );
+              DoJsonToArray( itemRef.id, jsonString, noMetaLabel );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1007,9 +1007,9 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then
            declare
-              result : unbounded_string;
+              result : storage := nullStorage;
            begin
-              get( theFile.hash.session, to_string( keyExpr ), result );
+              get( theFile.hash.session, to_string( keyExpr.value ), result.value );
               AssignParameter( itemRef, result );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
@@ -1032,12 +1032,12 @@ procedure ParseHashGet renames not_configured;
 #end if;
 #if BDB
 
-procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashHasElement( result : out storage; kind : out identifier ) is
   -- Syntax: v := hash.has_element( f, k );
   -- Ada:    bdb.exists( f, k );
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
 begin
   kind := boolean_t;
@@ -1048,10 +1048,10 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
         begin
-           exists( theFile.hash.session, to_string( keyExpr ) );
-           result := to_spar_boolean( true );
+           exists( theFile.hash.session, to_string( keyExpr.value ) );
+           result := storage'( to_spar_boolean( true ), noMetaLabel );
         exception when berkeley_error =>
-           result := to_spar_boolean( false );
+           result := storage'( to_spar_boolean( false ), noMetaLabel );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         end;
@@ -1061,7 +1061,7 @@ end ParseHashHasElement;
 
 #else
 
-procedure ParseHashHasElement( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseHashHasElement( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -1073,7 +1073,7 @@ procedure ParseHashRemove is
   theFile    : resPtr;
   cursId     : identifier := eof_t;
   theCurs    : resPtr;
-  keyExpr    : unbounded_string;
+  keyExpr    : storage;
   keyType    : identifier;
 begin
   if rshOpt then
@@ -1102,7 +1102,7 @@ begin
            end;
         else
            begin
-              delete( theFile.hash.session, to_string( keyExpr ) );
+              delete( theFile.hash.session, to_string( keyExpr.value ) );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1129,9 +1129,9 @@ procedure ParseHashIncrement is
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  amtExpr  : unbounded_string;
+  amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
@@ -1158,15 +1158,15 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
         begin
-          get( theFile.hash.session, to_string( keyExpr ), oldItem );
+          get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
 
           -- berkeley throws exception on not found
           --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.hash.session, to_string( keyExpr.value ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) ) ) ) );
           else
-             put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
+             put( theFile.hash.session, to_string( keyExpr.value ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
           --end if;
         exception when storage_error =>
@@ -1196,9 +1196,9 @@ procedure ParseHashDecrement is
   -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  amtExpr  : unbounded_string;
+  amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
@@ -1225,14 +1225,14 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
        begin
-         get( theFile.hash.session, to_string( keyExpr ), oldItem );
+         get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
          -- berkeley throws exception on not found
          --if oldItem /= null_unbounded_string then
          oldItemValue := to_numeric( oldItem );
          if hasAmt then
-            put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
+            put( theFile.hash.session, to_string( keyExpr.value ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) ) ) );
          else
-            put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
+            put( theFile.hash.session, to_string( keyExpr.value ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
          end if;
          --end if;
        exception when storage_error =>
@@ -1262,9 +1262,9 @@ procedure ParseHashAdd is
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   itemId     : identifier;
   isRecord   : boolean := false;
@@ -1303,7 +1303,7 @@ begin
               jsonString : unbounded_string;
            begin
               findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-              exists( theFile.hash.session, to_string( keyExpr ) );
+              exists( theFile.hash.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when CONSTRAINT_ERROR =>
@@ -1311,7 +1311,7 @@ begin
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
                 DoRecordToJson( jsonString, itemId );
-                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
              else
                 err( pl( exception_message( msg ) ) );
              end if;
@@ -1323,7 +1323,7 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              exists( theFile.hash.session, to_string( keyExpr ) );
+              exists( theFile.hash.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when CONSTRAINT_ERROR =>
@@ -1331,7 +1331,7 @@ begin
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
                 DoArrayToJson( jsonString, itemId );
-                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
              else
                 err( pl( exception_message( msg ) ) );
              end if;
@@ -1342,14 +1342,14 @@ begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then
            begin
-              exists( theFile.hash.session, to_string( keyExpr ) );
+              exists( theFile.hash.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
            when CONSTRAINT_ERROR =>
               err( +"constraint_error: value too big" );
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
-                put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
              else
                 err( pl( exception_message( msg ) ) );
              end if;
@@ -1372,9 +1372,9 @@ procedure ParseHashReplace is
   -- Note: the key will not be overwritten if a cursor is used
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   itemId     : identifier;
   isRecord   : boolean := false;
@@ -1435,7 +1435,7 @@ begin
                    DoRecordToJson( jsonString, itemId );
                    put( theFile.hash.session,
                         theCurs.hash_cur.cursor,
-                        keyExpr, -- this is ignored
+                        keyExpr.value, -- this is ignored
                         jsonString,
                         DB_C_PUT_CURRENT );
                 end if;
@@ -1463,7 +1463,7 @@ begin
                    DoArrayToJson( jsonString, itemId );
                    put( theFile.hash.session,
                         theCurs.hash_cur.cursor,
-                        keyExpr, -- this is ignored
+                        keyExpr.value, -- this is ignored
                         jsonString,
                         DB_C_PUT_CURRENT );
                 end if;
@@ -1489,8 +1489,8 @@ begin
                if last_error( theFile.hash.session ) = DB_OK then
                   put( theFile.hash.session,
                        theCurs.hash_cur.cursor,
-                       keyExpr, -- this is ignored
-                       itemExpr,
+                       keyExpr.value, -- this is ignored
+                       itemExpr.value,
                        DB_C_PUT_CURRENT );
                end if;
              exception when msg: berkeley_error =>
@@ -1508,9 +1508,9 @@ begin
               declare
                  jsonString : unbounded_string;
               begin
-                exists( theFile.hash.session, to_string( keyExpr ) );
+                exists( theFile.hash.session, to_string( keyExpr.value ) );
                 DoRecordToJson( jsonString, itemId );
-                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
               exception when storage_error =>
                 err( +"storage error raised" );
               when msg: berkeley_error =>
@@ -1527,9 +1527,9 @@ begin
               declare
                  jsonString : unbounded_string;
               begin
-                exists( theFile.hash.session, to_string( keyExpr ) );
+                exists( theFile.hash.session, to_string( keyExpr.value ) );
                 DoArrayToJson( jsonString, itemId );
-                put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
               exception when storage_error =>
                 err( +"storage error raised" );
               when msg: berkeley_error =>
@@ -1544,8 +1544,8 @@ begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
            if isVerifiedOpenFile( fileId, theFile ) then
              begin
-                exists( theFile.hash.session, to_string( keyExpr ) );
-                put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
+                exists( theFile.hash.session, to_string( keyExpr.value ) );
+                put( theFile.hash.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
               exception when storage_error =>
                 err( +"storage error raised" );
               when msg: berkeley_error =>
@@ -1573,9 +1573,9 @@ procedure ParseHashAppend is
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
@@ -1593,8 +1593,8 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
         begin
-          get( theFile.hash.session, to_string( keyExpr ), oldItem );
-          put( theFile.hash.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
+          get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
+          put( theFile.hash.session, to_string( keyExpr.value ), to_string( oldItem & itemExpr.value ) );
         exception when storage_error =>
           err( +"storage error raised" );
         when msg: berkeley_error =>
@@ -1620,9 +1620,9 @@ procedure ParseHashPrepend is
   -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
-  keyExpr  : unbounded_string;
+  keyExpr  : storage;
   keyType  : identifier;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
@@ -1640,8 +1640,8 @@ begin
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
         begin
-          get( theFile.hash.session, to_string( keyExpr ), oldItem );
-          put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
+          get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
+          put( theFile.hash.session, to_string( keyExpr.value ), to_string( itemExpr.value & oldItem ) );
         exception when storage_error =>
           err( +"storage error raised" );
         when CONSTRAINT_ERROR =>
@@ -1918,7 +1918,7 @@ begin
                       jsonString,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -1947,8 +1947,8 @@ begin
                       jsonString,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -1976,8 +1976,8 @@ begin
                       data,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -2069,7 +2069,7 @@ begin
                       jsonString,
                       DB_C_GET_NEXT );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2098,8 +2098,8 @@ begin
                       jsonString,
                       DB_C_GET_NEXT );
                 if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2127,8 +2127,8 @@ begin
                       data,
                       DB_C_GET_NEXT );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2228,7 +2228,7 @@ begin
                       jsonString,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2257,8 +2257,8 @@ begin
                       jsonString,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2286,8 +2286,8 @@ begin
                       data,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2379,7 +2379,7 @@ begin
                       jsonString,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
                     DoJsonToRecord( valRef.id, jsonString );
                  end if;
               end if;
@@ -2408,8 +2408,8 @@ begin
                       jsonString,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    DoJsonToArray( valRef.id, jsonString );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaLabel );
                  end if;
               end if;
            end if;
@@ -2437,8 +2437,8 @@ begin
                       data,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, key );
-                    AssignParameter( valRef, data );
+                    AssignParameter( keyRef, storage'( key, noMetaLabel ) );
+                    AssignParameter( valRef, storage'( data, noMetaLabel ) );
                  end if;
               end if;
            end if;
@@ -2457,7 +2457,7 @@ procedure ParseHashGetPrevious renames not_configured;
 #end if;
 #if BDB
 
-procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashWillRaise( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.will_raise( f );
   -- Ada:    N/A
   fileId     : identifier;
@@ -2470,22 +2470,22 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then
-           result := to_spar_boolean( will_raise( theFile.hash.session ) );
+           result := storage'( to_spar_boolean( will_raise( theFile.hash.session ) ), noMetaLabel );
         end if;
      exception when berkeley_error =>
-        result := to_spar_boolean( false );
+        result := storage'( to_spar_boolean( false ), noMetaLabel );
      end;
   end if;
 end ParseHashWillRaise;
 
 #else
 
-procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseHashWillRaise( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
 
-procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) is
+procedure ParseHashLastError( result : out storage; kind : out identifier ) is
   -- Syntax: n := hash_io.last_error( f );
   -- Ada:    N/A
   fileId     : identifier;
@@ -2498,7 +2498,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
        if isVerifiedOpenFile( fileId, theFile ) then
-          result := to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) );
+          result := storage'( to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) ), noMetaLabel );
        end if;
      exception when msg: berkeley_error =>
         err( pl( exception_message( msg ) ) );
@@ -2508,7 +2508,7 @@ end ParseHashLastError;
 
 #else
 
-procedure ParseHashLastError( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseHashLastError( result : out storage; kind : out identifier ) renames not_configured;
 
 #end if;
 #if BDB
@@ -2519,7 +2519,7 @@ procedure ParseHashRaiseExceptions is
   -- this is impacted by --trace
   fileId     : identifier;
   theFile    : resPtr;
-  boolExpr   : unbounded_string;
+  boolExpr   : storage;
   boolType   : identifier;
 begin
   expect( hash_raise_exceptions_t );
@@ -2527,7 +2527,7 @@ begin
   ParseLastEnumParameter( hash_raise_exceptions_t, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
-       raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := boolExpr.value = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then

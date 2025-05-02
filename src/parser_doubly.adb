@@ -200,7 +200,7 @@ begin
   end if;
 end ParseDoublyClear;
 
-procedure ParseDoublyIsEmpty( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyIsEmpty( result : out storage; kind : out identifier ) is
   -- Syntax: b := doubly_linked_list.is_empty( l );
   -- Ada:    b := doubly_linked_list.is_empty( l );
   listId   : identifier;
@@ -212,12 +212,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_spar_boolean( Doubly_Linked_String_Lists.Is_Empty( theList.dlslList ) );
+       result := storage'( to_spar_boolean( Doubly_Linked_String_Lists.Is_Empty( theList.dlslList ) ), noMetaLabel );
      end;
   end if;
 end ParseDoublyIsEmpty;
 
-procedure ParseDoublyLength( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyLength( result : out storage; kind : out identifier ) is
   -- Syntax: n := doubly_linked_list.length( l );
   -- Ada:    n := doubly_linked_list.length( l );
   listId   : identifier;
@@ -229,7 +229,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_unbounded_string( numericValue ( Doubly_Linked_String_Lists.Length( theList.dlslList ) ) );
+       result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_String_Lists.Length( theList.dlslList ) ) ), noMetaLabel );
      end;
   end if;
 end ParseDoublyLength;
@@ -241,9 +241,9 @@ procedure ParseDoublyAppend is
   --listType : identifier;
   listId : identifier;
   theList  : resPtr;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
@@ -266,10 +266,10 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr.value, cnt );
        else
-          Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr );
+          Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr.value );
        end if;
      exception when constraint_error =>
        err( +"append count must be a natural integer" );
@@ -285,10 +285,10 @@ procedure ParseDoublyPrepend is
   --listExpr : unbounded_string;
   --listType : identifier;
   listId : identifier;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
   theList  : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
@@ -311,10 +311,10 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr.value, cnt );
        else
-          Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr );
+          Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr.value );
        end if;
      exception when constraint_error =>
        err( +"append count must be a natural integer" );
@@ -324,7 +324,7 @@ begin
   end if;
 end ParseDoublyPrepend;
 
-procedure ParseDoublyFirstElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyFirstElement( result : out storage; kind : out identifier ) is
   -- Syntax: s := doubly_linked_list.first_element( l );
   -- Ada:    s := doubly_linked_list.first_element( l );
   listId : identifier;
@@ -342,12 +342,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := Doubly_Linked_String_Lists.First_Element( theList.dlslList );
+       result := storage'( Doubly_Linked_String_Lists.First_Element( theList.dlslList ), noMetaLabel );
      end;
   end if;
 end ParseDoublyFirstElement;
 
-procedure ParseDoublyLastElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyLastElement( result : out storage; kind : out identifier ) is
   -- Syntax: s := doubly_linked_list.last_element( l );
   -- Ada:    s := doubly_linked_list.last_element( l );
   listId   : identifier;
@@ -365,7 +365,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := Doubly_Linked_String_Lists.Last_Element( theList.dlslList );
+       result := storage'( Doubly_Linked_String_Lists.Last_Element( theList.dlslList ), noMetaLabel );
      end;
   end if;
 end ParseDoublyLastElement;
@@ -377,7 +377,7 @@ procedure ParseDoublyDeleteFirst is
   -- listType : identifier;
   listId   : identifier;
   theList  : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
@@ -395,7 +395,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_String_Lists.Delete_First( theList.dlslList, cnt );
        else
           Doubly_Linked_String_Lists.Delete_First( theList.dlslList );
@@ -413,7 +413,7 @@ procedure ParseDoublyDeleteLast is
   --listType : identifier;
   listId   : identifier;
   theList  : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
@@ -431,7 +431,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_String_Lists.Delete_Last( theList.dlslList, cnt );
        else
           Doubly_Linked_String_Lists.Delete_Last( theList.dlslList );
@@ -552,7 +552,7 @@ begin
   end if;
 end ParseDoublyPrevious;
 
-procedure ParseDoublyElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyElement( result : out storage; kind : out identifier ) is
   -- Syntax: s := doubly_linked_list.element( c );
   -- Ada:    s := doubly_linked_list.element( c );
   cursId    : identifier;
@@ -570,7 +570,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       result := Doubly_Linked_String_Lists.Element( theCursor.dlslCursor );
+       result := storage'( Doubly_Linked_String_Lists.Element( theCursor.dlslCursor ), noMetaLabel );
      exception when constraint_error =>
        err( +"position cursor has no element" );
      end;
@@ -586,7 +586,7 @@ procedure ParseDoublyReplaceElement is
   theList   : resPtr;
   cursId    : identifier;
   theCursor : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
 begin
   expect( doubly_replace_element_t );
@@ -604,7 +604,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       Doubly_Linked_String_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr );
+       Doubly_Linked_String_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr.value );
      end;
   end if;
 end ParseDoublyReplaceElement;
@@ -644,9 +644,9 @@ procedure ParseDoublyInsertBefore is
   theList    : resPtr;
   cursId     : identifier;
   theCursor  : resPtr;
-  itemExpr   : unbounded_string;
+  itemExpr   : storage;
   itemType   : identifier;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   hasCnt     : boolean := false;
 begin
@@ -671,10 +671,10 @@ begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr.value, cnt );
        else
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr.value );
        end if;
      exception when program_error =>
        err( +"the cursor refers to a different list" );
@@ -698,9 +698,9 @@ procedure ParseDoublyInsertBeforeAndMark is
   cursId     : identifier;
   theCursor  : resPtr;
   theSecondCursor : resPtr;
-  itemExpr   : unbounded_string;
+  itemExpr   : storage;
   itemType   : identifier;
-  cntExpr    : unbounded_string;
+  cntExpr    : storage;
   cntType    : identifier;
   hasItem    : boolean := false;
   hasCnt     : boolean := false;
@@ -772,16 +772,16 @@ begin
        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
        identifiers( ref.id ).resource := true;
        declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
-       AssignParameter( ref, to_unbounded_string( resId ) );
+       AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
        findResource( resId, theSecondCursor );
        -- there are four variations
        if hasItem and hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor, cnt );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr.value, theSecondCursor.dlslCursor, cnt );
        elsif hasItem then
-          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor );
+          Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr.value, theSecondCursor.dlslCursor );
        elsif hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor, cnt );
        else
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
@@ -805,7 +805,7 @@ procedure ParseDoublyDelete is
   --cursType  : identifier;
   cursId    : identifier;
   theCursor : resPtr;
-  cntExpr   : unbounded_string;
+  cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
@@ -831,7 +831,7 @@ begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        if hasCnt then
           begin
-            cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+            cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           exception when constraint_error =>
             err( +"constraint error raised" );
           end;
@@ -845,12 +845,12 @@ begin
   end if;
 end ParseDoublyDelete;
 
-procedure ParseDoublyContains( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyContains( result : out storage; kind : out identifier ) is
   -- Syntax: b := doubly_linked_list.contains( l, s );
   -- Ada:    b := doubly_linked_list.contains( l, s );
   listId   : identifier;
   theList  : resPtr;
-  itemExpr : unbounded_string;
+  itemExpr : storage;
   itemType : identifier;
 begin
   kind := boolean_t;
@@ -864,7 +864,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_spar_boolean( Doubly_Linked_String_Lists.Contains( theList.dlslList, itemExpr ) );
+       result := storage'( to_spar_boolean( Doubly_Linked_String_Lists.Contains( theList.dlslList, itemExpr.value ) ), noMetaLabel );
      end;
   end if;
 end ParseDoublyContains;
@@ -874,7 +874,7 @@ procedure ParseDoublyFind is
   -- Ada:    c := doubly_linked_list.find( l, s );
   listId    : identifier;
   theList   : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
   cursId    : identifier;
   theCursor : resPtr;
@@ -896,7 +896,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       theCursor.dlslCursor := Doubly_Linked_String_Lists.Find( theList.dlslList, itemExpr );
+       theCursor.dlslCursor := Doubly_Linked_String_Lists.Find( theList.dlslList, itemExpr.value );
      end;
   end if;
 end ParseDoublyFind;
@@ -906,7 +906,7 @@ procedure ParseDoublyReverseFind is
   -- Ada:    c := doubly_linked_list.reverse_find( l, s );
   listId    : identifier;
   theList   : resPtr;
-  itemExpr  : unbounded_string;
+  itemExpr  : storage;
   itemType  : identifier;
   cursId    : identifier;
   theCursor : resPtr;
@@ -928,7 +928,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       theCursor.dlslCursor := Doubly_Linked_String_Lists.Reverse_Find( theList.dlslList, itemExpr );
+       theCursor.dlslCursor := Doubly_Linked_String_Lists.Reverse_Find( theList.dlslList, itemExpr .value);
      end;
   end if;
 end ParseDoublyReverseFind;
@@ -1220,7 +1220,7 @@ begin
   end if;
 end ParseDoublySplice;
 
-procedure ParseDoublyHasElement( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyHasElement( result : out storage; kind : out identifier ) is
   -- Syntax: b := doubly_linked_list.has_element( l );
   -- Ada:    b := doubly_linked_list.has_element( l );
   cursId : identifier;
@@ -1233,14 +1233,14 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       result := to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_String_Lists.No_Element );
+       result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_String_Lists.No_Element ), noMetaLabel );
      end;
   end if;
 end ParseDoublyHasElement;
 
 -----------------------------------------------------------------------------
 
-procedure ParseDoublyAssemble( result : out unbounded_string; kind : out identifier ) is
+procedure ParseDoublyAssemble( result : out storage; kind : out identifier ) is
   -- Syntax: s := doubly_linked_lists.assemble( l [,d [,f]] );
   -- Ada:    N/A
   -- This should run faster than if the user did it themselves in a script.
@@ -1251,10 +1251,10 @@ procedure ParseDoublyAssemble( result : out unbounded_string; kind : out identif
   -- variable) ?
   listId  : identifier;
   theList : resPtr;
-  delimExpr : unbounded_string;
+  delimExpr : storage;
   delimType : identifier;
   hasDelim : boolean := false;
-  finalExpr : unbounded_string;
+  finalExpr : storage;
   finalType : identifier;
   hasFinal : boolean := false;
   curs    : Doubly_Linked_String_Lists.Cursor;
@@ -1278,20 +1278,21 @@ begin
      begin
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := to_unbounded_string( "" & ASCII.LF );
+          delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel );
        end if;
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        curs := Doubly_Linked_String_Lists.First( theList.dlslList );
+       result := nullStorage;
        if Doubly_Linked_String_Lists.Has_Element( curs ) then
           loop
-             result := result & Doubly_Linked_String_Lists.Element( curs );
+             result.value := result.value & Doubly_Linked_String_Lists.Element( curs );
              Doubly_Linked_String_Lists.Next( curs );
              exit when not Doubly_Linked_String_Lists.Has_Element( curs );
-             result := result & delimExpr;
+             result.value := result.value & delimExpr.value;
           end loop;
        end if;
        if hasFinal then
-          result := result & finalExpr;
+          result.value := result.value & finalExpr.value;
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -1310,13 +1311,13 @@ procedure ParseDoublyDisassemble is
   -- As a shell language, this is useful for processing data received from
   -- a shell command.
   -- TODO: not done
-  strExpr   : unbounded_string;
+  strExpr   : storage;
   strType   : identifier;
   listId    : identifier;
-  delimExpr : unbounded_string;
+  delimExpr : storage;
   delimType : identifier;
   hasDelim  : boolean := false;
-  finalExpr : unbounded_string;
+  finalExpr : storage;
   finalType : identifier;
   hasFinal  : boolean := false;
 begin
@@ -1339,7 +1340,7 @@ begin
      declare
        ch : character;
        i  : natural := 1;
-       l  : natural := length( strExpr );
+       l  : natural := length( strExpr.value );
        tempStr : unbounded_string;
        theList : resPtr;
        delimPos : natural;
@@ -1348,24 +1349,24 @@ begin
        -- default delimiter if none supplied
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := null_unbounded_string & ASCII.LF;
+          delimExpr := storage'( null_unbounded_string & ASCII.LF, noMetaLabel );
        end if;
        -- remove final part, if it exists and is defined
        if hasFinal then
-          if l > length( finalExpr ) then
-             if unbounded_slice( strExpr, l - length( finalExpr ) + 1, l ) = finalExpr then
-                delete( strExpr, l - length( finalExpr ) + 1, l );
+          if l > length( finalExpr.value ) then
+             if unbounded_slice( strExpr.value, l - length( finalExpr.value ) + 1, l ) = finalExpr.value then
+                delete( strExpr.value, l - length( finalExpr.value ) + 1, l );
              end if;
-             l := length( strExpr ); -- new length
+             l := length( strExpr.value ); -- new length
           end if;
        end if;
-       delimLen := length( delimExpr );
+       delimLen := length( delimExpr.value );
        delimPos := 0;
        -- generate the list items
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        while l >= i loop
-          ch := element( strExpr, i );
-          if ch = element( delimExpr, delimPos+1 ) then                           -- looking at delim?
+          ch := element( strExpr.value, i );
+          if ch = element( delimExpr.value, delimPos+1 ) then                           -- looking at delim?
              tempStr := tempStr & ch;                                             -- add chr to running string
              delimPos := delimPos + 1;                                            -- advance counter
              if delimPos = delimLen then                                                -- found delimiter?
@@ -1394,9 +1395,9 @@ procedure ParseDoublyParcel is
   -- Syntax: doubly_linked_lists.package( s, l );
   -- Ada:    N/A
   -- Divide a long string into a list of fixed-size strings.
-  strExpr   : unbounded_string;
+  strExpr   : storage;
   strType   : identifier;
-  widthExpr : unbounded_string;
+  widthExpr : storage;
   widthType : identifier;
   listId    : identifier;
 
@@ -1423,16 +1424,16 @@ begin
      begin
         -- generate the list items
         findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-        width := positive'value( " " & to_string( widthExpr ) );
+        width := positive'value( " " & to_string( widthExpr.value ) );
         -- width should be positive by this point
         firstPos := 1;
-        strLen := length( strExpr );
+        strLen := length( strExpr.value );
         while firstPos < strLen loop
            lastPos := firstPos + width - 1;
            if lastPos > strLen then
               lastPos := strLen;
            end if;
-           tempStr := unbounded_slice( strExpr, firstPos, lastPos );
+           tempStr := unbounded_slice( strExpr.value, firstPos, lastPos );
            if length( tempStr ) > 0 then
               Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
            end if;

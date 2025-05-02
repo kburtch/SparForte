@@ -54,7 +54,7 @@ stats_variance_t : identifier;
 -- PARSE THE STATS PACKAGE
 ---------------------------------------------------------
 
-procedure ParseStatsMax( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsMax( result : out storage; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
@@ -74,24 +74,24 @@ begin
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      begin
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
+        first := identifiers( var_id ).aStorage'first;
+        last  := identifiers( var_id ).aStorage'last;
         if last > first then
-           max_string := identifiers( var_id ).avalue( first );
+           max_string := identifiers( var_id ).aStorage( first ).value;
            max := to_numeric( max_string );
            for i in first+1..last loop
-               if to_numeric( identifiers( var_id ).avalue( i ) ) > max then
-                  max_string := identifiers( var_id ).avalue( i );
+               if to_numeric( identifiers( var_id ).aStorage( i ).value ) > max then
+                  max_string := identifiers( var_id ).aStorage( i ).value;
                   max := to_numeric( max_string );
                end if;
            end loop;
-           f := max_string;
+           result := storage'( max_string, noMetaLabel );
         else
-           f := to_unbounded_string( 0 );
+           result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" ) );
      end;
@@ -99,7 +99,7 @@ begin
   end if;
 end ParseStatsMax;
 
-procedure ParseStatsMin( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsMin( result : out storage; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
@@ -119,24 +119,24 @@ begin
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      begin
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
+        first := identifiers( var_id ).aStorage'first;
+        last  := identifiers( var_id ).aStorage'last;
         if last > first then
-           min_string := identifiers( var_id ).avalue( first );
+           min_string := identifiers( var_id ).aStorage( first ).value;
            min := to_numeric( min_string );
            for i in first+1..last loop
-               if to_numeric( identifiers( var_id ).avalue( i ) ) < min then
-                  min_string := identifiers( var_id ).avalue( i );
+               if to_numeric( identifiers( var_id ).aStorage( i ).value ) < min then
+                  min_string := identifiers( var_id ).aStorage( i ).value;
                   min := to_numeric( min_string );
                end if;
            end loop;
-           f := min_string;
+           result := storage'( min_string, noMetaLabel );
         else
-           f := to_unbounded_string( 0 );
+           result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when minning array" ) );
      end;
@@ -144,7 +144,7 @@ begin
   end if;
 end ParseStatsMin;
 
-procedure ParseStatsSum( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsSum( result : out storage; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
@@ -163,20 +163,20 @@ begin
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      begin
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
+        first := identifiers( var_id ).aStorage'first;
+        last  := identifiers( var_id ).aStorage'last;
         sum := 0.0;
         if last > first then
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
            end loop;
-           f := to_unbounded_string( sum );
+           result := storage'( to_unbounded_string( sum ), noMetaLabel );
         else
-           f := to_unbounded_string( 0 );
+           result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when minning array" ) );
      end;
@@ -184,7 +184,7 @@ begin
   end if;
 end ParseStatsSum;
 
-procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsAverage( result : out storage; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   len    : long_integer;
@@ -204,21 +204,21 @@ begin
   if isExecutingCommand then
      --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      begin
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
+        first := identifiers( var_id ).aStorage'first;
+        last  := identifiers( var_id ).aStorage'last;
         len   := last-first+1;
         sum := 0.0;
         if last > first then
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
            end loop;
-           f := to_unbounded_string( sum / numericValue( len ) );
+           result := storage'( to_unbounded_string( sum / numericValue( len ) ), noMetaLabel );
         else
-           f := to_unbounded_string(0);
+           result := storage'( to_unbounded_string(0), noMetaLabel );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when summing array" ) );
      end;
@@ -226,7 +226,7 @@ begin
   end if;
 end ParseStatsAverage;
 
-procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsVariance( result : out storage; kind : out identifier ) is
   var_id   : identifier;
   first, last : long_integer;
   len      : long_integer;
@@ -249,27 +249,27 @@ begin
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      begin
-        first := identifiers( var_id ).avalue'first;
-        last  := identifiers( var_id ).avalue'last;
+        first := identifiers( var_id ).aStorage'first;
+        last  := identifiers( var_id ).aStorage'last;
         len   := last-first+1;
         sum := 0.0;
         if last > first then
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
            end loop;
            mean := sum / numericValue( len );
            sum_diff_sq := 0.0;
            for i in first..last loop
-               diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
+               diff := to_numeric( identifiers( var_id ).aStorage( i ).value ) - mean;
                sum_diff_sq := sum_diff_sq + diff * diff;
            end loop;
-           f := to_unbounded_string( sum_diff_sq / numericValue( len-1 ) );
+           result := storage'( to_unbounded_string( sum_diff_sq / numericValue( len-1 ) ), noMetaLabel );
         else
-           f := to_unbounded_string( 0 );
+           result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when calculating variance" ) );
      end;
@@ -278,7 +278,7 @@ begin
   end if;
 end ParseStatsVariance;
 
-procedure ParseStatsStandardDeviation( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStatsStandardDeviation( result : out storage; kind : out identifier ) is
   var_id   : identifier;
   first, last : long_integer;
   len      : long_integer;
@@ -299,23 +299,23 @@ begin
   end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     first := identifiers( var_id ).avalue'first;
-     last  := identifiers( var_id ).avalue'last;
+     first := identifiers( var_id ).aStorage'first;
+     last  := identifiers( var_id ).aStorage'last;
      len   := last-first+1;
      sum := 0.0;
      if last > first then
         for i in first..last loop
-            sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
+            sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
         end loop;
         mean := sum / numericValue( len );
         sum_diff_sq := 0.0;
         for i in first..last loop
-            diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
+            diff := to_numeric( identifiers( var_id ).aStorage( i ).value) - mean;
             sum_diff_sq := sum_diff_sq + diff * diff;
         end loop;
-        f := to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) );
+        result := storage'( to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) ), noMetaLabel );
      else
-        f := to_unbounded_string( 0 );
+        result := storage'( to_unbounded_string( 0 ), noMetaLabel );
         err( +"array is empty" );
      end if;
      -- kind   := identifiers( var_id ).kind;
