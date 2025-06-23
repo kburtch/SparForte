@@ -192,7 +192,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Clear( theMap.shmMap );
+       Storage_Hashed_Maps.Clear( theMap.shmMap );
      end;
   end if;
 end ParseHashedMapsClear;
@@ -216,7 +216,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := storage'( to_spar_boolean( String_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel );
      end;
   end if;
 end ParseHashedMapsIsEmpty;
@@ -240,7 +240,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := storage'( to_unbounded_string( String_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
 end ParseHashedMapsCapacity;
@@ -268,7 +268,7 @@ begin
        cap : constant Ada.Containers.Count_Type := Ada.Containers.Count_Type( to_numeric( capExpr.value ) );
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );
+       Storage_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -332,17 +332,17 @@ begin
        case version is
        -- ( m, k, e )
        when 1 =>
-          String_Hashed_Maps.Insert( theMap.shmMap, keyExpr.value, elemExpr.value );
+          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
        -- (m, k, p, b )
        when 2 =>
           findResource( to_resource_id( identifiers( cursorRef.id ).value.all ), theCursor );
-          String_Hashed_Maps.Insert( theMap.shmMap, keyExpr.value, theCursor.shmCursor,
+          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, theCursor.shmCursor,
              result );
           AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
        -- (m, k, e, p, b )
        when 3 =>
           findResource( to_resource_id( identifiers( cursorRef.Id ).value.all ), theCursor );
-          String_Hashed_Maps.Insert( theMap.shmMap, keyExpr.value, elemExpr.value,
+          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
              theCursor.shmCursor, result );
           AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
        when others =>
@@ -384,7 +384,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Include( theMap.shmMap, keyExpr.value, elemExpr.value );
+       Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -417,7 +417,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Replace( theMap.shmMap, keyExpr.value, elemExpr.value );
+       Storage_Hashed_Maps.Replace( theMap.shmMap, keyExpr, elemExpr );
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -449,7 +449,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Exclude( theMap.shmMap, keyExpr.value );
+       Storage_Hashed_Maps.Exclude( theMap.shmMap, keyExpr );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -490,10 +490,10 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        if cursorId = eof_t then
-          String_Hashed_Maps.Delete( theMap.shmMap, keyExpr.value );
+          Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
        else
           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-          String_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
+          Storage_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -527,7 +527,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := storage'( to_spar_boolean( String_Hashed_Maps.Contains( theMap.shmMap, keyExpr.value ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) ), noMetaLabel );
      end;
   end if;
 end ParseHashedMapsContains;
@@ -610,10 +610,10 @@ begin
      begin
        if cursorId /= eof_t then
           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-          result := storage'( String_Hashed_Maps.Element( theCursor.shmCursor ), noMetaLabel );
+          result := Storage_Hashed_Maps.Element( theCursor.shmCursor );
        else
           findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-          result := storage'( String_Hashed_Maps.Element( theMap.shmMap, keyExpr.value ), noMetaLabel );
+          result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -642,7 +642,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := storage'( to_unbounded_string( String_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
 end ParseHashedMapsLength;
@@ -672,9 +672,16 @@ begin
   ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
   ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
   if isExecutingCommand then
+     declare
+       original : storage;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       Append( theMap.shmMap, keyExpr.value, elemExpr.value );
+       -- Append( theMap.shmMap, keyExpr, elemExpr );
+       original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       if metaLabelOk( elemExpr, original ) then
+          original.value := original.value & elemExpr.value;
+          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -710,9 +717,16 @@ begin
   ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
   ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
   if isExecutingCommand then
+     declare
+       original : storage;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       Prepend( theMap.shmMap, keyExpr.value, elemExpr.value );
+       -- Prepend( theMap.shmMap, keyExpr, elemExpr );
+       original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       if metaLabelOk( elemExpr, original ) then
+          original.value := elemExpr.value & original.value;
+          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -766,9 +780,17 @@ begin
      exception when constraint_error =>
        err( +"increment value is not natural" );
      end;
+     declare
+       original : storage;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       increment( theMap.shmMap, keyExpr.value, floatVal );
+       -- increment( theMap.shmMap, keyExpr, floatVal );
+       original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
+       if metaLabelOk( incExpr, original ) then
+          original.value := to_unbounded_string( floatVal'img ) ;
+          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -822,9 +844,17 @@ begin
      exception when constraint_error =>
        err( +"decrement value is not natural" );
      end;
+     declare
+       original : storage;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       decrement( theMap.shmMap, keyExpr.value, floatVal );
+       -- decrement( theMap.shmMap, keyExpr, floatVal );
+       original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
+       if metaLabelOk( decExpr, original ) then
+          original.value := to_unbounded_string( floatVal'img ) ;
+          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -861,7 +891,9 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       extract( theMap.shmMap, keyExpr.value, result.value );
+       -- extract( theMap.shmMap, keyExpr, result.value );
+       result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when others =>
@@ -896,7 +928,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
        findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
-       String_Hashed_Maps.Assign( targetMap.shmMap, sourceMap.shmMap );
+       Storage_Hashed_Maps.Assign( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -927,7 +959,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
        findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
-       String_Hashed_Maps.Move( targetMap.shmMap, sourceMap.shmMap );
+       Storage_Hashed_Maps.Move( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -960,7 +992,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       theCursor.shmCursor := String_Hashed_Maps.First( theMap.shmMap );
+       theCursor.shmCursor := Storage_Hashed_Maps.First( theMap.shmMap );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -987,7 +1019,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       theCursor.shmCursor := String_Hashed_Maps.Next( theCursor.shmCursor );
+       theCursor.shmCursor := Storage_Hashed_Maps.Next( theCursor.shmCursor );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1016,7 +1048,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := storage'( String_Hashed_Maps.Key( theCursor.shmCursor ), noMetalabel );
+       result := Storage_Hashed_Maps.Key( theCursor.shmCursor );
      exception when constraint_error =>
        err( +"cursor position has no element" );
      when storage_error =>
@@ -1056,7 +1088,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       theCursor.shmCursor := String_Hashed_Maps.Find( theMap.shmMap, keyExpr.value );
+       theCursor.shmCursor := Storage_Hashed_Maps.Find( theMap.shmMap, keyExpr );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1090,7 +1122,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       String_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr.value );
+       Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
      exception when constraint_error =>
        err( +"cursor position has no element" );
      when program_error =>
@@ -1122,7 +1154,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := storage'( to_spar_boolean( String_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel );
      end;
   end if;
 end ParseHashedMapsHasElement;
@@ -1141,7 +1173,7 @@ procedure ParseHashedMapsEqual( result : out storage; kind : out identifier ) is
   leftMap    : resPtr;
   rightMap   : resPtr;
   subprogramId : constant identifier := hashed_maps_equal_t;
-  use String_Hashed_Maps;
+  use Storage_Hashed_Maps;
 begin
   kind := boolean_t;
   expect( subprogramId );

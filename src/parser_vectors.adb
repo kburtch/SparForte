@@ -556,7 +556,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       Vector_String_Lists.Clear( theVector.vslVector );
+       Vector_Storage_Lists.Clear( theVector.vslVector );
      end;
   end if;
 end ParseVectorsClear;
@@ -585,7 +585,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       theVector.vslVector := Vector_String_Lists.To_Vector( itemExpr.value, ada.containers.count_type'value( to_string( cntExpr.value ) ) );
+       theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr.value, ada.containers.count_type'value( to_string( cntExpr.value ) ) );
      end;
   end if;
 end ParseVectorsToVector;
@@ -611,7 +611,7 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := storage'(
          to_unbounded_string(
-            ada.containers.count_type'image( Vector_String_Lists.Capacity( theVector.vslVector ) )
+            ada.containers.count_type'image( Vector_Storage_Lists.Capacity( theVector.vslVector ) )
          ),
          noMetaLabel
       );
@@ -643,7 +643,7 @@ begin
      begin
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       Vector_String_Lists.Reserve_Capacity( theVector.vslVector, cnt );
+       Vector_Storage_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
@@ -678,7 +678,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := storage'(
-         to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Length( theVector.vslVector ) ) ),
+         to_unbounded_string( ada.containers.count_type'image( Vector_Storage_Lists.Length( theVector.vslVector ) ) ),
          noMetaLabel
       );
      end;
@@ -709,7 +709,7 @@ begin
      begin
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       Vector_String_Lists.Set_Length( theVector.vslVector, cnt );
+       Vector_Storage_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
@@ -743,7 +743,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( to_spar_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsIsEmpty;
@@ -782,9 +782,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_String_Lists.Append( theVector.vslVector, itemExpr.value, cnt );
+          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr.value, cnt );
        else
-          Vector_String_Lists.Append( theVector.vslVector, itemExpr.value );
+          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr.value );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -828,9 +828,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr.value, cnt );
+          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr.value, cnt );
        else
-          Vector_String_Lists.Prepend( theVector.vslVector, itemExpr.value );
+          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr.value );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -934,7 +934,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       userIdx := Vector_String_Lists.First_Index( theVector.vslVector );
+       userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) ),
          noMetaLabel );
      end;
@@ -962,7 +962,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 --put_line( "last_index: vector = " & to_string( identifiers( vectorId ).name ) );
-       userIdx := Vector_String_Lists.Last_Index( theVector.vslVector );
+       userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
 -- put_line( "last_index: userIdx = " & userIdx'img );
        result := storage'( to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) ), noMetaLabel );
 -- put_line( "last_index: result = " & to_string( result ) ); -- DEBUG
@@ -1042,12 +1042,12 @@ begin
      begin
        if cursorId /= eof_t then
          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-         result := storage'( Vector_String_Lists.Element( theCursor.vslCursor ), noMetaLabel );
+         result := storage'( Vector_Storage_Lists.Element( theCursor.vslCursor ), noMetaLabel );
        else
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-         result := storage'( Vector_String_Lists.Element( theVector.vslVector, idx ), noMetaLabel );
+         result := storage'( Vector_Storage_Lists.Element( theVector.vslVector, idx ), noMetaLabel );
        end if;
 -- NOTE: Vector Lists stores internally a natural
      exception when constraint_error =>
@@ -1077,7 +1077,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( Vector_String_Lists.First_Element( theVector.vslVector ), noMetaLabel );
+       result := storage'( Vector_Storage_Lists.First_Element( theVector.vslVector ), noMetaLabel );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1103,7 +1103,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( Vector_String_Lists.Last_Element( theVector.vslVector ), noMetaLabel );
+       result := storage'( Vector_Storage_Lists.Last_Element( theVector.vslVector ), noMetaLabel );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1141,9 +1141,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_String_Lists.Delete_First( theVector.vslVector, cnt );
+          Vector_Storage_Lists.Delete_First( theVector.vslVector, cnt );
        else
-          Vector_String_Lists.Delete_First( theVector.vslVector );
+          Vector_Storage_Lists.Delete_First( theVector.vslVector );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -1186,9 +1186,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_String_Lists.Delete_Last( theVector.vslVector, cnt );
+          Vector_Storage_Lists.Delete_Last( theVector.vslVector, cnt );
        else
-          Vector_String_Lists.Delete_Last( theVector.vslVector );
+          Vector_Storage_Lists.Delete_Last( theVector.vslVector );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -1222,7 +1222,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( to_spar_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr.value ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr.value ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsContains;
@@ -1251,7 +1251,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( targetVectorId ).value.all ), theTargetVector );
        findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), theSourceVector );
-       Vector_String_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
+       Vector_Storage_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
      end;
   end if;
 end ParseVectorsMove;
@@ -1274,7 +1274,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       Vector_String_Lists.Reverse_Elements( theVector.vslVector );
+       Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
 end ParseVectorsReverseElements;
@@ -1297,7 +1297,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       Vector_String_Lists.Reverse_Elements( theVector.vslVector );
+       Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
 end ParseVectorsFlip;
@@ -1333,7 +1333,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       theCursor.vslCursor := Vector_String_Lists.First( theVector.vslVector );
+       theCursor.vslCursor := Vector_Storage_Lists.First( theVector.vslVector );
      end;
   end if;
 end ParseVectorsFirst;
@@ -1365,7 +1365,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       theCursor.vslCursor := Vector_String_Lists.Last( theVector.vslVector );
+       theCursor.vslCursor := Vector_Storage_Lists.Last( theVector.vslVector );
      end;
   end if;
 end ParseVectorsLast;
@@ -1388,7 +1388,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       Vector_String_Lists.Next( theCursor.vslCursor );
+       Vector_Storage_Lists.Next( theCursor.vslCursor );
      end;
   end if;
 end ParseVectorsNext;
@@ -1411,7 +1411,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       Vector_String_Lists.Previous( theCursor.vslCursor );
+       Vector_Storage_Lists.Previous( theCursor.vslCursor );
      end;
   end if;
 end ParseVectorsPrevious;
@@ -1432,7 +1432,7 @@ procedure ParseVectorsDelete is
   idxExpr   : storage;
   idxType   : identifier;
   hasIdx    : boolean := false;
-  idx       : Vector_String_Lists.Extended_Index;
+  idx       : Vector_Storage_Lists.Extended_Index;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
@@ -1467,19 +1467,19 @@ begin
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr.value ) );
-              Vector_String_Lists.Delete( theVector.vslVector, idx, cnt );
+              idx := Vector_Storage_Lists.Extended_Index( to_numeric( idxExpr.value ) );
+              Vector_Storage_Lists.Delete( theVector.vslVector, idx, cnt );
            else
-              idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr.value ) );
-              Vector_String_Lists.Delete( theVector.vslVector, idx );
+              idx := Vector_Storage_Lists.Extended_Index( to_numeric( idxExpr.value ) );
+              Vector_Storage_Lists.Delete( theVector.vslVector, idx );
            end if;
         else
            findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            if hasCnt then
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-              Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
+              Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
            else
-              Vector_String_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
+              Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
            end if;
         end if;
      exception when constraint_error =>
@@ -1509,7 +1509,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := storage'( to_spar_boolean( Vector_String_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsHasElement;
@@ -1527,7 +1527,7 @@ procedure ParseVectorsEqual( result : out storage; kind : out identifier ) is
   rightVectorId : identifier;
   leftVector    : resPtr;
   rightVector   : resPtr;
-  use Vector_String_Lists;
+  use Vector_Storage_Lists;
   subprogramId : constant identifier := vectors_equal_t;
 begin
   kind := boolean_t;
@@ -1626,9 +1626,9 @@ begin
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
-          Vector_String_Lists.Insert( theVector.vslVector, idx, elemExpr.value, cnt );
+          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr.value, cnt );
        else
-          Vector_String_Lists.Insert( theVector.vslVector, idx, elemExpr.value );
+          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr.value );
        end if;
      exception when constraint_error =>
        err_index( subprogramId, beforeExpr );
@@ -1681,7 +1681,7 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
-       Vector_String_Lists.Insert(
+       Vector_Storage_Lists.Insert(
           theVector.vslVector,
           theCursor.vslCursor,
           theVector2.vslVector
@@ -1746,7 +1746,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr.value, cnt );
+       Vector_Storage_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr.value, cnt );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1822,7 +1822,7 @@ begin
        -- If the second cursor was auto-declared, the cursor would have been
        -- created by LastOutVectorCursor.
 
-       Vector_String_Lists.Insert(
+       Vector_Storage_Lists.Insert(
           theVector.vslVector,
           theCursor.vslCursor,
           theVector2.vslVector,
@@ -1920,7 +1920,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       Vector_String_Lists.Insert(
+       Vector_Storage_Lists.Insert(
           Container => theVector.vslVector,
           Before    => theCursor.vslCursor,
           New_Item  => elemExpr.value,
@@ -2000,7 +2000,7 @@ begin
              idx : vector_index;
           begin
              idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeIdxExpr.value ) ) );
-             Vector_String_Lists.Insert_Space( theVector.vslVector, idx, cnt );
+             Vector_Storage_Lists.Insert_Space( theVector.vslVector, idx, cnt );
           end;
        else
           declare
@@ -2026,7 +2026,7 @@ begin
                  storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
              );
              findResource( positionCursorResourceId, thePositionCursor );
-             Vector_String_Lists.Insert_Space(
+             Vector_Storage_Lists.Insert_Space(
                 theVector.vslVector,
                 theBeforeCursor.vslCursor,
                 thePositionCursor.vslCursor,
@@ -2057,7 +2057,7 @@ procedure ParseVectorsAppendVector is
   rightVectorId : identifier;
   leftVector    : resPtr;
   rightVector   : resPtr;
-  use Vector_String_Lists;
+  use Vector_Storage_Lists;
   subprogramId : constant identifier := vectors_append_vector_t;
 begin
   expect( subprogramId );
@@ -2143,7 +2143,7 @@ begin
            idx1 := toRealVectorIndex( vectorId, integer( to_numeric( idx1Expr.value ) ) );
            idx2 := toRealVectorIndex( vectorId, integer( to_numeric( idx2Expr.value ) ) );
            findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-           Vector_String_Lists.Swap( theVector.vslVector, idx1, idx2 );
+           Vector_Storage_Lists.Swap( theVector.vslVector, idx1, idx2 );
         exception when constraint_error =>
            err_index( subprogramId, idx1Expr, idx2Expr );
         when others =>
@@ -2154,7 +2154,7 @@ begin
            findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
            findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
-           Vector_String_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
+           Vector_Storage_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
         exception when program_error =>
            err_cursor_mismatch;
         when others =>
@@ -2228,7 +2228,7 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_String_Lists.Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_Storage_Lists.Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
      exception when others =>
        err_exception_raised;
      end;
@@ -2299,7 +2299,7 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_String_Lists.Reverse_Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_Storage_Lists.Reverse_Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
      end;
   end if;
 end ParseVectorsReverseFind;
@@ -2340,7 +2340,7 @@ begin
 
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_String_Lists.Find_Index( theVector.vslVector, itemExpr.value, startIdx );
+        positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector, itemExpr.value, startIdx );
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
@@ -2389,7 +2389,7 @@ begin
 
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_String_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr.value, startIdx );
+        positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr.value, startIdx );
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
@@ -2570,7 +2570,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( targetVectorId ).value.all ), targetVector );
        findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), sourceVector );
-       Vector_String_Lists.Assign( targetVector.vslVector, sourceVector.vslVector );
+       Vector_Storage_Lists.Assign( targetVector.vslVector, sourceVector.vslVector );
      exception when storage_error =>
        err_storage;
      when others =>

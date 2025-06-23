@@ -48,7 +48,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string  := "2.7";
+version   : constant string  := "3.0";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
 copyright : constant string  :=  " Copyright (c)2001-2025 Free Software Foundation";
@@ -500,8 +500,14 @@ noMetaLabel     : constant identifier := identifier'first;
 -- VALUE STORAGE
 --
 -- A storage element is the string to hold a value plus any meta data
--- (tags) associated with the value.
+-- (tags) associated with the value.  Equality is required for some of the
+-- data structures like doubly linked lists.
 ------------------------------------------------------------------------------
+
+type storage;
+
+function value_equal( left, right : storage ) return boolean;
+-- Equals is required for doubly linked lists.
 
 type storage is record
     value      : aliased unbounded_string;
@@ -509,6 +515,7 @@ type storage is record
 end record;
 nullStorage : constant storage := ( null_unbounded_string, noMetaLabel );
 undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel );
+
 
 -- A storage for a variable is an array of storage elements, possibly with
 -- zero or only one element.
@@ -647,7 +654,7 @@ err_exception    : declaration;           -- the exception else eof_t for none
 -- The run-time security level.
 ------------------------------------------------------------------------------
 
-metaLevel       : identifier := noMetaLabel;             -- the security level
+sparMetaLabel    : identifier := noMetaLabel;             -- the security level
 
 ------------------------------------------------------------------------------
 -- Symbol Table

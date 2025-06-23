@@ -1371,7 +1371,7 @@ begin
         theBlock.identifiers_top := identifiers_top;               -- last ident
         theBlock.newScope := newScope;                             -- scope flag
         theBlock.blockName := To_Unbounded_String( newName );      -- name if any
-        theBlock.metaLevel := metaLevel;
+        theBlock.metaLabel := sparMetaLabel;
         if newFlow = noDataFlow then
            if blocks_top = block'first then
               theBlock.flowName := mainDataFlow;
@@ -1428,7 +1428,7 @@ begin
          b := deleteIdent( i );
      end loop;
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
-     metaLevel := blocks( blocks_top ).metaLevel;
+     sparMetaLabel := blocks( blocks_top ).metaLabel;
 
   -- Tiny Hash Cache
 
@@ -2741,7 +2741,7 @@ begin
   -- VALUE META LABELS
   -- Set the default run-time security level
 
-  metaLevel := noMetaLabel;
+  sparMetaLabel := noMetaLabel;
 end resetScanner;
 
 
@@ -4054,6 +4054,115 @@ begin
      end if;
   end if;
 end discardUnusedIdentifier;
+
+
+------------------------------------------------------------------------------
+-- Data Meta Label Checking / Verification
+--
+------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+--  META LABEL OK
+--
+-- TEST ONLY: meta label must be identical
+-----------------------------------------------------------------------------
+
+function metaLabelOk( leftStorage, rightStorage: storage ) return boolean is
+  leftMetaLabelString : unbounded_string;
+  rightMetaLabelString : unbounded_string;
+  sparMetaLabelString : unbounded_string;
+
+  -- TODO: this is a hack until we get better names/identifiers
+  procedure getLabelStrings is
+  begin
+     if leftStorage.metaLabel = noMetaLabel then
+        leftMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        leftMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+     if rightStorage.metaLabel = noMetaLabel then
+        rightMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        rightMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+     if sparMetaLabel = noMetaLabel then
+        sparMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        sparMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+  end getLabelStrings;
+begin
+  if leftStorage.metaLabel /= rightStorage.metaLabel then
+     getLabelStrings;
+     err_previous( pl( "left data meta label " ) &
+          unb_em( leftMetaLabelString ) &
+          pl( " is not compatible with right data meta label " ) &
+          unb_em( rightMetaLabelString )
+     );
+     return false;
+  elsif leftStorage.metaLabel /= sparMetaLabel then
+     getLabelStrings;
+     err_previous( pl( "data meta label " ) &
+         unb_em( leftMetaLabelString ) &
+         pl( " is not compatible with system meta label " ) &
+         unb_em( sparMetaLabelString )
+      );
+  end if;
+  return true;
+end metaLabelOk;
+
+function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean is
+  leftMetaLabelString : unbounded_string;
+  middleMetaLabelString : unbounded_string;
+  rightMetaLabelString : unbounded_string;
+  sparMetaLabelString : unbounded_string;
+
+  -- TODO: this is a hack until we get better names/identifiers
+  procedure getLabelStrings is
+  begin
+     if leftStorage.metaLabel = noMetaLabel then
+        leftMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        leftMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+     if middleStorage.metaLabel = noMetaLabel then
+        middleMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        middleMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+     if rightStorage.metaLabel = noMetaLabel then
+        rightMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        rightMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+     if sparMetaLabel = noMetaLabel then
+        sparMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        sparMetaLabelString := identifiers( sparMetaLabel ).name;
+     end if;
+  end getLabelStrings;
+begin
+  if leftStorage.metaLabel /= middleStorage.metaLabel or
+     middleStorage.metaLabel /= rightStorage.metaLabel then
+     getLabelStrings;
+     err_previous( pl( "left data meta label " ) &
+          unb_em( leftMetaLabelString) &
+          pl( " is not compatible with middle data meta label " ) &
+             unb_em( middleMetaLabelString ) &
+          pl( " or right label " ) &
+             unb_em( rightMetaLabelString )
+     );
+     return false;
+  elsif leftStorage.metaLabel /= sparMetaLabel then
+     getLabelStrings;
+     err_previous( pl( "data meta label " ) &
+         unb_em( leftMetaLabelString ) &
+         pl( " is not compatible with system meta label " ) &
+         unb_em( sparMetaLabelString )
+      );
+  end if;
+  return true;
+end metaLabelOk;
 
 
 -----------------------------------------------------------------------------

@@ -13,3 +13,5 @@ CHANGES SINCE 2.6.3
 
 4. Fix: malformed numeric literals like "123_" no longer throw an Ada exception.
 
+5. Fix: Added missing entry for doubly_linked_lists.last to the documentation.
+

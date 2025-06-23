@@ -25,8 +25,9 @@ with pegasoft.gen_list,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
-     --Ada.Containers.Vectors,
-     --Ada.Containers.Hashed_Maps,
+     Ada.Containers.Vectors,
+     Ada.Containers.Hashed_Maps,
+     Ada.Containers.Hashed_Sets,
      Unchecked_Deallocation,
      Interfaces.C,
      Gnat.Directory_Operations,
@@ -116,15 +117,56 @@ type aResourceType is (
 
 -- Singly Linked String Lists (Vectors)
 
--- type vector_index is new natural;
+-- Vectors (Ada)
+--
+-- Generic defined in a-convec.ads / Ada.Containers.Vectors
 
--- package vector_string_lists is new Ada.Containers.Vectors( vector_index, unbounded_string, "=" );
+-- vector_index is defined in pegasoft.vectors.
 
--- Doubly Linked String Lists
+package vector_storage_lists is new Ada.Containers.Vectors(
+   vector_index,
+   storage,
+   value_equal
+);
 
-package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
+-- Doubly Linked String Lists (Ada)
+--
+-- Generic defined in a-cdlili.ads / Ada.Containers.Doubly_Linked_Lists
 
--- Dynamic String Hash Tables
+-- package doubly_linked_string_lists is new Ada.Containers.Doubly_Linked_Lists( unbounded_string );
+
+package doubly_linked_storage_lists is new Ada.Containers.Doubly_Linked_Lists( storage, value_equal );
+
+-- Hashed Maps (Ada)
+--
+-- Generic defined in a-cohama.ads / Ada.Containers.Hashed_Maps
+
+function Storage_Hashed_Maps_Hash( key : storage ) return Ada.Containers
+.Hash_Type;
+
+package storage_hashed_maps is
+  new Ada.Containers.Hashed_Maps
+    (Key_Type        => storage,
+     Element_Type    => storage,
+     Hash            => Storage_Hashed_Maps_Hash,
+     Equivalent_Keys => value_equal);
+
+-- Hashed Sets (Ada)
+--
+-- Generic defined in a-cohase.ads / Ada.Containers.Hashed_Sets
+
+function Storage_Hashed_Sets_Hash( key : storage ) return Ada.Containers
+.Hash_Type;
+
+package storage_hashed_sets is
+  new Ada.Containers.Hashed_Sets
+    (Element_Type    => storage,
+     Hash            => Storage_Hashed_Sets_Hash,
+     Equivalent_Elements => value_equal);
+
+-- Dynamic String Hash Tables (GNAT)
+--
+-- Generic defined in g-dynhta.ads / GNAT.Dynamic_HTables
 
 --type Hash_Position is new long_integer range 0.. 4_294_967_295; -- 2^32-1
 type Hash_Position is new integer range 0.. 65_535; -- 2^32-1
@@ -133,12 +175,24 @@ function String_Hash( key : unbounded_string ) return Hash_Position;
 
 package dynamic_string_hash_tables is
    new Gnat.Dynamic_HTables.Simple_HTable(
-      Hash_Position,
-      unbounded_string,
-      null_unbounded_string,
-      unbounded_string,
-      String_Hash,
-      "="
+      header_num => Hash_Position,
+      element    => unbounded_string,
+      no_element => null_unbounded_string,
+      key        => unbounded_string,
+      hash       => String_Hash,
+      equal      => "="
+);
+
+function Storage_DHT_Hash( key : storage ) return Hash_Position;
+
+package dynamic_storage_hash_tables is
+   new Gnat.Dynamic_HTables.Simple_HTable(
+      header_num => Hash_Position,
+      element    => storage,
+      no_element => nullStorage,
+      key        => storage,
+      hash       => Storage_DHT_Hash,
+      equal      => value_equal
 );
 
 -- Berkeley DB B-Tree File
@@ -226,23 +280,23 @@ type resHandle( rt : aResourceType ) is record
      when memcache_connection => null;
      when pen_canvas => null;
      when vector_string_list =>
-          vslVector : vector_string_lists.Vector;
+          vslVector : vector_storage_lists.Vector;
      when vector_string_list_cursor =>
-          vslCursor : vector_string_lists.Cursor;
+          vslCursor : vector_storage_lists.Cursor;
      when doubly_linked_string_list =>
-          dlslList : doubly_linked_string_lists.List;
+          dlslList : doubly_linked_storage_lists.List;
      when doubly_linked_string_list_cursor =>
-          dlslCursor : doubly_linked_string_lists.Cursor;
+          dlslCursor : doubly_linked_storage_lists.Cursor;
      when dynamic_string_hash_table =>
-          dsht : dynamic_string_hash_tables.Instance;
+          dsht : dynamic_storage_hash_tables.Instance;
      when string_hashed_map =>
-          shmMap : string_hashed_maps.Map;
+          shmMap : storage_hashed_maps.Map;
      when string_hashed_map_cursor =>
-          shmCursor : string_hashed_maps.Cursor;
+          shmCursor : storage_hashed_maps.Cursor;
      when string_hashed_set =>
-          shsSet : string_hashed_sets.Set;
+          shsSet : storage_hashed_sets.Set;
      when string_hashed_set_cursor =>
-          shsCursor : string_hashed_sets.Cursor;
+          shsCursor : storage_hashed_sets.Cursor;
      when gl_byte_array =>
           gl_ba : GL_Byte_Array_Access;
      when gl_short_array =>

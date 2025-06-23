@@ -116,6 +116,14 @@ defaultVolatileExpire : constant time := clock;
 --    end if;
 --end getTinyHashCache;
 
+-- Storage Primitives
+--
+-----------------------------------------------------------------------------
+
+function value_equal( left, right : storage ) return boolean is
+begin
+  return left.value = right.value;
+end value_equal;
 
 ---> IS EXECUTING COMMAND
 --

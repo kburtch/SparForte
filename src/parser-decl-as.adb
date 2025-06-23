@@ -2602,24 +2602,24 @@ end ParseDeclareBlock;
 
 procedure ParseBeginBlock is
   old_error_found : constant boolean := error_found;
-  newMetaLevel : identifier := eof_t;
+  newMetaLabel : identifier := eof_t;
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
   if token = with_t then
      expect( with_t );
      expect( meta_t );
-     ParseIdentifier( newMetaLevel );
-     metaLevel := newMetaLevel;
+     ParseIdentifier( newMetaLabel );
+     sparMetaLabel := newMetaLabel;
   end if;
   ParseBlock;
   if token = exception_t then
      ParseExceptionHandler( old_error_found );
   end if;
   expect( end_t );
-  if newMetaLevel /= eof_t then
+  if newMetaLabel /= eof_t then
      expect( meta_t );
-     expect( newMetaLevel );
+     expect( newMetaLabel );
   end if;
   pullBlock;
 end ParseBeginBlock;
@@ -6288,9 +6288,17 @@ begin
               " := """ &
               toSecureData( to_string( ToEscaped( expr.value ) ) ) &
                  """" );
+           if expr.metaLabel /= noMetaLabel then
+              if trace then
+                 put_trace( to_string( identifiers( var_id ).name ) &
+                    " value has meta labels '" &
+                    to_string( identifiers( identifiers( var_id ).astorage( arrayIndex ).metaLabel ).name ) & "'" );
+              end if;
+           end if;
         end if;
      else
         identifiers( var_id ).value.all := expr.value;
+        identifiers( var_id ).sstorage.metaLabel := expr.metaLabel;
         if trace then
            -- builtins.env( ident ) would be better if a value is
            -- returned
@@ -6299,6 +6307,12 @@ begin
               " := """ &
               toSecureData( to_string( ToEscaped( expr.value ) ) ) &
               """" );
+           if expr.metaLabel /= noMetaLabel then
+              if trace then
+                 put_trace( to_string( identifiers( var_id ).name ) &
+                    " value has meta labels '" & to_string( identifiers( identifiers( var_id ).sstorage.metaLabel ).name ) & "'" );
+              end if;
+           end if;
         end if;
      end if;
   end if;

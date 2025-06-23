@@ -330,6 +330,14 @@ procedure discardUnusedIdentifier( id : identifier );
 -- if an identifier has been not been assigned a type,
 -- assume it's unused and discard it.
 
+------------------------------------------------------------------------------
+-- Data Meta Label Checking / Verification
+--
+------------------------------------------------------------------------------
+
+function metaLabelOk( leftStorage, rightStorage : storage ) return boolean;
+function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean;
+
 -----------------------------------------------------------------------------
 -- JSON
 -----------------------------------------------------------------------------
@@ -498,7 +506,7 @@ type blockDeclaration is record
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;
   occurrence_full      : unbounded_string;
-  metaLevel       : identifier; -- the security level
+  metaLabel       : identifier; -- the security level
 end record;
 
 type blocksArray is array( block ) of blockDeclaration;

@@ -24,9 +24,11 @@
 with ada.text_io,
      gnat.source_info,
      pegasoft.user_io,
+     pegasoft.hmaps,
      scanner.communications;
 use  ada.text_io,
      pegasoft.user_io,
+     pegasoft.hmaps,
      scanner.communications;
 
 #if BDB
@@ -59,11 +61,16 @@ end to_resource_id;
 
 ------------------------------------------------------------------------------
 
+-- GNAT Dynamic Hash Tables
 
 type hash_integer is mod 2**32;
 
+--  STRING HASH
+--
+-- A hash function for a dynamic hash table.
+-- A FVN hash for unbounded strings.  See parser_numerics for more on a FVN hash.
+
 function String_Hash( key : unbounded_string ) return Hash_Position is
--- FVN hash (see parser_numerics)
   hash   : hash_integer := 16#711c9dc5#; -- was 16#8
   k      : hash_integer;
   limit  : hash_integer;
@@ -81,12 +88,38 @@ begin
   return hash_position( hash );
 end String_Hash;
 
+--  STORAGE DHT HASH
+--
+-- A hash function for a dynamic hash table.
+-- A FVN hash for a storage value.  See parser_numerics for more on a FVN hash.
+
+function Storage_DHT_Hash( key : storage ) return Hash_Position is
+begin
+  return String_Hash( key.value );
+end Storage_DHT_Hash;
+
 ------------------------------------------------------------------------------
 
 --function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers.Hash_Type is
 --begin
 --  return Ada.Containers.Hash_Type( String_Hash( key ) );
 --end String_Hashed_Maps_Hash;
+
+-- Hashed Maps
+
+function Storage_Hashed_Maps_Hash( key : storage ) return Ada.Containers
+.Hash_Type is
+begin
+  return String_Hashed_Maps_Hash( key.value );
+end Storage_Hashed_Maps_Hash;
+
+-- Hashed Maps
+
+function Storage_Hashed_Sets_Hash( key : storage ) return Ada.Containers
+.Hash_Type is
+begin
+  return String_Hashed_Maps_Hash( key.value );
+end Storage_Hashed_Sets_Hash;
 
 ------------------------------------------------------------------------------
 --  DECLARE RESOURCE
@@ -273,15 +306,15 @@ begin
         close( rp.dir );
      end if;
   elsif rp.rt = vector_string_list then
-     vector_string_lists.clear( rp.vslVector );
+     vector_storage_lists.clear( rp.vslVector );
   elsif rp.rt = doubly_linked_string_list then
-     doubly_linked_string_lists.clear( rp.dlslList );
+     doubly_linked_storage_lists.clear( rp.dlslList );
   elsif rp.rt = dynamic_string_hash_table then
-     dynamic_string_hash_tables.reset( rp.dsht );
+     dynamic_storage_hash_tables.reset( rp.dsht );
   elsif rp.rt = string_hashed_map then
-     string_hashed_maps.clear( rp.shmMap );
+     storage_hashed_maps.clear( rp.shmMap );
   elsif rp.rt = string_hashed_set then
-     string_hashed_sets.clear( rp.shsSet );
+     storage_hashed_sets.clear( rp.shsSet );
   elsif rp.rt = gl_byte_array then
      Free( rp.gl_ba );
   elsif rp.rt = gl_short_array then

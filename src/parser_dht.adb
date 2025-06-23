@@ -91,7 +91,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       Dynamic_String_Hash_Tables.Reset( theTable.dsht );
+       Dynamic_Storage_Hash_Tables.Reset( theTable.dsht );
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -120,10 +120,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       Dynamic_String_Hash_Tables.Set(
+       Dynamic_Storage_Hash_Tables.Set(
           theTable.dsht,
-          keyExpr.value,
-          itemExpr.value );
+          keyExpr,
+          itemExpr );
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -150,7 +150,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       result := storage'( Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value ), noMetaLabel );
+       result := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
      end;
   end if;
 end ParseDHTGet;
@@ -175,7 +175,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       result := storage'( to_spar_boolean( Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value ) /= null_unbounded_string ), noMetaLabel );
+       result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel );
      end;
   end if;
 end ParseDHTHasElement;
@@ -199,7 +199,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       Dynamic_String_Hash_Tables.Remove( theTable.dsht, keyExpr.value );
+       Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -227,12 +227,12 @@ begin
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
      declare
-       s : unbounded_string;
+       s : storage;
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       s := Dynamic_String_Hash_Tables.Get_First( theTable.dsht );
-       AssignParameter( itemRef, storage'( s , noMetaLabel ) );
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = null_unbounded_string ), noMetaLabel ) );
+       s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
+       AssignParameter( itemRef, s );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
      end;
   end if;
 end ParseDHTGetFirst;
@@ -258,12 +258,12 @@ begin
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
      declare
-       s : unbounded_string;
+       s : storage;
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       s := Dynamic_String_Hash_Tables.Get_Next( theTable.dsht );
-       AssignParameter( itemRef, storage'( s, noMetaLabel ) );
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = null_unbounded_string ), noMetaLabel ) );
+       s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
+       AssignParameter( itemRef, s );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
      end;
   end if;
 end ParseDHTGetNext;
@@ -282,7 +282,7 @@ procedure ParseDHTAdd is
   keyType  : identifier;
   itemExpr : storage;
   itemType : identifier;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
 begin
   expectAdaScript( subject => dht_add_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_add_t, tableId, dht_table_t );
@@ -291,9 +291,9 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem = null_unbounded_string then
-          Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, itemExpr.value );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem = nullStorage then
+          Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -315,7 +315,7 @@ procedure ParseDHTReplace is
   keyType  : identifier;
   itemExpr : storage;
   itemType : identifier;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
 begin
   expectAdaScript( subject => dht_replace_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_replace_t, tableId, dht_table_t );
@@ -324,9 +324,9 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem /= null_unbounded_string then
-          Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, itemExpr.value );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem /= nullStorage then
+          Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -348,7 +348,7 @@ procedure ParseDHTAppend is
   keyType  : identifier;
   itemExpr : storage;
   itemType : identifier;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
 begin
   expectAdaScript( subject => dht_append_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_append_t, tableId, dht_table_t );
@@ -360,9 +360,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem /= null_unbounded_string then
-          Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, oldItem & itemExpr.value );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem /= nullStorage then
+          if metaLabelOK( olditem, itemExpr ) then
+             oldItem.value := oldItem.value & itemExpr.value;
+             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
+          end if;
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -384,7 +387,7 @@ procedure ParseDHTPrepend is
   keyType  : identifier;
   itemExpr : storage;
   itemType : identifier;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
 begin
   expectAdaScript( subject => dht_prepend_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_prepend_t, tableId, dht_table_t );
@@ -396,9 +399,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem /= null_unbounded_string then
-          Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, itemExpr.value & oldItem );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem /= nullStorage then
+          if metaLabelOK( olditem, itemExpr ) then
+             oldItem.value := itemExpr.value & oldItem.value;
+             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
+          end if;
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -421,7 +427,7 @@ procedure ParseDHTIncrement is
   amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
   oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_increment_t, remedy => +"use get and set" );
@@ -441,13 +447,18 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem /= null_unbounded_string then
-          oldItemValue := to_numeric( oldItem );
-          if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) ) ) );
-          else
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, to_unbounded_string( oldItemValue + 1.0 ) );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem /= nullStorage then
+          if metaLabelOK( oldItem, amtExpr ) then
+             oldItemValue := to_numeric( oldItem.value );
+             if hasAmt then
+                oldItem.value := to_unbounded_string(
+                   oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) )
+                );
+             else
+                oldItem.value := to_unbounded_string( oldItemValue + 1.0 );
+             end if;
+             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
           end if;
        end if;
      exception when storage_error =>
@@ -473,7 +484,7 @@ procedure ParseDHTDecrement is
   amtExpr  : storage;
   amtType  : identifier;
   hasAmt   : boolean := false;
-  oldItem  : unbounded_string;
+  oldItem  : storage;
   oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_decrement_t, remedy => +"use get and set" );
@@ -493,13 +504,16 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       oldItem := Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr.value );
-       if oldItem /= null_unbounded_string then
-          oldItemValue := to_numeric( oldItem );
-          if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) ) );
-          else
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr.value, to_unbounded_string( oldItemValue - 1.0 ) );
+       oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldItem /= nullStorage then
+          if metaLabelOK( oldItem, amtExpr ) then
+             oldItemValue := to_numeric( oldItem.value );
+             if hasAmt then
+                oldItem.value := to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) );
+             else
+                oldItem.value := to_unbounded_string( oldItemValue - 1.0 );
+             end if;
+             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
           end if;
        end if;
      exception when storage_error =>
