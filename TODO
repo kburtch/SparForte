@@ -11,11 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- copyright date on .ads files
 - value meta labels
 
-  - vectors should store storage not strings so tags
-    are not lost
+  - standard containers
     - double.assemble meta label handing must be resolved.
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
@@ -389,6 +387,7 @@ Annoyances / Bugs with Workarounds / Updates
 - unit testing and teamwork
     - restricted shell tests
     - xUnit support for tests (pragma test_result - output in JUNIT format?)
+    - pragma no_bourne_shell?  no_universals?
 - records
   - if constant records/arrays are allowed,they should have static expressions
     during declaration assignments.

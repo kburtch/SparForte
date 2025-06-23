@@ -585,7 +585,8 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr.value, ada.containers.count_type'value( to_string( cntExpr.value ) ) );
+       theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
+          ada.containers.count_type'value( to_string( cntExpr.value ) ) );
      end;
   end if;
 end ParseVectorsToVector;
@@ -782,9 +783,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr.value, cnt );
+          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr, cnt );
        else
-          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr.value );
+          Vector_Storage_Lists.Append( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -828,9 +829,9 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr.value, cnt );
+          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr, cnt );
        else
-          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr.value );
+          Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
        err_count( subprogramId, cntExpr, cntType );
@@ -869,7 +870,16 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-       Append( theVector.vslVector, idx, strExpr.value );
+       -- Append( theVector.vslVector, idx, strExpr );
+       declare
+         the_string : storage;
+       begin
+         the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
+         if metaLabelOK( the_string, strExpr ) then
+            the_string.value := the_string.value & strExpr.value;
+            Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
+         end if;
+       end;
      exception when constraint_error =>
        err( +"append index is wrong type" );
      when storage_error =>
@@ -905,7 +915,16 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-       Prepend( theVector.vslVector, idx, strExpr.value );
+       -- Prepend( theVector.vslVector, idx, strExpr );
+       declare
+         the_string : storage;
+       begin
+         the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
+         if metaLabelOK( the_string, strExpr ) then
+            the_string.value := strExpr.value & the_string.value;
+            Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
+         end if;
+       end;
      exception when constraint_error =>
        err( +"prepend count must be a natural integer" );
      when storage_error =>
@@ -1042,12 +1061,12 @@ begin
      begin
        if cursorId /= eof_t then
          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-         result := storage'( Vector_Storage_Lists.Element( theCursor.vslCursor ), noMetaLabel );
+         result := Vector_Storage_Lists.Element( theCursor.vslCursor );
        else
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-         result := storage'( Vector_Storage_Lists.Element( theVector.vslVector, idx ), noMetaLabel );
+         result := Vector_Storage_Lists.Element( theVector.vslVector, idx );
        end if;
 -- NOTE: Vector Lists stores internally a natural
      exception when constraint_error =>
@@ -1077,7 +1096,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( Vector_Storage_Lists.First_Element( theVector.vslVector ), noMetaLabel );
+       result := Vector_Storage_Lists.First_Element( theVector.vslVector );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1103,7 +1122,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( Vector_Storage_Lists.Last_Element( theVector.vslVector ), noMetaLabel );
+       result := Vector_Storage_Lists.Last_Element( theVector.vslVector );
      exception when constraint_error =>
        err_empty( subprogramId, vectorId );
      end;
@@ -1222,7 +1241,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr.value ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsContains;
@@ -1626,9 +1645,9 @@ begin
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
-          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr.value, cnt );
+          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr, cnt );
        else
-          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr.value );
+          Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr );
        end if;
      exception when constraint_error =>
        err_index( subprogramId, beforeExpr );
@@ -1746,7 +1765,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       Vector_Storage_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr.value, cnt );
+       Vector_Storage_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr, cnt );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1923,7 +1942,7 @@ begin
        Vector_Storage_Lists.Insert(
           Container => theVector.vslVector,
           Before    => theCursor.vslCursor,
-          New_Item  => elemExpr.value,
+          New_Item  => elemExpr,
           Position  => theCursor2.vslCursor,
           Count     => cnt
        );
@@ -2228,7 +2247,8 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_Storage_Lists.Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_Storage_Lists.Find( theVector.vslVector,
+           itemExpr, theCursor.vslCursor );
      exception when others =>
        err_exception_raised;
      end;
@@ -2299,7 +2319,8 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        thePositionCursor.vslCursor := Vector_Storage_Lists.Reverse_Find( theVector.vslVector, itemExpr.value, theCursor.vslCursor );
+        thePositionCursor.vslCursor := Vector_Storage_Lists.Reverse_Find(
+           theVector.vslVector, itemExpr, theCursor.vslCursor );
      end;
   end if;
 end ParseVectorsReverseFind;
@@ -2340,7 +2361,8 @@ begin
 
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector, itemExpr.value, startIdx );
+        positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector,
+           itemExpr, startIdx );
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
@@ -2389,8 +2411,10 @@ begin
 
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr.value ) ) );
 
-        positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr.value, startIdx );
-        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
+        positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector,
+           itemExpr, startIdx );
+        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex(
+           vectorId, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
@@ -2457,7 +2481,14 @@ begin
        begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-         Increment( theVector.vslVector, idx, floatVal );
+         --Increment( theVector.vslVector, idx, floatVal );
+         declare
+           the_string : storage;
+         begin
+           the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
+           the_string.value := to_unbounded_string( to_numeric( the_string.value ) + floatVal );
+           Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
+         end;
        end;
      exception when constraint_error =>
        err( context => subprogramId,
@@ -2528,7 +2559,14 @@ begin
        begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr.value ) ) );
-         Decrement( theVector.vslVector, idx, floatVal );
+         -- Decrement( theVector.vslVector, idx, floatVal );
+         declare
+           the_string : storage;
+         begin
+           the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
+           the_string.value := to_unbounded_string( to_numeric( the_string.value ) - floatVal );
+           Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
+         end;
        end;
      exception when constraint_error =>
        err( context => subprogramId,
