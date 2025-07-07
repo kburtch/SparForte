@@ -1712,9 +1712,9 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
      resId     : resHandleId;
   begin
      if uniType = doubly_list_t then
-        declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
+        declareResource( resId, doubly_linked_storage_list, getIdentifierBlock( id ) );
      elsif uniType = doubly_cursor_t then
-        declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
+        declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( id ) );
      elsif uniType = btree_file_t then
         declareResource( resId, btree_file, getIdentifierBlock( id ) );
      elsif uniType = btree_cursor_t then
@@ -1724,15 +1724,15 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
      elsif uniType = hash_cursor_t then
         declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
      elsif uniType = dht_table_t then
-        declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+        declareResource( resId, dynamic_storage_hash_table, getIdentifierBlock( id ) );
      elsif uniType = vectors_vector_t then
-        declareResource( resId, vector_string_list, getIdentifierBlock( id ) );
+        declareResource( resId, vector_storage_list, getIdentifierBlock( id ) );
      elsif uniType = vectors_cursor_t then
-        declareResource( resId, vector_string_list_cursor, getIdentifierBlock( id ) );
+        declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( id ) );
      elsif uniType = hashed_maps_map_t then
-        declareResource( resId, string_hashed_map, getIdentifierBlock( id ) );
+        declareResource( resId, storage_hashed_map, getIdentifierBlock( id ) );
      elsif uniType = hashed_maps_cursor_t then
-        declareResource( resId, string_hashed_map_cursor, getIdentifierBlock( id ) );
+        declareResource( resId, storage_hashed_map_cursor, getIdentifierBlock( id ) );
      else
         -- TODO: implement generic types
         err( contextNotes => pl( "declaring " ) & unb_em( identifiers( id ).name ),

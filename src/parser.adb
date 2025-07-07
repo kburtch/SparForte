@@ -1427,7 +1427,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
         expect( tagged_t );
         if class_ok(token, metaClass ) then
            f.metaLabel := token;
-          getNextToken;
+           getNextToken;
         end if;
      else
         f.metaLabel := noMetaLabel;
@@ -1778,9 +1778,8 @@ begin
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              -- TODO DATA META LABEL: last output needs to be storage
               f.metaLabel := noMetaLabel;
-              f.value := last_output;
+              f := last_output;
            end if;
            kind := last_output_type;
         end if;
@@ -1936,8 +1935,10 @@ begin
      --   );
      --   kind := eof_t;
      else
-        -- System package constants, etc.
+        -- System package constants, ASCII constants, etc.
+        -- These have no meta data labels so probably need an optional label
         ParseFactorIdentifier;
+        ParseFactorMetaLabel;
      end if;
   elsif identifiers( token ).class = userFuncClass then  -- a user function?
      declare
@@ -3136,7 +3137,7 @@ begin
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              f.value := last_output;
+              f := last_output;
            end if;
            kind := last_output_type;
         end if;

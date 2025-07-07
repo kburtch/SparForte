@@ -2513,7 +2513,7 @@ begin
 
   itself := null_unbounded_string;
   itself_type := eof_t;
-  last_output := null_unbounded_string;
+  last_output := nullStorage;
   last_output_type := eof_t;
 
   -- Boolean enumerated
@@ -4067,6 +4067,51 @@ end discardUnusedIdentifier;
 -- TEST ONLY: meta label must be identical
 -----------------------------------------------------------------------------
 
+function metaLabelOk( theStorage : storage ) return boolean is
+  theMetaLabelString : unbounded_string;
+  sparMetaLabelString : unbounded_string;
+  leftMetaLabel : identifier;
+
+  procedure getLabelStrings is
+  begin
+     begin
+       if sparMetaLabel = noMetaLabel then
+          sparMetaLabelString := to_unbounded_string( "undefined" );
+       else
+          sparMetaLabelString := identifiers( sparMetaLabel ).name;
+       end if;
+     exception when constraint_error =>
+       sparMetaLabelString := to_unbounded_string( "not initialized" );
+     end;
+     begin
+        if theStorage.metaLabel = noMetaLabel then
+           theMetaLabelString := to_unbounded_string( "undefined" );
+        else
+           theMetaLabelString :=  identifiers( theStorage.metaLabel ).name;
+     end if;
+     exception when constraint_error =>
+        theMetaLabelString := to_unbounded_string( "not initialized" );
+     end;
+   end getLabelStrings;
+begin
+  begin
+    leftMetaLabel := theStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "left meta label is not initialized" ) );
+    leftMetaLabel := noMetaLabel;
+  end;
+  if leftMetaLabel /= sparMetaLabel then
+     getLabelStrings;
+     err_previous( pl( "data meta label " ) &
+         unb_em( theMetaLabelString ) &
+         pl( " is not compatible with system meta label " ) &
+         unb_em( sparMetaLabelString )
+     );
+     return false;
+  end if;
+  return true;
+end metaLabelOk;
+
 function metaLabelOk( leftStorage, rightStorage: storage ) return boolean is
   leftMetaLabelString : unbounded_string;
   rightMetaLabelString : unbounded_string;
@@ -4075,22 +4120,35 @@ function metaLabelOk( leftStorage, rightStorage: storage ) return boolean is
   -- TODO: this is a hack until we get better names/identifiers
   procedure getLabelStrings is
   begin
+     if sparMetaLabel = noMetaLabel then
+        sparMetaLabelString := to_unbounded_string( "undefined" );
+     else
+        begin
+           sparMetaLabelString := identifiers( sparMetaLabel ).name;
+        exception when constraint_error =>
+           sparMetaLabelString := to_unbounded_string( "not initialized" );
+        end;
+     end if;
      if leftStorage.metaLabel = noMetaLabel then
         leftMetaLabelString := to_unbounded_string( "undefined" );
      else
-        leftMetaLabelString := identifiers( sparMetaLabel ).name;
+        begin
+           leftMetaLabelString :=  identifiers( leftStorage.metaLabel ).name;
+        exception when constraint_error =>
+           leftMetaLabelString := to_unbounded_string( "not initialized" );
+        end;
      end if;
      if rightStorage.metaLabel = noMetaLabel then
         rightMetaLabelString := to_unbounded_string( "undefined" );
      else
-        rightMetaLabelString := identifiers( sparMetaLabel ).name;
-     end if;
-     if sparMetaLabel = noMetaLabel then
-        sparMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        sparMetaLabelString := identifiers( sparMetaLabel ).name;
+        begin
+           rightMetaLabelString :=  identifiers( rightStorage.metaLabel ).name;
+        exception when constraint_error =>
+           rightMetaLabelString := to_unbounded_string( "not initialized" );
+        end;
      end if;
   end getLabelStrings;
+
 begin
   if leftStorage.metaLabel /= rightStorage.metaLabel then
      getLabelStrings;

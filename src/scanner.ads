@@ -335,6 +335,7 @@ procedure discardUnusedIdentifier( id : identifier );
 --
 ------------------------------------------------------------------------------
 
+function metaLabelOk( theStorage : storage ) return boolean;
 function metaLabelOk( leftStorage, rightStorage : storage ) return boolean;
 function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean;
 
@@ -480,7 +481,7 @@ type aScannerState is record
      lineno  : aLineNumber;      -- line number
      itself  : unbounded_string;   -- copy of the identifier declaration
      itself_type : identifier;        -- type of @ or procedure identifier
-     last_output : unbounded_string;   -- result of last output
+     last_output : storage     ;   -- result of last output
      last_output_type : identifier;    -- type of last output
      err_exception : declaration;      -- exception occurrence (if any)
 end record;

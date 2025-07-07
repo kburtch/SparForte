@@ -149,7 +149,7 @@ begin
 
         -- Attach the resource
 
-        declareResource( resId, string_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
+        declareResource( resId, storage_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
         identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
         identifiers( cursRef.id ).resource := true;

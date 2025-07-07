@@ -1174,7 +1174,7 @@ begin
           end;
         exit when not retry;
         end loop;
-        last_output := expr.value;
+        last_output := expr;
         last_output_type := expr_type;
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
@@ -1353,7 +1353,7 @@ begin
         exit when not retry;
         end loop;
      end if;
-     last_output := expr.value;
+     last_output := expr;
      last_output_type := expr_type;
      replaceField( standard_output_t, line_field,
         long_integer'image( long_integer'value(
@@ -1462,7 +1462,7 @@ begin
            end;
         exit when not retry;
         end loop;
-        last_output := expr.value;
+        last_output := expr;
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
         for i in 1..length( expr.value ) loop

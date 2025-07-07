@@ -13,14 +13,17 @@ Long term Ongoing Work
 
 - value meta labels
 
+  - clean up metaLabelOk exception handling
   - standard containers
-    - double.assemble meta label handing must be resolved.
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
   - world should be split into symbol table and world
   - the global meta mode for the language
-  - last output should be storage
+  - doubly linked lists insert_before should be able to omit the element,
+    according to the docs, but may not be implemented.
+    insert_before_and_mark is fine.
 
+  - issue of retagging something already tagged...what are the rules?
   - factors can be labelled but continue with expressions and labels
     - related unit tests
   - a structure to escallate and descallate the global meta mode
@@ -43,6 +46,8 @@ Long term Ongoing Work
   - pragmas need to be tested for meta labels
   - rename meta and related temporary keywords to ones more appropriate
     (e.g. labelled not tagged?)
+  - metaLabelOk should provide addition context (such as the values
+    associated to the labels when not secured)
 
 - error messages and additional context
   - errors for common problems

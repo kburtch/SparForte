@@ -387,7 +387,7 @@ begin
 
         -- Attach the resource
 
-        declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
+        declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
         identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
@@ -426,7 +426,7 @@ begin
 
         -- Attach the resource
 
-        declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
+        declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
         identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
@@ -2037,7 +2037,7 @@ begin
              identifiers( positionCursorRef.id ).resource := true;
              declareResource(
                  positionCursorResourceId,
-                 vector_string_list_cursor,
+                 vector_storage_list_cursor,
                  getIdentifierBlock( positionCursorRef.id )
              );
              AssignParameter(
@@ -2238,7 +2238,7 @@ begin
         identifiers( positionCursorRef.id ).resource := true;
         declareResource(
             positionCursorResourceId,
-            vector_string_list_cursor,
+            vector_storage_list_cursor,
             getIdentifierBlock( positionCursorRef.id )
         );
         AssignParameter(
@@ -2310,7 +2310,7 @@ begin
         identifiers( positionCursorRef.id ).resource := true;
         declareResource(
             positionCursorResourceId,
-            vector_string_list_cursor,
+            vector_storage_list_cursor,
             getIdentifierBlock( positionCursorRef.id )
         );
         AssignParameter(

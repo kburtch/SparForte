@@ -948,7 +948,7 @@ itself_type : identifier;         -- type of @ or procedure identifier
 
 -- The last output operand, %
 
-last_output : unbounded_string;   -- result of last output
+last_output : storage;   -- result of last output
 last_output_type : identifier;    -- type of last output
 
 -----------------------------------------------------------------------------

@@ -214,23 +214,23 @@ begin
        put_line_retry( "memcache connection" );
   when pen_canvas =>
        put_line_retry( "pen canvas" );
-  when vector_string_list =>
+  when vector_storage_list =>
        put_line_retry( "vector/singly linked list" );
-  when vector_string_list_cursor =>
+  when vector_storage_list_cursor =>
        put_line_retry( "vector/singly linked list cursor" );
-  when doubly_linked_string_list =>
+  when doubly_linked_storage_list =>
        put_line_retry( "doubly linked list" );
-  when doubly_linked_string_list_cursor =>
+  when doubly_linked_storage_list_cursor =>
        put_line_retry( "doubly linked list cursor" );
-  when dynamic_string_hash_table =>
+  when dynamic_storage_hash_table =>
        put_line_retry( "dynamic hash table" );
-  when string_hashed_map_cursor =>
+  when storage_hashed_map_cursor =>
        put_line_retry( "hashed map cursor" );
-  when string_hashed_map =>
+  when storage_hashed_map =>
        put_line_retry( "hashed map" );
-  when string_hashed_set_cursor =>
+  when storage_hashed_set_cursor =>
        put_line_retry( "hashed set cursor" );
-  when string_hashed_set =>
+  when storage_hashed_set =>
        put_line_retry( "hashed set" );
   when gl_byte_array  =>
        put_line_retry( "OpenGL byte array" );
@@ -305,15 +305,15 @@ begin
      if is_open( rp.dir ) then
         close( rp.dir );
      end if;
-  elsif rp.rt = vector_string_list then
+  elsif rp.rt = vector_storage_list then
      vector_storage_lists.clear( rp.vslVector );
-  elsif rp.rt = doubly_linked_string_list then
+  elsif rp.rt = doubly_linked_storage_list then
      doubly_linked_storage_lists.clear( rp.dlslList );
-  elsif rp.rt = dynamic_string_hash_table then
+  elsif rp.rt = dynamic_storage_hash_table then
      dynamic_storage_hash_tables.reset( rp.dsht );
-  elsif rp.rt = string_hashed_map then
+  elsif rp.rt = storage_hashed_map then
      storage_hashed_maps.clear( rp.shmMap );
-  elsif rp.rt = string_hashed_set then
+  elsif rp.rt = storage_hashed_set then
      storage_hashed_sets.clear( rp.shsSet );
   elsif rp.rt = gl_byte_array then
      Free( rp.gl_ba );

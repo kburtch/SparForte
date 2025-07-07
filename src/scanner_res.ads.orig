@@ -87,15 +87,15 @@ type aResourceType is (
    directory,
    memcache_connection,
    pen_canvas,
-   doubly_linked_string_list,
-   doubly_linked_string_list_cursor,
-   vector_string_list,
-   vector_string_list_cursor,
-   dynamic_string_hash_table,
-   string_hashed_map,
-   string_hashed_map_cursor,
-   string_hashed_set,
-   string_hashed_set_cursor,
+   doubly_linked_storage_list,
+   doubly_linked_storage_list_cursor,
+   vector_storage_list,
+   vector_storage_list_cursor,
+   dynamic_storage_hash_table,
+   storage_hashed_map,
+   storage_hashed_map_cursor,
+   storage_hashed_set,
+   storage_hashed_set_cursor,
    gl_byte_array,
    gl_short_array,
    gl_int_array,
@@ -279,23 +279,23 @@ type resHandle( rt : aResourceType ) is record
           dir : Dir_Type;
      when memcache_connection => null;
      when pen_canvas => null;
-     when vector_string_list =>
+     when vector_storage_list =>
           vslVector : vector_storage_lists.Vector;
-     when vector_string_list_cursor =>
+     when vector_storage_list_cursor =>
           vslCursor : vector_storage_lists.Cursor;
-     when doubly_linked_string_list =>
+     when doubly_linked_storage_list =>
           dlslList : doubly_linked_storage_lists.List;
-     when doubly_linked_string_list_cursor =>
+     when doubly_linked_storage_list_cursor =>
           dlslCursor : doubly_linked_storage_lists.Cursor;
-     when dynamic_string_hash_table =>
+     when dynamic_storage_hash_table =>
           dsht : dynamic_storage_hash_tables.Instance;
-     when string_hashed_map =>
+     when storage_hashed_map =>
           shmMap : storage_hashed_maps.Map;
-     when string_hashed_map_cursor =>
+     when storage_hashed_map_cursor =>
           shmCursor : storage_hashed_maps.Cursor;
-     when string_hashed_set =>
+     when storage_hashed_set =>
           shsSet : storage_hashed_sets.Set;
-     when string_hashed_set_cursor =>
+     when storage_hashed_set_cursor =>
           shsCursor : storage_hashed_sets.Cursor;
      when gl_byte_array =>
           gl_ba : GL_Byte_Array_Access;
