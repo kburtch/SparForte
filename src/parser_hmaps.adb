@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+-- with text_io;use text_io;
 
 with
     Ada.Containers,
@@ -179,6 +179,7 @@ end ParseNextOutMapCursor;
 --
 -- Syntax: hashed_maps.clear( m );
 -- Ada:    hashed_maps.clear( m );
+-- Delete the contents of map m.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsClear is
@@ -203,6 +204,7 @@ end ParseHashedMapsClear;
 --
 -- Syntax: b := hashed_maps.is_empty( m );
 -- Ada:    b := hashed_maps.is_empty( m );
+-- Return true if the map has no elements.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsIsEmpty( result : out storage; kind : out identifier ) is
@@ -227,6 +229,7 @@ end ParseHashedMapsIsEmpty;
 --
 -- Syntax: c := hashed_maps.capacity( m );
 -- Ada:    c := hashed_maps.capacity( m );
+-- How much spare item space exists in the map.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsCapacity( result : out storage; kind : out identifier ) is
@@ -251,6 +254,7 @@ end ParseHashedMapsCapacity;
 --
 -- Syntax: hashed_maps.reserve_capacity( m, c );
 -- Ada:    hashed_maps.reserve_capacity( m, c );
+-- Add enough spare item space in the map to store at least c items.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReserveCapacity is
@@ -283,16 +287,19 @@ end ParseHashedMapsReserveCapacity;
 --
 -- Syntax: hashed_maps.insert( m, k, e [, n, p, i ] ) | ( m, k, p, i )
 -- Ada:    hashed_maps.insert( m, k, e [, n, p, i ] )
+-- Insert the value v under key k in the hash map. If b exists, b is true if
+-- the insert was successful. If value e exists, set the value to e. If c
+-- exists, move the cursor to the insert position. If the key exists, raise an
+-- exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInsert is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyExpr : storage;
-  keyType : identifier;
-  elemExpr : storage;
-  elemType : identifier;
-  -- cursorId  : identifier := eof_t;
+  mapId     : identifier;
+  theMap    : resPtr;
+  keyExpr   : storage;
+  keyType   : identifier;
+  elemExpr  : storage;
+  elemType  : identifier;
   cursorRef : reference;
   theCursor : resPtr;
   insertRef : reference;
@@ -332,18 +339,26 @@ begin
        case version is
        -- ( m, k, e )
        when 1 =>
-          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
+          -- assuming the key and value can fall under different policies
+          if metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+             Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
+          end if;
        -- (m, k, p, b )
        when 2 =>
           findResource( to_resource_id( identifiers( cursorRef.id ).value.all ), theCursor );
-          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, theCursor.shmCursor,
-             result );
-          AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
+          if metaLabelOK( keyExpr ) then
+             Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, theCursor.shmCursor,
+                result );
+             AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
+          end if;
        -- (m, k, e, p, b )
        when 3 =>
           findResource( to_resource_id( identifiers( cursorRef.Id ).value.all ), theCursor );
-          Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
-             theCursor.shmCursor, result );
+          -- assuming the key and value can fall under different policies
+          if metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+             Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
+                theCursor.shmCursor, result );
+          end if;
           AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
        when others =>
           put_line_retry( gnat.source_info.source_location &
@@ -366,15 +381,18 @@ end ParseHashedMapsInsert;
 --
 -- Syntax: hashed_maps.include( m, k, e )
 -- Ada:    hashed_maps.include( m, k, e )
+-- Insert the value v under key k in the hash map. If the key exists, the value
+-- is overwritten.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInclude is
   mapId     : identifier;
   theMap    : resPtr;
-  keyExpr    : storage;
+  keyExpr   : storage;
   keyType   : identifier;
-  elemExpr   : storage;
+  elemExpr  : storage;
   elemType  : identifier;
+  oldElem   : storage;
   subprogramId : constant identifier := hashed_maps_include_t;
 begin
   expect( subprogramId );
@@ -384,7 +402,17 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
+       -- the key, value and existing value must all be checked. The map
+       -- may also be empty but existence is optional.
+       if not Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) then
+          oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+          if metaLabelOK( oldElem ) and
+             metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+             Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
+          end if;
+       elsif metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
+       end if;
      exception when storage_error =>
        err_storage;
      when others =>
@@ -399,6 +427,8 @@ end ParseHashedMapsInclude;
 --
 -- Syntax: hashed_maps.replace( m, k, e );
 -- Ada:    hashed_maps.replace( m, k, e );
+-- Replace the value v under key k in the hash map. If the key does not exist,
+-- raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReplace is
@@ -408,6 +438,7 @@ procedure ParseHashedMapsReplace is
   keyType : identifier;
   elemExpr : storage;
   elemType : identifier;
+  oldElem  : storage;
   subprogramId : constant identifier := hashed_maps_replace_t;
 begin
   expect( subprogramId );
@@ -417,7 +448,12 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       Storage_Hashed_Maps.Replace( theMap.shmMap, keyExpr, elemExpr );
+       -- the key, value and existing value must all be checked.
+       oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       if metaLabelOK( oldElem ) and
+          metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+          Storage_Hashed_Maps.Replace( theMap.shmMap, keyExpr, elemExpr );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when storage_error =>
@@ -434,6 +470,8 @@ end ParseHashedMapsReplace;
 --
 -- Syntax: hashed_maps.exclude( m, k );
 -- Ada:    hashed_maps.exclude( m, k );
+-- Delete the value v under key k in the hash map. If the key does not exist,
+-- do nothing.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsExclude is
@@ -441,6 +479,7 @@ procedure ParseHashedMapsExclude is
   theMap  : resPtr;
   keyExpr : storage;
   keyType : identifier;
+  oldElem : storage;
   subprogramId : constant identifier := hashed_maps_exclude_t;
 begin
   expect( subprogramId );
@@ -449,9 +488,15 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       Storage_Hashed_Maps.Exclude( theMap.shmMap, keyExpr );
+       -- the key, value and existing value must all be checked.
+       oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+          Storage_Hashed_Maps.Exclude( theMap.shmMap, keyExpr );
+       end if;
      exception when storage_error =>
        err_storage;
+     when constraint_error =>
+       null;  -- no key? do nothing
      when others =>
        err_exception_raised;
      end;
@@ -464,6 +509,8 @@ end ParseHashedMapsExclude;
 --
 -- Syntax: hashed_maps.delete( m, k | c );
 -- Ada:    hashed_maps.delete( m, k | c );
+-- Remove a key and the associated element from the hash map. If a cursor is
+-- given instead of a key, delete the item at the cursor position.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsDelete is
@@ -473,6 +520,7 @@ procedure ParseHashedMapsDelete is
   keyType : identifier;
   cursorId : identifier := eof_t;
   theCursor : resPtr;
+  oldElem : storage;
   subprogramId : constant identifier := hashed_maps_delete_t;
 begin
   expect( subprogramId );
@@ -490,10 +538,19 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        if cursorId = eof_t then
-          Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
+          -- the key and existing value must be checked. The map
+          -- may also be empty or the key may not exist.
+          oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+          if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+             Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
+          end if;
        else
           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-          Storage_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
+          -- the existing value must be checked
+          oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
+          if metaLabelOK( oldElem ) then
+             Storage_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
+          end if;
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -511,6 +568,9 @@ end ParseHashedMapsDelete;
 --
 -- Syntax: b := hashed_maps.contains( m, k );
 -- Ada:    b := hashed_maps.contains( m, k );
+-- Return true if key k is in the map m.
+-- Does not take into account the data meta label.  Result meta labels not
+-- affected by the data found.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsContains( result : out storage; kind : out identifier ) is
@@ -527,7 +587,11 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) ), noMetaLabel );
+       result := storage'(
+          to_spar_boolean(
+             Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr )
+          ),
+          noMetaLabel );
      end;
   end if;
 end ParseHashedMapsContains;
@@ -538,17 +602,19 @@ end ParseHashedMapsContains;
 --
 -- Syntax: e := hashed_maps.element( m, k ) | element(c)
 -- Ada:    e := hashed_maps.element( m, k ); | element(c)
+-- Return the value for key k in map m, or the value at cursor c.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsElement( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyExpr : storage;
-  keyType : identifier;
+  mapId     : identifier;
+  theMap    : resPtr;
+  keyExpr   : storage;
+  keyType   : identifier;
   cursorId  : identifier := eof_t;
   theCursor : resPtr;
   firstParamUniType : identifier;
-  discard : identifier;
+  oldElem   : storage;
+  discard   : identifier;
   subprogramId : constant identifier := hashed_maps_element_t;
 begin
   -- in the event of an error, we don't know what the data type is
@@ -610,10 +676,16 @@ begin
      begin
        if cursorId /= eof_t then
           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-          result := Storage_Hashed_Maps.Element( theCursor.shmCursor );
+          oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
+          if metaLabelOK( oldElem ) then
+             result := oldElem;
+          end if;
        else
           findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-          result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+          oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+          if metaLabelOK( keyExpr ) and metaLabelOK( oldElem ) then
+             result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+          end if;
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -629,6 +701,7 @@ end ParseHashedMapsElement;
 --
 -- Syntax: n := hashed_maps.length( m );
 -- Ada:    n := hashed_maps.length( m );
+-- Return the number of elements in the map.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsLength( result : out storage; kind : out identifier ) is
@@ -653,6 +726,8 @@ end ParseHashedMapsLength;
 --
 -- Syntax: hashed_maps.append( m, k, e );
 -- Ada:    N/A
+-- Append string element e to the value under key k in the hash map. If the key
+-- does not exist, raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsAppend is
@@ -698,6 +773,8 @@ end ParseHashedMapsAppend;
 --
 -- Syntax: hashed_maps.prepend( m, k, e );
 -- Ada:    N/A
+-- Prepend string element e to the value under key k in the hash table. If the
+-- key does not exist, raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsPrepend is
@@ -787,9 +864,16 @@ begin
        -- increment( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
-       if metaLabelOk( incExpr, original ) then
-          original.value := to_unbounded_string( floatVal'img ) ;
-          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       if hasAmt then
+          if metaLabelOk( incExpr, original ) then
+             original.value := to_unbounded_string( floatVal'img ) ;
+             Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+          end if;
+       else
+          if metaLabelOk( original ) then
+             original.value := to_unbounded_string( floatVal'img ) ;
+             Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+          end if;
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -851,9 +935,16 @@ begin
        -- decrement( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
-       if metaLabelOk( decExpr, original ) then
-          original.value := to_unbounded_string( floatVal'img ) ;
-          Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+       if hasAmt then
+          if metaLabelOk( decExpr, original ) then
+             original.value := to_unbounded_string( floatVal'img ) ;
+             Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+          end if;
+       else
+          if metaLabelOk( original ) then
+             original.value := to_unbounded_string( floatVal'img ) ;
+             Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
+          end if;
        end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
@@ -871,6 +962,8 @@ end ParseHashedMapsDecrement;
 --
 -- Syntax: e := hashed_maps.extract( m, k );
 -- Ada:    N/A (element + delete)
+-- Like remove, delete the value v under key k in the hash map but return it.
+-- If the key does not exist, raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsExtract( result : out storage; kind : out identifier ) is
@@ -878,6 +971,7 @@ procedure ParseHashedMapsExtract( result : out storage; kind : out identifier ) 
   theMap  : resPtr;
   keyExpr : storage;
   keyType : identifier;
+  oldElem : storage;
   subprogramId : constant identifier := hashed_maps_extract_t;
 begin
   -- in the event of an error, we don't know what the data type is
@@ -891,9 +985,11 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       -- extract( theMap.shmMap, keyExpr, result.value );
-       result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
+       oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+          result := oldElem;
+          Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
+       end if;
      exception when constraint_error =>
        err_no_key( subprogramId, keyExpr.value );
      when others =>
@@ -908,6 +1004,9 @@ end ParseHashedMapsExtract;
 --
 -- Syntax: hashed_maps.assign( t, s );
 -- Ada:    hashed_maps.assign( t, s );
+-- Assign source map s to target map t, overwriting the contents of t. s is
+-- unchanged.
+-- Does not take into account data meta label
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsAssign is
@@ -1034,11 +1133,13 @@ end ParseHashedMapsNext;
 --
 -- Syntax: k := hashed_maps.key( c );
 -- Ada:    k := hashed_maps.key( c );
+-- Return the key at the cursor c. If there is no key, raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsKey( result : out storage; kind : out identifier ) is
-  cursorId : identifier;
+  cursorId  : identifier;
   theCursor : resPtr;
+  oldElem   : storage;
   subprogramId : constant identifier := hashed_maps_key_t;
 begin
   -- in the event of an error, we don't know what the data type is
@@ -1048,7 +1149,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := Storage_Hashed_Maps.Key( theCursor.shmCursor );
+       oldElem := Storage_Hashed_Maps.Key( theCursor.shmCursor );
+       if metaLabelOk( oldElem ) then
+          result := oldElem;
+       end if;
      exception when constraint_error =>
        err( +"cursor position has no element" );
      when storage_error =>
@@ -1068,6 +1172,8 @@ end ParseHashedMapsKey;
 --
 -- Syntax: hashed_maps.find( m, k, c );
 -- Ada:    c := hashed_maps.find( m, k );
+-- Move the cursor to the position in the map for key k. If the key does not
+-- exist, the cursor will have no element.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsFind is
@@ -1103,6 +1209,8 @@ end ParseHashedMapsFind;
 --
 -- Syntax: hashed_maps.replace_element( m, c, e );
 -- Ada:    hashed_maps.replace_element( m, c, e );
+-- Replace the element at cursor position c in the hash map. If the key does
+-- not exist, raise an exception.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReplaceElement is
@@ -1122,7 +1230,9 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
+       if metaLabelOK( Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
+          Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
+       end if;
      exception when constraint_error =>
        err( +"cursor position has no element" );
      when program_error =>
@@ -1141,6 +1251,9 @@ end ParseHashedMapsReplaceElement;
 --
 -- Syntax: b := hashed_maps.has_element( c );
 -- Ada:    b := hashed_maps.has_element( c );
+-- True if item under cursor has a value.
+-- Does not take into account the data meta label.  Result meta labels not
+-- affected by the data found.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsHasElement( result : out storage; kind : out identifier ) is
@@ -1165,6 +1278,7 @@ end ParseHashedMapsHasElement;
 --
 -- Syntax: b := hashed_maps.equal( m1, m2 );
 -- Ada:    b := m1 = m2;
+-- True if the two maps have identical content.  Also checks meta data labels.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsEqual( result : out storage; kind : out identifier ) is

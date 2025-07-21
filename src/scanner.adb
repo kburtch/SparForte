@@ -4072,6 +4072,13 @@ function metaLabelOk( theStorage : storage ) return boolean is
   sparMetaLabelString : unbounded_string;
   leftMetaLabel : identifier;
 
+  -- GET LABEL STRINGS
+  --
+  -- Return human-readable strings describing meta data labels, especially
+  -- when they are undefined or not initialized
+  -- TODO: this is a hack for testing data meta labels until we get better
+  -- names/identifiers
+
   procedure getLabelStrings is
   begin
      begin
@@ -4093,13 +4100,19 @@ function metaLabelOk( theStorage : storage ) return boolean is
         theMetaLabelString := to_unbounded_string( "not initialized" );
      end;
    end getLabelStrings;
+
 begin
+
+  -- if the data meta labels are given an initial value, a constraint error
+  -- is usually raised.
+
   begin
     leftMetaLabel := theStorage.metaLabel;
   exception when constraint_error =>
     err_previous( pl( "left meta label is not initialized" ) );
     leftMetaLabel := noMetaLabel;
   end;
+
   if leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
      err_previous( pl( "data meta label " ) &
@@ -4117,40 +4130,66 @@ function metaLabelOk( leftStorage, rightStorage: storage ) return boolean is
   rightMetaLabelString : unbounded_string;
   sparMetaLabelString : unbounded_string;
 
-  -- TODO: this is a hack until we get better names/identifiers
+  -- GET LABEL STRINGS
+  --
+  -- Return human-readable strings describing meta data labels, especially
+  -- when they are undefined or not initialized
+  -- TODO: this is a hack for testing data meta labels until we get better
+  -- names/identifiers
+
   procedure getLabelStrings is
   begin
-     if sparMetaLabel = noMetaLabel then
-        sparMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        begin
-           sparMetaLabelString := identifiers( sparMetaLabel ).name;
-        exception when constraint_error =>
-           sparMetaLabelString := to_unbounded_string( "not initialized" );
-        end;
-     end if;
-     if leftStorage.metaLabel = noMetaLabel then
-        leftMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        begin
-           leftMetaLabelString :=  identifiers( leftStorage.metaLabel ).name;
-        exception when constraint_error =>
-           leftMetaLabelString := to_unbounded_string( "not initialized" );
-        end;
-     end if;
-     if rightStorage.metaLabel = noMetaLabel then
-        rightMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        begin
-           rightMetaLabelString :=  identifiers( rightStorage.metaLabel ).name;
-        exception when constraint_error =>
-           rightMetaLabelString := to_unbounded_string( "not initialized" );
-        end;
-     end if;
+    begin
+      if sparMetaLabel = noMetaLabel then
+         sparMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         sparMetaLabelString := identifiers( sparMetaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      sparMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if leftStorage.metaLabel = noMetaLabel then
+         leftMetaLabelString := to_unbounded_string( "undefined" );
+      else
+          leftMetaLabelString :=  identifiers( leftStorage.metaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      leftMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if rightStorage.metaLabel = noMetaLabel then
+         rightMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         rightMetaLabelString :=  identifiers( rightStorage.metaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      rightMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
   end getLabelStrings;
 
+  leftMetaLabel : identifier;
+  rightMetaLabel : identifier;
+
 begin
-  if leftStorage.metaLabel /= rightStorage.metaLabel then
+
+  -- if the data meta labels are given an initial value, a constraint error
+  -- is usually raised.
+
+  begin
+    leftMetaLabel := leftStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "left meta label is not initialized" ) );
+    leftMetaLabel := noMetaLabel;
+  end;
+  begin
+    rightMetaLabel := rightStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "right meta label is not initialized" ) );
+    rightMetaLabel := noMetaLabel;
+  end;
+
+  if leftMetaLabel /= rightMetaLabel then
      getLabelStrings;
      err_previous( pl( "left data meta label " ) &
           unb_em( leftMetaLabelString ) &
@@ -4158,7 +4197,7 @@ begin
           unb_em( rightMetaLabelString )
      );
      return false;
-  elsif leftStorage.metaLabel /= sparMetaLabel then
+  elsif leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
      err_previous( pl( "data meta label " ) &
          unb_em( leftMetaLabelString ) &
@@ -4175,33 +4214,83 @@ function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return
   rightMetaLabelString : unbounded_string;
   sparMetaLabelString : unbounded_string;
 
-  -- TODO: this is a hack until we get better names/identifiers
+  -- GET LABEL STRINGS
+  --
+  -- Return human-readable strings describing meta data labels, especially
+  -- when they are undefined or not initialized
+  -- TODO: this is a hack for testing data meta labels until we get better
+  -- names/identifiers
+
   procedure getLabelStrings is
   begin
-     if leftStorage.metaLabel = noMetaLabel then
-        leftMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        leftMetaLabelString := identifiers( sparMetaLabel ).name;
-     end if;
-     if middleStorage.metaLabel = noMetaLabel then
-        middleMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        middleMetaLabelString := identifiers( sparMetaLabel ).name;
-     end if;
-     if rightStorage.metaLabel = noMetaLabel then
-        rightMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        rightMetaLabelString := identifiers( sparMetaLabel ).name;
-     end if;
-     if sparMetaLabel = noMetaLabel then
-        sparMetaLabelString := to_unbounded_string( "undefined" );
-     else
-        sparMetaLabelString := identifiers( sparMetaLabel ).name;
-     end if;
+    begin
+      if leftStorage.metaLabel = noMetaLabel then
+         leftMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         leftMetaLabelString := identifiers( sparMetaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      leftMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if middleStorage.metaLabel = noMetaLabel then
+         middleMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         middleMetaLabelString := identifiers( sparMetaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      middleMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if rightStorage.metaLabel = noMetaLabel then
+         rightMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         rightMetaLabelString := identifiers( sparMetaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      rightMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if sparMetaLabel = noMetaLabel then
+         sparMetaLabelString := to_unbounded_string( "undefined" );
+      else
+         sparMetaLabelString := identifiers( sparMetaLabel ).name;
+      end if;
+    exception when constraint_error =>
+      sparMetaLabelString := to_unbounded_string( "not initialized" );
+    end;
   end getLabelStrings;
+
+  leftMetaLabel   : identifier;
+  middleMetaLabel : identifier;
+  rightMetaLabel  : identifier;
+
 begin
-  if leftStorage.metaLabel /= middleStorage.metaLabel or
-     middleStorage.metaLabel /= rightStorage.metaLabel then
+
+  -- if the data meta labels are given an initial value, a constraint error
+  -- is usually raised.
+
+  begin
+    leftMetaLabel := leftStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "left meta label is not initialized" ) );
+    leftMetaLabel := noMetaLabel;
+  end;
+  begin
+    middleMetaLabel := middleStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "middle meta label is not initialized" ) );
+    middleMetaLabel := noMetaLabel;
+  end;
+  begin
+    rightMetaLabel := rightStorage.metaLabel;
+  exception when constraint_error =>
+    err_previous( pl( "right meta label is not initialized" ) );
+    rightMetaLabel := noMetaLabel;
+  end;
+
+  if leftMetaLabel /= middleMetaLabel or
+     middleMetaLabel /= rightMetaLabel then
      getLabelStrings;
      err_previous( pl( "left data meta label " ) &
           unb_em( leftMetaLabelString) &
@@ -4211,7 +4300,7 @@ begin
              unb_em( rightMetaLabelString )
      );
      return false;
-  elsif leftStorage.metaLabel /= sparMetaLabel then
+  elsif leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
      err_previous( pl( "data meta label " ) &
          unb_em( leftMetaLabelString ) &

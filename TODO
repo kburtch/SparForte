@@ -11,9 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- value meta labels
+- value meta labels project
 
-  - clean up metaLabelOk exception handling
+  - review dht, vectors
   - standard containers
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
@@ -51,6 +51,8 @@ Long term Ongoing Work
 
 - error messages and additional context
   - errors for common problems
+    - built-in functions used as procedures should have a better error
+      message
     - custom error for subtype x is array... where arrays must be a type
 
     - many error messages have the source arrow 1 position to the right
@@ -80,6 +82,7 @@ Long term Ongoing Work
     - need to fix pointer issues to SDL/OpenGL structures
     - proper error messages should be provided on unavailable
       functions
+    - investigate switching from OpenGL to Vulkan 3D libraries
   - interfacing to more Standard Ada Libraries
   - complex data structures
 

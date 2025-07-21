@@ -182,12 +182,15 @@ end insertTypesOk;
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
+--  CLEAR
+--
+-- Syntax: doubly_linked_list.clear( l );
+-- Ada:    doubly_linked_list.clear( l );
+-- Delete the contents of list l.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyClear is
-  -- Syntax: doubly_linked_list.clear( l );
-  -- Ada:    doubly_linked_list.clear( l );
-  -- Delete the contents of list l.
-  --listExpr : unbounded_string;
-  --listType : identifier;
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -203,10 +206,16 @@ begin
   end if;
 end ParseDoublyClear;
 
+
+------------------------------------------------------------------------------
+--  IS EMPTY
+--
+-- Syntax: b := doubly_linked_list.is_empty( l );
+-- Ada:    b := doubly_linked_list.is_empty( l );
+-- Return true if the list has no elements.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyIsEmpty( result : out storage; kind : out identifier ) is
-  -- Syntax: b := doubly_linked_list.is_empty( l );
-  -- Ada:    b := doubly_linked_list.is_empty( l );
-  -- Return true if the list has no elements.
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -221,10 +230,16 @@ begin
   end if;
 end ParseDoublyIsEmpty;
 
+
+------------------------------------------------------------------------------
+--  LENGTH
+--
+-- Syntax: n := doubly_linked_list.length( l );
+-- Ada:    n := doubly_linked_list.length( l );
+-- Return the number of elements in the list.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyLength( result : out storage; kind : out identifier ) is
-  -- Syntax: n := doubly_linked_list.length( l );
-  -- Ada:    n := doubly_linked_list.length( l );
-  -- Return the number of elements in the list.
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -239,16 +254,20 @@ begin
   end if;
 end ParseDoublyLength;
 
+
+------------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: doubly_linked_list.append( l, s [,c] );
+-- Ada:    doubly_linked_list.append( l, s [,c] );
+-- Queue list element e at the end of the list (not the end of an element).
+------------------------------------------------------------------------------
+
 procedure ParseDoublyAppend is
-  -- Syntax: doubly_linked_list.append( l, s [,c] );
-  -- Ada:    doubly_linked_list.append( l, s [,c] );
-  -- Queue list element e at the end of the list.
-  --listExpr : unbounded_string;
-  --listType : identifier;
-  listId : identifier;
-  theList  : resPtr;
-  itemExpr : storage;
-  itemType : identifier;
+  listId    : identifier;
+  theList   : resPtr;
+  itemExpr  : storage;
+  itemType  : identifier;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
@@ -285,12 +304,16 @@ begin
   end if;
 end ParseDoublyAppend;
 
+
+------------------------------------------------------------------------------
+--  PREPEND
+--
+-- Syntax: doubly_linked_list.prepend( l, s );
+-- Ada:    doubly_linked_list.prepend( l, s );
+-- Push list element e on the front of the list. (not the front of an element).
+------------------------------------------------------------------------------
+
 procedure ParseDoublyPrepend is
-  -- Syntax: doubly_linked_list.prepend( l, s );
-  -- Ada:    doubly_linked_list.prepend( l, s );
-  -- Push list element e on the front of the list.
-  --listExpr : unbounded_string;
-  --listType : identifier;
   listId : identifier;
   itemExpr  : storage;
   itemType  : identifier;
@@ -331,11 +354,17 @@ begin
   end if;
 end ParseDoublyPrepend;
 
+
+------------------------------------------------------------------------------
+--  FIRST ELEMENT
+--
+-- Syntax: s := doubly_linked_list.first_element( l );
+-- Ada:    s := doubly_linked_list.first_element( l );
+-- Return the first list element.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyFirstElement( result : out storage; kind : out identifier ) is
-  -- Syntax: s := doubly_linked_list.first_element( l );
-  -- Ada:    s := doubly_linked_list.first_element( l );
-  -- Return the first list element.
-  listId : identifier;
+  listId   : identifier;
   theList  : resPtr;
 begin
   expect( doubly_first_element_t );
@@ -355,10 +384,16 @@ begin
   end if;
 end ParseDoublyFirstElement;
 
+
+------------------------------------------------------------------------------
+--  LAST ELEMENT
+--
+-- Syntax: s := doubly_linked_list.last_element( l );
+-- Ada:    s := doubly_linked_list.last_element( l );
+-- Return the last list element.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyLastElement( result : out storage; kind : out identifier ) is
-  -- Syntax: s := doubly_linked_list.last_element( l );
-  -- Ada:    s := doubly_linked_list.last_element( l );
-  -- Return the last list element.
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -379,13 +414,17 @@ begin
   end if;
 end ParseDoublyLastElement;
 
+
+------------------------------------------------------------------------------
+--  DELETE FIRST
+--
+-- Syntax: doubly_linked_list.delete_first( l, [, n] );
+-- Ada:    doubly_linked_list.delete_first( l, [, n] );
+-- Remove the list element from the start of the list. If n exists, remove n
+-- items instead of one.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyDeleteFirst is
-  -- Syntax: doubly_linked_list.delete_first( l, [, n] );
-  -- Ada:    doubly_linked_list.delete_first( l, [, n] );
-  -- Remove the list element from the start of the list. If n exists, remove n
-  -- items instead of one.
-  -- listExpr : unbounded_string;
-  -- listType : identifier;
   listId   : identifier;
   theList  : resPtr;
   cntExpr   : storage;
@@ -430,13 +469,17 @@ begin
   end if;
 end ParseDoublyDeleteFirst;
 
+
+------------------------------------------------------------------------------
+--  DELETE LAST
+--
+-- Syntax: doubly_linked_list.delete_last( l, [, n] );
+-- Ada:    doubly_linked_list.delete_last( l, [, n] );
+-- Remove the list element from the end of the list. If n exists, remove n 
+-- tems instead of one.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyDeleteLast is
-  -- Syntax: doubly_linked_list.delete_last( l, [, n] );
-  -- Ada:    doubly_linked_list.delete_last( l, [, n] );
-  -- Remove the list element from the end of the list. If n exists, remove n 
-  -- tems instead of one.
-  --listExpr : unbounded_string;
-  --listType : identifier;
   listId   : identifier;
   theList  : resPtr;
   cntExpr   : storage;
@@ -481,29 +524,6 @@ begin
   end if;
 end ParseDoublyDeleteLast;
 
---procedure ParseDoublyNewCursor is
---  -- Syntax: doubly_linked_list.new_cursor( c, t );
---  -- Ada:    N/A
---  resId : resHandleId;
---  ref : reference;
---  genKindId : identifier;
---begin
---  expect( doubly_new_cursor_t );
---  ParseFirstOutParameter( ref, doubly_cursor_t );
---  baseTypesOK( ref.kind, doubly_cursor_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---      null;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---  end if;
---end ParseDoublyNewCursor;
 
 procedure ParseDoublyFirst is
   -- Syntax: doubly_linked_list.first( l, c );
@@ -670,6 +690,8 @@ begin
   end if;
 end ParseDoublyReplaceElement;
 
+
+------------------------------------------------------------------------------
 -- Insert Family
 --
 -- The Original Ada is:
@@ -695,16 +717,23 @@ end ParseDoublyReplaceElement;
 -- problem is that we may not be able to distinguish between the new item
 -- and the count because both could be numeric.  So we have to have two
 -- inserts to differentiate the cases.
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  INSERT BEFORE
+--
+-- Syntax: doubly_linked_list.insert_before( l, c [, n] ) | ( l, c, e [, n] )
+-- Ada:    doubly_linked_list.insert( l ,c, e [, n]);
+-- Insert element e before the cursor c. If no element is given, a node is
+-- inserted with an unknown element. If the cursor does not point at an
+-- element, the element is appended. If n is given, insert n copies instead
+-- of one.
+-- This is the basic form of insert that doesn't return another cursor.
+-- Note: "insert" is a reserved SQL word in SparForte
+------------------------------------------------------------------------------
 
 procedure ParseDoublyInsertBefore is
-  -- Syntax: doubly_linked_list.insert_before( l, c [, n] ) | ( l, c, e [, n] )
-  -- Ada:    doubly_linked_list.insert( l ,c, e [, n]);
-  -- Insert element e before the cursor c. If no element is given, a node is
-  -- inserted with an unknown element. If the cursor does not point at an
-  -- element, the element is appended. If n is given, insert n copies instead
-  -- of one.
-  -- This is the basic form of insert that doesn't return another cursor.
-  -- Note: "insert" is a reserved word in SparForte
   listId     : identifier;
   theList    : resPtr;
   cursId     : identifier;
@@ -751,15 +780,20 @@ begin
   end if;
 end ParseDoublyInsertBefore;
 
-procedure ParseDoublyInsertBeforeAndMark is
-  -- Syntax: doubly_linked_list.insert_before_and_mark( l, c, c2 [, n] );
-  --         doubly_linked_list.insert_before_and_mark( l, c, s, c2 [, n] );
-  -- Ada:    doubly_linked_list.insert( l ,c, s [, n]);
-  --         doubly_linked_list.insert( l ,c, c2 [, n]);
-  --         doubly_linked_list.insert( l ,c, s, c2 [, n]);
-  -- Note: inserts before the cursor position
-  --       "insert" is a reserved word in SparForte
 
+------------------------------------------------------------------------------
+--  INSERT BEFORE AND MARK
+--
+-- Syntax: doubly_linked_list.insert_before_and_mark( l, c, c2 [, n] );
+--         doubly_linked_list.insert_before_and_mark( l, c, s, c2 [, n] );
+-- Ada:    doubly_linked_list.insert( l ,c, s [, n]);
+--         doubly_linked_list.insert( l ,c, c2 [, n]);
+--         doubly_linked_list.insert( l ,c, s, c2 [, n]);
+-- Note: inserts before the cursor position
+--       "insert" is a reserved word in SparForte
+------------------------------------------------------------------------------
+
+procedure ParseDoublyInsertBeforeAndMark is
   listId     : identifier;
   theList    : resPtr;
   cursId     : identifier;
@@ -771,7 +805,7 @@ procedure ParseDoublyInsertBeforeAndMark is
   cntType    : identifier;
   hasItem    : boolean := false;
   hasCnt     : boolean := false;
-  resId : resHandleId;
+  resId      : resHandleId;
   ref        : reference;
   b          : boolean;
   hasOutCursor : boolean := false;
@@ -867,15 +901,18 @@ begin
   end if;
 end ParseDoublyInsertBeforeAndMark;
 
+
+------------------------------------------------------------------------------
+--  DELETE
+--
+-- Syntax: doubly_linked_list.delete( l, c,[, n] );
+-- Ada:    doubly_linked_list.delete( l ,c [, n] );
+-- Note: delete is an SQL keyword
+------------------------------------------------------------------------------
+
 procedure ParseDoublyDelete is
-  -- Syntax: doubly_linked_list.delete( l, c,[, n] );
-  -- Ada:    doubly_linked_list.delete( l ,c [, n]);
-  --listExpr  : unbounded_string;
-  --listType  : identifier;
   listId   : identifier;
   theList   : resPtr;
-  --cursExpr  : unbounded_string;
-  --cursType  : identifier;
   cursId    : identifier;
   theCursor : resPtr;
   cntExpr   : storage;
@@ -926,12 +963,18 @@ begin
   end if;
 end ParseDoublyDelete;
 
+
+------------------------------------------------------------------------------
+--  CONTAINS
+--
+-- Syntax: b := doubly_linked_list.contains( l, s );
+-- Ada:    b := doubly_linked_list.contains( l, s );
+-- Return true if the list contains list element e.
+-- Does not take into account the data meta label.  Result meta labels not
+-- affected by the data found.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyContains( result : out storage; kind : out identifier ) is
-  -- Syntax: b := doubly_linked_list.contains( l, s );
-  -- Ada:    b := doubly_linked_list.contains( l, s );
-  -- Return true if the list contains list element e.
-  -- Does not take into account the data meta label.  Result meta labels not
-  -- affected by the data found.
   listId   : identifier;
   theList  : resPtr;
   itemExpr : storage;
@@ -953,12 +996,18 @@ begin
   end if;
 end ParseDoublyContains;
 
+
+------------------------------------------------------------------------------
+--  FIND
+--
+-- Syntax: doubly_linked_list.find( l, s, c );
+-- Ada:    c := doubly_linked_list.find( l, s );
+-- Move the cursor to the location of e in the list Start from the beginning.
+-- doubly_linked_lists.has_element will be false if the element is not found.
+-- Does not take into account the data meta label.
+------------------------------------------------------------------------------
+
 procedure ParseDoublyFind is
-  -- Syntax: doubly_linked_list.find( l, s, c );
-  -- Ada:    c := doubly_linked_list.find( l, s );
-  -- Move the cursor to the location of e in the list Start from the beginning.
-  -- doubly_linked_lists.has_element will be false if the element is not found.
-  -- Does not take into account the data meta label.
   listId    : identifier;
   theList   : resPtr;
   itemExpr  : storage;
@@ -988,13 +1037,19 @@ begin
   end if;
 end ParseDoublyFind;
 
+
+------------------------------------------------------------------------------
+--  REVERSE FIND
+--
+-- Syntax: doubly_linked_list.reverse_find( l, s, c );
+-- Ada:    c := doubly_linked_list.reverse_find( l, s );
+-- Move the cursor to the location of e in the list. Start from the end of
+-- the list. doubly_linked_lists.has_element will be false if the element is
+-- not found.
+-- Does not take into account the data meta label
+------------------------------------------------------------------------------
+
 procedure ParseDoublyReverseFind is
-  -- Syntax: doubly_linked_list.reverse_find( l, s, c );
-  -- Ada:    c := doubly_linked_list.reverse_find( l, s );
-  -- Move the cursor to the location of e in the list. Start from the end of
-  -- the list. doubly_linked_lists.has_element will be false if the element is
-  -- not found.
-  -- Does not take into account the data meta label
   listId    : identifier;
   theList   : resPtr;
   itemExpr  : storage;
@@ -1024,13 +1079,17 @@ begin
   end if;
 end ParseDoublyReverseFind;
 
+
+------------------------------------------------------------------------------
+--  REVERSE ELEMENTS
+--
+-- Syntax: doubly_linked_list.reverse_elements( l );
+-- Ada:    doubly_linked_list.reverse_elements( l );
+-- Reverse the order of the list elements.
+-- Does not take into account data meta label
+------------------------------------------------------------------------------
+
 procedure ParseDoublyReverseElements is
-  -- Syntax: doubly_linked_list.reverse_elements( l );
-  -- Ada:    doubly_linked_list.reverse_elements( l );
-  -- Reverse the order of the list elements.
-  -- Does not take into account data meta label
-  --listExpr : unbounded_string;
-  --listType : identifier;
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -1044,11 +1103,17 @@ begin
   end if;
 end ParseDoublyReverseElements;
 
+
+------------------------------------------------------------------------------
+--  FLIP
+--
+-- Syntax: doubly_linked_list.flip( l );
+-- Ada:    N/A (alias for reverse_elements)
+-- Reverse the order of the list elements.
+-- Does not take into account data meta label
+------------------------------------------------------------------------------
+
 procedure ParseDoublyFlip is
-  -- Syntax: doubly_linked_list.flip( l );
-  -- Ada:    N/A (alias for reverse_elements)
-  -- Reverse the order of the list elements.
-  -- Does not take into account data meta label
   listId   : identifier;
   theList  : resPtr;
 begin
@@ -1062,11 +1127,17 @@ begin
   end if;
 end ParseDoublyFlip;
 
+
+------------------------------------------------------------------------------
+--  ASSIGN
+--
+-- Syntax: doubly_linked_list.assign( l1, l2 );
+-- Ada:    doubly_linked_list.assign( l1, l2 );
+-- Overwrite the contents of list l1 with a copy of l2.
+-- Does not take into account data meta label
+------------------------------------------------------------------------------
+
 procedure ParseDoublyAssign is
-  -- Syntax: doubly_linked_list.assign( l1, l2 );
-  -- Ada:    doubly_linked_list.assign( l1, l2 );
-  -- Overwrite the contents of list l1 with a copy of l2.
-  -- Does not take into account data meta label
   sourceListId  : identifier;
   theSourceList : resPtr;
   targetListId  : identifier;
@@ -1098,17 +1169,19 @@ begin
   end if;
 end ParseDoublyAssign;
 
+
+------------------------------------------------------------------------------
+--  MOVE
+--
+-- Syntax: doubly_linked_list.move( l1, l2 );
+-- Ada:    doubly_linked_list.move( l1, l2 );
+-- Overwrite the contents of list l1 with a copy of l2 and erase l2.
+-- Does not take into account data meta label
+------------------------------------------------------------------------------
+
 procedure ParseDoublyMove is
-  -- Syntax: doubly_linked_list.move( l1, l2 );
-  -- Ada:    doubly_linked_list.move( l1, l2 );
-  -- Overwrite the contents of list l1 with a copy of l2 and erase l2.
-  -- Does not take into account data meta label
-  --sourceListExpr : unbounded_string;
-  --sourceListType : identifier;
   sourceListId   : identifier;
   theSourceList  : resPtr;
-  --targetListExpr : unbounded_string;
-  --targetListType : identifier;
   targetListId   : identifier;
   theTargetList  : resPtr;
 begin
@@ -1129,10 +1202,16 @@ begin
   end if;
 end ParseDoublyMove;
 
+
+------------------------------------------------------------------------------
+--  SWAP
+--
+-- Syntax: doubly_linked_list.swap( l, c1, c2 );
+-- Ada:    doubly_linked_list.swap( l, c1, c2 );
+-- Swaps values stored at c1, c2.
+------------------------------------------------------------------------------
+
 procedure ParseDoublySwap is
-  -- Syntax: doubly_linked_list.swap( l, c1, c2 );
-  -- Ada:    doubly_linked_list.swap( l, c1, c2 );
-  -- Swaps values stored at c1, c2.
   listId         : identifier;
   theList        : resPtr;
   firstCursId    : identifier;
@@ -1174,10 +1253,17 @@ begin
   end if;
 end ParseDoublySwap;
 
+
+------------------------------------------------------------------------------
+--  SWAP LINKS
+--
+-- Syntax: doubly_linked_list.swap_links( l, c1, c2 );
+-- Ada:    doubly_linked_list.swap_links( l, c1, c2 );
+-- Swaps the list nodes stored at c1, c2.  Cursors will follow the node as it
+-- moves as it's just a pointer to the node.
+------------------------------------------------------------------------------
+
 procedure ParseDoublySwapLinks is
-  -- Syntax: doubly_linked_list.swap_links( l, c1, c2 );
-  -- Ada:    doubly_linked_list.swap_links( l, c1, c2 );
-  -- Swaps the list nodes stored at c1, c2.  Cursors will follow the node as it moves as it's just a pointer to the node.
   listId         : identifier;
   theList        : resPtr;
   firstCursId    : identifier;
@@ -1219,11 +1305,17 @@ begin
   end if;
 end ParseDoublySwapLinks;
 
+
+------------------------------------------------------------------------------
+--  SPLICE
+--
+-- Syntax: doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
+-- Ada:    doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
+-- Append one list to another, or a node from one list to another, or
+-- a node within one list.
+------------------------------------------------------------------------------
+
 procedure ParseDoublySplice is
-  -- Syntax: doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
-  -- Ada:    doubly_linked_list.splice( l1, c, l2 [,c2] ) | ( l1, c, c2 );
-  -- Append one list to another, or a node from one list to another, or
-  -- a node within one list.
   sourceListId    : identifier;
   theSourceList   : resPtr;
   targetListId    : identifier;
@@ -1337,11 +1429,17 @@ begin
   end if;
 end ParseDoublySplice;
 
+
+------------------------------------------------------------------------------
+--  HAS ELEMENT
+--
+-- Syntax: b := doubly_linked_list.has_element( l );
+-- Ada:    b := doubly_linked_list.has_element( l );
+-- True if the cursor is positioned at a list element.
+-- Data meta labels are ignored
+------------------------------------------------------------------------------
+
 procedure ParseDoublyHasElement( result : out storage; kind : out identifier ) is
-  -- Syntax: b := doubly_linked_list.has_element( l );
-  -- Ada:    b := doubly_linked_list.has_element( l );
-  -- True if the cursor is positioned at a list element.
-  -- Data meta labels are ignored
   cursId : identifier;
   theCursor : resPtr;
   use Doubly_Linked_Storage_Lists; -- needed for =
@@ -1357,21 +1455,25 @@ begin
   end if;
 end ParseDoublyHasElement;
 
+
 -----------------------------------------------------------------------------
+--  ASSEMBLE
+--
+-- Syntax: s := doubly_linked_lists.assemble( l [,d [,f]] );
+-- Ada:    N/A
+-- Apply strings.image to each element in the list. Concatenate the strings
+-- together to form a new string, separated by delimiter string d and ending
+-- with optional string f. An list will result in an empty string (but f will
+-- be appended even if the string is empty).
+-- This should run faster than if the user did it themselves in a script.
+-- As a shell language, this is useful for passing data to a pipeline
+-- echo( doubly_linked_lists.assemble( l ) ) | wc
+-- TODO: shouldn't this stream directly to a pipeline so that it can
+-- be avoid storing the data twice in memory (using an intermediate
+-- variable) ?
+------------------------------------------------------------------------------
 
 procedure ParseDoublyAssemble( result : out storage; kind : out identifier ) is
-  -- Syntax: s := doubly_linked_lists.assemble( l [,d [,f]] );
-  -- Ada:    N/A
-  -- Apply strings.image to each element in the list. Concatenate the strings
-  -- together to form a new string, separated by delimiter string d and ending
-  -- with optional string f. An list will result in an empty string (but f will
-  -- be appended even if the string is empty).
-  -- This should run faster than if the user did it themselves in a script.
-  -- As a shell language, this is useful for passing data to a pipeline
-  -- echo( doubly_linked_lists.assemble( l ) ) | wc
-  -- TODO: shouldn't this stream directly to a pipeline so that it can
-  -- be avoid storing the data twice in memory (using an intermediate
-  -- variable) ?
   listId    : identifier;
   theList   : resPtr;
   delimExpr : storage;
@@ -1438,18 +1540,24 @@ begin
   end if;
 end ParseDoublyAssemble;
 
+
+-----------------------------------------------------------------------------
+--  DISASSEMBLE
+--
+-- Syntax: doubly_linked_lists.dissemble( s, l [,d [,f]] );
+-- Ada:    N/A
+-- The inverse of assemble.  Take a string and convert it to a list of
+-- strings.  Strip off the final suffix, if it exists.  Use d as the
+-- element delimiter (will not be included in the list element.  The
+-- default of d is ASCII.LF.
+-- This should run faster than if the user did it themselves in a script.
+-- As a shell language, this is useful for processing data received from
+-- a shell command.
+-- All list items receive the meta data labels of the string.  The script
+-- must be able to work with the meta data labels of the string.
+-----------------------------------------------------------------------------
+
 procedure ParseDoublyDisassemble is
-  -- Syntax: doubly_linked_lists.dissemble( s, l [,d [,f]] );
-  -- Ada:    N/A
-  -- The inverse of assemble.  Take a string and convert it to a list of
-  -- strings.  Strip off the final suffix, if it exists.  Use d as the
-  -- element delimiter (will not be included in the list element.  The
-  -- default of d is ASCII.LF.
-  -- This should run faster than if the user did it themselves in a script.
-  -- As a shell language, this is useful for processing data received from
-  -- a shell command.
-  -- All list items receive the meta data labels of the string.  The script
-  -- must be able to work with the meta data labels of the string.
   strExpr   : storage;
   strType   : identifier;
   listId    : identifier;
@@ -1534,14 +1642,20 @@ begin
   end if;
 end ParseDoublyDisassemble;
 
+
+-----------------------------------------------------------------------------
+--  PARCEL
+--
+-- Syntax: doubly_linked_lists.parcel( s, w, l );
+-- Ada:    N/A
+-- Convert ("parcel out") the string to a list of strings. Each string is
+-- length w except for the final string that has the remaining characters. An
+-- empty string will result in an unchanged list. If the list is not empty,
+-- the new strings will be appended. The list can be converted to a string
+-- with doubly_linked_lists.assemble.
+-----------------------------------------------------------------------------
+
 procedure ParseDoublyParcel is
-  -- Syntax: doubly_linked_lists.parcel( s, w, l );
-  -- Ada:    N/A
-  -- Convert ("parcel out") the string to a list of strings. Each string is
-  -- length w except for the final string that has the remaining characters. An
-  -- empty string will result in an unchanged list. If the list is not empty,
-  -- the new strings will be appended. The list can be converted to a string
-  -- with doubly_linked_lists.assemble.
   strExpr   : storage;
   strType   : identifier;
   widthExpr : storage;
@@ -1595,7 +1709,13 @@ begin
   end if;
 end ParseDoublyParcel;
 
+
 -----------------------------------------------------------------------------
+--
+-- HOUSEKEEPING
+--
+-----------------------------------------------------------------------------
+
 
 procedure StartupDoubly is
 begin
