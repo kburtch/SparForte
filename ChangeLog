@@ -15,3 +15,10 @@ CHANGES SINCE 2.6.3
 
 5. Fix: Added missing entry for doubly_linked_lists.last to the documentation.
 
+6. Fix: vectors package documentation has several corrections.
+
+7. Fix: vectors.delete calculates the vector index correctly.
+
+8. Fix: vectors.delete no longer allows a count with a cursor because of SparForte's meta data label implementation.
+
+9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index.

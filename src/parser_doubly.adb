@@ -366,6 +366,7 @@ end ParseDoublyPrepend;
 procedure ParseDoublyFirstElement( result : out storage; kind : out identifier ) is
   listId   : identifier;
   theList  : resPtr;
+  oldElem  : storage;
 begin
   expect( doubly_first_element_t );
   ParseSingleListParameter( doubly_first_element_t, listId );
@@ -379,7 +380,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := Doubly_Linked_Storage_Lists.First_Element( theList.dlslList );
+       oldElem := Doubly_Linked_Storage_Lists.First_Element( theList.dlslList );
+       if metaLabelOk( oldElem ) then
+          result := oldElem;
+       end if;
      end;
   end if;
 end ParseDoublyFirstElement;
@@ -396,6 +400,7 @@ end ParseDoublyFirstElement;
 procedure ParseDoublyLastElement( result : out storage; kind : out identifier ) is
   listId   : identifier;
   theList  : resPtr;
+  oldElem  : storage;
 begin
   expect( doubly_last_element_t );
   ParseSingleListParameter( doubly_last_element_t, listId );
@@ -409,7 +414,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList );
+       oldElem := Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList );
+       if metaLabelOk( oldElem ) then
+          result := oldElem;
+       end if;
      end;
   end if;
 end ParseDoublyLastElement;
@@ -627,6 +635,7 @@ procedure ParseDoublyElement( result : out storage; kind : out identifier ) is
   -- Return the list element at the cursor.
   cursId    : identifier;
   theCursor : resPtr;
+  oldElem   : storage;
 begin
   expect( doubly_element_t );
   ParseSingleCursorParameter( doubly_element_t, cursId );
@@ -640,7 +649,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       result := Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor );
+       oldElem := Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor );
+       if metaLabelOk( oldElem ) then
+          result := oldElem;
+       end if;
      exception when constraint_error =>
        err( +"position cursor has no element" );
      end;

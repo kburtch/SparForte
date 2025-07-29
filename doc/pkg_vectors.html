@@ -54,23 +54,29 @@
         <center>
         <div class="code">
 <pre>
-  append( v, e [,c] )                         append_vector( v1, v2 )
-  capacity( v )                               clear( v )
-  b := contains( c, e )                       delete( i [, c] )
-  b := equals( v1, v2 )                       find( v, e, c1, c2 )
-  first( v, c )                               e := first_element( v )
-  i := first_index( v )                       flip( v )
-  insert( v, i, e [, n] )                     insert_before( v, c, e [, n] )
-  insert_before_and_mark( v, c, e, c2 [, n] ) insert_space( v, c, c2, [, n] )
-  insert_space( v, i [,n] )                   insert_vector( v, c, v2 )
-  insert_vector_and_mark( v, c, v2, c2 )      b := is_empty( v )
-  last( v, c )                                e := last_element( v )
-  i := last_index( v )                        c := length( v )
-  next( c )                                   prepend( v, e [,c] )
-  previous( c )                               reserve_capacity( v, c )
-  reverse_elements( v )                       reverse_find( v, e, c1, c2 )
-  set_length( v, c )                          swap( v, i1, i2 | v, c1, c2 )
-  to_vector( v, e, c )
+  <a href="#vectors.append">append( v, e [,n] )</a>                         <a href="#vectors.append_elements">append_elements( v, e [,n] )</a>
+  <a href="#vectors.append_vector">append_vector( v1, v2 )</a>                     <a href="#vectors.assign">assign( t, s )</a>
+  <a href="#vectors.capacity">capacity( v )</a>                               <a href="#vectors.clear">clear( v )</a>
+  <a href="#vectors.contains">b := contains( v, e )</a>                       <a href="#vectors.decrement">decrement( v, i [,n] )</a>
+  <a href="#vectors.delete">delete( v, c ) | ( v, i [, n] )</a>             <a href="#vectors.delete_first">delete_first( v, n )</a>
+  <a href="#vectors.delete_last">delete_last( v, n )</a>                         <a href="#vectors.element">e := element( c ) | ( v, i )</a>
+  <a href="#vectors.equal">b := equal( v1, v2 )</a>                        <a href="#vectors.find">find( v, e, c1, c2 )</a>
+  <a href="#vectors.find_index">find_index( v, e, v1, i2 )</a>                  <a href="#vectors.first">first( v, c )</a>
+  <a href="#vectors.first_element">e := first_element( v )</a>                     <a href="#vectors.first_index">i := first_index( v )</a>
+  <a href="#vectors.flip">flip( v )</a>                                   <a href="#vectors.has_element">b := has_element( c )</b>
+  <a href="#vectors.increment">increment( v, i [,n] )</a>                      <a href="#vectors.insert">insert( v, i, e [, n] )</a>
+  <a href="#vectors.insert_before">insert_before( v, c, e [, n] )</a>              <a href="#vectors.insert_before_and_mark">insert_before_and_mark( v, c, e, c2 [, n] )</a>
+  <a href="#vectors.insert_space">insert_space( v, c, c2, [, n] )</a>             <a href="#vectors.insert_space">insert_space( v, i [,n] )</a>
+  <a href="#vectors.insert_vector">insert_vector( v, c, v2 )</a>                   <a href="#vectors.insert_vector_and_mark">insert_vector_and_mark( v, c, v2, c2 )</a>
+  <a href="#vectors.is_empty">b := is_empty( v )</a>                          <a href="#vectors.last">last( v, c )</a>
+  <a href="#vectors.last_element">e := last_element( v )</a>                      <a href="#vectors.last_index">i := last_index( v )</a>
+  <a href="#vectors.length">c := length( v )</a>                            <a href="#vectors.move">move( v1, v2 )</a>
+  <a href="#vectors.next">next( c )</a>                                   <a href="#vectors.prepend">prepend( v, e [,n] )</a>
+  <a href="#vectors.prepend_elements">prepend_elements( v, e [,n] )</a>               <a href="#vectors.previous">previous( c )</a>
+  <a href="#vectors.reserve_capacity">reserve_capacity( v, n )</a>                    <a href="#vectors.reverse_elements">reverse_elements( v )</a>
+  <a href="#vectors.reverse_find">reverse_find( v, e, c1, c2 )</a>                <a href="#vectors.reverse_find_index">reverse_find_index( v, e, v1, i2 )</a>
+  <a href="#vectors.set_length">set_length( v, n )</a>                          <a href="#vectors.swap">swap( v, i1, i2 | v, c1, c2 )</a>
+  <a href="#vectors.to_index">l := to_index( v, c )</a>                       <a href="#vectors.to_vector">to_vector( v, e, n )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -82,13 +88,25 @@
 <p>This package includes new generic types:</p>
 
 <ul>
-<li><b>vectors.cursor( <i>key type</i>, <i>element type</i> )</b> - a cursor for iterating through a vector</li>
-<li><b>vectors.vector( <i>key type</i>, <i>element type</i> )</b> - a dynamic array</li>
+<li><b>vectors.cursor( <i>index type</i>, <i>element type</i> )</b> - a cursor for iterating through a vector</li>
+<li><b>vectors.vector( <i>index type</i>, <i>element type</i> )</b> - a dynamic array</li>
 </ul>
+
+<p>This package includes a constant:</p>
+
+<ul>
+<li><b>vectors.no_index</b> - a long integer value indicating no position</li>
+</ul>
+
+<p>An empty vector has a value of two negative values, the last lower than
+the first.  These values are long_integers and may be out of the range of
+for your index type.</p>
 
 <p><b>Ada</b>: Because AdaScript does not have subtypes with ranges,
 you cannot change the first index or last index.  For example, any
 type based on positive will start at index 1.</p>
+
+<p>SparForte does not have an Extended_Index type.</p>
 
         <center>
         <div class="code">
@@ -102,11 +120,11 @@ type based on positive will start at index 1.</p>
         </div>
         </center>
 
-<a name="vectors.append"></a><h3>vectors.append( m, k, e )</h3>
+<a name="vectors.append"></a><h3>vectors.append( v, i, e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Append string element e to the value under key k in the hash map.  If the key does not exist, raise an exception.</p>
+<td><p>Append string element e to the value under index i in the vector. If the index does not exist, raise an exception.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( fruit_unit, "apple", bushel" );<br>vectors.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
 </tr><tr>
@@ -119,29 +137,29 @@ type based on positive will start at index 1.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
+<td><span>i</span></td>
 <td><span>in</span></td>
-<td><span><i>map key type</i></span></td>
+<td><span><i>vector index type</i></span></td>
 <td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the index position</span></td>
 </tr><tr>
 <td><span>e</span></td>
 <td><span>in</span></td>
-<td><span><i>map element type</i></span></td>
+<td><span><i>vector element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the string to append</span></td>
+<td><span>the string to concatenate</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key is the wrong type<br>
-An exception is raised if the key does not exist<br>
+<td><p>An exception is raised if the index is the wrong type<br>
+An exception is raised if the index does not exist<br>
 An exception is raised if out of memory<br>
 An exception is raised if the element type is not a string</p></td>
 </tr><tr>
@@ -149,7 +167,7 @@ An exception is raised if the element type is not a string</p></td>
 <td><p>Not allowed with pragma ada_95</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.prepend">hashed_maps.prepend</a></p></td>
+<td><p><a href="#vectors.prepend">vectors.prepend</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A (AdaScript extension)</p></td>
@@ -159,11 +177,11 @@ An exception is raised if the element type is not a string</p></td>
 </tr>
 </table>
 
-<a name="vectors.append_elements"></a><h3>vectors.append_elements( v, e [,c])</h3>
+<a name="vectors.append_elements"></a><h3>vectors.append_elements( v, e [,n])</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Queue list element e at the end of the vector v.  If c is used, append c copies of e.</p>
+<td><p>Queue element e at the end of the vector v.  If n is used, append c copies of e.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.append_elements( v, "zebra", 2 ); -- append 2 copies of "zebra"</span></p></td>
 </tr><tr>
@@ -184,11 +202,11 @@ An exception is raised if the element type is not a string</p></td>
 </tr><tr>
 <td><span>e</span></td>
 <td><span>in</span></td>
-<td><span><i>list element type</i></span></td>
+<td><span><i>vector element type</i></span></td>
 <td><span>required</span></td>
 <td><span>the element to queue</span></td>
 </tr><tr>
-<td><span>c</span></td>
+<td><span>n</span></td>
 <td><span>in</span></td>
 <td><span>containers.count_type</span></td>
 <td><span>1</span></td>
@@ -212,7 +230,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Add the contents of vector v2 to the end of vector v1.  Vector v2 is unchanged.</p>
+<td><p>Add the contents of vector v2 to the end of vector v1.  Vector v2 is unchanged.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">--if v1 has "a", "b", "c" and v2 has "d", "e", "f"<br>
 vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p></td>
@@ -228,9 +246,9 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 </tr><tr>
 <td><span>m</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map to erase</span></td>
+<td><span>the vector to erase</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -245,11 +263,111 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 </tr>
 </table>
 
+<a name="vectors.assign"></a><h3>vectors.assign( v1, v2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the contents of vector v1 with a copy of v2.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.assign( destination_vec, source_vec )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v1</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the destination vector</span></td>
+</tr><tr>
+<td><span>v2</span></td>
+<td><span>in</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the source vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.move">vectors.move</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Assign</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>assign introduced with SparForte 3.0</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="vectors.contains"></a><h3>b := vectors.contains( v, e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if the vector contains vector element e.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors( animal_vector, "hyena" ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if in the vector</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element is the wrong type</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.find">vectors.find</a><br><a href="#vectors.reverse_find">vectors.reverse_find</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Contains</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
 <a name="vectors.capacity"></a><h3>c := vectors.capacity( v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the spare element capacity of vector v.  This is the number of elements that can be inserted before the vector memory grows.</p>
+<td><p>Return the spare element capacity of vector v.  This is the number of elements that can be inserted before the vector memory grows.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">c := vectors.capacity( animal_vector );</span></p></td>
 </tr><tr>
@@ -280,7 +398,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Capacity</p></td>
 </tr>
 </table>
 
@@ -288,7 +406,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Delete the contents of the vector.</p>
+<td><p>Delete the contents of the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.clear( device_vector );</span></p></td>
 </tr><tr>
@@ -321,7 +439,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return true if element e in the vector v.</p>
+<td><p>Return true if element e in the vector v.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.contains( device_vector, "router" ) then...</span></p></td>
 </tr><tr>
@@ -356,13 +474,13 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 </tr>
 </table>
 
-<a name="hashed_maps.decrement"></a><h3>hashed_maps.decrement( m, k [,n] )</h3>
+<a name="vectors.decrement"></a><h3>vectors.decrement( v, i [,n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reduce the numeric value under key k in the hash map m by one (or n).  If the key does not exist, raise an exception.</p>
+<td><p>Decrease the numeric value under index position i in the vector by one (or n).  If the index position does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.decrement( fruit, 1 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -373,17 +491,17 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
+<td><span>i</span></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the index</span></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
@@ -394,33 +512,37 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the amount is the wrong type<br>
+<td><p>An exception is raised if the decrement value is the wrong type<br>
 An exception is raised if out of memory<br>
-An exception is raised if the element type is not numeric<br>
-An exception is raised if the key does not exist</p></td>
+An exception is raised if the index position does not exist<br>
+An exception is raised if the element value type is not numeric</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed with pragma ada_95</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.increment">hashed_maps.increment</a></p></td>
+<td><p><a href="#vectors.increment">vectors.increment</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>decrement introduced with SparForte 3.0</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This is in accordance with memcached.</p></td>
 </tr>
 </table>
 
-<a name="vectors.delete"></a><h3>vectors.delete( v, c | i [, n] )</h3>
+
+<a name="vectors.delete"></a><h3>delete( v, c ) | ( v, i [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Remove an element from the vector at the index position, effectively
 sliding the elements toward the start of the vector by one position.  If a
 cursor is given instead of an index, delete the item at the cursor position.
-If a count of n is given, delete n elements instead of one.</p>
+If a count of n is given, delete n elements instead of one.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
@@ -442,7 +564,7 @@ vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 </tr><tr>
 <td><span>i</span></td>
 <td><span>in</span></td>
-<td><span><i>map key type</i></span></td>
+<td><span><i>vector index type</i></span></td>
 <td><span>required (if no cursor)</span></td>
 <td><span>the position to delete</span></td>
 </tr><tr>
@@ -464,13 +586,13 @@ vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 <td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.Delete</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Ada uses "Delete" but delete is a reserved word in SparForte.  This may be renamed in the future.</p></td>
+<td><p>Ada uses "Delete" but delete is a reserved word in SparForte.  This may be renamed in the future.</p><p>Ada allows a container count with a cursor but SparForte's meta data labels implementation does not allow this.</p></td>
 </tr>
 </table>
 
@@ -479,7 +601,7 @@ vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Remove an element from the start of the vector.  If a count n is
-given, delete n elements.</p>
+given, delete n elements.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
@@ -511,7 +633,7 @@ vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
 <td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
+<td><p><a href="#vectors.delete">vectors.delete</a><br><a href="#vectors.delete_last">vectors.delete_last</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.Delete_First</p></td>
@@ -523,7 +645,7 @@ vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Remove an element from the end of the vector.  If a count n is
-given, delete n elements.</p>
+given, delete n elements.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
@@ -555,7 +677,7 @@ vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
 <td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
+<td><p><a href="#vectors.delete">vectors.delete</a><br><a href="#vectors.delete_first">vectors.delete_first</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.Delete_Last</p></td>
@@ -566,7 +688,7 @@ vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the element for index position i in vector v, or the element at cursor c.</p>
+<td><p>Return the element for index position i in vector v, or the element at cursor c.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if the vector has "switch", "router", "firewall"<br>
 ? vectors.element( device_vector, 1 ); -- displays "switch"</span></p></td>
@@ -617,7 +739,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the two vectors have identical content.</p>
+<td><p>True if the two vectors have identical content.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.equal( first_device_vector, second_device_vector ) then ...</span></p></td>
 </tr><tr>
@@ -651,7 +773,7 @@ An exception is raised if out of memory</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key or element types are different</p></td>
+<td><p>An exception is raised if the index or element types are different</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors."="</p></td>
@@ -665,7 +787,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor c2 to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
+<td><p>Move the cursor c2 to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
 </tr><tr>
@@ -723,7 +845,10 @@ An exception is raised if the cursor has the wrong types</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the index in the vector for element e.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
+<td><p>Return the index in the vector for element e.  Start at the position of index i1.  If the element does not exist, the index i2 will have No_Index.
+A long_integer
+is returned and the user can typecast it to the index type (unless it is
+No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
@@ -756,9 +881,9 @@ An exception is raised if the cursor has the wrong types</p></td>
 </tr><tr>
 <td><span>i2</span></td>
 <td><span>out</span></td>
-<td><span><i>vector index type</i></span></td>
+<td><span>long_integer</span></td>
 <td><span>required</span></td>
-<td><span>the position of the element</span></td>
+<td><span>the position of the element or no_index</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -772,8 +897,11 @@ An exception is raised if the starting position value is bad</p></td>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.Find_Index</p></td>
 </tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>find_index introduced with SparForte 3.0</p></td>
+</tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Ada's Find_Index is a function.  SparForte's Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional.</p></td>
+<td><p>Ada's Find_Index is a function.  SparForte's Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional. Ada does not return a long_integer.</p></td>
 </tr>
 </table>
 
@@ -781,7 +909,7 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the first element in the vectors.</p>
+<td><p>Move the cursor to the first element in the vectors.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.first( device_map, cursor );</span></p></td>
 </tr><tr>
@@ -818,7 +946,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.First</p></td>
+<td><p>Ada: Ada.Containers.Vectors.First</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada's First is a function.  SparForte's First is a procedure because the result type is limited.</p></td>
@@ -828,7 +956,7 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the first element of the vector.</p>
+<td><p>Return the first element of the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">e := vectors.first_element( device_vector );</span></p></td>
 </tr><tr>
@@ -873,7 +1001,9 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the first index of the vector.</p>
+<td><p>Return the first index of the vector.  If the vector is empty, No_Index
+is returned.  A long_integer is returned and the user can typecast it to the
+index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.first_index( device_vector );</span></p></td>
 </tr><tr>
@@ -894,9 +1024,9 @@ An exception is raised if the starting position value is bad</p></td>
 </tr><tr>
 <td><span>i</span></td>
 <td><span>return value</span></td>
-<td><span><i>vector index type</i></span></td>
+<td><span>long_integer</span></td>
 <td><span>required</span></td>
-<td><span>the index</span></td>
+<td><span>the index or no_index</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -910,7 +1040,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.First_Index</p></td>
+<td><p>Ada: Ada.Containers.Vectors.First_Index</p></td>
 </tr>
 </table>
 
@@ -918,7 +1048,7 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reverse the elements of the vector.  A renaming of vectors.reverse_elements.</p>
+<td><p>Reverse the elements of the vector.  A renaming of vectors.reverse_elements.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.flip( device_vector );</span></p></td>
 </tr><tr>
@@ -953,11 +1083,122 @@ An exception is raised if the starting position value is bad</p></td>
 </tr>
 </table>
 
+<a name="vectors.has_element"></a><h3>b := vectors.has_element( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the cursor points to an existing element in the vector.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.has_element( equip_cursor ) then...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if there is an element</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Has_Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>has_element introduced with SparForte 3.0</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="vectors.increment"></a><h3>vectors.increment( v, i [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Increase the numeric value under index position i in the vector by one (or n).  If the index position does not exist, raise an exception.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.increment( fruit, 1 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the index</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>1</span></td>
+<td><span>the amount to increment</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the increment value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the index position does not exist<br>
+An exception is raised if the element value type is not numeric</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.decrement">vectors.decrement</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>increment introduced with SparForte 3.0</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
 <a name="vectors.insert"></a><h3>vectors.insert( v, i, e [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert element e into vector v before index i.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
+<td><p>Insert element e into vector v before index i.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, 1, "firewall" );</span></p></td>
 </tr><tr>
@@ -1019,7 +1260,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert element e into vector v before cursor c.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
+<td><p>Insert element e into vector v before cursor c.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, device_cursor, "router" );</span></p></td>
 </tr><tr>
@@ -1085,7 +1326,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert element e into vector v before cursor c.  Return the position in cursor c2.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
+<td><p>Insert element e into vector v before cursor c.  Return the position in cursor c2.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, device_cursor, "router", insert_position );</span></p></td>
 </tr><tr>
@@ -1157,7 +1398,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert empty elements into vector v before index i.  If a cursor is used instead, insert the elements before cursor c.  Return the position new cursor.   If a count n is used, insert n copies of the element.  The second vector is unchanged.</p>
+<td><p>Insert empty elements into vector v before index i.  If a cursor is used instead, insert the elements before cursor c.  Return the position new cursor.   If a count n is used, insert n copies of the element.  The second vector is unchanged.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_spacee( device_vector, 1, 15 );</span></p></td>
 </tr><tr>
@@ -1221,7 +1462,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Copy the elements of v2 into vector v before cursor c.  The second vector is unchanged.</p>
+<td><p>Copy the elements of v2 into vector v before cursor c.  The second vector is unchanged.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_vector( device_vector, vector_cursor, firewall_vector );</span></p></td>
 </tr><tr>
@@ -1276,7 +1517,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Copy the elements of v2 into vector v before cursor c.  Return the position in cursor c2.  The second vector is unchanged.</p>
+<td><p>Insert the elements of v2 into vector v before cursor c.  Return the new position in cursor c2.  The second vector is unchanged.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_vector_and_mark( device_vector, device_cursor, new_devices, insert_position );</span></p></td>
 </tr><tr>
@@ -1341,7 +1582,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the vector has no items.</p>
+<td><p>True if the vector has no items.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.is_empty( device_vector ) then ...</span></p></td>
 </tr><tr>
@@ -1372,10 +1613,10 @@ An exception is raised if out of memory</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>Ada: Ada.Containers.Vectors.Is_Empty</p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Is_Empty</p></td>
 </tr>
 </table>
 
@@ -1383,7 +1624,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the last element in the vector.</p>
+<td><p>Move the cursor to the last element in the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.last( device_vector, cursor );</span></p></td>
 </tr><tr>
@@ -1430,7 +1671,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the last element of the vector.</p>
+<td><p>Return the last element of the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">e := vectors.last_element( device_vector );</span></p></td>
 </tr><tr>
@@ -1475,7 +1716,9 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the index to the last element in the vector.</p>
+<td><p>Return the index to the last element in the vector.  If the vector is
+empty, No_Index is returned.  A long_integer is returned and the user can
+typecast it to the index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.last_index( device_vector );</span></p></td>
 </tr><tr>
@@ -1490,9 +1733,9 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><span>i</span></td>
 <td><span>return value</span></td>
-<td><span><i>vector index type</i></span></td>
+<td><span>long_integer</span></td>
 <td><span>required</span></td>
-<td><span>the index</span></td>
+<td><span>the index position or no_index</span></td>
 </tr><tr>
 <td><span>v</span></td>
 <td><span>in out</span></td>
@@ -1513,14 +1756,17 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.First_Index</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada does not return a long_integer.</p></td>
 </tr>
 </table>
 
-<a name="vectors.length"></a><h3>n := vectors.length( m )</h3>
+<a name="vectors.length"></a><h3>n := vectors.length( v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the number of elements in the vector.</p>
+<td><p>Return the number of elements in the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">n := vectors.length( device_vector );</span></p></td>
 </tr><tr>
@@ -1539,7 +1785,7 @@ An exception is raised if out of memory</p></td>
 <td><span>required</span></td>
 <td><span>the number of items</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
 <td><span>vectors.vector</span></td>
 <td><span>required</span></td>
@@ -1555,13 +1801,60 @@ An exception is raised if out of memory</p></td>
 </tr>
 </table>
 
+<a name="vectors.move"></a><h3>vectors.move( v1, v2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Overwrite the contents of vector v1 with a copy of v2 and erase v2.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vector.move( destination_vector, source_vector )</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v1</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the destination vector</span></td>
+</tr><tr>
+<td><span>v2</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the source vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the element type is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.assign">vectors.assign</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Move</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+
 <a name="vectors.next"></a><h3>vectors.next( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the next element in the vector.  If there are no more items, do nothing.</p>
+<td><p>Move the cursor to the next element in the vector.  If there are no more items, do nothing.</p></td>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td><td><<p><span class="code">vectors.next( device_cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.next( device_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1597,13 +1890,66 @@ An exception is raised if out of memory</p></td>
 </tr>
 </table>
 
-<a name="vectors.prepend"></a><h3>vectors.prepend( v, e [, n] )</h3>
+<a name="vectors.prepend"></a><h3>vectors.prepend( v, i, e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert element e into vector v before the first position.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
+<td><p>Prepend string element e to the value under index i in the vector. If the index position does not exist, raise an exception.</p></td>
 </tr><tr>
-<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.prepend( device_vector, "router" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.prepend( device_vector, 5, "not " );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the index position</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to concatenate</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the index is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Prepend</p></td>
+</tr>
+</table>
+
+<a name="vectors.prepend_elements"></a><h3>vectors.prepend_elements( v, e [,n])</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Push element e at the start of the vector v.  If n is used, append c copies of e.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.prepend_elements( v, "zebra", 2 ); -- prepend 2 copies of "zebra"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1624,7 +1970,7 @@ An exception is raised if out of memory</p></td>
 <td><span>in</span></td>
 <td><span><i>vector element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the element to insert</span></td>
+<td><span>the element to queue</span></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
@@ -1635,18 +1981,14 @@ An exception is raised if out of memory</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory<br>
-An exception is raised if the index is out-of-range</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>-</p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
+<td><p>An exception is raised if the copies is not an integer value<br>
+An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Vectors.Prepend</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Append</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's prepend is separated into individual subprograms due to SparForte's current lack of named parameters to differentiate the variations.</p></td>
 </tr>
 </table>
 
@@ -1654,7 +1996,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the previous element in the vector.  If there are no more items, do nothing.</p>
+<td><p>Move the cursor to the previous element in the vector.  If there are no more items, do nothing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.previous( device_cursor );</span></p></td>
 </tr><tr>
@@ -1696,7 +2038,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Add enough memory to the vector to handle at least c items.</p>
+<td><p>Add enough memory to the vector to handle at least c items.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reserve_capacity( device_vector, 20 );</span></p></td>
 </tr><tr>
@@ -1735,7 +2077,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reverse the elements of the vector.</p>
+<td><p>Reverse the elements of the vector.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_elements( device_vector );</span></p></td>
 </tr><tr>
@@ -1774,7 +2116,7 @@ An exception is raised if the index is out-of-range</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor c2 backwards to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
+<td><p>Move the cursor c2 backwards to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
 </tr><tr>
@@ -1832,7 +2174,8 @@ An exception is raised if the cursor has the wrong types</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the index in the vector for element e, searching backwards.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
+<td><p>Return the index in the vector for element e, searching backwards.  Start at the position of index i1.  If the element does not exist, the index i2 will have No_Index.  A long_integer is returned and the user can
+typecast it to the index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
@@ -1865,9 +2208,9 @@ An exception is raised if the cursor has the wrong types</p></td>
 </tr><tr>
 <td><span>i2</span></td>
 <td><span>out</span></td>
-<td><span><i>vector index type</i></span></td>
+<td><span>long_integer</span></td>
 <td><span>required</span></td>
-<td><span>the position of the element</span></td>
+<td><span>the position of the element or no_index</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1881,8 +2224,11 @@ An exception is raised if the starting position value is bad</p></td>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Vectors.Reverse_Find_Index</p></td>
 </tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>reverse_find_index introduced with SparForte 3.0</p></td>
+</tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Ada's Reverse_Find_Index is a function.  SparForte's Reverse_Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional.</p></td>
+<td><p>Ada's Reverse_Find_Index is a function.  SparForte's Reverse_Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional.  Ada does not return a long_integer.</p></td>
 </tr>
 </table>
 
@@ -1890,7 +2236,7 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Resize the vector to n items, removing elements or adding empty elements if necessary.</p>
+<td><p>Resize the vector to n items, removing elements or adding empty elements if necessary.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.set_length( device_vector, 20 );</span></p></td>
 </tr><tr>
@@ -1932,7 +2278,7 @@ An exception is raised if the starting position value is bad</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Exchange two elements in the vector, either by a pair of indexes or a pair of cursors.</p>
+<td><p>Exchange two elements in the vector, either by a pair of indexes or a pair of cursors.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.swap( device_vector, first_position, second_position );</span></p></td>
 </tr><tr>
@@ -1989,11 +2335,70 @@ An exception is raised if the cursors are in different vectors.</p></td>
 </tr>
 </table>
 
-<a name="vectors.to_vector"></a><h3>vectors.to_vector( v, e [, n] )</h3>
+<a name="vectors.to_index"></a><h3>l := vectors.to_index( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Create a vector out of the element.   If a count n is used, use n copies of the element.  A count of zero inserts nothing.</p>
+<td><p>Return the index position of the cursor, or No_Index.  A long_integer
+is returned and the user can typecast it to the index type (unless it is
+No_Index).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">l := vectors.to_index( int_vector, "watermelon" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>return value</span></td>
+<td><span>long_integer</span></td>
+<td><span>required</span></td>
+<td><span>the index or no_index</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.To_Index</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>to_index introduced with SparForte 3.0</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada does not include the vector as a parameter.<br>Ada does not return a long_integer.</p></td>
+</tr>
+</table>
+
+<a name="vectors.to_vector"></a><h3>vectors.to_vector( v, e, n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Create a vector out of the element.  A count of zero inserts nothing.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.to_vector( new_vector, "switch", 4 );</span></p></td>
 </tr><tr>
@@ -2021,7 +2426,7 @@ An exception is raised if the cursors are in different vectors.</p></td>
 <td><span>n</span></td>
 <td><span>in</span></td>
 <td><span>containers.count_type</span></td>
-<td><span>1</span></td>
+<td><span>required</span></td>
 <td><span>the number of copies</span></td>
 </tr>
 </table></td>
@@ -2068,7 +2473,7 @@ An exception is raised if the index is out-of-range</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_hash_io.html">&nbsp;hash_io</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_hmaps.html">>&nbsp;hashed_maps></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_hmaps.html">&nbsp;hashed_maps</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_l10n.html">&nbsp;l10n</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_logs.html">&nbsp;logs</a></p>

@@ -183,7 +183,6 @@ end ParseNextOutMapCursor;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsClear is
-
   mapId   : identifier;
   theMap  : resPtr;
   subprogramId : constant identifier := hashed_maps_clear_t;

@@ -13,7 +13,7 @@ Long term Ongoing Work
 
 - value meta labels project
 
-  - review dht, vectors
+  - review dht
   - standard containers
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
@@ -22,10 +22,23 @@ Long term Ongoing Work
   - doubly linked lists insert_before should be able to omit the element,
     according to the docs, but may not be implemented.
     insert_before_and_mark is fine.
+  - add subprogramId variable to parser_doubly
+  - find index / reverse find index cannot return no_index because that's
+    vector_index'first-1 which is out-of-range.  It needs to use an
+    extended_index like Ada.  Also, should have a
+    has_index function to check for no_index.
+  - memory leaks when returning cursors (e.g. first, last and find functions)
+  - vector index function automated tests and new long_integer returns
+  - vector enums and index functions that return long_integer
+
+  - docs
+   - vector package index has no storage type because it is defined
+     by the package, not a key assisgned by a user.  Should be documented.
 
   - issue of retagging something already tagged...what are the rules?
   - factors can be labelled but continue with expressions and labels
     - related unit tests
+  - begin with meta should probably be begin meta
   - a structure to escallate and descallate the global meta mode
   - a package dealing with strings + meta tags
   - deploying strings + meta tags
@@ -36,6 +49,7 @@ Long term Ongoing Work
   - adaptation to other uses such as units of measure
   - what happens when unsetting meta labels - what is the policy?
   - System package values should be labelled secure
+  - should counts have there meta value checked?
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -48,6 +62,18 @@ Long term Ongoing Work
     (e.g. labelled not tagged?)
   - metaLabelOk should provide addition context (such as the values
     associated to the labels when not secured)
+  - package sound updates (gstreamer)
+
+  - data fields
+    General - Asset Name, Asset Type, Purpose, Oragnization
+    Data Hosting/Location - Country (determines laws), Type
+    Responsible Persons - App Owner, Data Admin, Business Owner, Tech Mgr, SME,
+      IT Owner
+    Catagorizations - Pii?  Regulation?
+    Risk Summary
+    Processing Summary - Purpose, Legal Basis, Data Source, Data Retention,
+      Data Subjects
+    Availability -
 
 - error messages and additional context
   - errors for common problems
