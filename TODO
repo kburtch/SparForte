@@ -13,7 +13,6 @@ Long term Ongoing Work
 
 - value meta labels project
 
-  - review dht
   - standard containers
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
@@ -29,7 +28,8 @@ Long term Ongoing Work
     has_index function to check for no_index.
   - memory leaks when returning cursors (e.g. first, last and find functions)
   - vector index function automated tests and new long_integer returns
-  - vector enums and index functions that return long_integer
+  - vector enums and index functions that return long_integer to be tested,
+    can the long_integer be converted to an enum?
 
   - docs
    - vector package index has no storage type because it is defined

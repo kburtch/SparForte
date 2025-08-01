@@ -80,6 +80,7 @@ dht_decrement_t     : identifier;
 --
 -- Syntax: dynamic_hash_tables.reset( t );
 -- Source: dynamic_hash_tables.reset( t );
+-- Delete all keys and associated values in the hash table..
 -----------------------------------------------------------------------------
 
 procedure ParseDHTReset is
@@ -103,6 +104,8 @@ end ParseDHTReset;
 --
 -- Syntax: dynamic_hash_tables.set( t, s, e );
 -- Source: dynamic_hash_tables.set( t, s, e );
+-- Assign the value v to the key k in the hash table. If the key does not
+-- exist, create it.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTSet is
@@ -112,6 +115,7 @@ procedure ParseDHTSet is
   keyType  : identifier;
   itemExpr : storage;
   itemType : identifier;
+  oldElem  : storage;
 begin
   expect( dht_set_t );
   ParseFirstInOutInstantiatedParameter( dht_set_t, tableId, dht_table_t ); -- TODO double gen
@@ -120,10 +124,22 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       Dynamic_Storage_Hash_Tables.Set(
-          theTable.dsht,
-          keyExpr,
-          itemExpr );
+       -- the key, value and existing value must all be checked.
+       oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if oldElem /= nullStorage then
+          if metaLabelOK( oldElem ) and
+             metaLabelOK( keyExpr ) and metaLabelOK( itemExpr ) then
+             Dynamic_Storage_Hash_Tables.Set(
+                theTable.dsht,
+                keyExpr,
+                itemExpr );
+          end if;
+       elsif metaLabelOK( keyExpr ) and metaLabelOK( itemExpr ) then
+          Dynamic_Storage_Hash_Tables.Set(
+             theTable.dsht,
+             keyExpr,
+             itemExpr );
+       end if;
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -135,6 +151,7 @@ end ParseDHTSet;
 --
 -- Syntax: e := doubly_linked_list.get( t, s );
 -- Source: e := doubly_linked_list.get( t, s );
+-- Get the value under key k in the hash table.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGet( result : out storage; kind : out identifier ) is
@@ -142,6 +159,7 @@ procedure ParseDHTGet( result : out storage; kind : out identifier ) is
   theTable : resPtr;
   keyExpr  : storage;
   keyType  : identifier;
+  oldElem  : storage;
 begin
   expect( dht_get_t );
   ParseFirstInOutInstantiatedParameter( dht_get_t, tableId, dht_table_t );
@@ -150,7 +168,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       result := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if metaLabelOk( oldElem ) then
+          result := oldElem;
+       end if;
      end;
   end if;
 end ParseDHTGet;
@@ -158,8 +179,9 @@ end ParseDHTGet;
 -----------------------------------------------------------------------------
 --  HAS ELEMENT
 --
--- Syntax: e := doubly_linked_list.has_element( t, s );
+-- Syntax: e := dynamic_hash_tables.has_element( t, s );
 -- Source: N/A
+-- Return true if key k is in the hash table.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTHasElement( result : out storage; kind : out identifier ) is
@@ -185,6 +207,7 @@ end ParseDHTHasElement;
 --
 -- Syntax: dynamic_hash_tables.remove( t, s );
 -- Source: dynamic_hash_tables.remove( t, s );
+-- Delete a key and the associated value from the hash table.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTRemove is
@@ -192,6 +215,7 @@ procedure ParseDHTRemove is
   theTable : resPtr;
   keyExpr  : storage;
   keyType  : identifier;
+  oldElem  : storage;
 begin
   expect( dht_remove_t );
   ParseFirstInOutInstantiatedParameter( dht_remove_t, tableId, dht_table_t );
@@ -199,7 +223,10 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
+       oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
+       if metaLabelOk( oldElem ) and metaLabelOk( keyExpr ) then
+          Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
+       end if;
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -211,6 +238,8 @@ end ParseDHTRemove;
 --
 -- Syntax: dynamic_hash_tables.get_first( t, e, eof );
 -- Source: e := dynamic_hash_tables.get_first( t );
+-- Iterate through the hash table. Return the first value in the table. Order
+-- of the values is not predictable.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGetFirst is
@@ -231,7 +260,9 @@ begin
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
-       AssignParameter( itemRef, s );
+       if metaLabelOk( s ) then
+          AssignParameter( itemRef, s );
+       end if;
        AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
      end;
   end if;
@@ -242,6 +273,9 @@ end ParseDHTGetFirst;
 --
 -- Syntax: dynamic_hash_tables.get_next( t, e, eof );
 -- Source: e := dynamic_hash_tables.get_next( t );
+-- Iterate through the hash table. Return the next value in the table. Order
+-- of the values is not predictable. Use get_first to start iterating. If
+-- iteration breaks if the table is altered.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGetNext is
@@ -262,7 +296,9 @@ begin
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
-       AssignParameter( itemRef, s );
+       if metaLabelOk( s ) then
+          AssignParameter( itemRef, s );
+       end if;
        AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
      end;
   end if;
@@ -273,6 +309,8 @@ end ParseDHTGetNext;
 --
 -- Syntax: dynamic_hash_tables.add( t, s, e );
 -- Source: N/A
+-- Put value v under key k in the hash table. If the key already exists, do
+-- nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTAdd is
@@ -293,7 +331,9 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = nullStorage then
-          Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
+          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) then
+             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
+          end if;
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -306,6 +346,8 @@ end ParseDHTAdd;
 --
 -- Syntax: dynamic_hash_tables.replace( t, s, e );
 -- Source: N/A
+-- Replace the value v under key k in the hash table. If the key does not
+-- exist, do nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTReplace is
@@ -326,7 +368,10 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
+          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) and
+             metaLabelOk( oldItem ) then
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
+          end if;
        end if;
      exception when storage_error =>
        err( +"storage error raised" );
@@ -339,6 +384,8 @@ end ParseDHTReplace;
 --
 -- Syntax: dynamic_hash_tables.append( t, s, e );
 -- Source: N/A
+-- Append string value v to the value under key k in the hash table. If the key
+-- does not exist, do nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTAppend is
@@ -362,9 +409,10 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOK( olditem, itemExpr ) then
+          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr, oldItem ) then
+             -- labels must be the same for the original value and the appending value
              oldItem.value := oldItem.value & itemExpr.value;
-             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
           end if;
        end if;
      exception when storage_error =>
@@ -378,6 +426,8 @@ end ParseDHTAppend;
 --
 -- Syntax: dynamic_hash_tables.prepend( t, s, e );
 -- Source:    N/A
+-- Prepend string value v to the value under key k in the hash table. If the
+-- key does not exist, do nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTPrepend is
@@ -401,7 +451,8 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOK( olditem, itemExpr ) then
+          -- labels must be the same for the original value and the appending value
+          if metaLabelOk( keyExpr ) and metaLabelOK( olditem, itemExpr ) then
              oldItem.value := itemExpr.value & oldItem.value;
              Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
           end if;
@@ -417,6 +468,8 @@ end ParseDHTPrepend;
 --
 -- Syntax: dynamic_hash_tables.increment( t, s [,n] );
 -- Source: N/A
+-- Increase the numeric value under key k in the hash table by one (or n). If
+-- the key does not exist, do nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTIncrement is
@@ -449,16 +502,19 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOK( oldItem, amtExpr ) then
-             oldItemValue := to_numeric( oldItem.value );
-             if hasAmt then
-                oldItem.value := to_unbounded_string(
-                   oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) )
-                );
-             else
-                oldItem.value := to_unbounded_string( oldItemValue + 1.0 );
+          oldItemValue := to_numeric( oldItem.value );
+          if hasAmt then
+             oldItem.value := to_unbounded_string(
+                 oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) )
+             );
+             if metaLabelOk( keyExpr ) and metaLabelOk( amtExpr, oldItem ) then
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
              end if;
-             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
+          else
+             oldItem.value := to_unbounded_string( oldItemValue + 1.0 );
+             if metaLabelOk( keyExpr ) and metaLabelOk( oldItem ) then
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
+             end if;
           end if;
        end if;
      exception when storage_error =>
@@ -506,14 +562,17 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOK( oldItem, amtExpr ) then
-             oldItemValue := to_numeric( oldItem.value );
-             if hasAmt then
-                oldItem.value := to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) );
-             else
-                oldItem.value := to_unbounded_string( oldItemValue - 1.0 );
+          oldItemValue := to_numeric( oldItem.value );
+          if hasAmt then
+             oldItem.value := to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) );
+             if metaLabelOk( keyExpr ) and metaLabelOk( amtExpr, oldItem ) then
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
              end if;
-             Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
+          else
+             oldItem.value := to_unbounded_string( oldItemValue - 1.0 );
+             if metaLabelOk( keyExpr ) and metaLabelOk( oldItem ) then
+                Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
+             end if;
           end if;
        end if;
      exception when storage_error =>

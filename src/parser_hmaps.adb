@@ -752,6 +752,7 @@ begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        -- Append( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
+       -- labels must be the same for the original value and the appending value
        if metaLabelOk( elemExpr, original ) then
           original.value := original.value & elemExpr.value;
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
@@ -864,12 +865,12 @@ begin
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
        if hasAmt then
-          if metaLabelOk( incExpr, original ) then
+          if metaLabelOk( keyExpr ) and metaLabelOk( incExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
        else
-          if metaLabelOk( original ) then
+          if metaLabelOk( keyExpr ) and metaLabelOk( original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
