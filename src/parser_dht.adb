@@ -530,6 +530,8 @@ end ParseDHTIncrement;
 --
 -- Syntax: dynamic_hash_tables.decrement( t, s [,n] );
 -- Ada:    N/A
+-- Reduce the numeric value under key k in the hash table by one (or n). If the
+-- key does not exist, do nothing.
 -----------------------------------------------------------------------------
 
 procedure ParseDHTDecrement is

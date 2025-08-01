@@ -25,3 +25,5 @@ CHANGES SINCE 2.6.3
 
 10. Fix: dynamic_hash_table package documentation correction.
 
+11. Fix: doubly linked lists assemble / disassemble are restricted under pragma ada_95.
+
