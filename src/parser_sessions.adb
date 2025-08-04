@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world;
-use  world;
+with world,
+     symbol_table;
+use  world,
+     symbol_table;
 
 package body parser_sessions is
 

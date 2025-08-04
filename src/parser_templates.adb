@@ -27,12 +27,18 @@ with
     ada.strings.unbounded,
     pegasoft,
     world,
+    symbol_table,
+    message_strings,
+    value_conversion,
     scanner.communications,
     parser_params;
 use
     ada.strings.unbounded,
     pegasoft,
     world,
+    symbol_table,
+    message_strings,
+    value_conversion,
     scanner,
     scanner.communications,
     parser_params;

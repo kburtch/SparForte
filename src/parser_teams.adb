@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use  ada.strings.unbounded;
+with ada.strings.unbounded,
+     symbol_table;
+use  ada.strings.unbounded,
+     symbol_table;
 
 package body parser_teams is
 

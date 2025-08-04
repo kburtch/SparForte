@@ -23,11 +23,13 @@
 
 with ada.strings.unbounded,
      spar_os.exec,
-     world;
+     world,
+     symbol_table;
 use  ada.strings.unbounded,
      spar_os,
      spar_os.exec,
-     world;
+     world,
+     symbol_table;
 
 package builtins is
 

@@ -27,12 +27,16 @@ pragma ada_2005;
 with ada.strings.unbounded,
      pegasoft,
      world,
+     symbol_table,
+     message_strings,
      scanner,
      scanner.communications,
      parser;
 use  ada.strings.unbounded,
      pegasoft,
      world,
+     symbol_table,
+     message_strings,
      scanner,
      scanner.communications,
      parser;

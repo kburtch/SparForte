@@ -25,10 +25,12 @@
 with ada.strings.unbounded,
      pegasoft,
      world,
+     symbol_table,
      scanner;
 use  ada.strings.unbounded,
      pegasoft,
      world,
+     symbol_table,
      scanner;
 
 package body chain_util is

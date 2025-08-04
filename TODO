@@ -17,11 +17,11 @@ Long term Ongoing Work
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
   - world should be split into symbol table and world
+    - should scanner-communication be moved to message strings?
   - the global meta mode for the language
   - doubly linked lists insert_before should be able to omit the element,
     according to the docs, but may not be implemented.
     insert_before_and_mark is fine.
-  - add subprogramId variable to parser_doubly
   - find index / reverse find index cannot return no_index because that's
     vector_index'first-1 which is out-of-range.  It needs to use an
     extended_index like Ada.  Also, should have a
@@ -63,6 +63,7 @@ Long term Ongoing Work
   - metaLabelOk should provide addition context (such as the values
     associated to the labels when not secured)
   - package sound updates (gstreamer)
+    - sound shouldn't really print message strings but throw exceptions
 
   - data fields
     General - Asset Name, Asset Type, Purpose, Oragnization

@@ -24,9 +24,13 @@
 
 with
   ada.strings.unbounded,
-  world;
+  world,
+  symbol_table,
+  message_strings;
 use ada.strings.unbounded,
-  world;
+  world,
+  symbol_table,
+  message_strings;
 
 package scanner.communications is
 

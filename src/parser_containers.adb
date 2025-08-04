@@ -21,6 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with symbol_table;
+use  symbol_table;
+
 package body parser_containers is
 
 -- There are no AdaScript procedures or functions in this package

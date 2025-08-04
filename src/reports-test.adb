@@ -27,6 +27,7 @@ with Ada.Characters.Latin_1,
      pegasoft.strings,
      pegasoft.user_io,
      world,
+     symbol_table,
      compiler; -- Circular dependency...
 use  Ada.Strings,
      Ada.Strings.Fixed,
@@ -35,6 +36,7 @@ use  Ada.Strings,
      pegasoft.strings,
      pegasoft.user_io,
      world,
+     symbol_table,
      compiler;
 
 package body reports.test is

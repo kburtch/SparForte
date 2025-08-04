@@ -27,3 +27,10 @@ CHANGES SINCE 2.6.3
 
 11. Fix: doubly linked lists assemble / disassemble are restricted under pragma ada_95.
 
+12. Enhancement: better error messages for procedure / function mismatches.
+
+13. Enhancement: better error messages for some edge cases like using a generic type as a shell command.
+
+14. Refactor: world package was refactored especially moving the symbol table into a separate file.
+
+

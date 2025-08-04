@@ -30,9 +30,13 @@ with gnat.cgi,
 #end if;
 with ada.strings.unbounded,
     world,
+    symbol_table,
+    message_strings,
     scanner.communications;
 use ada.strings.unbounded,
     world,
+    symbol_table,
+    message_strings,
     scanner,
     scanner.communications;
 

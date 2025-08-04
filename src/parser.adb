@@ -34,6 +34,8 @@ with ada.command_line,
     spar_os,
     pegasoft.strings,
     performance_monitoring,
+    symbol_table,
+    message_strings,
     compiler,
     scanner.calendar,
     scanner.communications,
@@ -48,6 +50,8 @@ use ada.command_line,
     pegasoft,
     pegasoft.strings,
     performance_monitoring,
+    symbol_table,
+    message_strings,
     compiler,
     scanner,
     scanner.calendar,
@@ -1472,6 +1476,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
     -- test (e.g. could be be a name that is not declared).
     --if error_found then
     --   null;
+
     if identifiers( t ).class = subClass or             -- type cast
        identifiers( t ).class = typeClass then
        -- this will change when arrays can have derived types.

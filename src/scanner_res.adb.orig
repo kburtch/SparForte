@@ -25,10 +25,12 @@ with ada.text_io,
      gnat.source_info,
      pegasoft.user_io,
      pegasoft.hmaps,
+     message_strings,
      scanner.communications;
 use  ada.text_io,
      pegasoft.user_io,
      pegasoft.hmaps,
+     message_strings,
      scanner.communications;
 
 #if BDB

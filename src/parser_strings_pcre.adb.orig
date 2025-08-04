@@ -26,11 +26,15 @@
 with interfaces.c,
     scanner.communications,
     pegasoft.strings,
+    symbol_table,
+    message_strings,
     parser_params;
 use interfaces.c,
     scanner,
     scanner.communications,
     pegasoft.strings,
+    symbol_table,
+    message_strings,
     parser_params;
 
 package body parser_strings_pcre is

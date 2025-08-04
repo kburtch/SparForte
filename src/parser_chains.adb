@@ -26,12 +26,18 @@
 with
     ada.strings.unbounded,
     world,
+    symbol_table,
+    message_strings,
+    value_conversion,
     scanner,
     scanner.communications,
     chain_util;
 use
     ada.strings.unbounded,
     world,
+    symbol_table,
+    message_strings,
+    value_conversion,
     scanner,
     scanner.communications,
     chain_util;

@@ -44,6 +44,8 @@ with system,
     performance_monitoring,
     -- TODO: referencing own child.  this is messy to sort out so I
     -- will look at it later.
+    symbol_table,
+    message_strings,
     scanner.communications,
     scanner_res,
     --TODO: I need to fix this circular dependency between the scanner and
@@ -106,6 +108,8 @@ use  ada.text_io,
     software_models,
     world.utf8,
     performance_monitoring,
+    symbol_table,
+    message_strings,
     scanner.communications,
     scanner_res,
     parser.decl.as,

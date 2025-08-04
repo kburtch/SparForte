@@ -32,7 +32,8 @@ with ada.text_io,
      spar_os.tty,
      spar_os.readline,
      pegasoft.strings,
-     world;
+     world,
+     symbol_table;
 use  ada.text_io,
      ada.text_io.unbounded_io,-- Ada 2005
      ada.calendar,
@@ -41,7 +42,8 @@ use  ada.text_io,
      spar_os.tty,
      spar_os.readline,
      pegasoft.strings,
-     world;
+     world,
+     symbol_table;
 
 #if not READLINE
 with gnat.regexp,

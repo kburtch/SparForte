@@ -37,6 +37,8 @@ with ada.text_io,
     pegasoft.script_io,
     pegasoft.strings,
     world.utf8,
+    symbol_table,
+    message_strings,
     performance_monitoring;
 use ada.text_io,
     ada.integer_text_io,
@@ -49,6 +51,8 @@ use ada.text_io,
     pegasoft.script_io,
     pegasoft.strings,
     world.utf8,
+    symbol_table,
+    message_strings,
     performance_monitoring;
 
 package body compiler is

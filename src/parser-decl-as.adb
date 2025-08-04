@@ -36,6 +36,8 @@ with Interfaces.C,
     builtins,
     jobs,
     signal_flags,
+    message_strings,
+    value_conversion,
     compiler,
     scanner.communications,
     scanner_res,
@@ -59,6 +61,8 @@ use Interfaces.C,
     builtins,
     jobs,
     signal_flags,
+    message_strings,
+    value_conversion,
     compiler,
     scanner.communications,
     scanner_res,
@@ -5339,10 +5343,46 @@ begin
 
      -- For built-ins like cd, the command is the token name.  Otherwise, we'll
      -- have to treat the token as a shell word.
+     -- getBaseType will raise an obscure error if the command is a generic
+     -- type name, so we provide some messages with more meaning.  If we pass
+     -- it to parser shell word, the user would just get "shell word expected'.
+
      if token >= env_t and token <= delete_t then
         cmdName := identifiers( token ).name;
         getNextToken;
-     elsif identifiers( token ).kind /= new_t and then getBaseType( identifiers( token ).kind ) = command_t then
+     elsif identifiers( token ).kind = new_t then
+        parseUniqueShellWord( shellWord );
+        cmdName := unbounded_string( shellWord.value );
+     elsif identifiers( token ).class = typeClass then
+         err(
+            contextNotes => +"in the shell command",
+            subject=> token,
+            reason => +"is a type not",
+            obstructorNotes => em( "a shell command" ),
+            remedy => +"use quotes if there is a command with the same name",
+            seeAlso => +"doc/ref_shellcmds.html"
+        );
+     elsif identifiers( token ).class = subClass then
+         err(
+            contextNotes => +"in the shell command",
+            subject=> token,
+            reason => +"is a subtype not",
+            obstructorNotes => em( "a shell command" ),
+            remedy => +"use quotes if there is a command with the same name",
+            seeAlso => +"doc/ref_shellcmds.html"
+        );
+     elsif identifiers( token ).class = genericTypeClass then
+        err(
+            contextNotes => +"in the shell command",
+            subject=> token,
+            reason => +"is a generic type not",
+            obstructorNotes => em( "a shell command" ),
+            remedy => +"use quotes if there is a command with the same name",
+            seeAlso => +"doc/ref_shellcmds.html"
+        );
+        parseUniqueShellWord( shellWord );
+        cmdName := unbounded_string( shellWord.value );
+     elsif getBaseType( identifiers( token ).kind ) = command_t then
         cmdName := identifiers( token ).value.all;
         identifiers( token ).wasReferenced := true;
         getNextToken;
@@ -6643,6 +6683,20 @@ begin
      DoUserDefinedProcedure( identifiers( token ).value.all );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
      DoUserDefinedCaseProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = funcClass then
+     err( contextNotes => +"in the general statement",
+          subject => token,
+          reason => +"is a function and not",
+          obstructorNotes => +"a procedure",
+          remedy => +"use functions in an expression or use quotes if it is a command"
+     );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userFuncClass then
+     err( contextNotes => +"in the general statement",
+          subject => token,
+          reason => +"is a function and not",
+          obstructorNotes => +"a procedure",
+          remedy => +"use functions in an expressionor use quotes if it is a command"
+     );
   else
 
      -- we need to check the next token then back up
@@ -7049,6 +7103,20 @@ begin
      DoUserDefinedProcedure( identifiers( token ).value.all );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
      DoUserDefinedCaseProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = funcClass then
+     err( contextNotes => +"in the general statement",
+          subject => token,
+          reason => +"is a function and not",
+          obstructorNotes => +"a procedure",
+          remedy => +"use functions in an expression or use quotes if it is a command"
+     );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userFuncClass then
+     err( contextNotes => +"in the general statement",
+          subject => token,
+          reason => +"is a function and not",
+          obstructorNotes => +"a procedure",
+          remedy => +"use functions in an expressionor use quotes if it is a command"
+     );
   else
 
      -- we need to check the next token then back up
@@ -7080,7 +7148,10 @@ begin
 
         -- Boolean true shortcut (boolean assertions)
         -- new_t check because a command will produce an varClass with no type
-        elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
+        elsif identifiers( startToken ).class = varClass and then
+              identifiers( startToken ).kind /= new_t and then
+              getBaseType( identifiers( startToken ).kind ) = boolean_t and then
+              not identifiers( startToken ).deleted then
            if onlyAda95 then
               err( +"use " & em( ":= true " ) & pl( " with " ) & em( "pragma ada_95" ) );
            end if;

@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with scanner.communications;
-use  scanner.communications;
+with message_strings,
+     scanner.communications;
+use  message_strings,
+     scanner.communications;
 
 package body scanner.shell is
 

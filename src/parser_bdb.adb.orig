@@ -22,6 +22,9 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
+with symbol_table;
+use  symbol_table;
+
 #if BDB
 with
     bdb_constants;

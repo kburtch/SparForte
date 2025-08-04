@@ -22,9 +22,11 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     world;
+     world,
+     symbol_table;
 use  ada.strings.unbounded,
-     world;
+     world,
+     symbol_table;
 
 package parser_params is
 

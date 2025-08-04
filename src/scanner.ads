@@ -27,10 +27,12 @@ with
   ada.strings.unbounded,
   pegasoft,
   world,
+  symbol_table,
   compiler;
 use ada.strings.unbounded,
   pegasoft,
   world,
+  symbol_table,
   compiler;
 
 package scanner is

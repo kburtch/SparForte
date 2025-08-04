@@ -32,12 +32,16 @@ with interfaces.c,
     pegasoft.user_io,
     parser_aux, -- for DoQuit
     pegasoft.gen_list,
-    world;
+    world,
+    symbol_table,
+    message_strings;
 use interfaces.c,
     ada.text_io,
     ada.strings.fixed,
     pegasoft.user_io,
     pegasoft.strings,
+    symbol_table,
+    message_strings,
     builtins,
     compiler,
     scanner,

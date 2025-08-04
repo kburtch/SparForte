@@ -22,9 +22,13 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     world, scanner;
+     world,
+     symbol_table,
+     scanner;
 use ada.strings.unbounded,
-    world, scanner;
+    world,
+    symbol_table,
+    scanner;
 
 package parser.decl.as is
 

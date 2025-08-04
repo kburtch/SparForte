@@ -29,12 +29,14 @@ with unchecked_deallocation,
      spar_os.exec,
      signal_flags,
      pegasoft.user_io,
-     world;
+     world,
+     symbol_table;
 use  ada.text_io,
      spar_os.exec,
      signal_flags,
      pegasoft.user_io,
-     world;
+     world,
+     symbol_table;
 
 package body spar_os.tty is
 

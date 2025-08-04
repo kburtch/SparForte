@@ -21,11 +21,15 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with scanner.communications,
-     pegasoft.user_io;
-use  scanner,
-     scanner.communications,
-     pegasoft.user_io;
+with pegasoft.user_io,
+     symbol_table,
+     message_strings,
+     scanner.communications;
+use  pegasoft.user_io,
+     symbol_table,
+     message_strings,
+     scanner,
+     scanner.communications;
 
 --with ada.text_io;
 --use  ada.text_io;

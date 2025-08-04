@@ -25,12 +25,16 @@
 
 with ada.strings.unbounded,
     pegasoft,
+    symbol_table,
+    message_strings,
     scanner.calendar,
     scanner.communications,
     parser_params,
     spar_os;
 use ada.strings.unbounded,
     pegasoft,
+    symbol_table,
+    message_strings,
     scanner,
     scanner.calendar,
     scanner.communications,
