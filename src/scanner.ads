@@ -26,12 +26,13 @@
 with
   ada.strings.unbounded,
   pegasoft,
-  world,
+  world.constraints,
   symbol_table,
   compiler;
 use ada.strings.unbounded,
   pegasoft,
   world,
+  world.constraints,
   symbol_table,
   compiler;
 

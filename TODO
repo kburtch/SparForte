@@ -16,8 +16,7 @@ Long term Ongoing Work
   - standard containers
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
-  - world should be split into symbol table and world
-    - should scanner-communication be moved to message strings?
+  - should scanner-communication be moved to message strings?
   - the global meta mode for the language
   - doubly linked lists insert_before should be able to omit the element,
     according to the docs, but may not be implemented.

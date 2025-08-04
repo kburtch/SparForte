@@ -33,4 +33,3 @@ CHANGES SINCE 2.6.3
 
 14. Refactor: world package was refactored especially moving the symbol table into a separate file.
 
-
