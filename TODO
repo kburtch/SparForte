@@ -13,14 +13,7 @@ Long term Ongoing Work
 
 - value meta labels project
 
-  - standard containers
-    - document the behaviour of doubly.assemble/disassemble for meta
-      tags
-  - should scanner-communication be moved to message strings?
   - the global meta mode for the language
-  - doubly linked lists insert_before should be able to omit the element,
-    according to the docs, but may not be implemented.
-    insert_before_and_mark is fine.
   - find index / reverse find index cannot return no_index because that's
     vector_index'first-1 which is out-of-range.  It needs to use an
     extended_index like Ada.  Also, should have a
@@ -31,6 +24,8 @@ Long term Ongoing Work
     can the long_integer be converted to an enum?
 
   - docs
+    - document the behaviour of doubly.assemble/disassemble for meta
+      tags
    - vector package index has no storage type because it is defined
      by the package, not a key assisgned by a user.  Should be documented.
 

@@ -756,12 +756,15 @@ end ParseDoublyReplaceElement;
 ------------------------------------------------------------------------------
 --  INSERT BEFORE
 --
--- Syntax: doubly_linked_list.insert_before( l, c [, n] ) | ( l, c, e [, n] )
+-- Syntax: doubly_linked_list.insert_before( l, c, e [, n] )
 -- Ada:    doubly_linked_list.insert( l ,c, e [, n]);
 -- Insert element e before the cursor c. If no element is given, a node is
 -- inserted with an unknown element. If the cursor does not point at an
 -- element, the element is appended. If n is given, insert n copies instead
 -- of one.
+-- In Ada, parameters e, n or both can be missing but, without named
+-- parameters, SparForte cannot distinguish whether a third parameter belongs
+-- to e or n.
 -- This is the basic form of insert that doesn't return another cursor.
 -- Note: "insert" is a reserved SQL word in SparForte
 ------------------------------------------------------------------------------
