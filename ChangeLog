@@ -35,3 +35,5 @@ CHANGES SINCE 2.6.3
 
 15. Fix: documentation corrected for doubly_linked_lists.insert_before.
 
+16. New: enum.pos / enum.val [docs needed, tests needed].
+

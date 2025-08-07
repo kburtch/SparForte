@@ -847,7 +847,7 @@ An exception is raised if the cursor has the wrong types</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index in the vector for element e.  Start at the position of index i1.  If the element does not exist, the index i2 will have No_Index.
 A long_integer
-is returned and the user can typecast it to the index type (unless it is
+is returned and the user can typecast it or use enum.val to convert it to the index type (unless it is
 No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.find_index( device_vector, "firewall", 1, position_index );</span></p></td>
@@ -1002,7 +1002,7 @@ An exception is raised if the starting position value is bad</p></td>
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the first index of the vector.  If the vector is empty, No_Index
-is returned.  A long_integer is returned and the user can typecast it to the
+is returned.  A long_integer is returned and the user can typecast it or use enum.val to convert it to the
 index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.first_index( device_vector );</span></p></td>
@@ -1718,7 +1718,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index to the last element in the vector.  If the vector is
 empty, No_Index is returned.  A long_integer is returned and the user can
-typecast it to the index type (unless it is No_Index).</p></td>
+typecast it or use enum.val to convert it to the index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.last_index( device_vector );</span></p></td>
 </tr><tr>
@@ -2175,7 +2175,7 @@ An exception is raised if the cursor has the wrong types</p></td>
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index in the vector for element e, searching backwards.  Start at the position of index i1.  If the element does not exist, the index i2 will have No_Index.  A long_integer is returned and the user can
-typecast it to the index type (unless it is No_Index).</p></td>
+typecast it or use enum.val to convert it to the index type (unless it is No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
@@ -2340,7 +2340,7 @@ An exception is raised if the cursors are in different vectors.</p></td>
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index position of the cursor, or No_Index.  A long_integer
-is returned and the user can typecast it to the index type (unless it is
+is returned and the user can typecast it or use enum.val to convert it to the index type (unless it is
 No_Index).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td><td><p><span class="code">l := vectors.to_index( int_vector, "watermelon" );</span></p></td>

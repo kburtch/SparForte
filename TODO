@@ -13,15 +13,8 @@ Long term Ongoing Work
 
 - value meta labels project
 
+  - vector index functions automated tests and new long_integer returns - negative tests partially looked at and seem ok.  positive tests to be checked
   - the global meta mode for the language
-  - find index / reverse find index cannot return no_index because that's
-    vector_index'first-1 which is out-of-range.  It needs to use an
-    extended_index like Ada.  Also, should have a
-    has_index function to check for no_index.
-  - memory leaks when returning cursors (e.g. first, last and find functions)
-  - vector index function automated tests and new long_integer returns
-  - vector enums and index functions that return long_integer to be tested,
-    can the long_integer be converted to an enum?
 
   - docs
     - document the behaviour of doubly.assemble/disassemble for meta

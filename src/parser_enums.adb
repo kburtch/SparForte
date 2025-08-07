@@ -44,20 +44,22 @@ use  ada.strings.unbounded,
 package body parser_enums is
 
 ------------------------------------------------------------------------------
--- Arrays package identifiers
+-- Enums package identifiers
 ------------------------------------------------------------------------------
 
 enums_first_t        : identifier;
 enums_last_t         : identifier;
 enums_pred_t         : identifier;
 enums_succ_t         : identifier;
+enums_pos_t          : identifier;
+enums_val_t          : identifier;
 
 ---------------------------------------------------------
 -- PARSE THE ENUMS PACKAGE
 ---------------------------------------------------------
 
 procedure ParseEnumsFirst( result : out storage; kind : out identifier ) is
-  -- Syntax: enums.first( arraytypeorvar );
+  -- Syntax: enums.first( enumType );
   -- Source: enumtype'first
   var_id   : identifier;
 begin
@@ -84,7 +86,7 @@ begin
 end ParseEnumsFirst;
 
 procedure ParseEnumsLast( result : out storage; kind : out identifier ) is
-  -- Syntax: enums.last( arraytypeorvar );
+  -- Syntax: enums.last( enumType );
   -- Source: enumtype'last
   var_id   : identifier;
   best     : integer;
@@ -222,6 +224,117 @@ begin
   end if;
 end ParseEnumsSucc;
 
+procedure ParseEnumsPos( result : out storage; kind : out identifier ) is
+  -- Syntax: enums.pos( enum_item );
+  -- Source: enumvar'pos
+  var_id   : identifier;
+  item     : natural;
+begin
+  expect( enums_pos_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( var_id );
+  kind := identifiers( var_id ).kind;
+  if identifiers( var_id ).class /= enumClass then
+     err( +"Enumerated item expected" );
+  else
+     kind := getBaseType( identifiers( var_id ).kind );
+     if identifiers( kind ).kind /= root_enumerated_t then
+        err( +"Enumerated item expected" );
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+  kind := natural_t;
+  if isExecutingCommand then
+     item := natural( to_numeric( identifiers( var_id ).value.all ) );
+     declare
+        ok : boolean := false;
+        candidate : natural;
+     begin
+        for id in reverse keywords_top..identifiers_top-1 loop
+           if identifiers( id ).kind = kind then
+              if identifiers( id ).class = enumClass then
+                 candidate := integer( to_numeric( identifiers( id ).value.all ) );
+                 if candidate = item then
+                    ok := true;
+                    exit;
+                 end if;
+              end if;
+           end if;
+        end loop;
+        -- if beyond end, raise exception
+        if not ok then
+           raise CONSTRAINT_ERROR with ": no such value";
+        end if;
+        -- convert to string and remove leading space
+        declare
+           s : constant string := item'img;
+        begin
+           --f := to_unbounded_string( s(2..s'last) );
+           result := storage'( to_unbounded_string( s ), noMetaLabel );
+        end;
+     exception when others =>
+        err( +"exception thrown" );
+     end;
+   end if;
+end ParseEnumsPos;
+
+procedure ParseEnumsVal( result : out storage; kind : out identifier ) is
+  -- Syntax: enums.val( enum_type, enum_item );
+  -- Source: enumvar'val
+  enumTypeId : identifier;
+  expr       : storage;
+  exprKind   : identifier;
+  item       : natural;
+begin
+  expect( enums_val_t );
+  expect( symbol_t, "(" );
+  ParseIdentifier( enumTypeId );
+  if identifiers( enumTypeId ).kind /= root_enumerated_t and
+     (identifiers( enumTypeId ).class /= typeClass and
+      identifiers( enumTypeId ).class /= subClass ) then
+     err(
+        context => enums_val_t,
+        subject => enumTypeId,
+        reason => +"is not an enumerated type",
+        obstructorNotes => nullMessageStrings,
+        seeAlso => +"doc/pkg_enums.html"
+     );
+  end if;
+  kind := enumTypeId;
+  expectSymbol( "," );
+  ParseExpression( expr, exprKind );
+  --kind := identifiers( var_id ).kind;
+  --if identifiers( var_id ).class /= enumClass then
+  --   err( +"Enumerated item expected" );
+  --else
+  --   kind := getBaseType( identifiers( var_id ).kind );
+  --   if identifiers( kind ).kind /= root_enumerated_t then
+  --      err( +"Enumerated item expected" );
+  --   end if;
+  --end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     begin
+        item := natural( to_numeric( expr.value ) );
+        declare
+           s : constant string := item'img;
+        begin
+           result := storage'( to_unbounded_string( s ), noMetaLabel );
+        exception when others =>
+           err( +"exception thrown" );
+        end;
+     exception  when constraint_error =>
+        err(
+           context => enums_val_t,
+           subject => enumTypeId,
+           reason => +"does not have a value for position",
+           obstructorNotes => unb_em( expr.value ),
+           seeAlso => +"doc/pkg_enums.html"
+        );
+     end;
+  end if;
+end ParseEnumsVal;
+
 -------------------------------------------------------------------------------
 -- Housekeeping
 -------------------------------------------------------------------------------
@@ -233,6 +346,8 @@ begin
   declareFunction( enums_last_t, "enums.last", ParseEnumsLast'access );
   declareFunction( enums_pred_t, "enums.pred", ParseEnumsPred'access );
   declareFunction( enums_succ_t, "enums.succ", ParseEnumsSucc'access );
+  declareFunction( enums_pos_t, "enums.pos", ParseEnumsPos'access );
+  declareFunction( enums_val_t, "enums.val", ParseEnumsVal'access );
   declareNamespaceClosed( "enums" );
 end StartupEnums;
 

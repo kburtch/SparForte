@@ -6295,6 +6295,13 @@ begin
         DoContracts( var_kind, expr );
      end if;
 
+     -- Memory Leak Protection
+     --
+     -- If the variable contains a resource, it should not be overwritten
+     -- without releasing the resource first.  To deal with this, resources
+     -- are declared limited.  Still, resources must be released on out
+     -- parameters.
+
      if identifiers( var_id ).list then
         --mem_id := long_integer( to_numeric( identifiers( var_id ).value ) );
         --arrayIndex := long_integer( to_numeric( index_value ) );
