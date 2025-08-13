@@ -100,9 +100,9 @@ function chain_context return chain_contexts is
 begin
   findIdent( chain_count_str, chain_count_id );
   findIdent( last_in_chain_str, last_in_chain_id );
-  if to_numeric( identifiers( chain_count_id ).value.all ) = 1.0 then
+  if to_numeric( identifiers( chain_count_id ).store.value ) = 1.0 then
      result := first;
-  elsif to_numeric( identifiers( last_in_chain_id ).value.all ) = 1.0 then
+  elsif to_numeric( identifiers( last_in_chain_id ).store.value ) = 1.0 then
      result := last;
   else
      result := middle;

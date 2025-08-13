@@ -110,7 +110,7 @@ end makeTempFile;
 
 function stringField( i : identifier; f : natural ) return unbounded_string is
 begin
-  return stringField( identifiers( i ).value.all, recSep, f );
+  return stringField( identifiers( i ).store.value, recSep, f );
 end stringField;
 
 
@@ -122,7 +122,7 @@ end stringField;
 
 procedure replaceField( i : identifier; f : natural; field : string ) is
 begin
-  replaceField( identifiers( i ).value.all, recSep, f, field );
+  replaceField( identifiers( i ).store.value, recSep, f, field );
 end replaceField;
 
 
@@ -602,7 +602,7 @@ begin
   -- Always a risk of an exception thrown here
   begin
     numFields := natural( to_numeric( identifiers( identifiers(
-        canonicalRef.id ).kind ).value.all ) );
+        canonicalRef.id ).kind ).store.value ) );
   exception when storage_error =>
     numFields := 0;
     err(
@@ -696,8 +696,8 @@ begin
            -- link the renaming field to the canonical field
            identifiers( canonicalField ).renamed_count :=
               identifiers( canonicalfield ).renamed_count + 1;
-           identifiers( renamingField ).value :=
-              identifiers( canonicalField ).value;
+           identifiers( renamingField ).store :=
+              identifiers( canonicalField ).store;
          end if;
      end;
      canonicalField := identifier( integer( canonicalField ) + 1 );

@@ -168,7 +168,7 @@ function parsePragmaKind return aPragmaKind is
   pragmaKind : aPragmaKind := unknown_pragma;
 begin
    -- just an error message...if ( with no name
-   if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
+   if token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( "(" ) then
       err( +"pragma name missing" );
   elsif name = "ada_95" then
      pragmaKind := ada_95;
@@ -472,9 +472,9 @@ procedure ParseLicenseKind( expr : out storage ) is
 
   procedure ParseLicenseExtra is
   begin
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        expr.value := expr.value & ": " & identifiers( token ).value.all;
+        expr.value := expr.value & ": " & identifiers( token ).store.value;
         expect( strlit_t );
      end if;
   end ParseLicenseExtra;
@@ -642,10 +642,10 @@ begin
      expect( number_t, " 0" );
      work_estimate_unknown := true;
   elsif var_id = teams_work_measure_size_t then
-     if identifiers( token ).value.all /= "s" and
-        identifiers( token ).value.all /= "m" and
-        identifiers( token ).value.all /= "l" and
-        identifiers( token ).value.all /= "xl" then
+     if identifiers( token ).store.value /= "s" and
+        identifiers( token ).store.value /= "m" and
+        identifiers( token ).store.value /= "l" and
+        identifiers( token ).store.value /= "xl" then
         err( +"expected ""s"", ""m"", ""l"" or ""xl""" );
      end if;
     expect( strlit_t );
@@ -687,15 +687,15 @@ begin
   elsif var_id = teams_work_priority_completed_t then
      expect( number_t, " 0" );
   elsif var_id = teams_work_priority_level_t then
-     if identifiers( token ).value.all /= "l" and
-        identifiers( token ).value.all /= "m" and
-        identifiers( token ).value.all /= "h" then
+     if identifiers( token ).store.value /= "l" and
+        identifiers( token ).store.value /= "m" and
+        identifiers( token ).store.value /= "h" then
         err( +"expected 'l', 'm' or 'h'" );
      end if;
      if is_todo then
         if not work_estimate_unknown and not allowAllTodosForRelease then
            if boolean( testOpt ) or boolean( maintenanceOpt ) then
-              if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
+              if allowLowPriorityTodosForRelease and identifiers( token ).store.value = "l" then
                  null;
               else
                  err( +"priority todo task not yet completed" );
@@ -705,14 +705,14 @@ begin
      end if;
      expect( charlit_t );
   elsif var_id = teams_work_priority_severity_t then
-     if identifiers( token ).value.all < " 1" or
-        identifiers( token ).value.all > " 5" then
+     if identifiers( token ).store.value < " 1" or
+        identifiers( token ).store.value > " 5" then
         err( +"expected 1..5" );
      end if;
      if is_todo then
         if not work_estimate_unknown and not allowAllTodosForRelease then
            if boolean( testOpt ) or boolean( maintenanceOpt ) then
-              if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
+              if allowLowPriorityTodosForRelease and identifiers( token ).store.value < " 2" then
                  null;
               else
                  err( +"priority todo task not yet completed" );
@@ -726,7 +726,7 @@ begin
         if not work_estimate_unknown and not allowAllTodosForRelease then
            if boolean( testOpt ) or boolean( maintenanceOpt ) then
               -- any financial risk
-              if identifiers( token ).value.all /= " 0" then
+              if identifiers( token ).store.value /= " 0" then
                  err( +"priority todo task not yet completed" );
               end if;
            end if;
@@ -737,7 +737,7 @@ begin
      declare
         v1 : numericValue;
      begin
-        v1 := to_numeric( identifiers( token ).value.all );
+        v1 := to_numeric( identifiers( token ).store.value );
         if v1 < 0.0 or v1 > 10.0 then
            err( +"expected 1..10" );
         end if;
@@ -1402,7 +1402,7 @@ begin
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
      noCommandHash and pragmaKind /= peek and pragmaKind /= gcc_errors and
      pragmaKind /= colour_messages then
-     if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value.all /= "(") then
+     if pragmaKind = debug and (token /= symbol_t or identifiers( token ).store.value /= "(") then
         pragmaKind := debug_on;
      else
         expectPragmaParameterOpen( pl( pragmaKind'img ) );
@@ -1426,7 +1426,7 @@ begin
      end if;
   when affinity =>                           -- pragma affinity
      ParseDesignPragmaAffinityIdentifier( expr.value );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
@@ -1467,12 +1467,12 @@ begin
      ParseDesignPragmaConstraintIdentifier( expr.value );
      expectPragmaComma;
      if token = strlit_t then
-        expr2.value := identifiers( token ).value.all;
+        expr2.value := identifiers( token ).store.value;
         getNextToken;
      else
         ParsePragmaIdentifier ( expr2.value );
      end if;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
@@ -1480,7 +1480,7 @@ begin
         expr3.value := to_unbounded_string( "0.0" );
      end if;
   when debug =>                              -- pragma debug
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      expect( backlit_t );
   when debug_on =>                              -- pragma debug (no param)
      null;
@@ -1491,16 +1491,16 @@ begin
      ParseDesignPragmaAffinityIdentifier( expr.value );
      -- expect( symbol_t, "," );
      -- if token = strlit_t then
-     --    if identifiers( token ).value.all = "" then
+     --    if identifiers( token ).store.value = "" then
      --       err( "affinity name should not be an empty string" );
      --    else
-     --       expr2.value := identifiers( token ).value.all;
+     --       expr2.value := identifiers( token ).store.value;
      --    end if;
      --    getNextToken;
      -- else
      --    ParsePragmaIdentifier( expr2 );
      -- end if;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
@@ -1514,16 +1514,16 @@ begin
      ParseDesignPragmaConstraintIdentifier( expr.value );
      expectPragmaComma;
      if token = strlit_t then
-        if identifiers( token ).value.all = "" then
+        if identifiers( token ).store.value = "" then
            err( +"constraint name should not be an empty string" );
         else
-           expr2.value := identifiers( token ).value.all;
+           expr2.value := identifiers( token ).store.value;
         end if;
         getNextToken;
      else
         ParsePragmaIdentifier( expr2.value );
      end if;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr3, var_id );
         baseTypesOK( var_id, float_t );
@@ -1531,7 +1531,7 @@ begin
         expr3.value := to_unbounded_string( "0.0" );
      end if;
   when depreciated =>                           -- pragma depreciated
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      ParseStaticExpression( expr, var_id );
      baseTypesOK( var_id, uni_string_t );
   when dispute =>                               -- pragma dispute
@@ -1624,7 +1624,7 @@ begin
            else
               err( +"true or false expected for the test status" );
            end if;
-          if token = symbol_t and identifiers( token ).value.all = "," then
+          if token = symbol_t and identifiers( token ).store.value = "," then
              getNextToken;
              ParseStaticExpression( expr, var_id );  -- defect id
              baseTypesOK( var_id, uni_string_t );
@@ -1646,7 +1646,7 @@ begin
      if rshOpt then                          -- security precaution
         err( +"prompt scripts cannot be used in a restricted shell" );
      else
-        expr.value := identifiers( token ).value.all;
+        expr.value := identifiers( token ).store.value;
         if expr.value /= null_unbounded_string then
            if tail( expr.value, 1 ) = " " or
               tail( expr.value, 1 ) = "" & ASCII.HT then
@@ -1665,7 +1665,7 @@ begin
      if rshOpt then                          -- security precaution
         err( +"prompt scripts cannot be used in a restricted shell" );
      else
-        expr.value := identifiers( token ).value.all;
+        expr.value := identifiers( token ).store.value;
         if expr.value /= null_unbounded_string then
            if tail( expr.value, 1 ) /= ";" then
               expr.value := expr.value & ";";
@@ -1703,10 +1703,10 @@ begin
         end if;
      end if;
   when register_memcache_server =>           -- pragma register_memcache_server
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      expect( strlit_t );
      expectPragmaComma;
-     expr2.value := identifiers( token ).value.all;
+     expr2.value := identifiers( token ).store.value;
      expect( number_t );
   when restriction =>                        -- pragma restriction
      ParsePragmaIdentifier( expr.value );
@@ -1752,13 +1752,13 @@ begin
      if rshOpt then                          -- security precaution
         err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
      if rshOpt then                          -- security precaution
         err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      expect( backlit_t );
   when suppress =>                           -- pragma restriction
      ParsePragmaIdentifier( expr.value );
@@ -1783,7 +1783,7 @@ begin
            err( +"templates cannot be used in a restricted shell" );
         else
            ParsePragmaIdentifier( expr.value );
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               -- it is possible for this to fail with a syntax error
               expect( strlit_t );
@@ -1833,12 +1833,12 @@ begin
         end if;
      end;
   when test =>                               -- pragma test
-     expr.value := identifiers( token ).value.all;
+     expr.value := identifiers( token ).store.value;
      expect( backlit_t );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         expect( strlit_t );
-        expr2.value := identifiers( strlit_t ).value.all;
+        expr2.value := identifiers( strlit_t ).store.value;
      else
         expr2 := nullStorage;
      end if;
@@ -1852,7 +1852,7 @@ begin
      else
         err( pl( "unknown test report type '" & to_string( expr.value ) & "'" ) );
      end if;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( reportPath, expr_type );
         baseTypesOK( expr_type, uni_string_t );
@@ -1881,9 +1881,9 @@ begin
            test_result_status := expr.value = "0";
         end if;
         -- Optional description string
-        --if token = symbol_t and identifiers( token ).value.all = "," then
+        --if token = symbol_t and identifiers( token ).store.value = "," then
         --   expect( symbol_t, "," );
-        --   expr.value2 := identifiers( token ).value.all;
+        --   expr.value2 := identifiers( token ).store.value;
         --   expect( strlit_t );
         --else
         --   expr2 := null_unbounded_string;
@@ -1910,7 +1910,7 @@ begin
        ParseWorkPriority( work_estimate_unknown );
 
        -- optional ticket id
-       if token = symbol_t and identifiers( token ).value.all = "," then
+       if token = symbol_t and identifiers( token ).store.value = "," then
           getNextToken;
           expect( strlit_t );
        end if;
@@ -1923,7 +1923,7 @@ begin
      end if;
      ParseIdentifier( var_id );
      expr := nullStorage;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr, expr_type );
         baseTypesOK( expr_type, duration_t );
@@ -1934,7 +1934,7 @@ begin
      end if;
      ParseIdentifier( var_id );
      expr := nullStorage;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseStaticExpression( expr, expr_type );
         baseTypesOK( expr_type, duration_t );
@@ -2333,21 +2333,21 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoJsonToString( identifiers( var_id ).value.all, newValue );
+                           DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
+                           DoJsonToNumber( newValue, identifiers( var_id ).store.value );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
+                           DoJsonToNumber( newValue, identifiers( var_id ).store.value );
                            -- identifiers( var_id ).value := newValue;
                         else
                            err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                         end if;
                      else                                                           -- no mapping
-                        identifiers( var_id ).value.all := newValue;
+                        identifiers( var_id ).store.value := newValue;
                      end if;
                   else
                     err( pl( "unable to find variable " &
@@ -2377,29 +2377,29 @@ begin
                    findIdent( sessions_session_variable_name_str, temp1_t );
                    findIdent( sessions_session_variable_value_str, temp2_t );
                    if temp1_t /= eof_t then
-                      identifiers( temp1_t ).value.all := identifiers( var_id ).name;
+                      identifiers( temp1_t ).store.value := identifiers( var_id ).name;
                    end if;
                       CompileAndRun( sessionImportScript, 1, false );
-                      importValue := identifiers( temp2_t ).value.all;
+                      importValue := identifiers( temp2_t ).store.value;
                    --   b := deleteIdent( temp2_t );
                    --   b := deleteIdent( temp1_t );
                       case identifiers( var_id ).mapping is
                       when json =>
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                            DoJsonToString( identifiers( var_id ).value.all, importValue );
+                            DoJsonToString( identifiers( var_id ).store.value, importValue );
                          elsif identifiers( var_id ).list then                           -- array
                             DoJsonToArray( var_id, importValue, noMetaLabel );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                             DoJsonToRecord( var_id, importValue );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                            DoJsonToNumber( importValue, identifiers( var_id ).value.all );
+                            DoJsonToNumber( importValue, identifiers( var_id ).store.value );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                            DoJsonToNumber( importValue, identifiers( var_id ).value.all );
+                            DoJsonToNumber( importValue, identifiers( var_id ).store.value );
                          else
                             err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                          end if;
                       when none =>
-                         identifiers( var_id ).value.all := importValue;
+                         identifiers( var_id ).store.value := importValue;
                       when others =>
                          err( pl( gnat.source_info.source_location & ": internal error: unexpected mapping type" ) );
                       end case;
@@ -2414,7 +2414,7 @@ begin
               if trace then
                   put_trace(
                      to_string( identifiers( var_id ).name ) & " := """ &
-                     toSecureData( to_string( ToEscaped( identifiers( var_id ).value.all ) ) ) &
+                     toSecureData( to_string( ToEscaped( identifiers( var_id ).store.value ) ) ) &
                      """" );
               end if;
            else
@@ -2434,7 +2434,7 @@ begin
           begin
             findIdent( to_unbounded_string( "System.Script_License" ), id );
             if id /= eof_t then
-               identifiers( id ).value.all := expr.value;
+               identifiers( id ).store.value := expr.value;
                licenseSet := true;
             end if;
           exception when others =>
@@ -2558,7 +2558,7 @@ begin
            begin
              findIdent( to_unbounded_string( "System.Script_Software_Model" ), id );
              if id /= eof_t then
-                identifiers( id ).value.all := expr.value;
+                identifiers( id ).store.value := expr.value;
                 softwareModelSet := true;
              end if;
            exception when others =>
@@ -2590,7 +2590,7 @@ begin
            end if;
            templatePath := templatePath & ".tmpl";
         else
-           templatePath := identifiers( strlit_t ).value.all;
+           templatePath := identifiers( strlit_t ).store.value;
         end if;
         processingTemplate := true;
         if pragmaKind = unrestricted_template then
@@ -2723,20 +2723,20 @@ begin
               -- apply mapping, if any.  assume these are all set correctly
                      if identifiers( var_id ).mapping = json then                       -- json
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
-                           DoJsonToString( identifiers( var_id ).value.all, newValue );
+                           DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            DoJsonToRecord( var_id, newValue );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
-                           DoJsonToNumber( newValue, identifiers( var_id ).value.all );
+                           DoJsonToNumber( newValue, identifiers( var_id ).store.value );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
-                           DoJsonToNumber( newValue, identifiers(var_id ).value.all );
+                           DoJsonToNumber( newValue, identifiers(var_id ).store.value );
                         else
                            err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                         end if;
                      else                                                           -- no mapping
-                        identifiers( var_id ).value.all := newValue;
+                        identifiers( var_id ).store.value := newValue;
                      end if;
                   end if;
               end;
@@ -2848,12 +2848,12 @@ begin
      while token /= eof_t and token /= end_t and not error_found loop
         -- an error check
         ParsePragmaStatement( pragmaKind );
-        if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
+        if token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( "@" ) then
            if onlyAda95 then
               err( +"@ cannot be used with " & em( "pragma ada_95" ) );
            end if;
            expect( symbol_t, "@" );
-        elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
+        elsif token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( ";" ) then
            expect( symbol_t, ";" );
            if token = pragma_t then
               err( +"single pragma in a pragma block" );
@@ -2874,10 +2874,10 @@ begin
      loop
         ParsePragmaStatement( pragmaKind );
         -- bit of a more descriptive error
-        if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
+        if token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( "(" ) then
            err( +"'@' or ';' expected" );
         end if;
-        exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
+        exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).store.value /= to_unbounded_string( "@" ) );
         if onlyAda95 then
            err( +"@cannot be used with " & em( "pragma ada_95" ) );
         end if;

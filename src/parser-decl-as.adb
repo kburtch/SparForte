@@ -561,7 +561,7 @@ begin
                  pl( " is already in the case identifier list" ) );
          end if;
       end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
+  exit when token /= symbol_t and identifiers( token ).store.value /= ",";
       expectParameterComma;
       if token = is_t then
          err( +"missing case identifier" );
@@ -707,7 +707,7 @@ procedure ParseCaseInBigArrowPart(
   outExpr  : storage;
   outType  : identifier;
 begin
-  if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+  if token /= symbol_t or identifiers( token ).store.value /= "=>" then
     err(                                                 -- "=>"
        contextNotes => +"in case procedure when part",
        subjectNotes => pl( qp( "the list of input values" ) ),
@@ -717,7 +717,7 @@ begin
   else
     getNextToken; -- expectSymbol( "=>" );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
     err(                                                 -- "=>"
        contextNotes => +"in case procedure when part",
        subjectNotes => pl( qp( "the list of output values" ) ),
@@ -758,9 +758,9 @@ begin
                  end if;
               end if;
 
-              identifiers( return_id ).value.all := outExpr.value;
+              identifiers( return_id ).store.value := outExpr.value;
               if trace then
-                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).value.all ) ) ) );
+                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).store.value ) ) ) );
               end if;
            --end if;
         end if;
@@ -778,7 +778,7 @@ begin
         end if;
      end loop;
   end if;
-  if token /= symbol_t or identifiers( token ).value.all /= ";" then
+  if token /= symbol_t or identifiers( token ).store.value /= ";" then
      err(                                                 -- "=>"
         contextNotes => +"in the case procedure when part",
         subjectNotes => pl( qp( "the list of output values" ) ),
@@ -844,9 +844,9 @@ end ParseCaseInBigArrowPart;
 --                 end if;
 --              end if;
 --
---              identifiers( return_id ).value.all := outExpr;
+--              identifiers( return_id ).store.value := outExpr;
 --              if trace then
---                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).value.all ) ) ) );
+--                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).store.value ) ) ) );
 --              end if;
 --           --end if;
 --        end if;
@@ -919,7 +919,7 @@ begin
   b2 := true;                                          -- assume it succeeds
   test_idx:= 1;                                        -- from first index
   while test_idx <= test_len loop                       -- all test ids
-     if token = symbol_t and identifiers( token ).value.all = "=>" then
+     if token = symbol_t and identifiers( token ).store.value = "=>" then
        err(                                                 -- "=>"
           contextNotes => +"in the case when part",
           subjectNotes => pl( qp( "the when conditions" ) ),
@@ -945,7 +945,7 @@ begin
               case_id := token;
               getNextToken;
            end if;
-        elsif token = symbol_t and identifiers( token ).value.all = "<>" then -- box allowed
+        elsif token = symbol_t and identifiers( token ).store.value = "<>" then -- box allowed
            boxCount := boxCount + 1;
            b1 := true;
            case_id := symbol_t;
@@ -966,17 +966,17 @@ begin
         if not error_found then                         -- OK? check case
            if case_id /= symbol_t then                  -- if not box token
               b1 := b1 or                                  -- against test var
-                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
-                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+                Ada.Strings.Unbounded.trim( identifiers( test_id ).store.value, Ada.Strings.left ) =
+                Ada.Strings.Unbounded.trim( identifiers( case_id ).store.value, Ada.Strings.left );
            end if;
         end if;
-        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
         expect( symbol_t, "|" );                        -- expect alternate
      end loop;
      if not error_found then
         b2 := b2 and b1;
      end if;
-     exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
+     exit when error_found or token /= symbol_t or identifiers( token ).store.value /= ",";
      expectParameterComma;                                      -- expect alternate
      test_idx := test_idx + 1;
      if test_idx > test_len then
@@ -1020,7 +1020,7 @@ end ParseCaseWhenPart;
 --  b2 := true;                                          -- assume it succeeds
 --  test_idx:= 1;                                        -- from first index
 --  while test_idx <= test_len loop                       -- all test ids
---     -- if token = symbol_t and identifiers( token ).value.all = "=>" then
+--     -- if token = symbol_t and identifiers( token ).store.value = "=>" then
 --     --   err( +"missing when condition" );
 --     --end if;
 --     test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
@@ -1041,7 +1041,7 @@ end ParseCaseWhenPart;
 --              case_id := token;
 --              getNextToken;
 --           end if;
---        elsif token = symbol_t and identifiers( token ).value.all = "<>" then -- box allowed
+--        elsif token = symbol_t and identifiers( token ).store.value = "<>" then -- box allowed
 --           boxCount := boxCount + 1;
 --           b1 := true;
 --           case_id := symbol_t;
@@ -1062,17 +1062,17 @@ end ParseCaseWhenPart;
 --        if not error_found then                         -- OK? check case
 --           if case_id /= symbol_t then                  -- if not box token
 --              b1 := b1 or                                  -- against test var
---                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
---                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+--                Ada.Strings.Unbounded.trim( identifiers( test_id ).store.value, Ada.Strings.left ) =
+--                Ada.Strings.Unbounded.trim( identifiers( case_id ).store.value, Ada.Strings.left );
 --           end if;
 --        end if;
---        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+--        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
 --        expect( symbol_t, "|" );                        -- expect alternate
 --     end loop;
 --     if not error_found then
 --        b2 := b2 and b1;
 --     end if;
---     exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
+--     exit when error_found or token /= symbol_t or identifiers( token ).store.value /= ",";
 --     expectParameterComma;                                      -- expect alternate
 --     test_idx := test_idx + 1;
 --     if test_idx > test_len then
@@ -1239,10 +1239,10 @@ begin
   --      end if;
   --      if not error_found then                         -- OK? check case
   --         b1 := b1 or                                  -- against test var
-  --           Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
-  --           Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+  --           Ada.Strings.Unbounded.trim( identifiers( test_id ).store.value, Ada.Strings.left ) =
+  --           Ada.Strings.Unbounded.trim( identifiers( case_id ).store.value, Ada.Strings.left );
   --      end if;
-  --      exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+  --      exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
   --      expect( symbol_t, "|" );                        -- expect alternate
   --   end loop;
 
@@ -1348,10 +1348,10 @@ end ParseCaseBlock;
 --        end if;
 --        if not error_found then                         -- OK? check case
 --           b := b or                                    -- against test var
---             Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
---             Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+--             Ada.Strings.Unbounded.trim( identifiers( test_id ).store.value, Ada.Strings.left ) =
+--             Ada.Strings.Unbounded.trim( identifiers( case_id ).store.value, Ada.Strings.left );
 --        end if;
---        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+--        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
 --        expect( symbol_t, "|" );                        -- expect alternate
 --     end loop;
 --     expect( symbol_t, "=>" );                             -- "=>"
@@ -1421,7 +1421,7 @@ begin
             test_len := test_len + 1;
          end if;
       end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
+  exit when token /= symbol_t and identifiers( token ).store.value /= ",";
       expectParameterComma;
   end loop;
   if onlyAda95 then
@@ -1472,16 +1472,16 @@ begin
         end if;
         if not error_found then                         -- OK? check case
               b1 := b1 or                                  -- against test var
-                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
-                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+                Ada.Strings.Unbounded.trim( identifiers( test_id ).store.value, Ada.Strings.left ) =
+                Ada.Strings.Unbounded.trim( identifiers( case_id ).store.value, Ada.Strings.left );
         end if;
-        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
         expect( symbol_t, "|" );                        -- expect alternate
      end loop;
         if not error_found then
            b2 := b2 and b1;
         end if;
-        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
+        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= ",";
         expectParameterComma;                                       -- expect alternate
         test_idx := test_idx + 1;
         if test_idx > test_len then
@@ -1581,9 +1581,9 @@ end ParseStaticCaseBlock;
 --        end if;
 --        if not error_found then                         -- OK? check case
 --           b := b or                                    -- against test var
---             identifiers( test_id ).value.all = identifiers( case_id ).value.all;
+--             identifiers( test_id ).store.value = identifiers( case_id ).store.value;
 --        end if;
---        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+--        exit when error_found or token /= symbol_t or identifiers( token ).store.value /= "|";
 --        expect( symbol_t, "|" );                        -- expect alternate
 --     end loop;
 --     expect( symbol_t, "=>" );                             -- "=>"
@@ -1865,7 +1865,7 @@ begin
            end if;
            if not error_found then
               if isReverse then
-                 identifiers( for_var ).value.all := expr2Expr.value; -- for var is
+                 identifiers( for_var ).store.value := expr2Expr.value; -- for var is
                  identifiers( for_var ).kind := expr2_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
@@ -1873,7 +1873,7 @@ begin
                     expr2_num := to_numeric( expr1Expr.value );
                  end if;
               else
-                 identifiers( for_var ).value.all := expr1Expr.value; -- for var is
+                 identifiers( for_var ).store.value := expr1Expr.value; -- for var is
                  identifiers( for_var ).kind := expr1_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
@@ -1895,14 +1895,14 @@ begin
         if isReverse then
            if isExecutingCommand then
               -- GCC Ada 7.4 says a conversion warning but it is wrong
-              identifiers( for_var ).value.all := to_unbounded_string(
-                  numericValue( to_numeric( identifiers( for_var ).value.all ) - 1.0 ) );
+              identifiers( for_var ).store.value := to_unbounded_string(
+                  numericValue( to_numeric( identifiers( for_var ).store.value ) - 1.0 ) );
            end if;
         else
            if isExecutingCommand then
               -- GCC Ada 7.4 says a conversion warning but it is wrong
-              identifiers( for_var ).value.all := to_unbounded_string(
-                  numericValue( to_numeric( identifiers( for_var ).value.all ) + 1.0 ) );
+              identifiers( for_var ).store.value := to_unbounded_string(
+                  numericValue( to_numeric( identifiers( for_var ).store.value ) + 1.0 ) );
            end if;
         end if;
      end if;
@@ -1910,18 +1910,18 @@ begin
         skipBlock;
         exit;
      elsif isReverse then
-        if to_numeric( identifiers( for_var ).value.all ) < expr2_num then
+        if to_numeric( identifiers( for_var ).store.value ) < expr2_num then
            skipBlock;
            exit;
         end if;
-     elsif to_numeric( identifiers( for_var ).value.all ) > expr2_num then
+     elsif to_numeric( identifiers( for_var ).store.value ) > expr2_num then
          skipBlock;
          exit;
      end if;
      if trace then
         put_trace(
             to_string( identifiers( for_var ).name ) & " := '" &
-            toSecureData( to_string( toEscaped( identifiers( for_var ).value.all ) ) ) & "'" );
+            toSecureData( to_string( toEscaped( identifiers( for_var ).store.value ) ) ) & "'" );
      end if;
      ParseBlock;                                           -- handle for block
      exit when exit_block or error_found or token = eof_t;
@@ -2030,8 +2030,8 @@ begin
          err( +"cannot change the type of a renaming" );
       else
          begin
-            identifiers( id ).value.all := castToType(
-               identifiers( id ).value.all, typeid );
+            identifiers( id ).store.value := castToType(
+               identifiers( id ).store.value, typeid );
             identifiers( id ).kind := typeid;
          exception when others =>
             err_exception_raised;
@@ -2093,7 +2093,7 @@ begin
         if rshOpt then
            err( +"subscripts are not allowed in a " & em( "restricted shell" ) );
         else
-           insertInclude( identifiers( token ).value.all );
+           insertInclude( identifiers( token ).store.value );
         end if;
      end if;
   end if;
@@ -2222,7 +2222,7 @@ begin
   -- re-raise?  restore the exception occurrence and announce an error
   -- It is only valid in an exception handler (as flagged in the block).
 
-  if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
+  if token = symbol_t and identifiers( token ).store.value = to_unbounded_string( ";" ) then
      -- exceptions only exist at run-time
      if not syntax_check then
         if not inExceptionHandler then
@@ -2230,7 +2230,7 @@ begin
         else
            getBlockException( err_exception, err_message, last_status );
            -- Be careful to fix sstorage pointer
-           err_exception.value := err_exception.sstorage.value'access;
+           err_exception.store := err_exception.sstorage'access;
         end if;
      end if;
      if token = when_t or token = if_t then
@@ -2272,7 +2272,7 @@ begin
            if token = use_t then
               err( em( "use" ) & pl( " may only be used in exception declaration" ) );
            end if;
-        elsif token /= when_t and token /= symbol_t and identifiers( token ).value.all /= ";" then
+        elsif token /= when_t and token /= symbol_t and identifiers( token ).store.value /= ";" then
            err( +"when, with or ';' expected" );
         end if;
         if token = when_t then
@@ -2284,8 +2284,8 @@ begin
         if mustRaise then
            -- if no message, check for and use the default message
            if length( with_text.value ) = 0 then
-              if length( identifiers( id ).value.all ) > 1 then
-                 with_text.value := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
+              if length( identifiers( id ).store.value ) > 1 then
+                 with_text.value := unbounded_slice( identifiers( id ).store.value, 2, length( identifiers( id ).store.value ) );
               end if;
            end if;
            -- Record the exception id
@@ -2295,7 +2295,7 @@ begin
            -- deallocated.
            err_exception := identifiers( id );
            err_exception.deleted := false;
-           err_exception.value := err_exception.sstorage.value'access;
+           err_exception.store := err_exception.sstorage'access;
            if length( with_text.value ) > 0 then
               raise_exception( +"raised " &
                    name_em( id ) &
@@ -2306,7 +2306,7 @@ begin
               raise_exception( +"raised " & name_em( id ) );
            end if;
            -- set the exit status
-           last_status := character'pos( element( identifiers( id ).value.all, 1 ) );
+           last_status := character'pos( element( identifiers( id ).store.value, 1 ) );
         end if;
      end if;
   end if;
@@ -2475,7 +2475,7 @@ begin
      -- save the exception id
      occurrence_exception := err_exception;
      -- because value is a pointer now we must be careful with the value
-     occurrence_exception.value := occurrence_exception.sstorage.value'unchecked_access;
+     occurrence_exception.store := occurrence_exception.sstorage'unchecked_access;
      -- TODO: an exception may be progated out of the declaration scope, leaving
 -- the position in the symbol table undefined
      occurrence_message := err_message;
@@ -2739,7 +2739,7 @@ begin
 
   -- Check for default value
 
-  if token = symbol_t and identifiers( token ).value.all = ":=" then
+  if token = symbol_t and identifiers( token ).store.value = ":=" then
      err( +"default values are not yet supported" );
   end if;
 
@@ -2805,7 +2805,7 @@ procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer
 begin
   loop
     ParseFormalParameter( formal_param_id, proc_id, param_no, abstract_parameter, is_function );
-    if error_found or token = eof_t or (token = symbol_t and identifiers( token ).value.all = ")" ) then
+    if error_found or token = eof_t or (token = symbol_t and identifiers( token ).store.value = ")" ) then
        exit;
     end if;
     expectDeclarationSemicolon( context => formal_param_id );
@@ -3029,7 +3029,7 @@ begin
   loop
      while specParamId < identifiers_top loop
         if identifiers( specParamId ).field_of = specId then
-           if integer'value( to_string( identifiers( specParamId ).value.all )) = specParameterNumber then
+           if integer'value( to_string( identifiers( specParamId ).store.value )) = specParameterNumber then
               exit;
            end if;
         end if;
@@ -3061,7 +3061,7 @@ begin
 
     -- Too few parameters, ran into closing parenthesis early
 
-    elsif token = symbol_t and identifiers( token ).value.all = ")" then
+    elsif token = symbol_t and identifiers( token ).store.value = ")" then
        err( +"missing parameter " & unb_em( specParamName ) &
             pl( " from earlier specification (at " &
             to_string( identifiers( specId ).specFile) & ":" &
@@ -3123,7 +3123,7 @@ begin
 
      -- consume a trailing semi-colon
 
-     if token = symbol_t and identifiers( token ).value.all = ";" then
+     if token = symbol_t and identifiers( token ).store.value = ";" then
         expectDeclarationSemicolon( context => specParamId );
      end if;
 
@@ -3212,7 +3212,7 @@ begin
    -- could do ParseIdentifier since it should exist but want a more meaningful
    -- message error for a mismatch
    ParseProcedureIdentifier( separate_proc_id );
-   if identifiers( separate_proc_id ).value.all = identifiers( proc_id ).value.all then
+   if identifiers( separate_proc_id ).store.value = identifiers( proc_id ).store.value then
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_proc_id );
    else
@@ -3221,9 +3221,9 @@ begin
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
-   if token = symbol_t and identifiers( token ).value.all = "(" then
+   if token = symbol_t and identifiers( token ).store.value = "(" then
       expect( symbol_t, "(" );
-      while token /= symbol_t and identifiers( token ).value.all /= ")" and token /= eof_t loop
+      while token /= symbol_t and identifiers( token ).store.value /= ")" and token /= eof_t loop
          getNextToken;
       end loop;
       expect( symbol_t, ")" );
@@ -3263,11 +3263,11 @@ begin
   -- forward specification, verify the new parameters match the old
   -- ones.  Otherwise, parse the parameters as normal.
 
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
      if identifiers( proc_id ).specAt /= noSpec then
         VerifySubprogramParameters( proc_id );
-        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+        if token /= symbol_t and identifiers( token ).store.value /= ")" then
            err( pl( "too many parameters compared to earlier specification (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
                 identifiers( proc_id ).specAt'img & ")" ) );
@@ -3284,7 +3284,7 @@ begin
 
   -- Is it a forward declaration?
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      if identifiers( proc_id ).specAt /= noSpec then
         err( +"already declared specification for " & name_em( proc_id ) & pl( " (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
@@ -3347,7 +3347,7 @@ begin
         expect( end_t );
         expect( proc_id );
         procEnd := lastPos+1; -- include EOL ASCII.NUL
-        identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
+        identifiers( proc_id ).store.value := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
         -- fake initial indent of 1 for byte code (SOH)
         -- we don't know what the initial indent is (if any) since it may
         -- not be the first token on the line (though it usually is)
@@ -3403,11 +3403,11 @@ begin
   -- forward specification, verify the new parameters match the old
   -- ones.  Otherwise, parse the parameters as normal.
 
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
      if identifiers( proc_id ).specAt /= noSpec then
         VerifySubprogramParameters( proc_id );
-        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+        if token /= symbol_t and identifiers( token ).store.value /= ")" then
            err( pl( "too many parameters compared to earlier specification (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
                 identifiers( proc_id ).specAt'img & ")" ) );
@@ -3424,7 +3424,7 @@ begin
 
   -- Is it a forward declaration?
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      if identifiers( proc_id ).specAt /= noSpec then
         err( +"already declared specification for " & name_em( proc_id ) & pl( " (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
@@ -3487,7 +3487,7 @@ begin
         expect( end_t );
         expect( proc_id );
         procEnd := lastPos+1; -- include EOL ASCII.NUL
-        identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
+        identifiers( proc_id ).store.value := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
         -- fake initial indent of 1 for byte code (SOH)
         -- we don't know what the initial indent is (if any) since it may
         -- not be the first token on the line (though it usually is)
@@ -3535,17 +3535,23 @@ procedure ParseActualParameters( proc_id : identifier;
   -- TODO: refactor to make this more general, place in world.adb?
   ----------------------------------------------------------------------------
 
-  --  UPDATE RENAMED ARRAY ELEMENT PARAMETER
+  --  UPDATE RENAMED ARRAY ELEMENT PARAMETER (PARSE ACTUAL PARAMETERS)
   --
+  -- Update the usable parameter within the subprogram block with the value
+  -- passed in from an array actual parameter.
+  -- e.g.
+  -- some_proc( p(1) )... i : integer
+  -- This procedure makes i's value point to p(1).
   ----------------------------------------------------------------------------
 
   procedure UpdateRenamedArrayElementParameter( actualParamRef : renamingReference;
     usableParamId : identifier ) is
   begin
     if isExecutingCommand then                      -- no value change
-       identifiers( usableParamId ).value :=
+       -- point the usable parameter to the incoming actual parameter
+       identifiers( usableParamId ).store :=
           identifiers( actualParamRef.id ).astorage(
-          actualParamRef.index ).value'access;
+          actualParamRef.index )'access;
     end if;
     exception when storage_error =>              -- prob freed mem
          err( pl( gnat.source_info.source_location &
@@ -3586,7 +3592,7 @@ begin
   -- Always a risk of an exception thrown here
   begin
     numFields := natural( to_numeric( identifiers( identifiers(
-        actualRecordRef.id ).kind ).value.all ) );
+        actualRecordRef.id ).kind ).store.value ) );
   exception when storage_error =>
     numFields := 0;
     err( pl( gnat.source_info.source_location &
@@ -3610,7 +3616,7 @@ begin
 
       while recordTypeFieldId < identifiers_top loop
         if identifiers( recordTypeFieldId ).field_of = identifiers( formalRecordParamId ).kind then
-           if integer'value( to_string( identifiers( recordTypeFieldId ).value.all )) = fieldNumber then
+           if integer'value( to_string( identifiers( recordTypeFieldId ).store.value )) = fieldNumber then
                exit;
             end if;
          end if;
@@ -3721,7 +3727,8 @@ begin
         if identifiers( formalParamId ).kind /= expr_type then
            DoContracts( identifiers( formalParamId ).kind, expr);
         end if;
-        identifiers( usableParamId ).value.all := expr.value;
+        -- with data meta labels, include the label
+        identifiers( usableParamId ).store.all := expr;
         if trace then
            put_trace(
               to_string( identifiers( usableParamId ).name ) & " := " &
@@ -3928,7 +3935,7 @@ begin
   loop
       while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
-           if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
+           if integer'value( to_string( identifiers( formalParamId ).store.value )) = parameterNumber then
               exit;
            end if;
         end if;
@@ -3944,7 +3951,7 @@ begin
     -- list.
 
     if not seenBracket then
-       if token = symbol_t and identifiers( token ).value.all = "(" then
+       if token = symbol_t and identifiers( token ).store.value = "(" then
           expect( symbol_t, "(" );
           seenBracket := true;
        else
@@ -3976,8 +3983,8 @@ begin
      end case;
 
      -- Not sure we need to exit on an error here - KB: 17/10/15
-     --exit when error_found or identifiers( token ).value.all /= ","; -- more?
-     exit when identifiers( token ).value.all /= ","; -- more?
+     --exit when error_found or identifiers( token ).store.value /= ","; -- more?
+     exit when identifiers( token ).store.value /= ","; -- more?
      expectParameterComma;
      parameterNumber := parameterNumber + 1;
      formalParamId := identifier( integer( formalParamId ) + 1 );
@@ -4007,7 +4014,7 @@ begin
         if identifiers( formalParamId ).field_of = proc_id then
            -- return value is end of function's parameters
            exit when identifiers( formalParamId ).name = return_value_str;
-           if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
+           if integer'value( to_string( identifiers( formalParamId ).store.value )) = parameterNumber then
               err( +"too few parameters" );
               exit;
            end if;
@@ -4026,7 +4033,6 @@ begin
 -- put_identifier( identifiers_top -3 ); -- DEBUG
 -- put_identifier( identifiers_top -2 ); -- DEBUG
 -- put_identifier( identifiers_top -1 ); -- DEBUG
-
   -- If an open bracket, we need a closing bracket
 
   if seenBracket then
@@ -4082,7 +4088,7 @@ begin
    -- could do ParseIdentifier since it should exist but want a more meaningful
    -- message error for a mismatch
    ParseProcedureIdentifier( separate_func_id );
-   if identifiers( separate_func_id ).value.all = identifiers( func_id ).value.all then
+   if identifiers( separate_func_id ).store.value = identifiers( func_id ).store.value then
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_func_id );
    else
@@ -4091,9 +4097,9 @@ begin
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
-   if token = symbol_t and identifiers( token ).value.all = "(" then
+   if token = symbol_t and identifiers( token ).store.value = "(" then
       expect( symbol_t, "(" );
-      while token /= symbol_t and identifiers( token ).value.all /= ")" and token /= eof_t loop
+      while token /= symbol_t and identifiers( token ).store.value /= ")" and token /= eof_t loop
          getNextToken;
       end loop;
       expect( symbol_t, ")" );
@@ -4150,13 +4156,13 @@ begin
   if token = is_t then
      -- force error for this common mistake
      expect( return_t );
-  elsif token = symbol_t and identifiers( token ).value.all = "(" then
+  elsif token = symbol_t and identifiers( token ).store.value = "(" then
      -- has parameters
      expect( symbol_t, "(" );
      if identifiers( func_id ).specAt /= noSpec then
         -- has a forward specification
         VerifySubprogramParameters( func_id, is_function => true );
-        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+        if token /= symbol_t and identifiers( token ).store.value /= ")" then
            err( pl( "too many parameters compared to earlier specification (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
                 identifiers( func_id ).specAt'img & ")" ) );
@@ -4195,7 +4201,7 @@ begin
   -- The function type must be set on a forward declaration because
   -- FunctionReturnPart is not run.
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      if identifiers( func_id ).specAt /= noSpec then
         err( +"already declared specification for " & name_em( func_id ) & pl( " (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
@@ -4267,7 +4273,7 @@ begin
         expect( end_t );
         expect( func_id );
         funcEnd := lastPos+1; -- include EOL ASCII.NUL
-        identifiers( func_id ).value.all := to_unbounded_string( copyByteCodeLines( funcStart, funcEnd ) );
+        identifiers( func_id ).store.value := to_unbounded_string( copyByteCodeLines( funcStart, funcEnd ) );
         -- fake initial indent of 1 for byte code (SOH)
         -- we don't know what the initial indent is (if any) since it may
         -- not be the first token on the line (though it usually is)
@@ -4339,11 +4345,11 @@ begin
     markScanner( paramStart );
     syntax_check := true;
     ParseActualParameters( proc_id, declareParams => false );
-    if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+    if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = "@" then
        in_chain := true;
     end if;
     if has_context then
-       if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = ";" then
+       if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = ";" then
           if trace then
              put_trace( "Last call in chain" );
           end if;
@@ -4364,16 +4370,16 @@ begin
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
-                identifiers( chain_count_id ).value.all :=
+                identifiers( chain_count_id ).store.value :=
                   to_unbounded_string(
-                    to_numeric( identifiers( chain_count_id ).value.all ) + 1.0
+                    to_numeric( identifiers( chain_count_id ).store.value ) + 1.0
                   );
                   findIdent( last_in_chain_str, last_in_chain_id );
                   if last_in_chain_id = eof_t then
                      err( pl( gnat.source_info.source_location &
                         ": internal error: last in chain not found" ) );
                   end if;
-                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).store.value := to_spar_boolean( last_in_chain );
              end if;
 --put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
 --put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
@@ -4399,8 +4405,8 @@ begin
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
-                identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
-                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
+                identifiers( chain_count_id ).store.value := to_unbounded_string( " 1" );
+                identifiers( last_in_chain_id ).store.value := to_spar_boolean( last_in_chain );
                 -- TODO: we only want to export these if we are the current chain.
                 -- Otherwise, they will always be exported even if the chain was further
                 -- down the block stack
@@ -4427,7 +4433,7 @@ begin
   -- Notice nothing gets executed during syntax check.  Any variables/parameters
   -- will have wasReferenced as false.
   -- TODO: perhaps using syntax_check inside PAP would fix this.
-     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     --if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseActualParameters( proc_id );
      --end if;
      -- parseNewCommands would clear error_found.
@@ -4521,7 +4527,7 @@ begin
      newFlow => identifiers( func_id ).name );
   -- Parameters?  Create storage space in the symbol table
   if isExecutingCommand then
-     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     --if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseActualParameters( func_id );
      --end if;
      -- Prepare to execute.  This should probably be a utility function.
@@ -4564,7 +4570,7 @@ begin
         end if;
         -- return value is top-most variable called "return value"
         findIdent( return_value_str, return_id );
-        result.value := identifiers( return_id ).value.all;
+        result := identifiers( return_id ).store.all;
         restoreScript( scriptState );            -- restore original script
      end if;
   elsif syntax_check or exit_block then
@@ -4640,11 +4646,11 @@ begin
     markScanner( paramStart );
     syntax_check := true;
     ParseActualParameters( proc_id, declareParams => false );
-    if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+    if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = "@" then
        in_chain := true;
     end if;
     if has_context then
-       if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = ";" then
+       if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = ";" then
           if trace then
              put_trace( "Last call in chain" );
           end if;
@@ -4665,16 +4671,16 @@ begin
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
-                identifiers( chain_count_id ).value.all :=
+                identifiers( chain_count_id ).store.value :=
                   to_unbounded_string(
-                    to_numeric( identifiers( chain_count_id ).value.all ) + 1.0
+                    to_numeric( identifiers( chain_count_id ).store.value ) + 1.0
                   );
                   findIdent( last_in_chain_str, last_in_chain_id );
                   if last_in_chain_id = eof_t then
                      err( pl( gnat.source_info.source_location &
                         ": internal error: last in chain not found" ) );
                   end if;
-                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).store.value := to_spar_boolean( last_in_chain );
              end if;
 --put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
 --put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
@@ -4700,8 +4706,8 @@ begin
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
-                identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
-                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
+                identifiers( chain_count_id ).store.value := to_unbounded_string( " 1" );
+                identifiers( last_in_chain_id ).store.value := to_spar_boolean( last_in_chain );
                 -- TODO: we only want to export these if we are the current chain.
                 -- Otherwise, they will always be exported even if the chain was further
                 -- down the block stack
@@ -4728,7 +4734,7 @@ begin
   -- Notice nothing gets executed during syntax check.  Any variables/parameters
   -- will have wasReferenced as false.
   -- TODO: perhaps using syntax_check inside PAP would fix this.
-     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     --if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseActualParameters( proc_id );
      --end if;
      -- parseNewCommands would clear error_found.
@@ -4840,7 +4846,7 @@ procedure ParseShellCommand is
               -- a regular export means exporting the variable's value.  If
               -- it's a json export, then we have to convert the value to
               -- a json string (especially if it is a complex type)
-              tempStr := identifiers( id ).value.all;
+              tempStr := identifiers( id ).store.value;
               if identifiers( id ).mapping = json then
                  if getUniType( identifiers( id ).kind ) = uni_string_t then
                     tempStr := DoStringToJson( tempStr );
@@ -4924,7 +4930,7 @@ procedure ParseShellCommand is
   -- check for a parenthesis, skipping any white space in front.
   --begin
   --   skipWhiteSpace;
-  --   return token = symbol_t and identifiers( token ).value.all = "(";
+  --   return token = symbol_t and identifiers( token ).store.value = "(";
   --   -- return script( cmdpos ) = '(';
   --end isParenthesis;
 
@@ -5383,7 +5389,7 @@ begin
         parseUniqueShellWord( shellWord );
         cmdName := unbounded_string( shellWord.value );
      elsif getBaseType( identifiers( token ).kind ) = command_t then
-        cmdName := identifiers( token ).value.all;
+        cmdName := identifiers( token ).store.value;
         identifiers( token ).wasReferenced := true;
         getNextToken;
      else
@@ -5402,7 +5408,7 @@ begin
   inBackground := false;                                 -- assume fg command
   --paramCnt := 0;                                         -- params unknown
 
-  if token = symbol_t and identifiers( token ).value.all = "(" then                                  -- parenthesis?
+  if token = symbol_t and identifiers( token ).store.value = "(" then                                  -- parenthesis?
      -- getNextToken;                                    -- AdaScript syntax
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
@@ -5412,14 +5418,14 @@ begin
         -- bourneShellWordLists.Queue( wordList, anExpandedShellWord( expr_val ) );
         addAdaScriptValue( wordList, expr.value);
         --paramCnt := paramCnt + 1;
-        if Token = symbol_t and then identifiers( Token ).value.all = "," then
+        if Token = symbol_t and then identifiers( Token ).store.value = "," then
            getNextToken;
         else
            exit;
         end if;
      end loop;
      expect( symbol_t, ")" );
-     if token = symbol_t and identifiers( token ).value.all = "|" then
+     if token = symbol_t and identifiers( token ).store.value = "|" then
         pipe2Next := true;
         getNextToken;
      end if;
@@ -5429,7 +5435,7 @@ begin
 
      -- Running in the background
 
-     if token = symbol_t and identifiers(token).value.all = "&" then
+     if token = symbol_t and identifiers(token).store.value = "&" then
         inbackground := true;
         expect( symbol_t, "&" );
         if pipe2Next then
@@ -5437,14 +5443,14 @@ begin
         elsif pipeFromLast then
            err( +"no & - final piped command always runs in the foreground" );
         end if;
-        if token /= symbol_t or identifiers( token ).value.all /= ";" then
+        if token /= symbol_t or identifiers( token ).store.value /= ";" then
            err( +"unexpected arguments after &" );
         end if;
      end if;
 
      -- Chaining with at-sign
 
-     if token = symbol_t and identifiers(token).value.all = "@" then
+     if token = symbol_t and identifiers(token).store.value = "@" then
         if onlyAda95 then
            err( +"@ not allowed with " & em( "pragma ada_95" ) );
         end if;
@@ -5485,7 +5491,7 @@ begin
        loop
 --put_token; -- DEBUG
           declare
-             token_value : unbounded_string renames identifiers( token ).value.all;
+             token_value : unbounded_string renames identifiers( token ).store.value;
           begin
              if token = eof_t then
                 expectStatementSemicolon( contextNotes => pl( "in " & to_string( cmdName ) ) );
@@ -5525,7 +5531,7 @@ begin
                    end if;
                    haveAllParameters := true;
                    expect( symbol_t, "&" );
-                   if token /= symbol_t or identifiers( token ).value.all /= ";" then
+                   if token /= symbol_t or identifiers( token ).store.value /= ";" then
                       err( +"unexpected arguments after &" );
                    end if;
                    exit;
@@ -6010,7 +6016,7 @@ begin
 
      expect( return_t );
 
-     if token /= eof_t and token /= when_t and not (token = symbol_t and identifiers( token ).value.all = ";") and not (token = symbol_t and identifiers( token ).value.all = "|" ) then
+     if token /= eof_t and token /= when_t and not (token = symbol_t and identifiers( token ).store.value = ";") and not (token = symbol_t and identifiers( token ).store.value = "|" ) then
 
         -- Handle a function return value
         --
@@ -6045,7 +6051,7 @@ begin
                  if u = uni_string_t or u = uni_numeric_t or u = universal_t then
                     expr.value:= castToType( expr.value, identifiers( return_id ).kind );
                  end if;
-                 identifiers( return_id ).value.all := expr.value;
+                 identifiers( return_id ).store.all := expr;
                  -- Unlike a regular variable, we do not mark this as read or
                  -- written.
                  if trace then
@@ -6122,7 +6128,7 @@ begin
   if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
     if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations then
        ParseNewIdentifier( var_id );
-       if token = symbol_t and identifiers( token ).value.all = "(" then
+       if token = symbol_t and identifiers( token ).store.value = "(" then
           err( +"cannot automatically declare new arrays" );
           discardUnusedIdentifier( var_id );
           var_id := eof_t;
@@ -6140,7 +6146,7 @@ begin
 
   -- Setup itself
 
-  itself := identifiers( var_id ).value.all;
+  itself := identifiers( var_id ).store.value;
   itself_type := var_kind;
 
   if type_checks_done or else class_ok( var_id, varClass ) then
@@ -6344,8 +6350,7 @@ begin
            end if;
         end if;
      else
-        identifiers( var_id ).value.all := expr.value;
-        identifiers( var_id ).sstorage.metaLabel := expr.metaLabel;
+        identifiers( var_id ).store.all := expr;
         if trace then
            -- builtins.env( ident ) would be better if a value is
            -- returned
@@ -6357,7 +6362,9 @@ begin
            if expr.metaLabel /= noMetaLabel then
               if trace then
                  put_trace( to_string( identifiers( var_id ).name ) &
-                    " value has meta labels '" & to_string( identifiers( identifiers( var_id ).sstorage.metaLabel ).name ) & "'" );
+                    " value has meta labels '" &
+                    to_string( identifiers( identifiers( var_id ).store.metaLabel ).name ) &
+                    "'" );
               end if;
            end if;
         end if;
@@ -6383,7 +6390,7 @@ procedure ParseVarDeclaration is
   b       : boolean;
 begin
    ParseVariableIdentifier( var_id );
-   if token = symbol_t and identifiers( token ).value.all = "," then
+   if token = symbol_t and identifiers( token ).store.value = "," then
       expectParameterComma;
       var2_id := token;
       pragma warnings( off ); -- hide infinite recursion warning
@@ -6420,12 +6427,12 @@ begin
                  numFields : natural;
                  source_id, target_id : identifier;
                begin
-                 numFields := natural( to_numeric( identifiers( identifiers( var_id ).kind ).value.all ) );
+                 numFields := natural( to_numeric( identifiers( identifiers( var_id ).kind ).store.value ) );
 -- put_line( "Copying " & numFields'img );
                  for i in 1..numFields loop
                      findField( var_id, i, source_id );
                      findField( var2_id, i, target_id );
-                     identifiers( source_id ).value.all := identifiers( target_id ).value.all;
+                     identifiers( source_id ).store.value := identifiers( target_id ).store.value;
                  end loop;
                end;
            end if;
@@ -6501,7 +6508,7 @@ begin
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );
-     checkDisplay( identifiers( term_id ).value.all );       -- adjust size
+     checkDisplay( identifiers( term_id ).store.value );       -- adjust size
      wasSIGWINCH := false;
   end if;
 
@@ -6509,7 +6516,7 @@ begin
   --
   -- built-in?
 
-  itself := identifiers( token ).value.all;
+  itself := identifiers( token ).store.value;
   itself_type := token;
   itself_question := false;
 
@@ -6564,7 +6571,7 @@ begin
      ParseOpen( create => true );
   elsif Token = open_t then
      ParseOpen;
-  elsif token = symbol_t and identifiers( token ).value.all = "?" then
+  elsif token = symbol_t and identifiers( token ).store.value = "?" then
      -- To implement "itself" with the "?" is difficult because
      -- "?" is a symbol and "@" is a symbol, so trying to look
      -- up the symbol value to determine if is "?" is not possible.
@@ -6575,7 +6582,7 @@ begin
      ParseReset;
   elsif Token = delete_t then                     -- special case
      getNextToken;                                -- with possibilities
-     if token = symbol_t and identifiers( token ).value.all = "(" then
+     if token = symbol_t and identifiers( token ).store.value = "(" then
         resumeScanning( cmdStart );
         ParseDelete;                              -- delete file
      else
@@ -6630,7 +6637,7 @@ begin
      else
         -- check for unreachable code on a stand-alone exit
         if syntax_check then
-           if token = symbol_t and identifiers( token ).value.all = ";" then
+           if token = symbol_t and identifiers( token ).store.value = ";" then
               -- we need to advance one to highlight the right token
               getNextToken;
               -- these are block ending tokens
@@ -6677,19 +6684,19 @@ begin
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
-  elsif Token = symbol_t and identifiers( token ).value.all = "@" then
+  elsif Token = symbol_t and identifiers( token ).store.value = "@" then
      err( +"unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
-  elsif Token = symbol_t and identifiers( token ).value.all = ";" then
+  elsif Token = symbol_t and identifiers( token ).store.value = ";" then
      err( +"statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
      resumeScanning( cmdStart );           -- assume array assignment
      ParseAssignment;                      -- looks like a AdaScript command
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
-     DoUserDefinedProcedure( identifiers( token ).value.all );
+     DoUserDefinedProcedure( identifiers( token ).store.value );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
-     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
+     DoUserDefinedCaseProcedure( identifiers( token ).store.value );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = funcClass then
      err( contextNotes => +"in the general statement",
           subject => token,
@@ -6714,8 +6721,8 @@ begin
      -- declarations
 
      if Token = symbol_t and
-        (to_string( identifiers( token ).value.all ) = ":" or
-        to_string( identifiers( token ).value.all ) = ",") then
+        (to_string( identifiers( token ).store.value ) = ":" or
+        to_string( identifiers( token ).store.value ) = ",") then
         resumeScanning( cmdStart );
         err( +"variable declarations not allowed in executable statements" );
         --ParseVarDeclaration;
@@ -6726,9 +6733,9 @@ begin
         -- for =, will be treated as a command if we don't force an error
         -- here for missing :=, since it was probably intended as an assignment
 
-        if Token = word_t and to_string( identifiers( token ).value.all ) = "=" then
+        if Token = word_t and to_string( identifiers( token ).store.value ) = "=" then
            expect( symbol_t, ":=" );
-        elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
+        elsif Token = symbol_t and to_string( identifiers( token ).store.value ) = ":=" then
            resumeScanning( cmdStart );
            ParseAssignment;
            itself_type := new_t;
@@ -6748,7 +6755,7 @@ begin
               -- Test for two or more data flows writing to one unprotected variable
               checkExpressionFactorVolatilityOnWrite( startToken );
               checkDoubleDataFlowWrite( startToken );
-              identifiers( startToken ).value.all := to_unbounded_string( "1" );
+              identifiers( startToken ).store.value := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
            --end if;
@@ -6771,7 +6778,7 @@ begin
      -- procedure with no parameters can be interpreted as shell words by the
      -- compiler because it doesn't know if something is a procedure or an
      -- external command at compile time.
-     if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+     if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            -- move to next token or infinite loop if done = true
@@ -6787,11 +6794,11 @@ begin
            -- question is a special case.  See ParseQuestion call above.
            if itself_question then
               itself_question := false;
-              identifiers( token ).value.all := to_unbounded_string( "?" );
+              identifiers( token ).store.value := to_unbounded_string( "?" );
            end if;
            if identifiers( token ).class = varClass then
               -- not a procedure or keyword? restore value
-              identifiers( token ).value.all := itself;
+              identifiers( token ).store.value := itself;
            end if;
         end if;
      else
@@ -6914,7 +6921,7 @@ begin
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );
-     checkDisplay( identifiers( term_id ).value.all );       -- adjust size
+     checkDisplay( identifiers( term_id ).store.value );       -- adjust size
      wasSIGWINCH := false;
   end if;
 
@@ -6922,12 +6929,13 @@ begin
   --
   -- built-in?
 
-  itself := identifiers( token ).value.all;
+  itself := identifiers( token ).store.value;
   itself_type := token;
   itself_question := false;
 
  --put( "PGS: " ); -- DEBUG
  --put_token; -- DEBUG
+ -- Debug_Put_Meta_Labels; -- DEBUG
 
   if Token = command_t then
      err( +"Bourne shell command command not implemented" );
@@ -6983,7 +6991,7 @@ begin
   --   ParseClose;
   --elsif Token = put_line_t then
   --   ParsePutLine;
-  elsif token = symbol_t and identifiers( token ).value.all = "?" then
+  elsif token = symbol_t and identifiers( token ).store.value = "?" then
      -- To implement "itself" with the "?" is difficult because
      -- "?" is a symbol and "@" is a symbol, so trying to look
      -- up the symbol value to determine if is "?" is not possible.
@@ -6994,7 +7002,7 @@ begin
      ParseReset;
   elsif Token = delete_t then                     -- special case
      getNextToken;                                -- with possibilities
-     if token = symbol_t and identifiers( token ).value.all = "(" then
+     if token = symbol_t and identifiers( token ).store.value = "(" then
         resumeScanning( cmdStart );
         ParseDelete;                              -- delete file
      else
@@ -7049,7 +7057,7 @@ begin
      else
         -- check for unreachable code on a stand-alone exit
         if syntax_check then
-           if token = symbol_t and identifiers( token ).value.all = ";" then
+           if token = symbol_t and identifiers( token ).store.value = ";" then
               -- we need to advance one to highlight the right token
               getNextToken;
               -- these are block ending tokens
@@ -7097,19 +7105,19 @@ begin
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
-  elsif Token = symbol_t and identifiers( token ).value.all = "@" then
+  elsif Token = symbol_t and identifiers( token ).store.value = "@" then
      err( +"unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
-  elsif Token = symbol_t and identifiers( token ).value.all = ";" then
+  elsif Token = symbol_t and identifiers( token ).store.value = ";" then
      err( +"statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
      resumeScanning( cmdStart );           -- assume array assignment
      ParseAssignment;                      -- looks like a AdaScript command
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
-     DoUserDefinedProcedure( identifiers( token ).value.all );
+     DoUserDefinedProcedure( identifiers( token ).store.value );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
-     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
+     DoUserDefinedCaseProcedure( identifiers( token ).store.value );
   elsif not identifiers( Token ).deleted and identifiers( token ).class = funcClass then
      err( contextNotes => +"in the general statement",
           subject => token,
@@ -7134,8 +7142,8 @@ begin
      -- declarations
 
      if Token = symbol_t and
-        (to_string( identifiers( token ).value.all ) = ":" or
-        to_string( identifiers( token ).value.all ) = ",") then
+        (to_string( identifiers( token ).store.value ) = ":" or
+        to_string( identifiers( token ).store.value ) = ",") then
         resumeScanning( cmdStart );
         ParseVarDeclaration;
      else
@@ -7146,9 +7154,9 @@ begin
         -- here for missing :=, since it was probably intended as an assignment
         -- For unstructured scripts, allow variables to be auto-declared.
 
-        if Token = word_t and to_string( identifiers( token ).value.all ) = "=" then
+        if Token = word_t and to_string( identifiers( token ).store.value ) = "=" then
            expect( symbol_t, ":=" );
-        elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
+        elsif Token = symbol_t and to_string( identifiers( token ).store.value ) = ":=" then
            resumeScanning( cmdStart );
            ParseAssignment( autoDeclareAllowed => (scriptType = unstructured) );
            itself_type := new_t;
@@ -7170,7 +7178,7 @@ begin
               -- Run-time side-effects tracking and test
               -- Test for two or more data flows writing to one unprotected variable
               checkDoubleDataFlowWrite( startToken );
-              identifiers( startToken ).value.all := to_unbounded_string( "1" );
+              identifiers( startToken ).store.value := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
            --end if;
@@ -7193,7 +7201,7 @@ begin
      -- procedure with no parameters can be interpreted as shell words by the
      -- compiler because it doesn't know if something is a procedure or an
      -- external command at compile time.
-     if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+     if ( token = symbol_t or token = word_t ) and identifiers( token ).store.value = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            -- move to next token or infinite loop if done = true
@@ -7209,11 +7217,11 @@ begin
            -- question is a special case.  See ParseQuestion call above.
            if itself_question then
               itself_question := false;
-              identifiers( token ).value.all := to_unbounded_string( "?" );
+              identifiers( token ).store.value := to_unbounded_string( "?" );
            end if;
            if identifiers( token ).class = varClass then
               -- not a procedure or keyword? restore value
-              identifiers( token ).value.all := itself;
+              identifiers( token ).store.value := itself;
            end if;
         end if;
      else
@@ -7361,7 +7369,7 @@ begin
   pushBlock( newScope => true,
     newName => to_string (identifiers( program_id ).name ) );
   -- Note: pushBlock must be before "is" (single symbol look-ahead)
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
     err(
       contextNotes => +"For your main program procedure",
       subject => is_t,

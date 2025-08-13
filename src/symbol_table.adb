@@ -222,7 +222,7 @@ begin
        end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
-       kw.value := kw.sstorage.value'access;
+       kw.store := kw.sstorage'access;
        kw.sstorage.value := Null_Unbounded_String;
        -- field_of is used while searching for fields.  It must always be
        -- set to a known value. eof_t may not not defined yet.
@@ -254,7 +254,7 @@ begin
        func.name := To_Unbounded_String( s );
        func.kind := identifier'first;
        func.sstorage.value := Null_Unbounded_String;
-       func.value := func.sstorage.value'access;
+       func.store := func.sstorage'access;
        func.class := funcClass;
        func.genKind := identifiers'first;
        func.genKind2 := identifiers'first;
@@ -288,7 +288,7 @@ begin
        proc.name := To_Unbounded_String( s );
        proc.kind := identifier'first;
        proc.sstorage.value := Null_Unbounded_String;
-       proc.value := proc.sstorage.value'access;
+       proc.store := proc.sstorage'access;
        proc.class := procClass;
        proc.genKind := identifiers'first;
        proc.genKind2 := identifiers'first;
@@ -499,7 +499,7 @@ begin
   for i in reverse identifiers'first..identifiers_top-1 loop
       if identifiers( i ).class = enumClass then
          if identifiers( i ).kind = kind then
-            if identifiers( i ).value.all = val then
+            if identifiers( i ).store.value = val then
                name := identifiers( i ).name;
                -- found := true;
                exit;
@@ -557,7 +557,7 @@ begin
        kind     => string_t,
        --sstorage    => To_Unbounded_String( s(eqpos+1..s'last ) ),
        --value    => sstorage'access,
-       value    => null,
+       store    => null,
        class    => varClass,
        import   => true,                                        -- must import
        method   => shell,
@@ -602,7 +602,7 @@ begin
        passingMode => none
      );
      -- sstorage isn't defined until here
-     identifiers( identifiers_top ).value := identifiers( identifiers_top ).sstorage.value'access;
+     identifiers( identifiers_top ).store := identifiers( identifiers_top ).sstorage'access;
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
 end init_env_ident;
@@ -625,7 +625,7 @@ begin
      identifiers( id ) := declaration'(                         -- define
        name     => name,                                        -- identifier
        kind     => kind,
-       value    => null,
+       store    => null,
        class    => class,
        import   => false,
        method   => none,
@@ -670,7 +670,7 @@ begin
        passingMode => none
      );
      -- sstorage isn't defined until here
-     identifiers( id ).value := identifiers( id ).sstorage.value'access;
+     identifiers( id ).store := identifiers( id ).sstorage'access;
   end if;
 end declareIdent;
 
@@ -706,7 +706,7 @@ begin
        sc.usage := constantUsage;
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
-       sc.value := sc.sstorage.value'access;
+       sc.store := sc.sstorage'access;
        sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
       -- since this is only called at startup, the default
@@ -749,7 +749,7 @@ begin
        sc.static := true;                                       -- identifier
        sc.usage := fullUsage;
        sc.field_of := eof_t;
-       sc.value := sc.sstorage.value'access;
+       sc.store := sc.sstorage'access;
        sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
        -- since this is only called at startup, the default
@@ -839,7 +839,7 @@ begin
   startingAt := eof_t;
   while i >= reserved_top and i < identifiers_top loop
       if identifiers( i ).field_of = proc_id then
-         if integer'value( to_string( identifiers( i ).value.all )) = parameterNumber then
+         if integer'value( to_string( identifiers( i ).store.value )) = parameterNumber then
             startingAt := identifier( integer( i ) + dir );
             exit;
          end if;
@@ -869,7 +869,7 @@ begin
                  name     => paramName,                         -- identifier
                  kind     => identifiers( i ).kind,
                  --value    => sstorage'access,
-                 value    => null,
+                 store    => null,
                  class    => varClass,
                  import   => false,
                  method   => none,
@@ -908,14 +908,17 @@ begin
                  firstBound => 1,
                  lastBound => 0,
                  contract => null_unbounded_string,
-                 sstorage => storage'(value, identifiers'first),
+                 sstorage => storage'(
+                    value,
+                    identifiers( i ).sstorage.metaLabel
+                 ),
                  astorage => null,
                  renaming_of => identifier'first,
                  renamed_count => 0,
                  passingMode => identifiers( i ).passingMode
      );
      -- sstorage isn't defined until here
-     identifiers( id ).value := identifiers( id ).sstorage.value'access;
+     identifiers( id ).store := identifiers( id ).sstorage'access;
      -- out or in out can be assigned to
      --if identifiers( i ).passingMode = out_mode or
      --   identifiers( i ).passingMode = in_out_mode then
@@ -955,7 +958,7 @@ begin
      identifiers( id ) := declaration'(               -- define
        name     => paramName,                         -- identifier
        kind     => identifiers( func_id ).kind,
-       value    => null,
+       store    => null,
        --value    => sstorage'access,
        class    => varClass,
        import   => false,
@@ -1053,7 +1056,7 @@ begin
        name     => name,                                     -- identifier
        kind     => exception_t,
        --value    => sstorage'access,
-       value    => null,
+       store    => null,
        class    => exceptionClass,
        import   => false,
        method   => none,
@@ -1098,7 +1101,7 @@ begin
        passingMode => none
      );
      -- sstorage isn't defined until here
-     identifiers( id ).value := identifiers( id ).sstorage.value'access;
+     identifiers( id ).store := identifiers( id ).sstorage'access;
   end if;
 end declareException;
 
@@ -1126,7 +1129,7 @@ begin
      identifiers( new_id ) := declaration'(                     -- define
        name     => identifiers( new_id ).name,                  -- identifier
        kind     => identifiers( canonicalRef.id ).kind,
-       value    => null,
+       store    => null,
        class    => identifiers( canonicalRef.id ).class,
        import   => false,
        method   => none,
@@ -1192,7 +1195,7 @@ begin
                  ": internal error: infinite renaming loop";
            end if;
         end loop;
-        identifiers( new_id ).value := identifiers( deref_id ).sstorage.value'access;
+        identifiers( new_id ).store := identifiers( deref_id ).sstorage'access;
      end;
 
      -- if the renaming is an array element, the type is the type of the
@@ -1227,7 +1230,7 @@ begin
            "internal errror: unexpected type " &
           to_string( identifiers( recordBaseTypeId ).name );
       end if;
-      numFields := natural( to_numeric( identifiers( recordBaseTypeId ).value.all ) );
+      numFields := natural( to_numeric( identifiers( recordBaseTypeId ).store.value ) );
    exception when others =>
       put_line_retry( standard_error, gnat.source_info.source_location &
         "internal errror: unable to get number of fields for " &
@@ -1247,7 +1250,7 @@ begin
      while j < identifiers_top loop
         -- TODO: should this be the base record type?  subtypes may break it
         if identifiers( j ).field_of = recordTypeId then
-           if integer'value( to_string( identifiers( j ).value.all )) = i then
+           if integer'value( to_string( identifiers( j ).store.value )) = i then
               exit;
            end if;
         end if;
@@ -1324,7 +1327,7 @@ begin
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
-       value    => null,
+       store    => null,
        class    => namespaceClass,
        import   => false,
        method   => none,
@@ -1369,7 +1372,7 @@ begin
        passingMode => none
      );
      -- sstorage isn't defined until here
-     identifiers( id ).value := identifiers( id ).sstorage.value'access;
+     identifiers( id ).store := identifiers( id ).sstorage'access;
 
      -- The position of the last namespace tag (open or closed)
      -- for setting the nextNamespace link
@@ -1464,7 +1467,7 @@ begin
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
        --value    => sstorage'access,
-       value    => null,
+       store    => null,
        class    => namespaceClass,
        import   => false,
        method   => none,
@@ -1509,7 +1512,7 @@ begin
        passingMode => none
      );
      -- sstorage isn't defined until here
-     identifiers( id ).value := identifiers( id ).sstorage.value'access;
+     identifiers( id ).store := identifiers( id ).sstorage'access;
 --put_line( "   last namespace was " & to_string( currentNamespace ) ); -- DEBUG
 
      -- The position of the last namespace tag (open or closed)
@@ -1651,7 +1654,7 @@ begin
   fieldVar := eof_t;
   for candidateType in reverse reserved_top..identifiers_top-1 loop
       if identifiers( candidateType ).field_of = recordType then
-         if integer'value( to_string( identifiers( candidateType ).value.all )) = fieldNumber then
+         if integer'value( to_string( identifiers( candidateType ).store.value )) = fieldNumber then
             declare
                fieldName : unbounded_string;
                field_t   : identifier;
@@ -1681,7 +1684,7 @@ function to_numeric( id : identifier ) return numericValue is
 -- Look up an identifier's value and return it as a long float
 -- (Spar's numeric representation).
 begin
-   return to_numeric( identifiers( id ).value.all );
+   return to_numeric( identifiers( id ).store.value );
 end to_numeric;
 
 end symbol_table;

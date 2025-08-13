@@ -121,7 +121,7 @@ begin
         err( +"not in a chain" );
      else
         findIdent( chain_count_str, chain_count_id );
-        result := storage'( identifiers( chain_count_id ).value.all, noMetaLabel );
+        result := storage'( identifiers( chain_count_id ).store.value, noMetaLabel );
      end if;
   end if;
 end ParseChainsChainCount;

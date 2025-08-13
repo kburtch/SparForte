@@ -52,8 +52,8 @@ enumerated values or values.</p>
         <center>
         <div class="code">
 <pre>
-  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pred">e := pred( e2 )</a>      
-  <a href="#enums.succ">e := succ( e2 )</a>
+  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pos">n := pos(e)</a>
+  <a href="#enums.pred">e := pred( e2 )</a>            <a href="#enums.succ">e := succ( e2 )</a>           <a href="#enums.val">e := val(t, n)</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -150,6 +150,53 @@ enumerated values or values.</p>
 </tr>
 </table>
 
+<a name="enums.pos"></a><h3>n := enums.pos( e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the ordinal position of item e of the enumerated type.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">n := enums.pos( true ); -- returns 1</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>enumerated item</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the position</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'pos attribute</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>pos introduced with SparForte 3.0</p></td>
+</tr>
+</table>
+
 <a name="enums.pred"></a><h3>e := enums.pred( e2 )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -237,6 +284,61 @@ enumerated values or values.</p>
 <td><p>Ada: 'succ attribute</p></td>
 </tr>
 </table>
+
+<a name="enums.val"></a><h3>e := enums.val( t, n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return item of the enumerated type at the ordinal position n.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">e := enums.val( boolean, 1 ); -- returns true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>enumerated type</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated type</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the position</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>enumerated type</span></td>
+<td><span>required</span></td>
+<td><span>the enumerated item at the position</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the position is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: 'val attribute</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>val introduced with SparForte 3.0</p></td>
+</p></td>
+</tr>
+</table>
+
 
 &nbsp;<br>
 

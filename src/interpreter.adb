@@ -907,11 +907,11 @@ begin
   -- Current_Input, Current_Output and Current_Error are aliases for
   -- another file (by default, Standard_Input/Output/Error ).
 
-  identifiers( current_input_t ).value.all :=
+  identifiers( current_input_t ).store.value :=
     to_unbounded_string( standard_input_t'img );
-  identifiers( current_output_t ).value.all :=
+  identifiers( current_output_t ).store.value :=
     to_unbounded_string( standard_output_t'img );
-  identifiers( current_error_t ).value.all :=
+  identifiers( current_error_t ).store.value :=
     to_unbounded_string( standard_error_t'img );
 
 end SetStandardVariables;
@@ -1111,7 +1111,7 @@ begin
   rshOpt := false;                         -- turn off for profile
   findIdent( to_unbounded_string( "HOME" ), home_id );
   if home_id /= eof_t then                     -- HOME defined?
-     profilePath := identifiers( home_id ).value.all;
+     profilePath := identifiers( home_id ).store.value;
      if Element( profilePath, length( profilePath ) ) /= '/' then
         profilePath := profilePath & "/";
      end if;
@@ -1419,7 +1419,7 @@ begin
   findPwd;
   findIdent( to_unbounded_string( "PWD" ), pwd );
   if pwd /= eof_t then
-     identifiers( pwd ).value.all := current_working_directory;
+     identifiers( pwd ).store.value := current_working_directory;
   end if;
   pegasoft.user_io.getline.startupGetline( optionOffset, promptIdleCallback'access );
 end startInterpreter;

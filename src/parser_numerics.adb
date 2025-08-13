@@ -310,7 +310,7 @@ begin
   kind := uni_numeric_t;
   expect( log_t );
   ParseFirstNumericParameter( log_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( log_t, base_st, base_type );
   else
      expect( symbol_t, ")" );
@@ -358,7 +358,7 @@ begin
   kind := uni_numeric_t;
   expect( sin_t );
   ParseFirstNumericParameter( sin_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( sin_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -388,7 +388,7 @@ begin
   kind := uni_numeric_t;
   expect( cos_t );
   ParseFirstNumericParameter( cos_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( cos_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -404,7 +404,6 @@ begin
     end if;
   exception when others =>
      err_exception_raised;
-     raise;
   end;
 end ParseNumericsCos;
 
@@ -419,7 +418,7 @@ begin
   kind := uni_numeric_t;
   expect( tan_t );
   ParseFirstNumericParameter( tan_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( tan_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -449,7 +448,7 @@ begin
   kind := uni_numeric_t;
   expect( cot_t );
   ParseFirstNumericParameter( cot_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( cot_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -479,7 +478,7 @@ begin
   kind := uni_numeric_t;
   expect( arcsin_t );
   ParseFirstNumericParameter( arcsin_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( arcsin_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -509,7 +508,7 @@ begin
   kind := uni_numeric_t;
   expect( arccos_t );
   ParseFirstNumericParameter( arccos_t, expr_st, expr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( arccos_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -543,7 +542,7 @@ begin
   expect( arctan_t );
   ParseFirstNumericParameter( arctan_t, expr_st, expr_type );
   ParseNextNumericParameter( arctan_t, expr2_st, expr2_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( arctan_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -578,7 +577,7 @@ begin
   expect( arccot_t );
   ParseFirstNumericParameter( arccot_t, expr_st, expr_type );
   ParseNextNumericParameter( arccot_t, expr2_st, expr2_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( arccot_t, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
@@ -1119,7 +1118,10 @@ begin
   ParseSingleNumericParameter( abs_t, expr_st, expr_type );
   begin
      if isExecutingCommand then
-       result.value := to_unbounded_string( abs( to_numeric( expr_st.value ) ) );
+       result := storage'(
+          to_unbounded_string( abs( to_numeric( expr_st.value ) ) ),
+          noMetaLabel
+       );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1240,8 +1242,8 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        result := storage'( to_unbounded_string( numericValue( Re( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
@@ -1268,8 +1270,8 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        result := storage'( to_unbounded_string( numericValue( Im( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
@@ -1301,14 +1303,13 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        Set_Re( c, to_numeric( expr_st.value ) );
-       identifiers( real_t ).value.all := to_unbounded_string( numericValue( c.re ) );
+       identifiers( real_t ).store.value := to_unbounded_string( numericValue( c.re ) );
      end if;
   exception when others =>
      err_exception_raised;
-     raise;
   end;
 end ParseNumericsSetRe;
 
@@ -1336,10 +1337,10 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        Set_Im( c, to_numeric( expr_st.value ) );
-       identifiers( img_t ).value.all := to_unbounded_string( numericValue( c.Im ) );
+       identifiers( img_t ).store.value := to_unbounded_string( numericValue( c.Im ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1388,8 +1389,8 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ), noMetaLabel );
      end if;
   exception when others =>
@@ -1415,7 +1416,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( cycle_st, cycle_type );
         has_cycle := true;
@@ -1426,8 +1427,8 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).value.all );
-       c.im := to_numeric( identifiers( img_t ).value.all );
+       c.re := to_numeric( identifiers( real_t ).store.value );
+       c.im := to_numeric( identifiers( img_t ).store.value );
        if has_cycle then
           result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ), noMetaLabel );
        else

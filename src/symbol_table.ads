@@ -89,9 +89,8 @@ type declaration;
 type declaration is record
      name            : unbounded_string        -- identifier's name
                 := Null_Unbounded_String;
-     value           : valuePtr := null;       -- identifier's value
-     --value    : unbounded_string                -- identifier's value
-     --           := Null_Unbounded_String;
+     store           : storagePtr := null;       -- identifier's value/label
+     --value           : valuePtr := null;       -- identifier's value
      kind            : identifier;              -- identifier's type
      class           : anIdentifierClass        -- identifier's class
                        := otherClass;

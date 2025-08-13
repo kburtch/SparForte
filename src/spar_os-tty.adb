@@ -135,7 +135,7 @@ function tput( attr : termAttributes ) return unbounded_string is
 
   findIdent( to_unbounded_string( "TERM" ), term_id );
   declare
-     termString : constant string := "TERM=" & to_string( identifiers( term_id ).value.all ) & ASCII.NUL;
+     termString : constant string := "TERM=" & to_string( identifiers( term_id ).store.value ) & ASCII.NUL;
      status : integer;
   begin
      findIdent( to_unbounded_string( "TERM" ), term_id );

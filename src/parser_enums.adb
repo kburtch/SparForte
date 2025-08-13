@@ -111,7 +111,7 @@ begin
      for id in reverse keywords_top..identifiers_top-1 loop
         if identifiers( id ).kind = var_id then
            if identifiers( id ).class = enumClass then
-              candidate := integer( to_numeric( identifiers( id ).value.all ) );
+              candidate := integer( to_numeric( identifiers( id ).store.value ) );
               if candidate > best then
                  best := candidate;
               end if;
@@ -150,7 +150,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     item := natural( to_numeric( identifiers( var_id ).value.all ) );
+     item := natural( to_numeric( identifiers( var_id ).store.value ) );
      begin
         item := item - 1;
         -- convert to string and remove leading space
@@ -188,7 +188,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     item := natural( to_numeric( identifiers( var_id ).value.all ) );
+     item := natural( to_numeric( identifiers( var_id ).store.value ) );
      declare
         ok : boolean := false;
         candidate : natural;
@@ -197,7 +197,7 @@ begin
         for id in reverse keywords_top..identifiers_top-1 loop
            if identifiers( id ).kind = kind then
               if identifiers( id ).class = enumClass then
-                 candidate := integer( to_numeric( identifiers( id ).value.all ) );
+                 candidate := integer( to_numeric( identifiers( id ).store.value ) );
                  if candidate = item then
                     ok := true;
                     exit;
@@ -245,7 +245,7 @@ begin
   expect( symbol_t, ")" );
   kind := natural_t;
   if isExecutingCommand then
-     item := natural( to_numeric( identifiers( var_id ).value.all ) );
+     item := natural( to_numeric( identifiers( var_id ).store.value ) );
      declare
         ok : boolean := false;
         candidate : natural;
@@ -253,7 +253,7 @@ begin
         for id in reverse keywords_top..identifiers_top-1 loop
            if identifiers( id ).kind = kind then
               if identifiers( id ).class = enumClass then
-                 candidate := integer( to_numeric( identifiers( id ).value.all ) );
+                 candidate := integer( to_numeric( identifiers( id ).store.value ) );
                  if candidate = item then
                     ok := true;
                     exit;

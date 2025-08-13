@@ -575,7 +575,7 @@ begin
               identifiers( token ).class = userFuncClass or        -- or func?
               identifiers( token ).class = userCaseProcClass then -- case proc?
            if isLocal( token ) then                                 -- local?
-              if length( identifiers( token ).value.all ) = 0 then -- forward?
+              if length( identifiers( token ).store.value ) = 0 then -- forward?
                  id := token;                                      -- then it's
               else                                                 -- not fwd?
                  err( subject => token,
@@ -1359,7 +1359,7 @@ begin
       -- Otherwise, assign the value to the variable and apply contracts.
 
       if kind_id /= new_t and kind_id /= eof_t then
-         identifiers( type_value_id ).value.all := expr.value;
+         identifiers( type_value_id ).store.value := expr.value;
          DoContract1( kind_id, expr);
       end if;
 
@@ -1368,12 +1368,12 @@ begin
       -- We can't relay on wasWritten since it only applies to syntax checks.
 
 --put_trace( "end of contract, value is " & to_string( toEscaped( expr_val ) ) ); -- DEBUG
---put_trace( "type_value is " & to_string( identifiers( type_value_id ).value.all ) ); -- DEBUG
+--put_trace( "type_value is " & to_string( identifiers( type_value_id ).store.value ) ); -- DEBUG
 --put_trace( "type_value written " & identifiers( type_value_id ).wasWritten'img ); -- DEBUG
       --if identifiers( type_value_id ).wasWritten then
 
       -- Copying a value is not so easy for an array
-      expr.value := identifiers( type_value_id ).value.all;
+      expr.value := identifiers( type_value_id ).store.value;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
             put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr.value ) ) ) );
@@ -1460,7 +1460,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
             seeAlso => seePragmas
        );
        --refreshVolatile( t );
-       --f := identifiers( t ).value.all;
+       --f := identifiers( t ).store.value;
        --kind := identifiers( t ).kind;
     end if;
     -- check to see if it's an incomplete spec
@@ -1492,7 +1492,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
           );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
-       if token = symbol_t and identifiers( token ).value.all = "(" then
+       if token = symbol_t and identifiers( token ).store.value = "(" then
           getNextToken;
        else
           expectSymbol(
@@ -1627,7 +1627,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
 
        end if;
     -- regular variable with an array index?
-       if token = symbol_t and then identifiers( token ).value.all = "(" then
+       if token = symbol_t and then identifiers( token ).store.value = "(" then
          err( name_em( t ) &
              pl( " has an array index but is not an array" ) );
        end if;
@@ -1643,8 +1643,8 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
              end if;
           end if;
        end if;
-       f.metaLabel := identifiers( t ).sstorage.metaLabel;
-       f.value := identifiers( t ).value.all;
+       f.metaLabel := identifiers( t ).store.metaLabel;
+       f.value := identifiers( t ).store.value;
        kind := identifiers( t ).kind;
        -- Mark as used as a factor.  if it is a record field, mark the whole
        -- record as used as a factor for limit type testing purposes.
@@ -1669,17 +1669,17 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
 
 begin
 --put_line("ParseFactor"); -- DEBUG
-  if Token = symbol_t and identifiers( Token ).value.all = "+" then
+  if Token = symbol_t and identifiers( Token ).store.value = "+" then
      uniOp := doPlus;
      getNextToken;
-  elsif Token = symbol_t and identifiers( Token ).value.all = "-" then
+  elsif Token = symbol_t and identifiers( Token ).store.value = "-" then
      uniOp := doMinus;
      getNextToken;
   elsif Token = not_t then
      uniOp := doNot;
      getNextToken;
   end if;
-  if Token = symbol_t and then identifiers( Token ).value.all = "(" then
+  if Token = symbol_t and then identifiers( Token ).store.value = "(" then
      getNextToken;
      ParseExpression( f, kind );
      expectSymbol(
@@ -1692,22 +1692,22 @@ begin
   -- to speed things up, these wide if statements break up tokens into
   -- categories.  If the token isn't in the category, skip the rest.
   elsif token < reserved_top then
-     if Token = symbol_t and then identifiers( Token ).value.all = "$?" then
+     if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
         f.value := to_unbounded_string( last_status'img );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
         f.value := to_unbounded_string( aPID'image( getpid ) );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
         f.value := to_unbounded_string( aPID'image( lastChild ) );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
         if onlyAda95 then
            err( +"$# not allowed with " & em( "pragma ada_95" ) &
            pl( " -- use command_line package" ) );
@@ -1718,8 +1718,8 @@ begin
         end if;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all >= "$1" and then
-        identifiers( Token ).value.all <= "$9" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value >= "$1" and then
+        identifiers( Token ).store.value <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
            err( +"$1..$9 not allowed with " & em( "pragma ada_95" ) &
@@ -1732,7 +1732,7 @@ begin
               f.value := to_unbounded_string(
                  Argument(
                    integer'value(
-                   "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
+                   "" & Element( identifiers( Token ).store.value, 2 ) )+optionOffset ) );
            exception when program_error =>
               err( +"program_error exception raised" );
               kind := eof_t;
@@ -1742,7 +1742,7 @@ begin
            end;
         end if;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$0" then
         if onlyAda95 then
            err( +"$0 not allowed with " & em( "pragma ada_95" ) &
            pl( " -- use command_line package" ) );
@@ -1753,7 +1753,7 @@ begin
         end if;
         kind := uni_string_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            f.metaLabel := noMetaLabel;
@@ -1773,7 +1773,7 @@ begin
            kind := itself_type;
         end if;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "%" then
         if onlyAda95 then
            err( +"% is not allowed with " & em( "pragma ada_95" ) );
            f.value := null_unbounded_string;
@@ -1792,17 +1792,17 @@ begin
         end if;
         getNextToken;
      elsif token = number_t then                           -- numeric literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
      elsif token = charlit_t then                          -- character literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
      elsif token = strlit_t then                           -- string literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
@@ -1811,7 +1811,7 @@ begin
         -- If the backquoted commands don't end with a semi-colon, add one.
         -- There is a chance that the semi-colon could be hidden by a
         -- comment symbol (--).
-        codeFragment := identifiers( token ).value.all;
+        codeFragment := identifiers( token ).store.value;
         -- Bourne shell allows empty backquotes.  However, we do not by default.
         if length( codeFragment ) = 0 then
            if not suppress_no_empty_command_subs then
@@ -1850,8 +1850,8 @@ begin
         kind := eof_t;
         -- comma (a list) or semi-colon (end-of-statement) may indicate a
         -- missing expression
-        if token = symbol_t and ( identifiers( token ).value.all = "," or
-           identifiers( token ).value.all = ";" ) then
+        if token = symbol_t and ( identifiers( token ).store.value = "," or
+           identifiers( token ).store.value = ";" ) then
            err(
               -- redundant contextNotes => "in this expression",
               subjectNotes => subjectExpression,
@@ -1877,7 +1877,7 @@ begin
         ParseIsOpen( t );
         if isExecutingCommand then
            f.metaLabel := noMetaLabel;
-           f.value := identifiers( t ).value.all;
+           f.value := identifiers( t ).store.value;
         end if;
         kind := boolean_t;
      elsif token = system_meta_level_image_t then         -- Security Level
@@ -1951,7 +1951,7 @@ begin
      declare
        funcToken : constant identifier := token;
      begin
-       DoUserDefinedFunction( identifiers( funcToken ).value.all, f );
+       DoUserDefinedFunction( identifiers( funcToken ).store.value, f );
        kind := identifiers( funcToken ).kind;
      end;
   elsif identifiers( token ).kind = keyword_t then      -- no keywords
@@ -1959,8 +1959,8 @@ begin
      kind := universal_t;
       -- comma (a list) or semi-colon (end-of-statement) may indicate a
       -- missing expression
-      if token = symbol_t and ( identifiers( token ).value.all = "," or
-         identifiers( token ).value.all = ";" ) then
+      if token = symbol_t and ( identifiers( token ).store.value = "," or
+         identifiers( token ).store.value = ";" ) then
          err(
             -- redundant contextNotes => "in this expression",
             subjectNotes => subjectExpression,
@@ -2046,10 +2046,10 @@ begin
         remedy => +"'**'."
      );
   -- This is checked by parseTerm
-  --elsif identifiers( Token ).value.all /= "**" then
+  --elsif identifiers( Token ).store.value /= "**" then
   --   err( "** operator expected");
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParsePowerTermOperator;
@@ -2073,7 +2073,7 @@ begin
   ParseFactor( factor1, kind1 );
   term := factor1;
   term_type := kind1;
-  while identifiers( Token ).value.all = "**" loop
+  while identifiers( Token ).store.value = "**" loop
      ParsePowerTermOperator( operator );
      ParseFactor( factor2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then
@@ -2140,7 +2140,7 @@ begin
         obstructorNotes => +"an operator",
         remedy => +"a term operator like '*', '/' or '&'."
      );
-  elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
+  elsif identifiers( Token ).store.value /= "*" and identifiers( Token ).store.value /= "/" and identifiers( Token ).store.value /= "&" then
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => subjectExpression,
@@ -2149,7 +2149,7 @@ begin
         remedy => +"a term operator like '*', '/' or '&'."
      );
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParseTermOperator;
@@ -2173,9 +2173,9 @@ begin
   ParsePowerTerm( pterm1, kind1 );
   term := pterm1;
   term_type := kind1;
-  while identifiers( Token ).value.all = "*" or
-        identifiers( Token ).value.all = "/" or
-        identifiers( Token ).value.all = "&" or
+  while identifiers( Token ).store.value = "*" or
+        identifiers( Token ).store.value = "/" or
+        identifiers( Token ).store.value = "&" or
         Token = mod_t or Token = rem_t loop
      ParseTermOperator( operator );
      ParsePowerTerm( pterm2, kind2 );
@@ -2382,7 +2382,7 @@ begin
         obstructorNotes => +"an operator",
         remedy => +"a simple expression operator like '+' or '-'."
      );
-  elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
+  elsif identifiers( Token ).store.value /= "+" and identifiers( Token ).store.value /= "-" then
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => subjectExpression,
@@ -2391,7 +2391,7 @@ begin
         remedy => +"a simple expression operator like '+' or '-'."
      );
   end if;
-  op := identifiers( token ).value.all;
+  op := identifiers( token ).store.value;
   getNextToken;
 end ParseSimpleExpressionOperator;
 
@@ -2415,7 +2415,7 @@ begin
   ParseTerm( term1, kind1 );
   se := term1;
   expr_type := kind1;
-  while identifiers( Token ).value.all = "+" or identifiers( Token ).value.all = "-" loop
+  while identifiers( Token ).store.value = "+" or identifiers( Token ).store.value = "-" loop
      ParseSimpleExpressionOperator( operator );
      ParseTerm( term2, kind2 );
      -- Special exception for + and -...allow time arithmetic
@@ -2594,12 +2594,12 @@ begin
         obstructorNotes => +"an operator",
         remedy => +"a relational operator like '=', '/=' or 'in'"
      );
-  elsif identifiers( Token ).value.all /= ">=" and
-        identifiers( Token ).value.all /= ">" and
-        identifiers( Token ).value.all /= "<" and
-        identifiers( Token ).value.all /= "<=" and
-        identifiers( Token ).value.all /= "=" and
-        identifiers( Token ).value.all /= "/=" and
+  elsif identifiers( Token ).store.value /= ">=" and
+        identifiers( Token ).store.value /= ">" and
+        identifiers( Token ).store.value /= "<" and
+        identifiers( Token ).store.value /= "<=" and
+        identifiers( Token ).store.value /= "=" and
+        identifiers( Token ).store.value /= "/=" and
         Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
@@ -2624,7 +2624,7 @@ begin
         );
      end if;
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParseRelationalOperator;
@@ -2652,12 +2652,12 @@ begin
   ParseSimpleExpression( se1, kind1 );
   re := se1;
   rel_type := kind1;
-  if identifiers( Token ).value.all = ">=" or
-        identifiers( Token ).value.all = ">" or
-        identifiers( Token ).value.all = "<" or
-        identifiers( Token ).value.all = "<=" or
-        identifiers( Token ).value.all = "=" or
-        identifiers( Token ).value.all = "/=" or
+  if identifiers( Token ).store.value = ">=" or
+        identifiers( Token ).store.value = ">" or
+        identifiers( Token ).store.value = "<" or
+        identifiers( Token ).store.value = "<=" or
+        identifiers( Token ).store.value = "=" or
+        identifiers( Token ).store.value = "/=" or
         Token = in_t or Token = not_t then
      rel_type := boolean_t; -- always
      ParseRelationalOperator( operator );
@@ -3041,37 +3041,37 @@ procedure ParseStaticFactor( f : out storage; kind : out identifier ) is
   t : identifier;
   codeFragment : unbounded_string;
 begin
-  if Token = symbol_t and identifiers( Token ).value.all = "+" then
+  if Token = symbol_t and identifiers( Token ).store.value = "+" then
      uniOp := doPlus;
      getNextToken;
-  elsif Token = symbol_t and identifiers( Token ).value.all = "-" then
+  elsif Token = symbol_t and identifiers( Token ).store.value = "-" then
      uniOp := doMinus;
      getNextToken;
   elsif Token = not_t then
      uniOp := doNot;
      getNextToken;
   end if;
-  if Token = symbol_t and then identifiers( Token ).value.all = "(" then
+  if Token = symbol_t and then identifiers( Token ).store.value = "(" then
      expect( symbol_t, "(" );
      ParseStaticExpression( f, kind );
      expect( symbol_t, ")" );
   else
-     if Token = symbol_t and then identifiers( Token ).value.all = "$?" then
+     if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
         f.value := to_unbounded_string( last_status'img );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
         f.value := to_unbounded_string( aPID'image( getpid ) );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
         f.value := to_unbounded_string( aPID'image( lastChild ) );
         f.metaLabel := noMetaLabel;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
         if onlyAda95 then
            err( +"$# not allowed with " & em( "pragma ada_95" ) &
            pl( " -- use command_line package" ) );
@@ -3082,8 +3082,8 @@ begin
         end if;
         kind := uni_numeric_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all >= "$1" and then
-        identifiers( Token ).value.all <= "$9" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value >= "$1" and then
+        identifiers( Token ).store.value <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
            err( +"$1..$9 not allowed with " & em( "pragma ada_95" ) &
@@ -3096,7 +3096,7 @@ begin
               f.value := to_unbounded_string(
                  Argument(
                    integer'value(
-                   "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
+                   "" & Element( identifiers( Token ).store.value, 2 ) )+optionOffset ) );
            exception when program_error =>
               err( +"program_error exception raised" );
               kind := eof_t;
@@ -3106,7 +3106,7 @@ begin
            end;
         end if;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "$0" then
         if onlyAda95 then
            err( +"$0 not allowed with " & em( "pragma ada_95" ) &
            pl( " -- use command_line package" ) );
@@ -3116,7 +3116,7 @@ begin
         end if;
         kind := uni_string_t;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            f.value := null_unbounded_string;
@@ -3132,7 +3132,7 @@ begin
            kind := itself_type;
         end if;
         getNextToken;
-     elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
+     elsif Token = symbol_t and then identifiers( Token ).store.value = "%" then
         if onlyAda95 then
            err( +"% is not allowed with " & em( "pragma ada_95" ) );
            f.value := null_unbounded_string;
@@ -3150,15 +3150,15 @@ begin
         end if;
         getNextToken;
      elsif token = number_t then                           -- numeric literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = charlit_t then                          -- character literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = strlit_t then                           -- string literal
-        f.value := identifiers( token ).value.all;
+        f.value := identifiers( token ).store.value;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
@@ -3166,7 +3166,7 @@ begin
         -- If the backquoted commands don't end with a semi-colon, add one.
         -- There is a chance that the semi-colon could be hidden by a
         -- comment symbol (--).
-        codeFragment := identifiers( token ).value.all;
+        codeFragment := identifiers( token ).store.value;
         if length( codeFragment ) = 0 then
            if not suppress_no_empty_command_subs then
               err( +"empty command substitution" );
@@ -3193,7 +3193,7 @@ begin
      elsif token = is_open_t then                         -- is_open function
         err( +"static expressions cannot call functions" );
         --ParseIsOpen( t );
-        --f := identifiers( t ).value.all;
+        --f := identifiers( t ).store.value;
         kind := boolean_t;
      elsif token = abs_t then                             -- abs function
         err( +"static expressions cannot call functions" );
@@ -3253,7 +3253,7 @@ begin
      --    declare
      --      funcToken : identifier := token;
      --    begin
-     --      DoUserDefinedFunction( identifiers( funcToken ).value.all, f );
+     --      DoUserDefinedFunction( identifiers( funcToken ).store.value, f );
      --      kind := identifiers( funcToken ).kind;
      --    end;
      elsif identifiers( token ).kind = keyword_t then      -- no keywords
@@ -3272,7 +3272,7 @@ begin
         -- Note: Variables must be allowed for System package variables
         if identifiers( t ).volatile /= none then  -- volatile user identifier
            refreshVolatile( t );
-           f.value := identifiers( t ).value.all;
+           f.value := identifiers( t ).store.value;
            kind := identifiers( t ).kind;
         elsif identifiers( t ).class = subClass or             -- type cast
            identifiers( t ).class = typeClass then
@@ -3331,11 +3331,11 @@ begin
         --   kind := identifiers( identifiers( array_id ).kind ).kind;
         -- regular variable with an array index?
         else
-          if token = symbol_t and identifiers( token ).value.all = "(" then
+          if token = symbol_t and identifiers( token ).store.value = "(" then
              err( name_em( t ) &
                  pl( " has an array index but is not an array" ) );
            end if;
-           f.value := identifiers( t ).value.all;
+           f.value := identifiers( t ).store.value;
            kind := identifiers( t ).kind;
         end if;
      end if;
@@ -3388,7 +3388,7 @@ begin
   if Token /= symbol_t then
      err( +"operator expected" );
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParseStaticPowerTermOperator;
@@ -3411,7 +3411,7 @@ begin
   ParseStaticFactor( factor1, kind1 );
   term := factor1;
   term_type := kind1;
-  while identifiers( Token ).value.all = "**" loop
+  while identifiers( Token ).store.value = "**" loop
      ParseStaticPowerTermOperator( operator );
      ParseStaticFactor( factor2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then
@@ -3463,10 +3463,10 @@ begin
      op := identifiers( token ).name;
   elsif Token /= symbol_t then
      err( +"operator expected");
-  elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
+  elsif identifiers( Token ).store.value /= "*" and identifiers( Token ).store.value /= "/" and identifiers( Token ).store.value /= "&" then
      err( +"term operator expected");
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParseStaticTermOperator;
@@ -3489,9 +3489,9 @@ begin
   ParseStaticPowerTerm( pterm1, kind1 );
   term := pterm1;
   term_type := kind1;
-  while identifiers( Token ).value.all = "*" or
-        identifiers( Token ).value.all = "/" or
-        identifiers( Token ).value.all = "&" or
+  while identifiers( Token ).store.value = "*" or
+        identifiers( Token ).store.value = "/" or
+        identifiers( Token ).store.value = "&" or
         Token = mod_t or Token = rem_t loop
      ParseStaticTermOperator( operator );
      ParseStaticPowerTerm( pterm2, kind2 );
@@ -3672,10 +3672,10 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( +"operator expected");
-  elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
+  elsif identifiers( Token ).store.value /= "+" and identifiers( Token ).store.value /= "-" then
      err( +"simple expression operator expected");
   end if;
-  op := identifiers( token ).value.all;
+  op := identifiers( token ).store.value;
   getNextToken;
 end ParseStaticSimpleExpressionOperator;
 
@@ -3698,7 +3698,7 @@ begin
   ParseStaticTerm( term1, kind1 );
   se := term1;
   expr_type := kind1;
-  while identifiers( Token ).value.all = "+" or identifiers( Token ).value.all = "-" loop
+  while identifiers( Token ).store.value = "+" or identifiers( Token ).store.value = "-" loop
      ParseStaticSimpleExpressionOperator( operator );
      ParseStaticTerm( term2, kind2 );
      -- Special exception for + and -...allow time arithmetic
@@ -3848,12 +3848,12 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
      err( +"operator expected");
-  elsif identifiers( Token ).value.all /= ">=" and
-        identifiers( Token ).value.all /= ">" and
-        identifiers( Token ).value.all /= "<" and
-        identifiers( Token ).value.all /= "<=" and
-        identifiers( Token ).value.all /= "=" and
-        identifiers( Token ).value.all /= "/=" and
+  elsif identifiers( Token ).store.value /= ">=" and
+        identifiers( Token ).store.value /= ">" and
+        identifiers( Token ).store.value /= "<" and
+        identifiers( Token ).store.value /= "<=" and
+        identifiers( Token ).store.value /= "=" and
+        identifiers( Token ).store.value /= "/=" and
         Token /= in_t and Token /= not_t then
      err( +"relational operator expected");
   end if;
@@ -3866,7 +3866,7 @@ begin
         err( +"relational operator expected");
      end if;
   else
-     op := identifiers( token ).value.all;
+     op := identifiers( token ).store.value;
   end if;
   getNextToken;
 end ParseStaticRelationalOperator;
@@ -3892,12 +3892,12 @@ begin
   ParseStaticSimpleExpression( se1, kind1 );
   re := se1;
   rel_type := kind1;
-  if identifiers( Token ).value.all = ">=" or
-        identifiers( Token ).value.all = ">" or
-        identifiers( Token ).value.all = "<" or
-        identifiers( Token ).value.all = "<=" or
-        identifiers( Token ).value.all = "=" or
-        identifiers( Token ).value.all = "/=" or
+  if identifiers( Token ).store.value = ">=" or
+        identifiers( Token ).store.value = ">" or
+        identifiers( Token ).store.value = "<" or
+        identifiers( Token ).store.value = "<=" or
+        identifiers( Token ).store.value = "=" or
+        identifiers( Token ).store.value = "/=" or
         Token = in_t or Token = not_t then
      rel_type := boolean_t; -- always
      ParseStaticRelationalOperator( operator );

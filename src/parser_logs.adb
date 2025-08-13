@@ -178,10 +178,10 @@ procedure writeCurrentError( expr : unbounded_string ) is
   retry     : boolean;
 begin
   -- This is an alias to the variable with the file
-  ref.id := identifier( to_numeric( identifiers(current_error_t).value.all ) );
+  ref.id := identifier( to_numeric( identifiers(current_error_t).store.value ) );
 
   -- Check to see that the file is open
-  if length( identifiers( ref.id ).value.all ) = 0 then
+  if length( identifiers( ref.id ).store.value ) = 0 then
      err( +"log file is not open" );
      return;
   end if;
@@ -528,7 +528,7 @@ begin
   ParseSingleInOutParameter( logs_level_end_t, id, log_level_t );
   if isExecutingCommand then
      begin
-        level := natural'value( ' ' & to_string( identifiers( id ).value.all ) );
+        level := natural'value( ' ' & to_string( identifiers( id ).store.value ) );
      exception when constraint_error =>
         err( +"constraint_error raised" );
      when others =>
@@ -548,7 +548,7 @@ begin
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      if cc = none then
         cc := first;
      else
@@ -592,7 +592,7 @@ begin
         err_exception_raised;
      end;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      expect( symbol_t );
      goto repeat_ok;
   end if;
@@ -609,7 +609,7 @@ begin
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      if cc = none then
         cc := first;
      else
@@ -654,7 +654,7 @@ begin
         err_exception_raised;
      end;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      expect( symbol_t );
      goto repeat_info;
   end if;
@@ -671,7 +671,7 @@ begin
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      if cc = none then
         cc := first;
      else
@@ -716,7 +716,7 @@ begin
         err_exception_raised;
      end;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      expect( symbol_t );
      goto repeat_warning;
   end if;
@@ -733,7 +733,7 @@ begin
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      if cc = none then
         cc := first;
      else
@@ -778,7 +778,7 @@ begin
         err_exception_raised;
      end;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "@" then
+  if token = symbol_t and identifiers( token ).store.value = "@" then
      expect( symbol_t );
      goto repeat_error;
   end if;
@@ -800,7 +800,7 @@ begin
   expect( logs_open_t );
   ParseFirstStringParameter( logs_open_t, pathExpr, pathType, string_t );
   ParseNextEnumParameter( logs_open_t, modeExpr, modeType, log_modes_t );
-  if token = symbol_t and identifiers( token ).value.all = ")" then
+  if token = symbol_t and identifiers( token ).store.value = ")" then
      widthExpr := storage'( to_unbounded_string( defaultWidth'img ), noMetaLabel );
      expect( symbol_t, ")" );
   else

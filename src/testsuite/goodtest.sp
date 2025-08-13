@@ -6873,9 +6873,9 @@ begin
   vectors.append_elements( v, "blueberry" );
   vectors.append_elements( v, "cherry" );
   vectors.append_elements( v, "pear" );
-  vectors.delete( v, vectors.last_index( v ) );
+  vectors.delete( v, natural( vectors.last_index( v ) ) );
   pragma assert( vectors.last_element( v ) = "cherry" );
-  vectors.delete( v, vectors.last_index( v ) -1, 2 );
+  vectors.delete( v, natural( vectors.last_index( v ) -1 ), 2 );
   pragma assert( vectors.last_element( v ) = "apple" );
   vectors.append_elements( v, "" );
   pragma assert( vectors.last_element( v ) = "" );
@@ -6904,8 +6904,8 @@ begin
   vectors.delete( v, c );
   pragma assert( vectors.first_element( v ) = "bear" );
   vectors.first( v, c );
-  vectors.delete( v, c, 2 );
-  pragma assert( vectors.length( v ) = 0 );
+  vectors.delete( v, c );
+  pragma assert( vectors.length( v ) = 1 );
 end;
 
   -- tests with selected data types
@@ -6947,7 +6947,7 @@ begin
 
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "cat" );
-    idx := vectors.last_index( v1 );
+    idx := natural( vectors.last_index( v1 ) );
     vectors.insert( v1, idx, "bear" );
     vectors.first( v1, c );
     pragma assert( vectors.element( c ) = "ant" );
@@ -6967,7 +6967,7 @@ begin
     begin
        vectors.append_elements( v3, "ant" );
        vectors.append_elements( v3, "cat" );
-       idx := vectors.last_index( v3 );
+       idx := natural( vectors.last_index( v3 ) );
        vectors.insert( v3, idx, "1234" );
        vectors.first( v3, c3 );
        pragma assert( vectors.element( c3 ) = "ant" );
@@ -6979,7 +6979,7 @@ begin
 
     -- insert with index and element and count
 
-    idx := vectors.last_index( v1 );
+    idx := natural( vectors.last_index( v1 ) );
     vectors.insert( v1, idx, "wolf", 2 );
     vectors.first( v1, c );
     pragma assert( vectors.element( c ) = "ant" );
@@ -7076,7 +7076,7 @@ begin
     vectors.clear( v1 );
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "cat" );
-    idx := vectors.last_index( v1 );
+    idx := natural( vectors.last_index( v1 ) );
     vectors.insert_space( v1, idx );
     pragma assert( vectors.length( v1 ) = 3 );
     vectors.first( v1, c );
@@ -7088,7 +7088,7 @@ begin
     vectors.clear( v1 );
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "cat" );
-    idx := vectors.last_index( v1 );
+    idx := natural( vectors.last_index( v1 ) );
     vectors.insert_space( v1, idx, 2 );
     pragma assert( vectors.length( v1 ) = 4 );
     vectors.first( v1, c );
@@ -7114,7 +7114,7 @@ begin
     vectors.clear( v1 );
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "cat" );
-    idx := vectors.last_index( v1 );
+    idx := natural( vectors.last_index( v1 ) );
     vectors.insert_space( v1, c, c2, 2 );
     pragma assert( vectors.length( v1 ) = 4 );
     vectors.first( v1, c );
@@ -7141,8 +7141,8 @@ begin
     vectors.clear( v );
     vectors.append_elements( v, "ant" );
     vectors.append_elements( v, "bear" );
-    idx1 := vectors.first_index( v );
-    idx2 := vectors.last_index( v );
+    idx1 := natural( vectors.first_index( v ) );
+    idx2 := natural( vectors.last_index( v ) );
     vectors.swap( v, idx1, idx2 );
     pragma assert( vectors.first_element( v ) = "bear" );
     pragma assert( vectors.last_element( v ) = "ant" );
@@ -7183,16 +7183,19 @@ begin
   declare
     idx1 : natural;
     idx2 : natural;
+    long_index : long_integer;
   begin
     vectors.clear( v );
     vectors.append_elements( v, "ant" );
     vectors.append_elements( v, "bear" );
     vectors.append_elements( v, "cat" );
-    idx1 := vectors.first_index( v );
-    vectors.find_index( v, "bear", idx1, idx2 );
+    idx1 := natural( vectors.first_index( v ) );
+    vectors.find_index( v, "bear", idx1, long_index );
+    idx2 := natural( long_index );
     pragma assert( idx2 = 1 );
-    idx1 := vectors.last_index( v );
-    vectors.reverse_find_index( v, "bear", idx1, idx2 );
+    idx1 := natural( vectors.last_index( v ) );
+    vectors.reverse_find_index( v, "bear", idx1, long_index );
+    idx2 := natural( long_index );
     pragma assert( idx2 = 1 );
   end;
 
@@ -7256,8 +7259,8 @@ begin
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "bear" );
     pragma assert( vectors.length( v1 ) = 2 );
-    pragma assert( vectors.element( v1, vectors.first_index( v1 ) ) = "ant" );
-    pragma assert( vectors.element( v1, vectors.first_index( v1 )+1 ) = "bear" );
+    pragma assert( vectors.element( v1, integer( vectors.first_index( v1 ) ) ) = "ant" );
+    pragma assert( vectors.element( v1, integer( vectors.first_index( v1 ) ) +1 ) = "bear" );
   end;
 end;
 

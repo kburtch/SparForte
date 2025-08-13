@@ -350,7 +350,7 @@ begin
   startCompiler;
   startScanner;
   findIdent( to_unbounded_string( "TERM" ), term_id );
-  checkDisplay( identifiers( term_id ).value.all );
+  checkDisplay( identifiers( term_id ).store.value );
   startParser;
   startInterpreter;
 

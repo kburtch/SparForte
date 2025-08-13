@@ -13,8 +13,10 @@ Long term Ongoing Work
 
 - value meta labels project
 
-  - vector index functions automated tests and new long_integer returns - negative tests partially looked at and seem ok.  positive tests to be checked
   - the global meta mode for the language
+  - doubly/insert and mark allocates a return cursor but if it's in-out
+    it should reuse the existing cursor??  You can't delete the cursor
+    without changing the numbering.
 
   - docs
     - document the behaviour of doubly.assemble/disassemble for meta
@@ -37,6 +39,7 @@ Long term Ongoing Work
   - what happens when unsetting meta labels - what is the policy?
   - System package values should be labelled secure
   - should counts have there meta value checked?
+  - tags on user proc/func parameters or at least out parameters
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -64,6 +67,7 @@ Long term Ongoing Work
     Availability -
 
 - error messages and additional context
+  - parer-decl-as still has many errors not in the new format
   - errors for common problems
     - built-in functions used as procedures should have a better error
       message

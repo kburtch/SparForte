@@ -118,7 +118,7 @@ begin
    else
       findIdent( to_unbounded_string( "PATH" ), pathId );
       if pathId /= eof_t then
-         prefixes := identifiers( pathId ).value.all;
+         prefixes := identifiers( pathId ).store.value;
          while length( prefixes ) > 0 loop
             colonPos := Index( prefixes, ":" );
             if colonPos = 0 then

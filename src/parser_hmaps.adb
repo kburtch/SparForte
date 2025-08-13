@@ -157,7 +157,7 @@ begin
 
         declareResource( resId, storage_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
+        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
         identifiers( cursRef.id ).resource := true;
      end if;
   else
@@ -197,7 +197,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        Storage_Hashed_Maps.Clear( theMap.shmMap );
      end;
   end if;
@@ -222,7 +222,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel );
      end;
   end if;
@@ -247,7 +247,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
@@ -276,7 +276,7 @@ begin
      declare
        cap : constant Ada.Containers.Count_Type := Ada.Containers.Count_Type( to_numeric( capExpr.value ) );
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        Storage_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );
      exception when storage_error =>
        err_storage;
@@ -328,7 +328,7 @@ begin
      version := 2;
   else
     ParseGenItemParameter( elemExpr, elemType, identifiers( mapId ).genKind2 );
-    if token = symbol_t and identifiers( token ).value.all = ")" then
+    if token = symbol_t and identifiers( token ).store.value = ")" then
        expect( symbol_t, ")" );
     else
        ParseNextOutMapCursor( mapId, cursorRef );
@@ -339,7 +339,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
 
        case version is
        -- ( m, k, e )
@@ -349,16 +349,18 @@ begin
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
           end if;
        -- (m, k, p, b )
+       -- meta data labels require inserted values to have defined values so
+       -- null storage is used.
        when 2 =>
-          findResource( to_resource_id( identifiers( cursorRef.id ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorRef.id ).store.value ), theCursor );
           if metaLabelOK( keyExpr ) then
-             Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, theCursor.shmCursor,
+             Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, nullStorage, theCursor.shmCursor,
                 result );
              AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
           end if;
        -- (m, k, e, p, b )
        when 3 =>
-          findResource( to_resource_id( identifiers( cursorRef.Id ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorRef.Id ).store.value ), theCursor );
           -- assuming the key and value can fall under different policies
           if metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
@@ -406,10 +408,10 @@ begin
   ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- the key, value and existing value must all be checked. The map
        -- may also be empty but existence is optional.
-       if not Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) then
+       if Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) then
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
           if metaLabelOK( oldElem ) and
              metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
@@ -452,7 +454,7 @@ begin
   ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and
@@ -492,7 +494,7 @@ begin
   ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
@@ -541,7 +543,7 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        if cursorId = eof_t then
           -- the key and existing value must be checked. The map
           -- may also be empty or the key may not exist.
@@ -550,7 +552,7 @@ begin
              Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
           end if;
        else
-          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
           -- the existing value must be checked
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
           if metaLabelOK( oldElem ) then
@@ -591,7 +593,7 @@ begin
   ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        result := storage'(
           to_spar_boolean(
              Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr )
@@ -680,13 +682,13 @@ begin
   if isExecutingCommand then
      begin
        if cursorId /= eof_t then
-          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
           if metaLabelOK( oldElem ) then
              result := oldElem;
           end if;
        else
-          findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+          findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
           if metaLabelOK( keyExpr ) and metaLabelOK( oldElem ) then
              result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
@@ -719,7 +721,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
@@ -755,7 +757,7 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- Append( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        -- labels must be the same for the original value and the appending value
@@ -803,7 +805,7 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- Prepend( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOk( elemExpr, original ) then
@@ -845,10 +847,10 @@ begin
      err( +"increment requires a numeric element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( subprogramId, incExpr, incType, identifiers( mapId ).genKind2 );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
@@ -866,7 +868,7 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- increment( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
@@ -916,10 +918,10 @@ begin
      err( +"decrement requires a numeric element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( subprogramId, decExpr, decType, identifiers( mapId ).genKind2 );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
@@ -937,7 +939,7 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        -- decrement( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
@@ -990,7 +992,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
           result := oldElem;
@@ -1031,8 +1033,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
-       findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
+       findResource( to_resource_id( identifiers( targetMapId ).store.value ), targetMap );
+       findResource( to_resource_id( identifiers( sourceMapId ).store.value ), sourceMap );
        Storage_Hashed_Maps.Assign( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1062,8 +1064,8 @@ begin
   ParseLastInOutInstantiatedParameter( subprogramId, sourceMapId, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
-       findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
+       findResource( to_resource_id( identifiers( targetMapId ).store.value ), targetMap );
+       findResource( to_resource_id( identifiers( sourceMapId ).store.value ), sourceMap );
        Storage_Hashed_Maps.Move( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1095,8 +1097,8 @@ begin
   --ParseLastOutMapCursor( mapId, cursRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.First( theMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1123,7 +1125,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.Next( theCursor.shmCursor );
      exception when storage_error =>
        err_storage;
@@ -1154,7 +1156,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        oldElem := Storage_Hashed_Maps.Key( theCursor.shmCursor );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -1198,8 +1200,8 @@ begin
  -- TODO: not really in out
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.Find( theMap.shmMap, keyExpr );
      exception when storage_error =>
        err_storage;
@@ -1234,8 +1236,8 @@ begin
   ParseLastGenItemParameter( subprogramId, newExpr, newType, identifiers( mapId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        if metaLabelOK( Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
           Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
        end if;
@@ -1272,7 +1274,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel );
      end;
   end if;
@@ -1305,8 +1307,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftMapId ).value.all ), leftMap );
-       findResource( to_resource_id( identifiers( rightMapId ).value.all ), rightMap );
+       findResource( to_resource_id( identifiers( leftMapId ).store.value ), leftMap );
+       findResource( to_resource_id( identifiers( rightMapId ).store.value ), rightMap );
        result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaLabel );
      exception when storage_error =>
        err_storage;

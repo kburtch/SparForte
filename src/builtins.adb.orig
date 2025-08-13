@@ -206,9 +206,9 @@ procedure old_cd( s : unbounded_string ) is
        findIdent( to_unbounded_string( "OLDPWD" ), oldpwd );
        if pwd /= eof_t then
           if oldpwd /= eof_t then
-             identifiers( oldpwd ).value.all := identifiers( pwd ).value.all;
+             identifiers( oldpwd ).store.value := identifiers( pwd ).store.value;
           end if;
-          identifiers( pwd ).value.all := current_working_directory;
+          identifiers( pwd ).store.value := current_working_directory;
        end if;
     end if;
     return result = 0;
@@ -237,11 +237,11 @@ begin
   if head( path, 5 ) = "$HOME" then
      findIdent( to_unbounded_string( "HOME" ), temp_id );
      Delete( path, 1, 5 );
-     Insert( path, 1, to_string( identifiers( temp_id ).value.all ) );
+     Insert( path, 1, to_string( identifiers( temp_id ).store.value ) );
   elsif head( path, 7 ) = "$OLDPWD" then
      findIdent( to_unbounded_string( "OLDPWD" ), temp_id );
      Delete( path, 1, 7 );
-     Insert( path, 1, to_string( identifiers( temp_id ).value.all ) );
+     Insert( path, 1, to_string( identifiers( temp_id ).store.value ) );
   end if;
 
   -- CDPATH support not yet implmeneted.  Should go HERE, but
@@ -423,7 +423,7 @@ begin
      );
   elsif isExecutingCommand then
      findIdent( to_unbounded_string( "TERM" ), term_id );
-     terminalClear( identifiers( term_id ).value.all );
+     terminalClear( identifiers( term_id ).store.value );
   end if;
 end clear;
 

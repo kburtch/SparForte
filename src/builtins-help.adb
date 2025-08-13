@@ -154,14 +154,14 @@ package body builtins.help is
          annotationKind : unbounded_string;
        begin
          if pragmaKind = license_str then
-            if token = symbol_t and identifiers( token ).value.all = "(" then
+            if token = symbol_t and identifiers( token ).store.value = "(" then
                getNextToken;
                info := identifiers( token ).name;
                discardUnusedIdentifier( token );
                getNextToken;
-               if token = symbol_t and identifiers( token ).value.all = "," then
+               if token = symbol_t and identifiers( token ).store.value = "," then
                   getNextToken;
-                  info := info & ": " & identifiers( token ).value.all;
+                  info := info & ": " & identifiers( token ).store.value;
                   expect( strlit_t );
                end if;
                expect( symbol_t, ")" );
@@ -170,7 +170,7 @@ package body builtins.help is
                end if;
             end if;
          elsif pragmaKind = todo_str then
-            if token = symbol_t and identifiers( token ).value.all = "(" then
+            if token = symbol_t and identifiers( token ).store.value = "(" then
                todoTotal := todoTotal + 1;
                getNextToken;
                info := identifiers( token ).name; -- name
@@ -183,8 +183,8 @@ package body builtins.help is
                measure := token;
                getNextToken;
                expectPragmaComma;
-               info := info & "," & identifiers( token ).value.all; -- unit
-               units := identifiers( token ).value.all;
+               info := info & "," & identifiers( token ).store.value; -- unit
+               units := identifiers( token ).store.value;
                -- calculate work by measure
                if measure = teams_work_measure_unknown_t then
                   workMeasureCntUnknown := workMeasureCntUnknown + 1;
@@ -213,8 +213,8 @@ package body builtins.help is
                measure := token;
                getNextToken;
                expectPragmaComma;
-               info := info & "," & identifiers( token ).value.all; -- unit
-               units := identifiers( token ).value.all;
+               info := info & "," & identifiers( token ).store.value; -- unit
+               units := identifiers( token ).store.value;
                if measure = teams_work_priority_unknown_t then
                   workPriorityCntUnknown := workPriorityCntUnknown + 1;
                elsif measure = teams_work_priority_level_t and units = "l" then
@@ -255,9 +255,9 @@ package body builtins.help is
                end if;
                getNextToken;
                -- ticket is optional
-               if token = symbol_t and identifiers( token ).value.all = "," then
+               if token = symbol_t and identifiers( token ).store.value = "," then
                   getNextToken;
-                  info := info & "," & ToCSV( identifiers( token ).value.all );
+                  info := info & "," & ToCSV( identifiers( token ).store.value );
                   getNextToken;
                end if;
                expect( symbol_t, ")" );
@@ -271,7 +271,7 @@ package body builtins.help is
                pragmaKind = dispute_str or
                pragmaKind = propose_str or
                pragmaKind = refactor_str then
-            if token = symbol_t and identifiers( token ).value.all = "(" then
+            if token = symbol_t and identifiers( token ).store.value = "(" then
                getNextToken;
                info := pragmaKind & "," & identifiers( token ).name; -- name
                getNextToken;
@@ -287,7 +287,7 @@ package body builtins.help is
                end if;
             end if;
          elsif pragmaKind = annotate_str then
-            if token = symbol_t and identifiers( token ).value.all = "(" then
+            if token = symbol_t and identifiers( token ).store.value = "(" then
                getNextToken;
                annotationKind := identifiers( token ).name;
                discardUnusedIdentifier( token );
@@ -353,8 +353,8 @@ package body builtins.help is
          else
             -- Any other pragma skip to the ; or @ at the end
             loop
-              exit when token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" );
-              exit when token = symbol_t and identifiers( token ).value.all = to_unbounded_string( "@" );
+              exit when token = symbol_t and identifiers( token ).store.value = to_unbounded_string( ";" );
+              exit when token = symbol_t and identifiers( token ).store.value = to_unbounded_string( "@" );
               exit when error_found or done or token = eof_t;
               getNextToken;
             end loop;
@@ -375,9 +375,9 @@ package body builtins.help is
             while token /= eof_t and token /= end_t loop
                -- an error check
                ParsePragmaStatementAsHelp( pragmaKind );
-               if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
+               if token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( "@" ) then
                   expect( symbol_t, "@" );
-               elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
+               elsif token = symbol_t and identifiers( symbol_t ).store.value = to_unbounded_string( ";" ) then
                   expect( symbol_t, ";" );
                   if token /= end_t then
                      pragmaKind := parsePragmaKindAsHelp;
@@ -393,7 +393,7 @@ package body builtins.help is
             pragmaKind := parsePragmaKindAsHelp;
             loop
                ParsePragmaStatementAsHelp( pragmaKind );
-               exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
+               exit when done or token = eof_t or (token = symbol_t and identifiers( symbol_t ).store.value /= to_unbounded_string( "@" ) );
                expect( symbol_t, "@" );
             end loop;
          end if;
@@ -1711,8 +1711,8 @@ begin
      authorKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using enumerated types." );
-     content( e, "enums.first(t)","enums.last(t)","enums.pred(e2)");
-     content( e, "enums.succ(e2)");
+     content( e, "e := first(t)","e := last(t)","n := pos(e)" );
+     content( e, "e := pred(e2)", "e := succ(e2)", "e := val(t,n)" );
      seeAlso( e, "doc/pkg_enums.html" );
      endHelp( e );
   elsif helpTopic = "env" then

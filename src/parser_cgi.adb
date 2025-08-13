@@ -172,7 +172,7 @@ procedure ParseValue( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   exprExpr2 : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel ); -- default
   expr_type2: identifier;
-  exprExpr3 : storage := storage'( identifiers( false_t ).value.all, noMetalabel );
+  exprExpr3 : storage := storage'( identifiers( false_t ).store.value, noMetalabel );
   expr_type3: identifier;
 begin
   kind := string_t;
@@ -180,11 +180,11 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( exprExpr2, expr_type2 );
         if uniTypesOk( expr_type2, positive_t ) then
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               ParseExpression( exprExpr3, expr_type3 );
               if uniTypesOk( expr_type3, boolean_t ) then
@@ -199,7 +199,7 @@ begin
      begin
        result := storage'( cgi.Value( exprExpr.value,
          positive'value( to_string( exprExpr2.value ) ),
-         exprExpr3.value = identifiers( true_t ).value.all ), noMetaLabel );
+         exprExpr3.value = identifiers( true_t ).store.value ), noMetaLabel );
      exception when constraint_error =>
          err( +"key does not exist" );
      when others =>
@@ -401,7 +401,7 @@ procedure ParsePut_CGI_Header is
   expr_type : identifier;
 begin
   expect( cgi_put_cgi_header_t );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
      ParseExpression( exprExpr, expr_type );
      if uniTypesOk( expr_type, uni_string_t ) then
@@ -436,7 +436,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         expectParameterComma;
         ParseExpression( expr2Expr, expr2_type );
         if uniTypesOk( expr2_type, uni_string_t ) then
@@ -724,7 +724,7 @@ end ParseValue_of_Line;
 procedure ParseURL_Decode( result : out storage; kind : out identifier ) is
   exprExpr  : storage;
   expr_type : identifier;
-  boolExpr : storage := storage'( identifiers( true_t ).value.all, noMetaLabel );
+  boolExpr : storage := storage'( identifiers( true_t ).store.value, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
@@ -732,7 +732,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( boolExpr, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
@@ -743,7 +743,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-        result := storage'( cgi.URL_Decode( exprExpr.value, boolExpr.value = identifiers( true_t ).value.all ), noMetaLabel );
+        result := storage'( cgi.URL_Decode( exprExpr.value, boolExpr.value = identifiers( true_t ).store.value ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -763,7 +763,7 @@ end ParseURL_Decode;
 procedure ParseURL_Encode( result : out storage; kind : out identifier ) is
   exprExpr  : storage;
   expr_type : identifier;
-  boolExpr  : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
+  boolExpr  : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
@@ -771,7 +771,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( boolExpr, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
@@ -783,7 +783,7 @@ begin
   if isExecutingCommand then
      begin
         result := storage'( cgi.URL_Encode( exprExpr.value, boolExpr.value = identifiers( true_t
-).value.all ), noMetaLabel );
+).store.value ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -857,17 +857,17 @@ procedure ParseSet_Cookie is
   domain_type  : identifier;
   expiresExpr  : storage := nullStorage;
   expires_type : identifier;
-  secureExpr   : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
+  secureExpr   : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
   secure_type  : identifier;
 begin
   -- lookup defaults
   findIdent( to_unbounded_string( "PATH_INFO" ), path_type );
   if path_type /= eof_t then
-     pathExpr.value := identifiers( path_type ).value.all;
+     pathExpr.value := identifiers( path_type ).store.value;
   end if;
   findIdent( to_unbounded_string( "SERVER_NAME" ), domain_type );
   if domain_type /= eof_t then
-     domainExpr.value:= identifiers( domain_type ).value.all;
+     domainExpr.value:= identifiers( domain_type ).store.value;
   end if;
   expect( cgi_set_cookie_t );
   expect( symbol_t, "(" );
@@ -877,20 +877,20 @@ begin
   end if;
   ParseExpression( cookieExpr, cookie_type );
   if baseTypesOK( cookie_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( expiresExpr, expires_type );
         if baseTypesOK( expires_type, string_t ) then
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      getNextToken;
      ParseExpression( pathExpr, path_type );
      if baseTypesOK( path_type, string_t ) then
-        if token = symbol_t and identifiers( token ).value.all = "," then
+        if token = symbol_t and identifiers( token ).store.value = "," then
            getNextToken;
            ParseExpression( domainExpr, domain_type );
            if baseTypesOK( domain_type, string_t ) then
 
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               ParseExpression( secureExpr, secure_type );
               if baseTypesOK( secure_type, boolean_t ) then
@@ -911,7 +911,7 @@ begin
        to_string( expiresExpr.value ),
        to_string( pathExpr.value ),
        to_string( domainExpr.value ),
-       (secureExpr.value = identifiers( true_t ).value.all) );
+       (secureExpr.value = identifiers( true_t ).store.value) );
   end if;
 end ParseSet_Cookie;
 
@@ -930,7 +930,7 @@ procedure ParseCookie_Value( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   posExpr   : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel );
   pos_type : identifier;
-  boolExpr  : storage := storage'( identifiers( false_t ).value.all, noMetaLabel );
+  boolExpr  : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
   bool_type : identifier;
 begin
   kind := string_t;
@@ -938,11 +938,11 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( exprExpr, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseExpression( posExpr, pos_type );
         if baseTypesOk( pos_type, positive_t ) then
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               ParseExpression( boolExpr, bool_type );
               if baseTypesOk( bool_type, boolean_t ) then
@@ -957,7 +957,7 @@ begin
      begin
         result := storage'( cgi.cookie_value( exprExpr.value,
            positive( to_numeric( posExpr.value ) ),
-           boolExpr.value = identifiers( true_t ).value.all ), noMetaLabel );
+           boolExpr.value = identifiers( true_t ).store.value ), noMetaLabel );
      exception when others =>
         err_exception_raised;
      end;

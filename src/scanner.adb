@@ -222,10 +222,10 @@ begin
       put_line_retry( standard_error, "put_token: constraint_error raised on token type" );
      end;
   end if;
-  if identifiers( token ).value = null then
+  if identifiers( token ).store = null then
      put_line_retry( "    Token value = null" );
   else
-     put_line_retry( "    Token value = '" & ToEscaped( identifiers( token ).value.all ) & "'" );
+     put_line_retry( "    Token value = '" & ToEscaped( identifiers( token ).store.value ) & "'" );
   end if;
   put_retry( "    Token properties = " );
   if identifiers( token ).import then
@@ -564,7 +564,7 @@ begin
               put_retry( kind.name );
            end if;
         elsif ident.kind = root_record_t then -- base record type
-           put_retry( "record with " & ident.value.all & " fields" );
+           put_retry( "record with " & ident.store.value & " fields" );
         elsif ident.kind = procedure_t then -- procedure's "kind" is procedure
            null;
         else
@@ -644,16 +644,16 @@ begin
                 -- this appears first because getBaseType will fail on a
                 -- procedure
                 put_retry( '"' );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( '"' );
                 -- (should really used root type to determine quoting)
             elsif ident.class = userCaseProcClass then
                 put_retry( '"' );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( '"' );
             elsif ident.class = userFuncClass then
                 put_retry( '"' );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( '"' );
             elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
                 put_retry( "(" );
@@ -661,12 +661,12 @@ begin
                    field_id  : identifier;
                    numFields : natural;
                 begin
-                   numFields := natural( to_numeric( identifiers( getBaseType( ident.kind ) ).value.all ) );
+                   numFields := natural( to_numeric( identifiers( getBaseType( ident.kind ) ).store.value ) );
                    for i in 1..numFields loop
                        findField( id, i, field_id );
                        put_retry( delete( identifiers( field_id ).name, 1, length( ident.name ) + 1 ) ); -- skip record name + '.'
                        put_retry( " =>" );
-                       put_retry( ToEscaped( identifiers( field_id ).value.all ) );
+                       put_retry( ToEscaped( identifiers( field_id ).store.value ) );
                        if i /= numFields then
                           put_retry( "," );
                        end if;
@@ -675,21 +675,21 @@ begin
                 put_retry( ")" );
             elsif ident.kind = string_t then
                 put_retry( '"' );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( '"' );
             elsif ident.kind = character_t then
                 put_retry( "'" );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( "'" );
             elsif ident.class = enumClass then
                 put_retry( '"' );
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
                 put_retry( '"' );
             elsif getUniType( ident.kind ) = root_enumerated_t then
                 for i in identifiers'first..identifiers_top-1 loop
                     if identifiers( i ).kind = ident.kind then
                        if identifiers( i ).class = enumClass then
-                          if identifiers( i ).value.all = ident.value.all then
+                          if identifiers( i ).store.value = ident.store.value then
                              put_retry( ToEscaped( identifiers( i ).name ) );
                              exit;
                           end if;
@@ -697,7 +697,7 @@ begin
                     end if;
                end loop;
             elsif not ident.list then
-                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.store.value ) );
             end if;
         end if;
      end if;
@@ -738,7 +738,7 @@ begin
          firstChar := 0;
          lastChar := 0;
          if identifiers( i ).kind /= keyword_t and not identifiers( i ).list then
-            escapedValue := toEscaped( identifiers( i ).value.all );
+            escapedValue := toEscaped( identifiers( i ).store.value );
          else
             escapedValue := null_unbounded_string;
          end if;
@@ -780,6 +780,41 @@ begin
   end loop;
   -- TODO: DEVICE_ERROR handling
 end put_all_identifiers;
+
+procedure Debug_Put_Meta_Labels is -- DEBUG
+begin
+  for i in reverse keywords_top..identifiers_top-1 loop
+      exit when identifiers( i ).class = mainProgramClass;
+      if not identifiers( i ).deleted and
+         identifiers( i ).class /= namespaceClass and
+         not syntax_check then
+         put( i'img );
+         put( ": " );
+         put( to_string( identifiers( identifiers( i ).kind ).name ) );
+         put( " " );
+         put( identifiers( i ).passingMode'img );
+         put( " " );
+         put( to_string( identifiers( i ).name ) );
+         put( " '" );
+         if identifiers( i ).class /= userProcClass then
+            put( to_string( toEscaped( identifiers( i ).store.value ) ) );
+         end if;
+         put( "' " );
+         if identifiers( i ).renamed_count > 0 then
+            put( "renamed " );
+         end if;
+         begin
+           if identifiers( i ).store.metaLabel = noMetaLabel then
+              put( "[noMetaLabel]" );
+           end if;
+         exception when others =>
+              put( "[undefined]" );
+         end;
+         new_line;
+      end if;
+  end loop;
+end Debug_Put_Meta_Labels;
+
 
 
 -----------------------------------------------------------------------------
@@ -826,7 +861,7 @@ begin
   if softwareModelSet then
      -- TODO: this is slow...should cache it somehow
      findIdent( system_script_software_model_name, model_id );
-     model := identifiers( model_id ).value.all;
+     model := identifiers( model_id ).store.value;
   end if;
   if model = shell_script_model_name then
      if id = standard_error_t then
@@ -1246,9 +1281,9 @@ begin
   scannerState.last_output_type := last_output_type;
   scannerState.err_exception := err_exception;
   -- because value is now a pointer
-  scannerState.err_exception.value := scannerState.err_exception.sstorage.value'unchecked_access;
+  scannerState.err_exception.store := scannerState.err_exception.sstorage'unchecked_access;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
-     scannerState.value := identifiers( token ).value.all;
+     scannerState.value := identifiers( token ).store.value;
   end if;
 end markScanner;
 
@@ -1275,10 +1310,10 @@ begin
   -- stoarge.
   if length( err_exception.name ) = 0 then
      err_exception := scannerState.err_exception;
-     err_exception.value := err_exception.sstorage.value'access;
+     err_exception.store := err_exception.sstorage'access;
   end if;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
-     identifiers( token ).value.all := scannerState.value;
+     identifiers( token ).store.value := scannerState.value;
   end if;
 end resumeScanning;
 
@@ -1316,7 +1351,7 @@ begin
   end if;
   markScanner( scriptState.scannerState );
   scriptState.script := script;
-  scriptState.size := identifiers( source_info_script_size_t ).value.all;
+  scriptState.size := identifiers( source_info_script_size_t ).store.value;
   scriptState.inputMode := inputMode;
   script := null;
 end saveScript;
@@ -1347,7 +1382,7 @@ begin
   script := scriptState.script;
   scriptState.script := null;
   inputMode := scriptState.inputMode;
-  identifiers( source_info_script_size_t ).value.all := scriptState.size;
+  identifiers( source_info_script_size_t ).store.value := scriptState.size;
   resumeScanning( scriptState.scannerState );
 end restoreScript;
 
@@ -2281,13 +2316,13 @@ begin
   declareIdent( file_mode_t, "file_mode", root_enumerated_t, typeClass );
   declareIdent( unbounded_string_t, "unbounded_string", uni_string_t, typeClass );
   declareIdent( complex_t, "complex", root_record_t, typeClass );
-  identifiers( complex_t ).value.all := to_unbounded_string( "2" );
+  identifiers( complex_t ).store.value := to_unbounded_string( "2" );
   declareIdent( complex_real_t, "complex.re", long_float_t, subClass );
   identifiers( complex_real_t ).field_of := complex_t;
-  identifiers( complex_real_t ).value.all := to_unbounded_string( "1" );
+  identifiers( complex_real_t ).store.value := to_unbounded_string( "1" );
   declareIdent( complex_imaginary_t, "complex.im", long_float_t, subClass );
   identifiers( complex_imaginary_t ).field_of := complex_t;
-  identifiers( complex_imaginary_t ).value.all := to_unbounded_string( "2" );
+  identifiers( complex_imaginary_t ).store.value := to_unbounded_string( "2" );
 end declareStandardTypes;
 
 
@@ -2633,7 +2668,7 @@ begin
     C_reset_errno;
     getcwd( buffer, buffer'length );
     if C_errno = 0 then
-       identifiers( pwd_id ).value.all := to_unbounded_string(
+       identifiers( pwd_id ).store.value := to_unbounded_string(
            buffer( 1..index( buffer, ASCII.NUL & "" ) - 1 ) ) ;
     end if;
   end;
@@ -2661,12 +2696,12 @@ begin
   end if;
   identifiers( shell_id ).export := true;
   -- A reasonable default
-  identifiers( shell_id ).value.all := to_unbounded_string( Ada.Command_Line.Command_Name );
+  identifiers( shell_id ).store.value := to_unbounded_string( Ada.Command_Line.Command_Name );
   -- There could be multiple SparForte's installed on a system.
   -- I have to walk the path directories to find it.
-  if identifiers( shell_id ).value.all = fname then
+  if identifiers( shell_id ).store.value = fname then
      declare
-        remainingCmdPathDirs : unbounded_string := identifiers( path_id ).value.all;
+        remainingCmdPathDirs : unbounded_string := identifiers( path_id ).store.value;
         candidateCmdPathDir : unbounded_string;
         pos : natural;
         candidate : unbounded_string;
@@ -2682,19 +2717,19 @@ begin
            end if;
            candidate := candidateCmdPathDir & "/" & fname;
            if C_is_executable_file( to_string( candidate & ASCII.NUL ) ) then
-              identifiers( shell_id ).value.all := candidate;
+              identifiers( shell_id ).store.value := candidate;
               exit;
            end if;
         end loop;
      exception when others => null;
      end;
-  elsif head( identifiers( shell_id ).value.all, 2 ) = "./" then
+  elsif head( identifiers( shell_id ).store.value, 2 ) = "./" then
      declare
-        candidate : unbounded_string := identifiers( temp_id ).value.all;
+        candidate : unbounded_string := identifiers( temp_id ).store.value;
      begin
         candidate := delete( candidate, 1, 1 );
-        candidate := identifiers( pwd_id ).value.all & "/" & fname;
-        identifiers( shell_id ).value.all := candidate;
+        candidate := identifiers( pwd_id ).store.value & "/" & fname;
+        identifiers( shell_id ).store.value := candidate;
      end;
   end if;
   if rshOpt then                                              -- restricted sh?
@@ -2704,15 +2739,15 @@ begin
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "TERM", uni_string_t );           -- declare it
      identifiers( temp_id ).export := true;                   -- default xterm
-     identifiers( temp_id ).value.all := to_unbounded_string( "xterm" );
+     identifiers( temp_id ).store.value := to_unbounded_string( "xterm" );
   else
      -- xterm emulation?  then change the window name during interactive
      -- sessions
-     if head( identifiers( temp_id ).value.all, 5 ) = "xterm" then
+     if head( identifiers( temp_id ).store.value, 5 ) = "xterm" then
         terminalWindowNaming := true;
-     elsif identifiers( temp_id ).value.all = "linux" then       -- could be
+     elsif identifiers( temp_id ).store.value = "linux" then       -- could be
         findIdent( to_unbounded_string( "DISPLAY" ), temp_id );  -- a console
-        if identifiers( temp_id ).value.all = "DISPLAY" then     -- hope its x
+        if identifiers( temp_id ).store.value = "DISPLAY" then     -- hope its x
            terminalWindowNaming := true;
         end if;
      end if;
@@ -2728,7 +2763,7 @@ begin
      tabSize := 8;
   else
      begin
-       tabSize := natural( to_numeric( identifiers( temp_id ).value.all ) );
+       tabSize := natural( to_numeric( identifiers( temp_id ).store.value ) );
      exception when others =>
        tabSize := 8;
      end;
@@ -2886,16 +2921,16 @@ begin
         --  "session_variable_value", string_t );
         findIdent( sessions_session_variable_name_str, temp1_t );
         if temp1_t /= eof_t then
-           identifiers( temp1_t ).value.all := identifiers( id ).name;
+           identifiers( temp1_t ).store.value := identifiers( id ).name;
         end if;
         findIdent( sessions_session_variable_value_str, temp2_t );
         if temp2_t /= eof_t then
            -- temp2_t could be rendered a constant for the export script
-           identifiers( temp2_t ).value.all := identifiers( id ).name;
+           identifiers( temp2_t ).store.value := identifiers( id ).name;
         end if;
         if not error_found then
            CompileAndRun( sessionImportScript, 1, false );
-           importedStringValue := identifiers( temp2_t ).value.all;
+           importedStringValue := identifiers( temp2_t ).store.value;
            -- b := deleteIdent( temp2_t );
            -- b := deleteIdent( temp1_t );
         end if;
@@ -2942,20 +2977,20 @@ begin
   if not error_found then
      if identifiers( id ).mapping = json then                       -- json
         if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
-           DoJsonToString( identifiers( id ).value.all, importedStringValue );
+           DoJsonToString( identifiers( id ).store.value, importedStringValue );
         elsif identifiers( id ).list then                           -- array
            DoJsonToArray( id, importedStringValue, noMetaLabel );   -- VALUE META LABEL: TODO: assign the correct level
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
            DoJsonToRecord( id, importedStringValue );
         elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
-           DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
+           DoJsonToNumber( importedStringValue, identifiers( id ).store.value );
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
-           DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
+           DoJsonToNumber( importedStringValue, identifiers( id ).store.value );
         --else
         --   err( "internal error: unexpected import translation type" );
         end if;
      else                                                           -- no mapping
-        identifiers( id ).value.all := importedStringValue;
+        identifiers( id ).store.value := importedStringValue;
      end if;
   end if;
 end refreshVolatile;
@@ -3804,7 +3839,7 @@ function deleteIdent( id : identifier ) return boolean is
 
   function ConvertValueToJson( id : identifier ) return unbounded_string is
   begin
-    tempStr := identifiers( id ).value.all;
+    tempStr := identifiers( id ).store.value;
     if getUniType( identifiers( id ).kind ) = uni_string_t then
        tempStr := DoStringToJson( tempStr );
     elsif identifiers( id ).list then
@@ -3843,7 +3878,7 @@ function deleteIdent( id : identifier ) return boolean is
            else
               Set( localMemcacheCluster,
                    identifiers( id ).name,
-                   identifiers( id ).value.all );
+                   identifiers( id ).store.value );
            end if;
         exception when others => null;
         end;
@@ -3856,7 +3891,7 @@ function deleteIdent( id : identifier ) return boolean is
            else
               Set( distributedMemcacheCluster,
                    identifiers( id ).name,
-                   identifiers( id ).value.all );
+                   identifiers( id ).store.value );
            end if;
         exception when others => null;
         end;
@@ -3877,15 +3912,15 @@ function deleteIdent( id : identifier ) return boolean is
            begin
              findIdent( sessions_session_variable_name_str, temp1_t );
              if temp1_t /= eof_t then
-                identifiers( temp1_t ).value.all := identifiers( id ).name;
+                identifiers( temp1_t ).store.value := identifiers( id ).name;
              end if;
              findIdent( sessions_session_variable_value_str, temp2_t );
              if temp2_t /= eof_t then
                 -- temp2_t could be rendered a constant for the export script
                 if identifiers( id ).mapping = json then
-                  identifiers( temp2_t ).value.all := ConvertValueToJson( id );
+                  identifiers( temp2_t ).store.value := ConvertValueToJson( id );
                 else
-                  identifiers( temp2_t ).value.all := identifiers( id ).value.all;
+                  identifiers( temp2_t ).store.value := identifiers( id ).store.value;
                 end if;
              --    declareStandardConstant( temp2_t, "session_variable_value", string_t, to_string( ConvertValueToJson( id ) ) );
              -- else
@@ -4947,7 +4982,7 @@ begin
               for i in reverse keywords_top..identifiers_top-1  loop
                   if identifiers( i ).kind = elementKind then
                      if identifiers( i ).class = enumClass then
-                        maxEnum := integer( to_numeric( identifiers( i ).value.all ) );
+                        maxEnum := integer( to_numeric( identifiers( i ).store.value ) );
                         exit;
                      end if;
                   end if;
@@ -5221,10 +5256,10 @@ procedure DoRecordToJson( result : out unbounded_string; source_var_id : identif
    item        : unbounded_string;
 begin
      result := to_unbounded_string( "{" );
-     for i in 1..integer'value( to_string( identifiers( identifiers( source_var_id ).kind ).value.all ) ) loop
+     for i in 1..integer'value( to_string( identifiers( identifiers( source_var_id ).kind ).store.value ) ) loop
          for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = identifiers( source_var_id ).kind then
-                if integer'value( to_string( identifiers( j ).value.all )) = i then
+                if integer'value( to_string( identifiers( j ).store.value )) = i then
                       fieldName := identifiers( j ).name;
                       dotPos := length( fieldName );
                       while dotPos > 1 loop
@@ -5253,14 +5288,14 @@ begin
                          uniFieldType := getUniType( identifiers( field_t ).kind );
                          if getBaseType( identifiers( field_t ).kind ) = boolean_t then
                             begin
-                               if identifiers( field_t ).value.all = "" then
+                               if identifiers( field_t ).store.value = "" then
                                    err( contextNotes => +"encoding a record to a JSON string value",
                                         subject => field_t,
                                         subjectType => identifiers( field_t ).kind,
                                         reason => pl( "has an " ) & em( "undefined value" ),
                                         obstructorNotes => nullMessageStrings
                                    );
-                               elsif integer( to_numeric( identifiers( field_t ).value.all ) ) = 0 then
+                               elsif integer( to_numeric( identifiers( field_t ).store.value ) ) = 0 then
                                   result := result & "false";
                                else
                                   result := result & "true";
@@ -5271,13 +5306,13 @@ begin
                                       " while encoding the record" ),
                                    subjectNotes => subjectInterpreter,
                                    reason => +"had an internal error because it expected a boolean value but found",
-                                   obstructorNotes => em_value( identifiers( field_t ).value.all )
+                                   obstructorNotes => em_value( identifiers( field_t ).store.value )
                               );
                             end;
                          -- in most cases you just copy the data as-is.
                          -- however, we still must handle undefined values
                          elsif uniFieldType = uni_numeric_t then
-                            if identifiers( field_t ).value.all = "" then
+                            if identifiers( field_t ).store.value = "" then
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,
@@ -5285,13 +5320,13 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).value.all;
+                               result := result & identifiers( field_t ).store.value;
                             end if;
                          elsif uniFieldType = root_enumerated_t then
                             -- The originally existed but " 0" is the first
                             -- enum value.
-                            --if identifiers( field_t ).value.all = " 0" or
-                            if identifiers( field_t ).value.all = "" then
+                            --if identifiers( field_t ).store.value = " 0" or
+                            if identifiers( field_t ).store.value = "" then
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,
@@ -5299,11 +5334,11 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).value.all;
+                               result := result & identifiers( field_t ).store.value;
                             end if;
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
                             -- if it's a JSON string, just copy the JSON data
-                            if identifiers( field_t ).value.all = "" then
+                            if identifiers( field_t ).store.value = "" then
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,
@@ -5311,12 +5346,12 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).value.all;
+                               result := result & identifiers( field_t ).store.value;
                             end if;
                          elsif uniFieldType = uni_string_t or uniFieldType = universal_t then
                             -- universal and universal string are strings
                             item := to_unbounded_string( """" );
-                            item := item & ToJSONEscaped( identifiers( field_t ).value.all );
+                            item := item & ToJSONEscaped( identifiers( field_t ).store.value );
                             item := item & '"';
                             result := result & item;
                          else
@@ -5457,7 +5492,7 @@ begin
 
     -- The number of items in the JSON string should equal the size of the
     -- record.
-    if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).value.all ) ) then
+    if sourceLen = long_integer'value( to_string( identifiers( identifiers( target_var_id ).kind ).store.value ) ) then
 
        -- for each of the items in the JSON string
 
@@ -5507,9 +5542,9 @@ begin
                     elementKind := getBaseType( identifiers( j ).kind );
                     if elementKind = boolean_t then
                        if decodedItemValue = "true" then
-                          identifiers( j ).value.all := to_unbounded_string( "1" );
+                          identifiers( j ).store.value := to_unbounded_string( "1" );
                        elsif decodedItemValue = "false" then
-                          identifiers( j ).value.all :=  to_unbounded_string( "0" );
+                          identifiers( j ).store.value :=  to_unbounded_string( "0" );
                        -- this cannot happen because it will get a parse error first
                        --elsif decodedItemValue = "" then
                        --    err( contextAltText( sourceVal, "decoding the JSON string value to a record" ),
@@ -5540,7 +5575,7 @@ begin
                         for i in reverse keywords_top..identifiers_top-1  loop
                             if identifiers( i ).kind = elementKind then
                                if identifiers( i ).class = enumClass then
-                                  maxEnum := integer( to_numeric( identifiers( i ).value.all ) );
+                                  maxEnum := integer( to_numeric( identifiers( i ).store.value ) );
                                   exit;
                                end if;
                             end if;
@@ -5563,7 +5598,7 @@ begin
                         end;
                         -- Space is required for findEnumImage.  Values are
                         -- stored with leading space.
-                        identifiers( j ).value.all := ' ' & decodedItemValue;
+                        identifiers( j ).store.value := ' ' & decodedItemValue;
                       end;
                     elsif getUniType( elementKind ) = uni_string_t or
                           getUniType( elementKind ) = universal_t then
@@ -5591,7 +5626,7 @@ begin
                             decodedItemValue := ToJSONUnescaped( decodedItemValue );
                          end if;
                       end if;
-                      identifiers( j ).value.all := castToType( decodedItemValue,
+                      identifiers( j ).store.value := castToType( decodedItemValue,
                          identifiers( j ).kind );
                     elsif getUniType( elementKind ) = uni_numeric_t then
                       -- Numbers
@@ -5604,7 +5639,7 @@ begin
                               obstructorNotes => +"a " & em( "number value" )
                          );
                       end if;
-                      identifiers( j ).value.all := castToType( decodedItemValue,
+                      identifiers( j ).store.value := castToType( decodedItemValue,
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
@@ -5646,7 +5681,7 @@ begin
             subject => target_var_id,
             subjectType => identifiers( target_var_id ).kind,
             reason => +"has " &
-               unb_pl( identifiers( identifiers( target_var_id ).kind ).value.all  ) &
+               unb_pl( identifiers( identifiers( target_var_id ).kind ).store.value  ) &
                pl( " field(s) but JSON string has" ),
             obstructorNotes => em( sourceLen'img )
        );
@@ -5850,7 +5885,7 @@ begin
      lastpos := cmdpos - 1; -- last char
      cmdpos := cmdpos + 1; -- skip delim
      token := word_t;
-     identifiers( word_t ).value.all := word;
+     identifiers( word_t ).store.value := word;
      return;
 
   elsif  ch = immediate_symbol_delimiter then
@@ -5868,7 +5903,7 @@ begin
         lastpos := lastpos+1;
      end loop;
      lastpos := lastpos-1;
-     identifiers( shell_symbol_t ).value.all := To_Unbounded_String( -- extract string
+     identifiers( shell_symbol_t ).store.value := To_Unbounded_String( -- extract string
        script( cmdpos..lastpos ) );
      cmdpos := lastpos+2;                                     -- skip delim
      token := shell_symbol_t;                                 -- a shell symbol
@@ -5897,7 +5932,7 @@ begin
      lastpos := cmdpos - 1; -- last char
      cmdpos := cmdpos + 1; -- skip delim
      token := sql_word_t;
-     identifiers( sql_word_t ).value.all := word;
+     identifiers( sql_word_t ).store.value := word;
      return;
 
   elsif (ch >= 'a' and ch <='z') or
@@ -6008,7 +6043,7 @@ begin
      end if;
      if is_based_number then
         begin
-           identifiers( number_t ).value.all := to_unbounded_string(
+           identifiers( number_t ).store.value := to_unbounded_string(
               natural'image( natural'value( ' ' & script( cmdpos..lastpos ) ) ) );
         exception when others =>
           err(
@@ -6022,7 +6057,7 @@ begin
           );
         end;
      else
-        identifiers( number_t ).value.all := To_Unbounded_String( -- extract number
+        identifiers( number_t ).store.value := To_Unbounded_String( -- extract number
            ' ' & script( cmdpos..lastpos ) );
      end if;
      cmdpos := lastpos+1;                                 -- advance posn
@@ -6042,7 +6077,7 @@ begin
         if script( lastpos+1 ) = ''' then                -- '''?
            lastpos := lastpos+2;                         -- skip literal
            cmdpos := lastpos;                            -- start here next
-           identifiers( charlit_t ).value.all := To_Unbounded_String( "'" );
+           identifiers( charlit_t ).store.value := To_Unbounded_String( "'" );
                                                          -- extract string
            token := charlit_t;                           -- char literal
            return;                                       -- that's it
@@ -6052,7 +6087,7 @@ begin
      if script( lastpos ) = high_ascii_escape then
         lastpos := lastpos + 1;
      end if;
-     identifiers( charlit_t ).value.all := To_Unbounded_String( -- extract string
+     identifiers( charlit_t ).store.value := To_Unbounded_String( -- extract string
        "" & script( lastpos ) );
      lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last '
@@ -6073,7 +6108,7 @@ begin
            if script( lastpos+2 ) = '"' then             -- """"?
               lastpos := lastpos+3;                      -- skip literal
               cmdpos := lastpos;                         -- start here next
-              identifiers( strlit_t ).value.all := To_Unbounded_String( """" );
+              identifiers( strlit_t ).store.value := To_Unbounded_String( """" );
                                                          -- extract string
               token := strlit_t;                         -- string literal
               return;                                    -- that's it
@@ -6081,12 +6116,12 @@ begin
         end if;                                          -- fall through
      end if;
      -- NORMAL CASE
-     identifiers( strlit_t ).value.all := Null_Unbounded_String;
+     identifiers( strlit_t ).store.value := Null_Unbounded_String;
      while script( lastpos ) /= '"' loop                 -- until last "
         if script( lastpos ) = high_ascii_escape then
            lastpos := lastpos + 1;
         end if;
-        identifiers( strlit_t ).value.all := identifiers( strlit_t ).value.all &
+        identifiers( strlit_t ).store.value := identifiers( strlit_t ).store.value &
           script( lastpos );
         lastpos := lastpos + 1;
      end loop;
@@ -6104,7 +6139,7 @@ begin
 
      cmdpos := cmdpos+1;                                      -- continue
      lastpos := cmdpos;                                       -- reading
-     identifiers( backlit_t ).value.all := Null_Unbounded_String;
+     identifiers( backlit_t ).store.value := Null_Unbounded_String;
      inBackslash := false;
      while not (script( lastpos ) = '`' and not inBackslash) loop -- until last `
         -- allow anything to be backslashed. the shell parser will
@@ -6114,7 +6149,7 @@ begin
            if script( lastpos ) = high_ascii_escape then
               lastpos := lastpos + 1;
            end if;
-           identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+           identifiers( backlit_t ).store.value := identifiers( backlit_t ).store.value &
               script( lastpos );
         elsif script( lastpos ) = '\' then
            inBackslash := true;
@@ -6122,19 +6157,19 @@ begin
            if script( lastpos ) = high_ascii_escape then
               lastpos := lastpos + 1;
            end if;
-           identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+           identifiers( backlit_t ).store.value := identifiers( backlit_t ).store.value &
               script( lastpos );
         end if;
         --if script( lastpos ) = high_ascii_escape then
         --   lastpos := lastpos + 1;
         --end if;
-        --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+        --identifiers( backlit_t ).store.value := identifiers( backlit_t ).store.value &
         --    script( lastpos );
         lastpos := lastpos + 1;
      end loop;
      --lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last `
---put_line( to_string( identifiers( backlit_t ).value.all ) ); -- DEBUG
+--put_line( to_string( identifiers( backlit_t ).store.value ) ); -- DEBUG
      token := backlit_t;                                      -- string literal
      return;
 
@@ -6236,7 +6271,7 @@ begin
           cmdpos := cmdpos + 1;                               -- as a symbol
      end case;
      lastpos := cmdpos-1;                                     -- end of token
-     identifiers( symbol_t ).value.all := To_Unbounded_String(
+     identifiers( symbol_t ).store.value := To_Unbounded_String(
         script( firstpos..lastpos ) );
      token := symbol_t;                                       -- a symbol
      return;
@@ -6477,8 +6512,8 @@ begin
         end if;                                               -- check env var
         findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id );
         if temp_id /= eof_t then                              -- exists?
-           if length( identifiers( temp_id ).value.all ) > 0 then  -- non-blank?
-              workingPaths := workingPaths & ":" & identifiers( temp_id ).value.all;
+           if length( identifiers( temp_id ).store.value ) > 0 then  -- non-blank?
+              workingPaths := workingPaths & ":" & identifiers( temp_id ).store.value;
            end if;
         end if;
 
@@ -6658,7 +6693,7 @@ begin
      compileInclude( includeText );
      new_script := pre_script & to_unbounded_string( script.all ) & post_script;
      replaceScript( new_script );
-     identifiers( source_info_script_size_t ).value.all := delete( to_unbounded_string( script.all'length'img), 1, 1 );
+     identifiers( source_info_script_size_t ).store.value := delete( to_unbounded_string( script.all'length'img), 1, 1 );
      resumeScanning( includeSemicolonPosition );
   end if;
 end insertInclude;

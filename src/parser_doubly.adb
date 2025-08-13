@@ -207,7 +207,7 @@ begin
      -- Technically, I should check each item for the right to delete but
      -- I have not done so here.
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        Doubly_Linked_Storage_Lists.Clear( theList.dlslList );
      end;
   end if;
@@ -232,7 +232,7 @@ begin
   ParseSingleListParameter( subprogramId, listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ), noMetaLabel );
      end;
   end if;
@@ -257,7 +257,7 @@ begin
   ParseSingleListParameter( subprogramId, listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaLabel );
      end;
   end if;
@@ -289,7 +289,7 @@ begin
   if not error_found then
      ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -299,7 +299,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_Storage_Lists.Append( theList.dlslList, itemExpr, cnt );
@@ -340,7 +340,7 @@ begin
   if not error_found then
      ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -350,7 +350,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_Storage_Lists.Prepend( theList.dlslList, itemExpr, cnt );
@@ -391,7 +391,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        oldElem := Doubly_Linked_Storage_Lists.First_Element( theList.dlslList );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -426,7 +426,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        oldElem := Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -455,7 +455,7 @@ procedure ParseDoublyDeleteFirst is
 begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -465,7 +465,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -511,7 +511,7 @@ procedure ParseDoublyDeleteLast is
 begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -521,7 +521,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_last has a count parameter, we cannot use it.
@@ -569,8 +569,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.First( theList.dlslList );
      end;
   end if;
@@ -597,8 +597,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Last( theList.dlslList );
      end;
   end if;
@@ -620,7 +620,7 @@ begin
   ParseSingleCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        Doubly_Linked_Storage_Lists.Next( theCursor.dlslCursor );
      end;
   end if;
@@ -642,7 +642,7 @@ begin
   ParseSingleCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        Doubly_Linked_Storage_Lists.Previous( theCursor.dlslCursor );
      end;
   end if;
@@ -668,7 +668,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        oldElem := Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -710,8 +710,8 @@ begin
      -- Note: check-before-use.  This will be an issue if concurrency is
      -- introduced.
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ), itemExpr ) then
           Doubly_Linked_Storage_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
@@ -787,10 +787,10 @@ begin
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
   genTypesOk( identifiers( listId ).genKind, itemType );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType );
      hasCnt := true;
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
@@ -799,8 +799,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        if metaLabelOk( itemExpr ) then
           if hasCnt then
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -873,10 +873,10 @@ begin
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      -- A cursor may be followed by an optional count
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
-     elsif token = symbol_t and identifiers( token ).value.all = ")" then
+     elsif token = symbol_t and identifiers( token ).store.value = ")" then
         expect( symbol_t, ")" );
      else
         err( +", or ) expected" );
@@ -892,10 +892,10 @@ begin
      ParseNextOutParameter( subprogramId, ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastNumericParameter( subprogramId, cntExpr, cntType );
         hasCnt := true;
-     elsif token = symbol_t and identifiers( token ).value.all = ")" then
+     elsif token = symbol_t and identifiers( token ).store.value = ")" then
         expect( symbol_t, ")" );
      else
         err( +", or ) expected" );
@@ -906,8 +906,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
        identifiers( ref.id ).resource := true;
        declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( ref.id ) );
@@ -918,17 +918,43 @@ begin
        if hasItem and hasCnt then
           if metaLabelOk( itemExpr ) then
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-             Doubly_Linked_Storage_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor, cnt );
+             Doubly_Linked_Storage_Lists.Insert(
+                theList.dlslList,
+                theCursor.dlslCursor,
+                itemExpr,
+                theSecondCursor.dlslCursor,
+                cnt
+             );
           end if;
        elsif hasItem then
           if metaLabelOk( itemExpr ) then
-             Doubly_Linked_Storage_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, theSecondCursor.dlslCursor );
+             Doubly_Linked_Storage_Lists.Insert(
+                theList.dlslList,
+                theCursor.dlslCursor,
+                itemExpr,
+                theSecondCursor.dlslCursor
+             );
           end if;
        elsif hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          Doubly_Linked_Storage_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor, cnt );
+          -- the meta data labels require nullStorage to be insert, not just
+          -- random data
+          Doubly_Linked_Storage_Lists.Insert(
+             theList.dlslList,
+             theCursor.dlslCursor,
+             nullStorage,
+             theSecondCursor.dlslCursor,
+             cnt
+          );
        else
-          Doubly_Linked_Storage_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
+          -- the meta data labels require nullStorage to be insert, not just
+          -- random data
+          Doubly_Linked_Storage_Lists.Insert(
+             theList.dlslList,
+             theCursor.dlslCursor,
+             nullStorage,
+             theSecondCursor.dlslCursor
+          );
        end if;
 
      exception when program_error =>
@@ -966,7 +992,7 @@ begin
   if not error_found then
      genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -976,8 +1002,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        if hasCnt then
          begin
            cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -1030,7 +1056,7 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaLabel);
      end;
   end if;
@@ -1071,8 +1097,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -1114,8 +1140,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Reverse_Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -1140,7 +1166,7 @@ begin
   ParseSingleListParameter( subprogramId, listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        Doubly_Linked_Storage_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -1165,7 +1191,7 @@ begin
   ParseSingleListParameter( subprogramId, listId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        Doubly_Linked_Storage_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -1198,8 +1224,8 @@ begin
      declare
        sourceCursor : Doubly_Linked_Storage_Lists.Cursor;
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
+       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
+       findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
        -- this is only available starting in GCC Ada 4.7 or 4.8 or newer
        --Doubly_Linked_Storage_Lists.Assign( theTargetList.dlslList, theSourceList.dlslList );
        -- we'll write our own
@@ -1241,8 +1267,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
+       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
+       findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
        Doubly_Linked_Storage_Lists.Move( theTargetList.dlslList, theSourceList.dlslList );
      end;
   end if;
@@ -1282,9 +1308,9 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( firstCursId ).store.value ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).store.value ), theSecondCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap( theList.dlslList,
@@ -1335,9 +1361,9 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       findResource( to_resource_id( identifiers( firstCursId ).store.value ), theFirstCursor );
+       findResource( to_resource_id( identifiers( secondCursId ).store.value ), theSecondCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap_Links( theList.dlslList,
@@ -1389,7 +1415,7 @@ begin
      sourceListId := tempId;
      hasSourceId := true;
      genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastCursorParameter( subprogramId, curs2Id );
         hasCurs2 := true;
         genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
@@ -1409,13 +1435,13 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        if hasSourceId then
-          findResource( to_resource_id( identifiers( sourceListId ).value.all ), theSourceList );
+          findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
        end if;
        if hasCurs2 then
-          findResource( to_resource_id( identifiers( curs2Id ).value.all ), theSecondCursor );
+          findResource( to_resource_id( identifiers( curs2Id ).store.value ), theSecondCursor );
        end if;
 
        -- There are 3 variations to this function
@@ -1499,7 +1525,7 @@ begin
   ParseSingleCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaLabel );
      end;
   end if;
@@ -1538,10 +1564,10 @@ begin
   kind := uni_string_t;
   expectAdaScript( subject => subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( subprogramId, delimExpr, delimType, uni_string_t );
      hasDelim := true;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastStringParameter( subprogramId, finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
@@ -1559,7 +1585,7 @@ begin
           -- TODO: the eol delimiter should be based on the operating system
           delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel );
        end if;
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        curs := Doubly_Linked_Storage_Lists.First( theList.dlslList );
        result := nullStorage;
        if Doubly_Linked_Storage_Lists.Has_Element( curs ) then
@@ -1623,10 +1649,10 @@ begin
   expectAdaScript( subject => subprogramId );
   ParseFirstStringParameter( subprogramId, strExpr, strType, uni_string_t );
   ParseNextListParameter( subprogramId, listId );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( subprogramId, delimExpr, delimType, uni_string_t );
      hasDelim := true;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastStringParameter( subprogramId, finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
@@ -1662,7 +1688,7 @@ begin
        delimLen := length( delimExpr.value );
        delimPos := 0;
        -- generate the list items
-       findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        tempStore.metaLabel := strExpr.metaLabel;
        if metaLabelOk( strExpr ) then
           while l >= i loop
@@ -1734,7 +1760,7 @@ begin
   if isExecutingCommand then
      begin
         -- generate the list items
-        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+        findResource( to_resource_id( identifiers( listId ).store.value ), theList );
         width := positive'value( " " & to_string( widthExpr.value ) );
         -- width should be positive by this point
         firstPos := 1;

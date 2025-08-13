@@ -136,7 +136,7 @@ begin
 
   if identifiers( ref.id ).list then        -- array variable?
         -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
-     if token = symbol_t and identifiers( token ).value.all = "(" then
+     if token = symbol_t and identifiers( token ).store.value = "(" then
         expect( symbol_t, "(" );
         ref.hasIndex := true;
         ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
@@ -1048,10 +1048,10 @@ begin
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
      if isNew then
-        for i in 1..integer'value( to_string( identifiers( ref.kind ).value.all ) ) loop
+        for i in 1..integer'value( to_string( identifiers( ref.kind ).store.value ) ) loop
             for j in 1..identifiers_top-1 loop
                 if identifiers( j ).field_of = ref.kind then
-                   if integer'value( to_string( identifiers( j ).value.all )) = i then
+                   if integer'value( to_string( identifiers( j ).store.value )) = i then
                       declare
                          fieldName   : unbounded_string;
                          dont_care_t : identifier;
@@ -1233,10 +1233,10 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
-     for i in 1..integer'value( to_string( identifiers( ref.kind ).value.all ) ) loop
+     for i in 1..integer'value( to_string( identifiers( ref.kind ).store.value ) ) loop
         for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = ref.kind then
-                if integer'value( to_string( identifiers( j ).value.all )) = i then
+                if integer'value( to_string( identifiers( j ).store.value )) = i then
                    declare
                       fieldName   : unbounded_string;
                       dont_care_t : identifier;

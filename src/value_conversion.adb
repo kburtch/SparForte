@@ -27,7 +27,7 @@ function to_numeric( id : identifier ) return numericValue is
 -- Look up an identifier's value and return it as a long float
 -- (Spar's numeric representation).
 begin
-   return to_numeric( identifiers( id ).value.all );
+   return to_numeric( identifiers( id ).store.value );
 end to_numeric;
 
 function to_spar_boolean( AdaBoolean : boolean ) return unbounded_string is

@@ -97,7 +97,7 @@ begin
   ParseSingleInOutInstantiatedParameter( dht_reset_t, tableId, dht_table_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        Dynamic_Storage_Hash_Tables.Reset( theTable.dsht );
      exception when storage_error =>
        err( +"storage error raised" );
@@ -129,7 +129,7 @@ begin
   ParseLastGenItemParameter( dht_set_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        -- the key, value and existing value must all be checked.
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldElem /= nullStorage then
@@ -173,7 +173,7 @@ begin
   ParseLastStringParameter( dht_get_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -202,7 +202,7 @@ begin
   ParseLastStringParameter( dht_has_element_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel );
      end;
   end if;
@@ -228,7 +228,7 @@ begin
   ParseLastStringParameter( dht_remove_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if metaLabelOk( oldElem ) and metaLabelOk( keyExpr ) then
           Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
@@ -264,7 +264,7 @@ begin
      declare
        s : storage;
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
        if metaLabelOk( s ) then
           AssignParameter( itemRef, s );
@@ -300,7 +300,7 @@ begin
      declare
        s : storage;
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
        if metaLabelOk( s ) then
           AssignParameter( itemRef, s );
@@ -334,7 +334,7 @@ begin
   ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) then
@@ -371,7 +371,7 @@ begin
   ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) and
@@ -412,7 +412,7 @@ begin
   ParseLastGenItemParameter( dht_append_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr, oldItem ) then
@@ -454,7 +454,7 @@ begin
   ParseLastGenItemParameter( dht_prepend_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           -- labels must be the same for the original value and the appending value
@@ -495,17 +495,17 @@ begin
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( dht_increment_t, keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( dht_increment_t, amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           oldItemValue := to_numeric( oldItem.value );
@@ -557,17 +557,17 @@ begin
      err( +"decrement requires a numeric item type" );
   end if;
   ParseNextStringParameter( dht_decrement_t, keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( dht_decrement_t, amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
+       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           oldItemValue := to_numeric( oldItem.value );

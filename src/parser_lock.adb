@@ -65,7 +65,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = ")" then
+     if token = symbol_t and identifiers( token ).store.value = ")" then
         fileExpr := expr;
      else
         expectParameterComma;
@@ -73,11 +73,11 @@ begin
         -- first variation: dir, file [,wait [,retry] ]
         if getUniType( expr_type ) = uni_string_t then
            dirExpr := expr;
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               ParseExpression( waitExpr, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
-                 if token = symbol_t and identifiers( token ).value.all = "," then
+                 if token = symbol_t and identifiers( token ).store.value = "," then
                     getNextToken;
                     ParseExpression( retryExpr, expr_type );
                     if baseTypesOk( expr_type, duration_t ) then
@@ -91,7 +91,7 @@ begin
            -- second variation: file [,wait [,retry] ]
            waitExpr := fileExpr; -- what we read was wait time
            fileExpr := expr; -- and first param is file
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
               ParseExpression( retryExpr, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
@@ -135,7 +135,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( fileExpr, expr_type );
   if baseTypesOk( expr_type, string_t ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         dirExpr := fileExpr;
         ParseExpression( fileExpr, expr_type );

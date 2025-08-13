@@ -326,7 +326,7 @@ begin
      begin
        -- close the file / environment, if they are still open.  This doesn't
        -- close any cursors.
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
        if theFile.btree.isOpen then
           Close( theFile.btree.session );
           Close( theFile.btree.env );
@@ -377,7 +377,7 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         init( theFile.btree.env );
 
         -- berkeley db paths must be absolute paths when creating (opening
@@ -388,7 +388,7 @@ begin
            dirname2 := null_unbounded_string;
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
-           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+           dirname2 := identifiers( pwdId ).store.value & "/" & dirname;
         end if;
         if trace then
            put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
@@ -476,7 +476,7 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
 
         init( theFile.btree.env );
 
@@ -488,7 +488,7 @@ begin
            dirname2 := null_unbounded_string;
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
-           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+           dirname2 := identifiers( pwdId ).store.value & "/" & dirname;
         end if;
         if trace then
            put_trace( "Base directory is '" & toSecuredata( to_string( toEscaped( dirname2 ) ) ) & "'" );
@@ -575,7 +575,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if theFile.btree.isOpen then
            close( theFile.btree.session );
            close( theFile.btree.env );
@@ -647,7 +647,7 @@ begin
         pwdId : identifier;
      begin
         -- TODO: pathname handling
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
 
         -- Create an environment
         init( theFile.btree.env );
@@ -664,7 +664,7 @@ begin
            err( +"file must be in current directory in a " & em( "restricted shell" ) );
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
-           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+           dirname2 := identifiers( pwdId ).store.value & "/" & dirname;
         end if;
         if trace then
            put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
@@ -736,7 +736,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         result := storage'( to_spar_boolean( theFile.btree.isOpen ), noMetaLabel );
      exception when berkeley_error =>
         result := storage'( to_spar_boolean( false ), noMetaLabel );
@@ -768,7 +768,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         result := storage'( theFile.btree.name, noMetaLabel );
      end;
   end if;
@@ -800,7 +800,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if theFile.btree.isOpen then
            begin
               close( theFile.btree.session );
@@ -817,7 +817,7 @@ begin
            pwdId : identifier;
         begin
            -- TODO: pathname handling
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
 
            -- Create an environment
            init( theFile.btree.env );
@@ -834,7 +834,7 @@ begin
               err( +"file must be in current directory in a " & em( "restricted shell" ) );
            elsif element( dirname2, 1 ) /= '/' then
               findIdent( to_unbounded_string( "PWD" ), pwdId );
-              dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+              dirname2 := identifiers( pwdId ).store.value & "/" & dirname;
            end if;
            if trace then
               put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
@@ -966,7 +966,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
@@ -980,7 +980,7 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
@@ -995,7 +995,7 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
               put( theFile.btree.session, to_string( keyExpr.value ), to_string( valExpr.value ) );
@@ -1086,7 +1086,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
@@ -1106,7 +1106,7 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
@@ -1126,7 +1126,7 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               result : unbounded_string;
@@ -1173,7 +1173,7 @@ begin
   ParseFirstFileParameter( subprogramId, fileId );
   ParseLastStringParameter( subprogramId, keyExpr, keyType, string_t );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
            exists( theFile.btree.session, to_string( keyExpr.value ) );
@@ -1225,11 +1225,11 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         if cursId /= eof_t then
            begin
-             findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+             findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
              delete( theFile.btree.session, theCurs.btree_cur.cursor );
            exception when msg: berkeley_error =>
                err( pl( exception_message( msg ) ) );
@@ -1284,16 +1284,16 @@ begin
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( subprogramId, amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
@@ -1356,16 +1356,16 @@ begin
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastNumericParameter( subprogramId, amtExpr, amtType, natural_t );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
        begin
          get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
@@ -1446,12 +1446,12 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+              findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
               exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
@@ -1471,7 +1471,7 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
@@ -1494,7 +1494,7 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
               exists( theFile.btree.session, to_string( keyExpr.value ) );
@@ -1579,14 +1579,14 @@ begin
      if cursId /= eof_t then
         -- put where the cursor is
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
                 get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
                    temp_key,
@@ -1609,14 +1609,14 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
                  jsonString : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
                 get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
                    temp_key,
@@ -1639,13 +1639,13 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
              declare
                temp_key    : unbounded_string;
                temp_string : unbounded_string;
              begin
-               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+               findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
                get( theFile.btree.session,
                   theCurs.btree_cur.cursor,
                   temp_key,
@@ -1670,7 +1670,7 @@ begin
      else
        -- put, but only if the target exists
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
@@ -1691,7 +1691,7 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
@@ -1712,7 +1712,7 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
              begin
                exists( theFile.btree.session, to_string( keyExpr.value ) );
@@ -1767,7 +1767,7 @@ begin
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
@@ -1818,7 +1818,7 @@ begin
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
@@ -1858,7 +1858,7 @@ begin
   expect( subprogramId );
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
            sync( theFile.btree.session );
@@ -1892,7 +1892,7 @@ begin
   expect( subprogramId );
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         declare
            cnt : natural;
@@ -1973,9 +1973,9 @@ begin
   ParseFirstFileParameter( subprogramId, fileId );
   ParseLastCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-        findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+        findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
         if theCurs.btree_cur.isOpen then
            err( +"cursor " &
               name_em( cursId ) &
@@ -2015,9 +2015,9 @@ begin
   ParseLastCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-           findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+           findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
            if not theCurs.btree_cur.isOpen then
               err( +"cursor " &
                  name_em( cursId ) &
@@ -2106,13 +2106,13 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2137,13 +2137,13 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                       name_em( cursId ) &
@@ -2168,13 +2168,13 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               data : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2271,9 +2271,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2302,9 +2302,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2333,9 +2333,9 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2440,9 +2440,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2471,9 +2471,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2502,9 +2502,9 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2601,9 +2601,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2632,9 +2632,9 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2663,9 +2663,9 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
            if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
+              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
                     name_em( cursId ) &
@@ -2716,7 +2716,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            result := storage'( to_spar_boolean( will_raise( theFile.btree.session ) ), noMetaLabel );
         end if;
@@ -2750,7 +2750,7 @@ begin
   ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
           result := storage'( to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) ), noMetaLabel );
        end if;
@@ -2791,7 +2791,7 @@ begin
      declare
        raise_them : constant boolean := boolExpr.value = to_unbounded_string( "1" );
      begin
-        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
         end if;

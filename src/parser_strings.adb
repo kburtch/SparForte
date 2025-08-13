@@ -352,7 +352,7 @@ begin
         err( +"search string is empty" );
      end if;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( index_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dirExpr.value ) ) is
@@ -393,7 +393,7 @@ begin
   kind := natural_t;
   expect( index_non_blank_t );
   ParseFirstStringParameter( index_non_blank_t, strExpr, str_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( index_non_blank_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dirExpr.value ) ) is
@@ -442,12 +442,12 @@ begin
   expect( index_set_t );
   ParseFirstStringParameter( index_set_t, strExpr, str_type );
   ParseNextStringParameter( index_set_t, setExpr, set_type, uni_string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( index_set_t, firstExpr, first_type, positive_t );
   else
      firstExpr.value := to_unbounded_string("1" );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( index_set_t, testExpr, test_type, strings_membership_t );
      if isExecutingCommand then
         if to_string( testExpr.value ) = "1" then -- 1 is outside; TODO: cleaner way?
@@ -455,7 +455,7 @@ begin
         end if;
      end if;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( index_set_t, dirExpr, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dirExpr.value ) ) is
@@ -570,7 +570,7 @@ begin
   ParseFirstStringParameter( replace_all_t, strExpr, str_type );
   ParseNextStringParameter( replace_all_t, needleExpr, needle_type );
   ParseNextStringParameter( replace_all_t, newstrExpr, newstr_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( replace_all_t, sensitivityExpr,  sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
@@ -708,7 +708,7 @@ begin
   kind := uni_string_t;
   expect( trim_t );
   ParseFirstStringParameter( trim_t, strExpr, str_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      has_end := true;
      ParseLastEnumParameter( trim_t, trim_endExpr, trim_end_type, strings_trim_end_t );
   else
@@ -779,7 +779,7 @@ begin
   expect( head_t );
   ParseFirstStringParameter( head_t, strExpr, str_type );
   ParseNextNumericParameter( head_t, cntExpr, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastStringParameter( head_t, padExpr, pad_type, character_t );
      begin
         pad_char := element( padExpr.value, 1 );
@@ -820,7 +820,7 @@ begin
   expect( tail_t );
   ParseFirstStringParameter( tail_t, strExpr, str_type );
   ParseNextNumericParameter( tail_t, cntExpr, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastStringParameter( tail_t, padExpr, pad_type, character_t );
      begin
         pad_char := element( padExpr.value, 1 );
@@ -860,7 +860,7 @@ begin
   expectAdaScript( subject => starts_with_t );
   ParseFirstStringParameter( starts_with_t, strExpr, str_type );
   ParseNextStringParameter( starts_with_t, headExpr, head_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( starts_with_t, sensitivityExpr, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
@@ -903,7 +903,7 @@ begin
   expectAdaScript( subject => ends_with_t );
   ParseFirstStringParameter( ends_with_t, strExpr, str_type );
   ParseNextStringParameter( ends_with_t, tailExpr, tail_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( ends_with_t, sensitivityExpr, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
@@ -951,7 +951,7 @@ begin
   expectAdaScript( subject => field_t );
   ParseFirstStringParameter( field_t, strExpr, str_type );
   ParseNextNumericParameter( field_t, cntExpr, cnt_type, natural_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastStringParameter( field_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -997,7 +997,7 @@ begin
   ParseFirstStringParameter( csv_field_t, strExpr, str_type );
   ParseNextNumericParameter( csv_field_t, cntExpr, cnt_type, natural_t );
   -- Optional delimiter
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( csv_field_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -1007,7 +1007,7 @@ begin
         end;
      end if;
      -- Optional single quotes flag
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastEnumParameter( csv_field_t, squotesExpr, squotes_type, boolean_t );
         if isExecutingCommand then
            begin
@@ -1272,7 +1272,7 @@ begin
   expect( lookup_t );
   ParseFirstStringParameter( lookup_t, srcExpr, src_type );
   ParseNextStringParameter( lookup_t, tarExpr, tar_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastStringParameter( lookup_t, delExpr, del_type, character_t );
      if isExecutingCommand then
         begin
@@ -1318,7 +1318,7 @@ begin
   if uniTypesOk( src_ref.kind, Uni_String_T ) then
      ParseNextNumericParameter( replace_t, cntExpr, cnt_type, natural_t );
      ParseNextStringParameter( replace_t, tarExpr, tar_type, Uni_String_T );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastStringParameter( replace_t, delExpr, del_type, character_t );
         if isExecutingCommand then
            begin
@@ -1373,7 +1373,7 @@ begin
   if uniTypesOk( src_ref.kind, Uni_String_t ) then
      ParseNextNumericParameter( csv_replace_t, cntExpr, cnt_type, natural_t );
      ParseNextStringParameter( csv_replace_t, tarExpr, tar_type );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseNextStringParameter( csv_replace_t, delExpr, del_type, character_t );
         if isExecutingCommand then
            begin
@@ -1383,7 +1383,7 @@ begin
            end;
         end if;
         -- Optional single quotes flag
-        if token = symbol_t and identifiers( token ).value.all = "," then
+        if token = symbol_t and identifiers( token ).store.value = "," then
            ParseLastEnumParameter( csv_replace_t, squotesExpr, squotes_type, boolean_t );
            if isExecutingCommand then
               begin
@@ -1543,6 +1543,8 @@ begin
   ParseLastNumericParameter( split_t, fieldExpr, field_type, natural_t );
   begin
      if isExecutingCommand then
+        leftStr.metaLabel := srcExpr.metaLabel;
+        rightStr.metaLabel := srcExpr.metaLabel;
         split( srcExpr.value, leftStr.value, rightStr.value,
                natural( to_numeric( fieldExpr.value ) ) );
         assignParameter( left_ref, leftStr );
@@ -2168,12 +2170,12 @@ begin
   expectAdaScript( subject => compare_t );
   ParseFirstStringParameter( compare_t, firstExpr, first_type );
   ParseNextStringParameter( compare_t, lastExpr, last_type );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextEnumParameter( compare_t, sensitivityExpr,  sensitivity_type, strings_sensitivity_t );
   else
     sensitivityExpr.value := to_unbounded_string( "1" );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( compare_t, lenExpr, len_type, natural_t );
   else
     expect( symbol_t, ")" );

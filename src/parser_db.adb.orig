@@ -147,15 +147,15 @@ begin
      return;
   end if;
   ParseFirstStringParameter( db_connect_t, dbnameExpr, dbnameType, string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( db_connect_t, userExpr, userType, string_t );
      hasUser := true;
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseNextStringParameter( db_connect_t, pswdExpr, pswdType, string_t );
-        if token = symbol_t and identifiers( token ).value.all = "," then
+        if token = symbol_t and identifiers( token ).store.value = "," then
            ParseNextStringParameter( db_connect_t, hostExpr, hostType, string_t );
            hasHost := true;
-           if token = symbol_t and identifiers( token ).value.all = "," then
+           if token = symbol_t and identifiers( token ).store.value = "," then
               ParseNextNumericParameter( db_connect_t, portExpr, portType, integer_t );
               hasPort := true;
            end if;
@@ -331,7 +331,7 @@ procedure ParseDBPrepare is
 begin
   expect( db_prepare_t );
   ParseFirstStringParameter( db_prepare_t, sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( db_prepare_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -372,7 +372,7 @@ procedure ParseDBAppend is
 begin
   expect( db_append_t );
   ParseFirstStringParameter( db_append_t, sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( db_append_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -442,7 +442,7 @@ procedure ParseDBAppendQuoted is
 begin
   expect( db_append_quoted_t );
   ParseFirstStringParameter( db_append_quoted_t, sqlExpr, sqlType, string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( db_append_quoted_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
@@ -512,7 +512,7 @@ procedure ParseDBExecuteChecked is
   hasMsg    : boolean := false;
 begin
   expect( db_execute_checked_t );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseSingleStringParameter( db_execute_checked_t, msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
@@ -824,7 +824,7 @@ procedure ParseDBOpenDBTrace is
 begin
   expect( db_open_db_trace_t );
   ParseFirstStringParameter( db_open_db_trace_t, fnameExpr, fnameType, string_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( db_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr.value ) ) );
      hasMode := true;
@@ -978,7 +978,7 @@ procedure ParseDBRaiseExceptions is
   raiseType : identifier;
 begin
   expect( db_raise_exceptions_t );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseSingleEnumParameter( db_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
      raiseExpr.value := to_unbounded_string( "1" );
@@ -1013,7 +1013,7 @@ procedure ParseDBReportErrors is
   reportType : identifier;
 begin
   expect( db_report_errors_t );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseSingleStringParameter( db_report_errors_t, reportExpr, reportType, boolean_t );
   else
      reportExpr := storage'( to_unbounded_string( "1" ), noMetaLabel );
@@ -1165,7 +1165,7 @@ procedure ParseDBFetch is
   haveIndex : boolean := false;
 begin
   expect( db_fetch_t );
-  if token = symbol_t and identifiers( token ).value.all = "(" then
+  if token = symbol_t and identifiers( token ).store.value = "(" then
      ParseSingleNumericParameter( db_fetch_t, expr, expr_type, db_tuple_index_type_t );
      haveIndex := true;
   end if;

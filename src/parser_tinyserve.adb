@@ -143,7 +143,7 @@ begin
 -- TODO: handle defaults
 -- TODO: out parameter works here?
      if isExecutingCommand then
-        findServer( identifiers( serverId ).value.all, server );
+        findServer( identifiers( serverId ).store.value, server );
         if server /= null then
            -- TODO: number conversion could throw exception
            pegasock.tinyserve.startupTinyServe(
@@ -170,7 +170,7 @@ begin
   expect( tinyserve_shutdown_t );
   ParseSingleServerParameter( tinyserve_shutdown_t, serverId );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).value.all, server );
+     findServer( identifiers( serverId ).store.value, server );
      if server /= null then
         pegasock.tinyserve.shutdownTinyServe( server.tinyserve_server );
      end if;
@@ -188,7 +188,7 @@ begin
   ParseFirstServerParameter( tinyserve_manage_connections_t, serverId );
   ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).value.all, server );
+     findServer( identifiers( serverId ).store.value, server );
      manageConnections( server.tinyserve_server, client );
      assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
   end if;
@@ -205,7 +205,7 @@ begin
   ParseFirstServerParameter( tinyserve_get_next_client_t, serverId );
   ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).value.all, server );
+     findServer( identifiers( serverId ).store.value, server );
      if server /= null then
         getNextClient( server.tinyserve_server, client );
         assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
@@ -224,7 +224,7 @@ begin
   ParseFirstServerParameter( tinyserve_get_listener_socket_t, serverId );
   ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).value.all, server );
+     findServer( identifiers( serverId ).store.value, server );
      if server /= null then
         getListenerSocket( server.tinyserve_server, client );
         assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
@@ -242,7 +242,7 @@ begin
   expect( tinyserve_count_clients_t );
   ParseFirstServerParameter( tinyserve_count_clients_t, serverId );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).value.all, server );
+     findServer( identifiers( serverId ).store.value, server );
      if server /= null then
         clients := countClients( server.tinyserve_server );
         result := storage'( to_unbounded_string( clients'img ), noMetaLabel );

@@ -316,7 +316,7 @@ end ParseVarUsageQualifiers;
 procedure ParseGenericParametersPart( varId, genTypeId : identifier ) is
   genKind : identifier;
 begin
-  if token /= symbol_t or identifiers( token ).sstorage.value /= "(" then
+  if token /= symbol_t or identifiers( token ).store.value /= "(" then
 
      err( contextNotes => +"While checking the generic type",
           subject => varId,
@@ -330,7 +330,7 @@ begin
   ParseIdentifier( genKind );
   if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
      identifiers( varId ).genKind := genKind;
-     if token = symbol_t and identifiers( token ).sstorage .value = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
         ParseIdentifier( genKind );
         if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
@@ -430,7 +430,7 @@ begin
   if not error_found then
      begin
        --identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
-       identifiers( new_id ).value := identifiers( new_id ).sstorage.value'access;
+       identifiers( new_id ).store := identifiers( new_id ).sstorage'access;
 
        -- For a volatile, update the value before copying.
        if isExecutingCommand then
@@ -440,7 +440,7 @@ begin
        end if;
 
        if canonicalRef.index = 0 then
-          identifiers( new_id ).sstorage.value := identifiers( canonicalRef.id ).value.all;
+          identifiers( new_id ).sstorage.value := identifiers( canonicalRef.id ).sstorage.value;
        else
           identifiers( new_id ).sstorage.value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value;
        end if;
@@ -564,7 +564,7 @@ begin
        else                                                    -- check anyway
           arrayIndex := arrayIndex+1;                          -- next element
        end if;                                                 -- stop on err
-       exit when error_found or identifiers( token ).value.all /= ","; -- more?
+       exit when error_found or identifiers( token ).store.value /= ","; -- more?
        expectParameterComma;                                   -- continue
      end loop;
      arrayIndex := arrayIndex - 1;                             -- last added
@@ -712,7 +712,7 @@ begin
         subjectNotes => +"the index range"
      );
      ParseExpression( ab2Expr, kind2 );                            -- high bound
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
@@ -795,7 +795,7 @@ begin
         end if;
         if type_checks_done or else class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            if isExecutingCommand and not syntax_check then
-              identifiers( anonType ).value.all := null_unbounded_string;
+              identifiers( anonType ).store.value := null_unbounded_string;
               identifiers( anonType ).firstBound := long_integer( to_numeric( ab1Expr.value ) );
               identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2Expr.value ) );
               identifiers( anonType ).genKind    := kind1;
@@ -810,7 +810,7 @@ begin
   -- (Constant assignments, etc. occur only when actually running a script)
 
   if isExecutingCommand then
-     identifiers( id ).value.all := null_unbounded_string;
+     identifiers( id ).store.value := null_unbounded_string;
      identifiers( id ).astorage := findStorage( long_integer( to_numeric( ab1Expr.value ) ),
         long_integer( to_numeric( ab2Expr.value ) ) );
      identifiers( id ).genKind := kind1;
@@ -827,7 +827,7 @@ begin
   --
   -- Note: Array ID will not be valid at syntax check time
 
-  if token = symbol_t and identifiers( token ).value.all = ":=" then
+  if token = symbol_t and identifiers( token ).store.value = ":=" then
      ParseArrayAssignPart( id );
   end if;
 
@@ -888,7 +888,7 @@ begin
         else
            base_type_id := arrayType;
         end if;
-        identifiers( id ).value.all := null_unbounded_string;
+        identifiers( id ).store.value := null_unbounded_string;
         identifiers( id ).astorage := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );
         identifiers( id ).genKind := identifiers( base_type_id ).genKind;
      end if;
@@ -901,7 +901,7 @@ begin
      -- CONST SPECS
      -- Constant Array Specification
 
-     if token = symbol_t and identifiers( token ).value.all = ";" then
+     if token = symbol_t and identifiers( token ).store.value = ";" then
         if identifiers( id ).usage = constantUsage then
            identifiers( id ).specFile := getSourceFileName;
            identifiers( id ).specAt := getLineNo;
@@ -912,11 +912,11 @@ begin
      --
      -- Note: Array ID will not be valid at syntax check time
 
-     if token = symbol_t and identifiers( token ).value.all = ":=" then
+     if token = symbol_t and identifiers( token ).store.value = ":=" then
        -- TODO: the recursion problem may exist here, where defining x but x may be
        -- in the assignment list.
         ParseArrayAssignPart( id );
-     elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
+     elsif token = symbol_t and identifiers( token ).store.value = "(" then
          err( name_em( arrayType ) & pl( " is not a generic type but has parameters" ) );
      end if;
 
@@ -959,7 +959,7 @@ begin
      expect( symbol_t, "(" );                                  -- read constant
      field_no := 1;
      begin
-       expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
+       expected_fields := integer'value( to_string( identifiers( recType ).store.value ) );
      exception when others =>
        expected_fields := 0;
      end;
@@ -968,7 +968,7 @@ begin
        found := false;
        for j in 1..identifiers_top-1 loop
            if identifiers( j ).field_of = recType then
-              if integer'value( to_string( identifiers( j ).value.all )) = field_no then
+              if integer'value( to_string( identifiers( j ).store.value )) = field_no then
                  found := true;
                  declare
                     fieldName : unbounded_string;
@@ -1001,7 +1001,7 @@ begin
                     else
                        if type_checks_done or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
-                             identifiers( field_t ).value.all := expr.value;
+                             identifiers( field_t ).store.value := expr.value;
                              if trace then
                                 put_trace(
                                   to_string( fieldName ) & " := " &
@@ -1023,7 +1023,7 @@ begin
                pl( " field(s)" )
           );
        end if;
-       exit when error_found or identifiers( token ).value.all /= ","; -- more?
+       exit when error_found or identifiers( token ).store.value /= ","; -- more?
        expectParameterComma;
        field_no := field_no + 1;
      end loop;
@@ -1050,7 +1050,7 @@ begin
 
      if isExecutingCommand then
         begin
-          expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
+          expected_fields := integer'value( to_string( identifiers( recType ).store.value ) );
         exception when others =>
           expected_fields := 0;
         end;
@@ -1063,7 +1063,7 @@ begin
            for field_no in 1..expected_fields loop
               for j in 1..identifiers_top-1 loop
                   if identifiers( j ).field_of = recType then
-                     if integer'value( to_string( identifiers( j ).value.all )) = field_no then
+                     if integer'value( to_string( identifiers( j ).store.value )) = field_no then
                         -- find source field
                         sourceFieldName := identifiers( j ).name;
                         sourceFieldName := delete( sourceFieldName, 1, index( sourceFieldName, "." ) );
@@ -1095,11 +1095,11 @@ begin
                            exit;
                         end if;
                         -- copy it
-                        identifiers( target_field_t ).value.all := identifiers( source_field_t ).value.all;
+                        identifiers( target_field_t ).store.value := identifiers( source_field_t ).store.value;
                         if trace then
                           put_trace(
                             to_string( targetFieldName ) & " := " &
-                            toSecureData( to_string( toEscaped( identifiers( target_field_t ).value.all ) ) ) );
+                            toSecureData( to_string( toEscaped( identifiers( target_field_t ).store.value ) ) ) );
                         end if;
                      end if; -- right number
                   end if; -- field member
@@ -1144,7 +1144,7 @@ begin
 
      baseRecType := getBaseType( recType );
      begin
-       numFields := natural'value( to_string( identifiers( baseRecType ).value.all ) );
+       numFields := natural'value( to_string( identifiers( baseRecType ).store.value ) );
      exception when constraint_error =>
        err( contextNotes => pl( "At " & gnat.source_info.source_location &
                " while assigning a value" ),
@@ -1178,7 +1178,7 @@ begin
 
             while j < identifiers_top loop
               if identifiers( j ).field_of = baseRecType then
-                 if integer'value( to_string( identifiers( j ).value.all )) = i then
+                 if integer'value( to_string( identifiers( j ).store.value )) = i then
                     exit;
                  end if;
               end if;
@@ -1255,7 +1255,7 @@ begin
 
   -- Assignment when declaring a record variable
 
-  elsif token = symbol_t and identifiers( token ).value.all = ":=" then
+  elsif token = symbol_t and identifiers( token ).store.value = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
      -- elsif identifiers( id ).usage = constantUsage then
@@ -1268,7 +1268,7 @@ begin
 
   -- Parenthesis?  It looks like a Generic type.  Show an error.
 
-  elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
+  elsif token = symbol_t and identifiers( token ).store.value = "(" then
      err( contextNotes => pl( "in record declaration for " &
              to_string( identifiers( id ).name ) ),
           subject => recType,
@@ -1354,7 +1354,7 @@ begin
       -- TODO: we could make this happen
       featureNotYetImplemented( subjectNotes => "copying an exception",
          remedy => "declare the second exception separately" );
-   elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+   elsif token /= symbol_t and identifiers( token ).store.value /= ";" then
       err( contextNotes => +"in the exception declaration",
            subjectNotes => em( "with or ;" ),
            reason => +"is expected",
@@ -1750,7 +1750,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
      end if;
      if isExecutingCommand then
         identifiers( id ).sstorage.value := to_unbounded_string( resId );
-        identifiers( id ).value := identifiers( id ).sstorage.value'access;
+        identifiers( id ).store := identifiers( id ).sstorage'access;
         identifiers( id ).resource := true;
      end if;
   end AttachGenericParameterResource;
@@ -1928,7 +1928,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
              DoContracts( identifiers( new_const_id ).kind, expr );
           end if;
        end if;
-       identifiers( new_const_id ).value.all := expr.value;
+       identifiers( new_const_id ).store.value := expr.value;
        if trace then
            put_trace(
               to_string( identifiers( new_const_id ).name ) & " := """ &
@@ -2173,7 +2173,7 @@ begin
      identifiers( id ).kind := type_token;
      identifiers( id ).usage := identifiers( type_token ).usage;
 
-  elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
+  elsif token = symbol_t and identifiers( token ).store.value = "(" then
      err( contextNotes => pl( "in declaration for " &
              to_string( identifiers( id ).name ) ),
           subject => type_token,
@@ -2275,7 +2275,7 @@ begin
            -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
-                 identifiers( id ).value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value'access;
+                 identifiers( id ).store := identifiers( canonicalRef.id ).astorage( canonicalRef.index )'access;
               exception when storage_error =>
                  err( contextNotes => pl( "At " & gnat.source_info.source_location &
                          " while declaring the renaming" ),
@@ -2381,7 +2381,7 @@ begin
            -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
-                 identifiers( id ).value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value'access;
+                 identifiers( id ).store := identifiers( canonicalRef.id ).astorage( canonicalRef.index )'access;
               exception when storage_error =>
                  err( contextNotes => pl( "At " & gnat.source_info.source_location &
                          " while declaring the renaming" ),
@@ -2410,7 +2410,7 @@ begin
   -- constant specification?  Record the location of the specification
   -- and assign the data type to the identifier.
 
-  elsif (token = symbol_t and identifiers( token ).value.all = ";") and
+  elsif (token = symbol_t and identifiers( token ).store.value = ";") and
      expr_expected then
      identifiers( id ).kind := type_token;
      identifiers( id ).specFile := getSourceFileName;
@@ -2420,7 +2420,7 @@ begin
 
   -- Check for optional assignment
 
-  elsif (token = symbol_t and identifiers( token ).value.all = ":=") or
+  elsif (token = symbol_t and identifiers( token ).store.value = ":=") or
      expr_expected then
 
      -- Tricky bit: what about "i : integer := i"?
@@ -2528,7 +2528,7 @@ begin
         if type_token /= right_type then
            DoContracts( identifiers( id ).kind, expr );
         end if;
-        identifiers( id ).value.all := expr.value;
+        identifiers( id ).store.value := expr.value;
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
@@ -2557,11 +2557,11 @@ begin
                  );
                  end if;
               end if;
-              identifiers( id ).value.all := expr.value;
+              identifiers( id ).store.value := expr.value;
            end if;
         end if;
      end if;
-  elsif (token = symbol_t and identifiers( token ).value.all = ";") then
+  elsif (token = symbol_t and identifiers( token ).store.value = ";") then
      identifiers( id ).kind := type_token;
   else
      -- neither an ending ; or a :=?  destory the variable.  A syntax
@@ -2595,7 +2595,7 @@ begin
   ParseDeclarationPart( field_id, anon_arrays => false, exceptions => false );
   identifiers( field_id ).class := subClass;        -- it is a subtype
   identifiers( field_id ).field_of := record_id;    -- it is a field
-  identifiers( field_id ).value.all := to_unbounded_string( field_no'img );
+  identifiers( field_id ).store.value := to_unbounded_string( field_no'img );
   if syntax_check then
      identifiers( field_id ).wasReferenced := true;
      --identifiers( field_id ).referencedByFlow := getDataFlowName;
@@ -2660,7 +2660,7 @@ begin
       identifiers( newtype_id ).class := typeClass;         -- it is a type
       identifiers( newtype_id ).import := false;            -- never import
       identifiers( newtype_id ).export := false;            -- never export
-      identifiers( newtype_id ).value.all := to_unbounded_string( field_no'img );
+      identifiers( newtype_id ).store.value := to_unbounded_string( field_no'img );
       -- number of fields in a record variable
    else                                                     -- otherwise
      b := deleteIdent( newtype_id );                        -- discard bad type
@@ -2706,7 +2706,7 @@ begin
    end if;
    expect( symbol_t, ".." );
    ParseExpression( ab2Expr, kind2 );
-   if token = symbol_t and identifiers( token ).value.all = "," then
+   if token = symbol_t and identifiers( token ).store.value = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
    elsif ab1Expr.value = null_unbounded_string then
@@ -2788,7 +2788,7 @@ begin
   -- (Constant assignments, etc. occur only when actually running a script)
 
    elementBaseType := getBaseType( elementType );
-   if token = symbol_t and identifiers( token ).value.all = ":=" then
+   if token = symbol_t and identifiers( token ).store.value = ":=" then
       err( contextNotes => pl( "declaring the array type " ) &
                        unb_em( identifiers( newtype_id ).name ),
           subjectNotes => em( "an array type" ),
@@ -2927,7 +2927,7 @@ begin
 
    while token = when_t loop
       expect( when_t );
-      if token = symbol_t and identifiers( token ).value.all = "=>" then
+      if token = symbol_t and identifiers( token ).store.value = "=>" then
          err(                                                 -- "=>"
             contextNotes => +"in the case when part",
             subjectNotes => pl( qp( "the when conditions" ) ),
@@ -2947,7 +2947,7 @@ begin
             obstructorNotes => +"a type or subtype"
          );
       else
-         while token = symbol_t and identifiers( token ).value.all = "|" loop
+         while token = symbol_t and identifiers( token ).store.value = "|" loop
             expect( symbol_t, "|" );
             ParseIdentifier( case_id );
             if identifiers( case_id ).class /= typeClass and
@@ -2965,7 +2965,7 @@ begin
          end loop;
       end if;
 
-      if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+      if token /= symbol_t or identifiers( token ).store.value /= "=>" then
          err(                                                 -- "=>"
             contextNotes => +"in case affirm when part",
             subjectNotes => pl( qp( "the list of input values" ) ),
@@ -2989,7 +2989,7 @@ begin
       );                        -- if pointing at
    end if;                                                  -- end case
    expect( others_t );                                      -- "others"
-   if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+   if token /= symbol_t or identifiers( token ).store.value /= "=>" then
       err(                                                 -- "=>"
          contextNotes => +"in case affirm when part",
          subjectNotes => pl( qp( "the list of input values" ) ),
@@ -3123,7 +3123,7 @@ begin
    ParseNewIdentifier( newtype_id );                       -- typename
    expect( is_t );                                         -- is
 
-   if Token = symbol_t and identifiers( token ).value.all = "(" then
+   if Token = symbol_t and identifiers( token ).store.value = "(" then
 
       -- enumerated
       --
@@ -3168,14 +3168,14 @@ begin
             begin
               -- drop leading space
               --identifiers( newtype_id ).value := to_unbounded_string( s(2..s'last) );
-              identifiers( newtype_id ).value.all := to_unbounded_string( s );
+              identifiers( newtype_id ).store.value := to_unbounded_string( s );
             end;
             identifiers( newtype_id ).kind := parent_id;   -- based on parent
          else                                              -- otherwise
             b := deleteIdent( newtype_id );                -- discard item
          end if;
          enum_index := enum_index + 1;                     -- next item number
-         exit when error_found or identifiers( token ).value.all /= ",";      -- quit when no ","
+         exit when error_found or identifiers( token ).store.value /= ",";      -- quit when no ","
          expectParameterComma;                             -- ","
       end loop;
       expectSymbol(                                        -- close enum
@@ -3312,7 +3312,7 @@ begin
         end if;
         -- currently, it will always be limitedUsage
         identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
-     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     elsif token = symbol_t and identifiers( token ).store.value = "(" then
            err( contextNotes => +"in the declaration of type " &
                 unb_em( identifiers( newtype_id ).name ),
              subject => parent_id,
@@ -3372,7 +3372,7 @@ begin
         ParseCaseAffirmClause( newtype_id );
      elsif token = affirm_t then
         ParseAffirmClause( newtype_id );
-     elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+     elsif token /= symbol_t and identifiers( token ).store.value /= ";" then
         err( contextNotes => +"in the declaration of type " &
                 unb_em( identifiers( newtype_id ).name ),
              subjectNotes => +"the declaration",
@@ -3435,7 +3435,7 @@ begin
            remedy => +"declare it as a new type not a subtype",
            seeAlso => docTypeDecl
       );
-   elsif token = symbol_t and identifiers( token ).value.all = "(" then
+   elsif token = symbol_t and identifiers( token ).store.value = "(" then
       err( contextNotes => +"in the declaration of subtype " &
               unb_em( identifiers( newtype_id ).name ),
            subject => parent_id,
@@ -3495,7 +3495,7 @@ begin
          ParseCaseAffirmClause( newtype_id );
       elsif token = affirm_t then
          ParseAffirmClause( newtype_id );
-      elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+      elsif token /= symbol_t and identifiers( token ).store.value /= ";" then
         err( contextNotes => +"in the declaration of subtype " &
                 unb_em( identifiers( newtype_id ).name ),
              subjectNotes => +"the declaration",

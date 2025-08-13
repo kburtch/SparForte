@@ -422,7 +422,7 @@ type storage is record
 end record;
 nullStorage : constant storage := ( null_unbounded_string, noMetaLabel );
 undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel );
-
+type storagePtr is access all storage;
 
 -- A storage for a variable is an array of storage elements, possibly with
 -- zero or only one element.

@@ -420,6 +420,8 @@ procedure Put_All_Identifiers;
 -- show all identifiers' name, value and attributes on standard output
 -- in tabular format (used by env)
 
+procedure Debug_Put_Meta_Labels; -- DEBUG
+
 --procedure Put_Trace( msg : string );
 -- put this string if trace is true (on)
 

@@ -96,7 +96,7 @@ begin
       globPattern.value := replace_slice( globPattern.value, 1, 1, "/home/" );
    else
       findIdent( to_unbounded_string( "HOME" ), home_id );
-      globPattern.value := replace_slice( globPattern.value, 1, 1, to_string( identifiers( home_id ).value.all ) );
+      globPattern.value := replace_slice( globPattern.value, 1, 1, to_string( identifiers( home_id ).store.value ) );
    end if;
 end parseTilde;
 
@@ -722,10 +722,10 @@ begin
             if getUniType( identifiers( var_id ).kind ) = root_enumerated_t then
                -- an enumerated is just the name of the value
                subword := identifiers( var_id ).name;
-               findEnumImage( identifiers( var_id ).value.all , identifiers( var_id ).kind, temp );
+               findEnumImage( identifiers( var_id ).store.value , identifiers( var_id ).kind, temp );
                subword := temp;
             else
-               subword := identifiers( var_id ).value.all;              -- word to substit.
+               subword := identifiers( var_id ).store.value;              -- word to substit.
                if whitespaceOption = trim then
                   subword := Ada.Strings.Unbounded.Trim(                   -- unless double
                      unbounded_string( subword ), Ada.Strings.Both );            -- quotes;
@@ -2267,7 +2267,7 @@ begin
    -- quoted.
 
    if token = word_t then
-      shellWord := aRawShellWord'( identifiers( token ).value.all, noMetaLabel );
+      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel );
       len := length( shellWord.value );
       if len > 0 then
          -- $@ is a special case because the word splitting is not done
@@ -2298,7 +2298,7 @@ begin
    elsif token = sql_word_t then
       -- An SQL word is a shell word with spaces in it containing the
       -- SQL command except for the first keywrod.
-      shellWord := aRawShellWord'( identifiers( token ).value.all, noMetaLabel );
+      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel );
       len := length( shellWord.value );
       if len > 0 then
          while wordPos <= len and not error_found and not endOfShellWord loop
@@ -2362,7 +2362,7 @@ begin
         theWord : anExpandedShellWord;
       begin
         if identifiers( token ).kind /= new_t then
-           put_trace( "shell word '" & to_string( toEscaped( identifiers( token ).value.all ) ) &
+           put_trace( "shell word '" & to_string( toEscaped( identifiers( token ).store.value ) ) &
               "' expands to:" );
         else
            put_trace( "shell word '" & to_string( toEscaped( identifiers( token ).name ) ) &

@@ -168,7 +168,7 @@ procedure ParseDirOpsRemoveDir is
 begin
   expect( dirops_remove_dir_t );
   ParseFirstStringParameter( dirops_remove_dir_t, expr, expr_type, dirops_dir_name_str_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( dirops_remove_dir_t, expr2, expr_type2, boolean_t );
   else
      expect( symbol_t, ")" );
@@ -251,7 +251,7 @@ begin
   kind := string_t;
   expect( dirops_base_name_t );
   ParseFirstStringParameter( dirops_base_name_t, expr, expr_type, dirops_path_name_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastStringParameter( dirops_base_name_t, expr2, expr_type2, string_t );
   else
      expect( symbol_t, ")" );
@@ -312,7 +312,7 @@ begin
   kind := dirops_path_name_t;
   expect( dirops_format_pathname_t );
   ParseFirstStringParameter( dirops_format_pathname_t, expr, expr_type, dirops_path_name_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( dirops_format_pathname_t, expr2, expr_type2, dirops_path_style_t );
   else
      expect( symbol_t, ")" );
@@ -349,7 +349,7 @@ begin
   kind := dirops_path_name_t;
   expect( dirops_expand_path_t );
   ParseFirstStringParameter( dirops_expand_path_t, expr, expr_type, dirops_path_name_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastEnumParameter( dirops_expand_path_t, expr2, expr_type2, dirops_env_style_t );
   else
      expect( symbol_t, ")" );
@@ -418,7 +418,7 @@ begin
           findResource( resId, theDir );
        else
           -- Reuse existing resource
-          findResource( to_resource_id( identifiers( ref.id ).value.all ), theDir );
+          findResource( to_resource_id( identifiers( ref.id ).store.value ), theDir );
        end if;
        Open( theDir.dir, to_string( expr.value ) );
      exception when DIRECTORY_ERROR =>
@@ -440,7 +440,7 @@ begin
   if isExecutingCommand then
      if identifiers( dirId ).resource then
         begin
-          findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
+          findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
           Close( theDir.dir );
         exception when DIRECTORY_ERROR =>
           err( +"directory is not open" );
@@ -465,7 +465,7 @@ begin
   if isExecutingCommand then
      if identifiers( dirId ).resource then
         begin
-          findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
+          findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
           result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaLabel );
         exception when others =>
           err_exception_raised;
@@ -496,7 +496,7 @@ begin
        s : string(1..1024);
        last : natural;
      begin
-       findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
+       findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
        Read( theDir.dir, s, last );
        AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ), noMetaLabel ) );
        --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?

@@ -74,7 +74,7 @@ begin
      begin
        Gnat.CRC32.Initialize( C );
        --identifiers( record_ref.id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
-       identifiers( record_ref.id ).value.all := to_unbounded_string( numericValue( C ) );
+       identifiers( record_ref.id ).store.value := to_unbounded_string( numericValue( C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -102,11 +102,11 @@ begin
   if isExecutingCommand then
      declare
        c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
-           identifiers( var_id ).value.all ) );
+           identifiers( var_id ).store.value ) );
      begin
        Gnat.CRC32.Update( C, to_string( expr.value ) );
        --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
-       identifiers( var_id ).value.all := to_unbounded_string( numericValue( C ) );
+       identifiers( var_id ).store.value := to_unbounded_string( numericValue( C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -127,7 +127,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := storage'( identifiers( var_id ).value.all, noMetaLabel );
+       result := storage'( identifiers( var_id ).store.value, noMetaLabel );
      exception when others =>
        err_exception_raised;
      end;

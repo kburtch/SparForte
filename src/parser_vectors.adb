@@ -399,7 +399,7 @@ begin
         declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
+        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
         identifiers( cursRef.id ).resource := true;
      end if;
   else
@@ -438,7 +438,7 @@ begin
         declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
         identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
         identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).value := identifiers( cursRef.id ).sStorage.value'access;
+        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
         identifiers( cursRef.id ).resource := true;
      end if;
   else
@@ -470,7 +470,7 @@ function toRealVectorIndex( subId : identifier; vectorId : identifier; UserIdx :
 begin
    kind := identifiers( vectorId ).genKind;
    uniKind := getUniType( kind );
-   findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+   findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
 
    -- the index type is either a numeric or an enumerated
    --
@@ -548,7 +548,7 @@ function toUserVectorIndex( subId : identifier; vectorId : identifier;
 begin
    kind  := identifiers( vectorId ).genKind;
    unikind := getUniType( kind );
-   findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+   findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
    begin
       -- the index type is either a numeric or an enumerated
       if unikind = uni_numeric_t then
@@ -627,7 +627,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        Vector_Storage_Lists.Clear( theVector.vslVector );
      end;
   end if;
@@ -657,7 +657,7 @@ begin
   ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        if metaLabelOk( itemExpr ) then
           theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
              ada.containers.count_type'value( to_string( cntExpr.value ) ) );
@@ -686,7 +686,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        result := storage'(
          to_unbounded_string(
             ada.containers.count_type'image( Vector_Storage_Lists.Capacity( theVector.vslVector ) )
@@ -721,7 +721,7 @@ begin
        cnt : ada.containers.count_type;
      begin
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        Vector_Storage_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
@@ -758,7 +758,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        result := storage'(
          to_unbounded_string( ada.containers.count_type'image( Vector_Storage_Lists.Length( theVector.vslVector ) ) ),
          noMetaLabel
@@ -792,7 +792,7 @@ begin
        cnt : ada.containers.count_type;
      begin
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        Vector_Storage_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
@@ -829,7 +829,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
      end;
   end if;
@@ -858,7 +858,7 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -868,7 +868,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           if metaLabelOk( itemExpr ) then
@@ -912,7 +912,7 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -922,7 +922,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           if metaLabelOk( itemExpr ) then
@@ -972,7 +972,7 @@ begin
      declare
        idx : vector_index;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
        -- Append( theVector.vslVector, idx, strExpr );
        declare
@@ -1021,7 +1021,7 @@ begin
      declare
        idx : vector_index;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
        -- Prepend( theVector.vslVector, idx, strExpr );
        declare
@@ -1063,7 +1063,7 @@ begin
   kind := long_integer_t;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( long_integer'image(
             toUserVectorIndex( subprogramId, vectorId, userIdx ) ) ),
@@ -1092,7 +1092,7 @@ begin
   kind := long_integer_t;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorId, userIdx ) ) ), noMetaLabel );
      end;
@@ -1171,13 +1171,13 @@ begin
        idx : vector_index;
      begin
        if cursorId /= eof_t then
-         findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+         findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
          oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
          if metaLabelOk( oldElem ) then
             result := oldElem;
          end if;
        else
-         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
          oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
@@ -1215,7 +1215,7 @@ begin
   kind := identifiers( vectorId ).genKind2;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        oldElem := Vector_Storage_Lists.First_Element( theVector.vslVector );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -1247,7 +1247,7 @@ begin
   kind := identifiers( vectorId ).genKind2;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        oldElem := Vector_Storage_Lists.Last_Element( theVector.vslVector );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -1280,7 +1280,7 @@ procedure ParseVectorsDeleteFirst is
 begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -1290,7 +1290,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -1300,7 +1300,7 @@ begin
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
              if metaLabelOK( Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
-                Vector_Storage_Lists.Delete_First( theVector.vslVector, cnt );
+                Vector_Storage_Lists.Delete_First( theVector.vslVector );
              end if;
           end loop;
        else
@@ -1338,7 +1338,7 @@ procedure ParseVectorsDeleteLast is
 begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
@@ -1348,7 +1348,7 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -1358,7 +1358,7 @@ begin
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
              if metaLabelOK( Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
-                Vector_Storage_Lists.Delete_Last( theVector.vslVector, cnt );
+                Vector_Storage_Lists.Delete_Last( theVector.vslVector );
              end if;
           end loop;
        else
@@ -1398,7 +1398,7 @@ begin
   ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel );
      end;
   end if;
@@ -1427,8 +1427,8 @@ begin
   genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetVectorId ).value.all ), theTargetVector );
-       findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), theSourceVector );
+       findResource( to_resource_id( identifiers( targetVectorId ).store.value ), theTargetVector );
+       findResource( to_resource_id( identifiers( sourceVectorId ).store.value ), theSourceVector );
        Vector_Storage_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
      end;
   end if;
@@ -1452,7 +1452,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -1476,7 +1476,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -1512,8 +1512,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        theCursor.vslCursor := Vector_Storage_Lists.First( theVector.vslVector );
      end;
   end if;
@@ -1545,8 +1545,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        theCursor.vslCursor := Vector_Storage_Lists.Last( theVector.vslVector );
      end;
   end if;
@@ -1571,7 +1571,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursId, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        Vector_Storage_Lists.Next( theCursor.vslCursor );
      end;
   end if;
@@ -1596,7 +1596,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursId, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
        Vector_Storage_Lists.Previous( theCursor.vslCursor );
      end;
   end if;
@@ -1645,14 +1645,14 @@ begin
      --baseTypesOK( idxType, identifiers( vectorId ).genKind );
      hasIdx := true;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
   expectParameterClose( subprogramId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
         if hasIdx then
            if hasCnt then
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
@@ -1674,7 +1674,7 @@ begin
               end if;
            end if;
         else
-           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+           findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
            if hasCnt then
               -- the problem with a count and a cursor is that the cursor becomes
               -- invalid when the item beneath it is deleted
@@ -1742,7 +1742,7 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
      end;
   end if;
@@ -1775,8 +1775,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftVectorId ).value.all ), leftVector );
-       findResource( to_resource_id( identifiers( rightVectorId ).value.all ), rightVector );
+       findResource( to_resource_id( identifiers( leftVectorId ).store.value ), leftVector );
+       findResource( to_resource_id( identifiers( rightVectorId ).store.value ), rightVector );
        result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel );
      exception when storage_error =>
        err_storage;
@@ -1837,11 +1837,11 @@ begin
   -- distinguish between them.  So we don't permit the element to be
   -- absent.
 
-  --if token = symbol_t and identifiers( token ).value.all = "," then
+  --if token = symbol_t and identifiers( token ).store.value = "," then
      expectParameterComma( subprogramId );
      ParseExpression( elemExpr, elemType );
      if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
-        if token = symbol_t and identifiers( token ).value.all = "," then
+        if token = symbol_t and identifiers( token ).store.value = "," then
            ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
         end if;
@@ -1854,7 +1854,7 @@ begin
        idx : vector_index;
        cnt : ada.containers.count_type := 1;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
        idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( beforeExpr.value ) ) );
        if hasCnt then
           begin
@@ -1921,9 +1921,9 @@ begin
        theCursor  : resPtr;
        theVector2 : resPtr;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       findResource( to_resource_id( identifiers( vector2Id ).store.value ), theVector2 );
        Vector_Storage_Lists.Insert(
           theVector.vslVector,
           theCursor.vslCursor,
@@ -1966,7 +1966,7 @@ begin
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
   ParseNextGenItemParameter( subprogramId, elemExpr, elemType, identifiers( vectorId ).genKind2 );
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
@@ -1984,8 +1984,8 @@ begin
        theVector  : resPtr;
        theCursor  : resPtr;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        if hasCnt then
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -2052,9 +2052,9 @@ begin
        theVector2 : resPtr;
        theCursor2 : resPtr;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       findResource( to_resource_id( identifiers( vector2Id ).store.value ), theVector2 );
 
        -- For a reference, the index is significant if it is an array.
        -- I cannot remember if value is set for me in the reference.  I will
@@ -2067,7 +2067,7 @@ begin
              identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
              theCursor2 );
        else
-          findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+          findResource( to_resource_id( identifiers( cursor2ref.id ).store.value ), theCursor2 );
        end if;
 
        -- If the second cursor was auto-declared, the cursor would have been
@@ -2125,7 +2125,7 @@ begin
   ParseExpression( elemExpr, elemType );
   if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
      ParseNextOutVectorCursor( subprogramId, vectorId, cursor2Ref );
-     if token = symbol_t and identifiers( token ).value.all = "," then
+     if token = symbol_t and identifiers( token ).store.value = "," then
         ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
      end if;
@@ -2151,8 +2151,8 @@ begin
        theCursor  : resPtr;
        theCursor2 : resPtr;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
 
        -- For a reference, the index is significant if it is an array.
        -- I cannot remember if value is set for me in the reference.  I will
@@ -2165,7 +2165,7 @@ begin
              identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
              theCursor2 );
        else
-          findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+          findResource( to_resource_id( identifiers( cursor2ref.id ).store.value ), theCursor2 );
        end if;
        -- TODO: the cursor may not exist
 
@@ -2235,7 +2235,7 @@ begin
      vectorIndexOrCursorOk( subprogramId, beforeIdxType, vectorId );
      hasIdx := true;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
@@ -2243,7 +2243,7 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
 
        -- Either variation can have a count
 
@@ -2272,7 +2272,7 @@ begin
              thePositionCursor : resPtr;
           begin
              findResource(
-                 to_resource_id( identifiers( beforeCursorId ).value.all ),
+                 to_resource_id( identifiers( beforeCursorId ).store.value ),
                  theBeforeCursor
              );
 
@@ -2335,8 +2335,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftVectorId ).value.all ), leftVector );
-       findResource( to_resource_id( identifiers( rightVectorId ).value.all ), rightVector );
+       findResource( to_resource_id( identifiers( leftVectorId ).store.value ), leftVector );
+       findResource( to_resource_id( identifiers( rightVectorId ).store.value ), rightVector );
        leftVector.vslVector := leftVector.vslVector & rightVector.vslVector;
      exception when storage_error =>
        err_storage;
@@ -2410,7 +2410,7 @@ begin
         begin
            idx1 := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idx1Expr.value ) ) );
            idx2 := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idx2Expr.value ) ) );
-           findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+           findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
            if metaLabelOK( Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
                            Vector_Storage_Lists.Element( theVector.vslVector, idx2 ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, idx1, idx2 );
@@ -2422,9 +2422,9 @@ begin
         end;
      else
         begin
-           findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-           findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
+           findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+           findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+           findResource( to_resource_id( identifiers( cursorId2 ).store.value ), theCursor2 );
            if metaLabelOK( Vector_Storage_Lists.Element( theCursor.vslCursor),
                            Vector_Storage_Lists.Element( theCursor2.vslCursor ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
@@ -2488,8 +2488,8 @@ begin
         positionCursorResourceId : resHandleId;
         thePositionCursor : resPtr;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-        findResource( to_resource_id( identifiers( startCursorId ).value.all ), theCursor );
+        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+        findResource( to_resource_id( identifiers( startCursorId ).store.value ), theCursor );
 
         -- the second cursor is the out parameter.  Declare it.  Then fetch it.
         -- TODO: if out is overwriting a resource, delete old resource(s)
@@ -2569,8 +2569,8 @@ begin
         positionCursorResourceId : resHandleId;
         thePositionCursor : resPtr;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-        findResource( to_resource_id( identifiers( startCursorId ).value.all ), theCursor );
+        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+        findResource( to_resource_id( identifiers( startCursorId ).store.value ), theCursor );
 
         -- the second cursor is the out parameter.  Declare it.  Then fetch it.
         -- TODO: if out is overwriting a resource, delete old resource(s)
@@ -2635,7 +2635,7 @@ begin
         positionIdx : Vector_Storage_Lists.Extended_Index;
         positionValue : unbounded_string;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
         startIdx := toRealVectorIndex( subprogramId, vectorId, long_integer(
            to_numeric( startIdxExpr.value ) ) );
         if metaLabelOk( itemExpr ) then
@@ -2690,7 +2690,7 @@ begin
         positionIdx : Vector_Storage_Lists.Extended_Index;
         positionValue : unbounded_string;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
 
         startIdx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( startIdxExpr.value ) ) );
 
@@ -2744,10 +2744,10 @@ begin
           obstructor => identifiers( vectorId ).genKind2
      );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorId ).genKind2 );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
@@ -2768,7 +2768,7 @@ begin
        declare
          idx : vector_index;
        begin
-         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
          begin
            idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
@@ -2838,10 +2838,10 @@ begin
           obstructor => identifiers( vectorId ).genKind2
      );
   end if;
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
      ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorId ).genKind2 );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
@@ -2874,7 +2874,7 @@ begin
              remedy => +"the value should be >= 0"
            );
          end;
-         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
          idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
          -- Decrement( theVector.vslVector, idx, floatVal );
          declare
@@ -2928,8 +2928,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetVectorId ).value.all ), targetVector );
-       findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), sourceVector );
+       findResource( to_resource_id( identifiers( targetVectorId ).store.value ), targetVector );
+       findResource( to_resource_id( identifiers( sourceVectorId ).store.value ), sourceVector );
        Vector_Storage_Lists.Assign( targetVector.vslVector, sourceVector.vslVector );
      exception when storage_error =>
        err_storage;
@@ -2962,7 +2962,7 @@ begin
   ParseLastInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
        convertedIdx := toUserVectorIndex( subprogramId, vectorId,
            Vector_Storage_Lists.To_Index( theCursor.vslCursor ) );
        result := storage'(

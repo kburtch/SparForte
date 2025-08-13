@@ -88,7 +88,7 @@ begin
      if err_exception.deleted then
         result := storage'( to_unbounded_string( "0" ), noMetaLabel );
      else
-        result := storage'( to_unbounded_string( numericValue( character'pos( element( err_exception.value.all, 1 ) ) ) ), noMetaLabel );
+        result := storage'( to_unbounded_string( numericValue( character'pos( element( err_exception.store.value, 1 ) ) ) ), noMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionStatusCode;

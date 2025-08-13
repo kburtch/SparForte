@@ -1112,12 +1112,12 @@ begin
   if s'length = 1 then
      if s(s'first) = '~' then
         findIdent( to_unbounded_string( "HOME" ), home_id );
-        return to_string( identifiers( home_id ).value.all ) & "/";
+        return to_string( identifiers( home_id ).store.value ) & "/";
      end if;
   elsif s'length > 1 then
      if s(s'first..s'first+1) = "~/" then
         findIdent( to_unbounded_string( "HOME" ), home_id );
-        return to_string( identifiers( home_id ).value.all ) & s( s'first+1..s'last );
+        return to_string( identifiers( home_id ).store.value ) & s( s'first+1..s'last );
      elsif s(s'first) = '~' then
         return "/home/" & s( s'first+1..s'last ) & "/";
      end if;
@@ -1173,7 +1173,7 @@ begin
      else
         findIdent( to_unbounded_string( "PATH" ), path_id );
         if path_id /= eof_t then
-           remainingCmdPathDirs := identifiers( path_id ).value.all;
+           remainingCmdPathDirs := identifiers( path_id ).store.value;
         else
            remainingCmdPathDirs := null_unbounded_string;
         end if;
@@ -1497,7 +1497,7 @@ procedure getLine( line : out unbounded_string;
 begin
   findIdent( to_unbounded_string( "TERM" ), term_id );
   if term_id /= eof_t then
-     termEmu := New_String( to_string( identifiers( term_id ).value.all ));
+     termEmu := New_String( to_string( identifiers( term_id ).store.value ));
   else
      termEmu := New_String( "xterm" );
   end if;
@@ -1557,7 +1557,7 @@ begin
      history( historyNext ).line := line;           -- lines
      findIdent( to_unbounded_string( "PWD" ), pwd_id ); -- TODO: SLOW!
      if pwd_t /= eof_t then
-        history( historyNext ).pwd:= identifiers( pwd_id ).value.all;
+        history( historyNext ).pwd:= identifiers( pwd_id ).store.value;
      end if;
      history( historyNext ).time := Ada.Calendar.Clock; -- time
      historyNext := historyNext + 1;
@@ -1712,7 +1712,7 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
     -- A tilde?  Then substitute in the home directory.
     if length( dir ) > 0 and then element( dir, 1) = '~' then
        findIdent( to_unbounded_string( "HOME" ), home_id );
-       expandedDir := identifiers( home_id ).value.all & slice( dir, 2, length(dir));
+       expandedDir := identifiers( home_id ).store.value & slice( dir, 2, length(dir));
     else
        expandedDir := dir;
     end if;
@@ -2015,7 +2015,7 @@ begin
           history( historyNext ).line := line;           -- lines
           findIdent( to_unbounded_string( "PWD" ), pwd_id ); -- TODO: SLOW!
           if pwd_t /= eof_t then
-             history( historyNext ).pwd:= identifiers( pwd_id ).value.all;
+             history( historyNext ).pwd:= identifiers( pwd_id ).store.value;
           end if;
           history( historyNext ).time := Ada.Calendar.Clock; -- time
           historyNext := historyNext + 1;
@@ -2299,10 +2299,10 @@ begin
      findIdent( to_unbounded_string( "HOME" ), home_id );
      if home_id /= eof_t then
         if sessionName = "" then
-            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+            historyPath := identifiers( home_id ).store.value & directory_delimiter &
                ".sparforte_history.txt";
         else
-            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+            historyPath := identifiers( home_id ).store.value & directory_delimiter &
                ".sparforte_" & sessionName & "_history.txt";
         end if;
         if C_is_includable_file( to_string( historyPath ) & ASCII.NUL ) then
@@ -2380,10 +2380,10 @@ begin
      findIdent( to_unbounded_string( "HOME" ), home_id );
      if home_id /= eof_t then
         if sessionName = "" then
-            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+            historyPath := identifiers( home_id ).store.value & directory_delimiter &
                ".sparforte_history.txt";
         else
-            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+            historyPath := identifiers( home_id ).store.value & directory_delimiter &
                ".sparforte_" & sessionName & "_history.txt";
         end if;
         if save_history then

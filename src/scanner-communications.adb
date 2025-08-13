@@ -1892,7 +1892,7 @@ begin
         err( pl( to_string( identifiers( expected_token ).name ) & " expected" ) );
      end if;
   end if;
-  if value /= to_string( identifiers( token ).value.all ) then
+  if value /= to_string( identifiers( token ).store.value ) then
       err( pl( "'" & value & "' expected" ) );
   end if;
   getNextToken;
@@ -1918,7 +1918,7 @@ procedure expectSymbol(
     remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
-  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).store.value ) then
 
      if not expectPlural then
         expectOrExpects := expectOrExpects & "s";
@@ -1948,7 +1948,7 @@ procedure expectSymbol(
     remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
-  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).store.value ) then
 
      if not expectPlural then
         expectOrExpects := expectOrExpects & "s";
@@ -1978,7 +1978,7 @@ procedure expectSymbol(
     remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
-  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).store.value ) then
 
      if not expectPlural then
         expectOrExpects := expectOrExpects & "s";
@@ -2008,7 +2008,7 @@ procedure expectSymbol(
     remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
-  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).store.value ) then
 
      if not expectPlural then
         expectOrExpects := expectOrExpects & "s";
@@ -2071,13 +2071,13 @@ begin
      );
   end if;
   -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
+  if token = symbol_t and identifiers( token ).store.value = ":" then
      expectSymbol(
        expectedValue => ";",
        context => context,
        reason => +"':' could be a mistake because the end of the statement"
      );
-  elsif token = symbol_t and identifiers( token ).value.all = "|" then
+  elsif token = symbol_t and identifiers( token ).store.value = "|" then
      expectSymbol(
        expectedValue => ";",
        context => context,
@@ -2085,10 +2085,10 @@ begin
        remedy => +"this is not a command so standard output cannot be used in a command pipeline"
      );
   -- > and >>
-  elsif token = symbol_t and identifiers( token ).value.all = ">" then
+  elsif token = symbol_t and identifiers( token ).store.value = ">" then
      markScanner( errState );
      getNextToken;
-     if identifiers( token ).value.all = ">" then
+     if identifiers( token ).store.value = ">" then
         -- the error cursor may not be correct here
         resumeScanning( errState );
         expectSymbol(
@@ -2107,7 +2107,7 @@ begin
           remedy => +"this is not a command so the standard output cannot be redirected like commands"
         );
      end if;
-  elsif token = symbol_t and identifiers( token ).value.all = "<" then
+  elsif token = symbol_t and identifiers( token ).store.value = "<" then
      expectSymbol(
        expectedValue => ";",
        context => context,
@@ -2115,10 +2115,10 @@ begin
        remedy => +"this is not a command so the standard input cannot be redirected like commands"
      );
   -- 2> and 2>>
-  elsif token = number_t and identifiers( token ).value.all = " 2" then
+  elsif token = number_t and identifiers( token ).store.value = " 2" then
      markScanner( errState );
      getNextToken;
-     if identifiers( token ).value.all = ">" then
+     if identifiers( token ).store.value = ">" then
         -- the error cursor may not be correct here
         resumeScanning( errState );
         expectSymbol(
@@ -2136,7 +2136,7 @@ begin
            reason => +"the end of the statement"
         );
      end if;
-  elsif identifiers( token ).value.all = "&" then
+  elsif identifiers( token ).store.value = "&" then
      expectSymbol(
        expectedValue => ";",
        context => context,
@@ -2165,7 +2165,7 @@ begin
      );
   end if;
   -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
+  if token = symbol_t and identifiers( token ).store.value = ":" then
      expectSymbol(
        expectedValue => ";",
        contextNotes => contextNotes,
@@ -2197,7 +2197,7 @@ begin
   end if;
 
   -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
+  if token = symbol_t and identifiers( token ).store.value = ":" then
      expectSymbol(
        expectedValue => ";",
        contextNotes => myContextNotes,
@@ -2217,7 +2217,7 @@ procedure expectDeclarationSemicolon( contextNotes : messageStrings := nullMessa
 begin
 
   -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
+  if token = symbol_t and identifiers( token ).store.value = ":" then
      expectSymbol(
        expectedValue => ";",
        contextNotes => myContextNotes,
@@ -2258,7 +2258,7 @@ begin
   end if;
 
   -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
+  if token = symbol_t and identifiers( token ).store.value = ":" then
      expectSymbol(
        expectedValue => ";",
        contextNotes => myContextNotes,
@@ -2302,7 +2302,7 @@ begin
 
   -- Semi-colon may not happen because it may abort earlier due to
   -- end-of-function.
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      if subprogram = eof_t then
         expectSymbol(
           contextNotes => contextNotes,
@@ -2316,7 +2316,7 @@ begin
           reason => +"';' could be a mistake because the parameters"
         );
      end if;
-  elsif token = symbol_t and identifiers( token ).value.all = "." then
+  elsif token = symbol_t and identifiers( token ).store.value = "." then
      if subprogram = eof_t then
         expectSymbol(
           contextNotes => contextNotes,
@@ -2330,7 +2330,7 @@ begin
           reason => +"'.' could be a mistake because the parameters"
         );
      end if;
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      if subprogram = eof_t then
         expectSymbol(
           expectedValue => ",",
@@ -2372,19 +2372,19 @@ end expectParameterComma;
 procedure expectPragmaComma is
   contextNotes : constant string := "in the pragma parameter list";
 begin
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      expectSymbol(
        contextNotes => pl( contextNotes ),
        expectedValue => ",",
        reason => +"';' could be a mistake because the list"
      );
-  elsif token = symbol_t and identifiers( token ).value.all = "." then
+  elsif token = symbol_t and identifiers( token ).store.value = "." then
      expectSymbol(
        expectedValue => ",",
        contextNotes => pl( contextNotes ),
        reason => +"'.' could be a mistake because the list"
      );
-  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+  elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expectSymbol(
        expectedValue => ",",
        contextNotes => pl( contextNotes ),
@@ -2419,7 +2419,7 @@ begin
      contextNotes := to_unbounded_string( "in the parameter list" );
   end if;
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      expectSymbol(
        expectedValue => "(",
        context => subprogram,
@@ -2444,7 +2444,7 @@ begin
         );
      end if;
   end if;
-  if token = symbol_t and identifiers( token ).value.all = ")" then
+  if token = symbol_t and identifiers( token ).store.value = ")" then
      if contextNotes = "" then
         err( context => subprogram,
              subjectNotes => +"the parameters",
@@ -2479,7 +2479,7 @@ begin
      contextNotes := to_unbounded_string( "in the parameter list" );
   end if;
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      if contextNotes = "" then
         expectSymbol(
           expectedValue => ")",
@@ -2493,7 +2493,7 @@ begin
           reason => +"';' looks like a symbol is missing because the list"
         );
      end if;
-  elsif token = symbol_t and identifiers( token ).value.all = "," then
+  elsif token = symbol_t and identifiers( token ).store.value = "," then
      if contextNotes = "" then
         expectSymbol(
           expectedValue => ")",
@@ -2542,7 +2542,7 @@ begin
      contextNotes := pl( "in the pragma " ) & pragmaKind & pl( " parameter list" );
   end if;
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      expectSymbol(
        expectedValue => "(",
        contextNotes => contextNotes,
@@ -2577,13 +2577,13 @@ begin
      contextNotes := pl( "in the pragma " ) & pragmaKind & pl( " parameter list" );
   end if;
 
-  if token = symbol_t and identifiers( token ).value.all = ";" then
+  if token = symbol_t and identifiers( token ).store.value = ";" then
      expectSymbol(
        expectedValue => ")",
        contextNotes => contextNotes,
        reason => +"';' looks like a symbol is missing because the list"
      );
-  elsif token = symbol_t and identifiers( token ).value.all = "," then
+  elsif token = symbol_t and identifiers( token ).store.value = "," then
      expectSymbol(
        expectedValue => ")",
        contextNotes => contextNotes,
