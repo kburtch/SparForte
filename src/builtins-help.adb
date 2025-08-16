@@ -1399,7 +1399,8 @@ begin
      description( e, "A collection of common routines using dates and times." );
      content( e, "t := clock","y := year( t )","m := month( t )" );
      content( e, "d := day( t )","s := seconds( t )","split( t, y, m, d, s )" );
-     content( e, "t := time_of( y,m,d,s )","i := day_of_week( t )","t := to_time( j )" );
+     content( e, "t := time_of( y,m,d,s )","i := day_of_week( t )","j := to_julian( t )" );
+     content( e, "t := to_time( j )" );
      seeAlso( e, "doc/pkg_calendar.html" );
      endHelp( e );
   elsif helpTopic = "case" then

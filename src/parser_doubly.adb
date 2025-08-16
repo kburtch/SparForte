@@ -233,7 +233,8 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ),
+          noMetaLabel );
      end;
   end if;
 end ParseDoublyIsEmpty;

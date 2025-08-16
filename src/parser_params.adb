@@ -1284,4 +1284,24 @@ begin
   end if;
 end ParseInOutParameter;
 
+
+------------------------------------------------------------------------------
+-- PARSE FACTOR META LABEL
+--
+-- Syntax: ... [tagged tag]
+------------------------------------------------------------------------------
+
+procedure ParseMetaLabelSuffix( label : out identifier ) is
+begin
+  if token = tagged_t then
+     expect( tagged_t );
+     if class_ok(token, metaClass ) then
+        label := token;
+        getNextToken;
+     end if;
+  else
+     label := noMetaLabel;
+  end if;
+end ParseMetaLabelSuffix;
+
 end parser_params;

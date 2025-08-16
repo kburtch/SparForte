@@ -475,7 +475,6 @@ begin
   return valid;
 end isTokenValidIdentifier;
 
-
 -----------------------------------------------------------------------------
 --  PARSE FIELD IDENTIFIER
 --
@@ -1417,7 +1416,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   t : identifier;
   codeFragment : unbounded_string;
 
-  -- PARSE FACTOR META TAG
+  -- PARSE FACTOR META LABEL
   --
   -- Syntax: ... [tagged tag]
   -- Example: ... "joe doe" tagged grdp

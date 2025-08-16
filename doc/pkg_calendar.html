@@ -53,7 +53,8 @@ arithmetic and more.</p>
 <pre>
   <a href="#calendar.clock">t := clock</a>               <a href="#calendar.year">y := year( t )</a>           <a href="#calendar.month">m := month( t )</a>
   <a href="#calendar.day">d := day( t )</a>            <a href="#calendar.seconds">s := seconds( t )</a>        <a href="#calendar.split">split( t, y, m, d, s )</a>
-  <a href="#calendar.time_of">t := time_of( y,m,d,s )</a>  <a href="#calendar.day_of_week">i := day_of_week( t )</a>    <a href="#calendar.to_time">t := to_time( j )</a>
+  <a href="#calendar.time_of">t := time_of( y,m,d,s )</a>  <a href="#calendar.day_of_week">i := day_of_week( t )</a>    <a href="#calendar.to_julian">j := to_julian( t )</a>
+  <a href="#calendar.to_time">t := to_time( j )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -78,9 +79,14 @@ arithmetic and more.</p>
 
 <li>
 <b>calendar.time</b> - a point in time</li>
+
+<li>
+<b>calendar.julian_date</b> - a Julian date</li>
 </ul>
-<p>year_number, month_number, day_number are subtypes in Ada, but are declared
-as types in AdaScript to emphasize that they represent incompatible values.</p>
+
+<p><b>Ada</b>: year_number, month_number, day_number are subtypes in Ada, but are declared
+as types in AdaScript to emphasize that they represent incompatible values.  julian_date is not defined in Ada.</p>
+
 <p>
 Limited arithmetic: a duration can be added or subtracted from a
 calendar.time value.  "calendar.clock - 1.0" subtracts 1 second from the
@@ -281,7 +287,7 @@ Sunday, an integer between 0 and 6.</p></td>
 </tr>
 </table>
 
-<a name="calendar.seconds"></a><h3>y := calendar.seconds( t )</h3>
+<a name="calendar.seconds"></a><h3>s := calendar.seconds( t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -300,7 +306,7 @@ number between 0.0 and 86,400.0.</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>y</span></td>
+<td><span>s</span></td>
 <td><span>return value</span></td>
 <td><span>calendar.day_duration</span></td>
 <td><span>required</span></td>
@@ -456,8 +462,99 @@ number between 0.0 and 86,400.0.</p></td>
 </tr>
 </table>
 
+<a name="calendar.to_julian"></a><h3>j := calendar.to_julian( t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of days since at noon Universal Time on Monday,
+January 1, 4713 BC.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">julian_date := calendar.to_julian( current_time );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>j</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.julian_date</span></td>
+<td><span>required</span></td>
+<td><span>the Julian date</span></td>
+</tr>
+<tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#calendar.to_time">calendar.to_time</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+
 <a name="calendar.to_time"></a><h3>t := calendar.to_time( j )</h3>
-<p>Incomplete function for Julian dates.</p>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the Calendar time of a Julian date.  This is broken and does not work.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">caltime := calendar.to_time( julian_date );</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+</tr>
+<td><span>t</span></td>
+<td><span>return value</span></td>
+<td><span>calendar.time</span></td>
+<td><span>required</span></td>
+<td><span>the time</span></td>
+<tr>
+<td><span>j</span></td>
+<td><span>in</span></td>
+<td><span>calendar.julian_date</span></td>
+<td><span>required</span></td>
+<td><span>the Julian date</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#calendar.to_julian">calendar.to_julian</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p><b>Implementation Note</b></p></td>
+<td><p>This function is broken.</p></td>
+</tr>
+</table>
+
 
 <a name="calendar.year"></a><h3>y := calendar.year( t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">

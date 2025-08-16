@@ -4352,6 +4352,26 @@ begin
   return true;
 end metaLabelOk;
 
+-- META DATA LABELS - this doesn't produce meaningful error messages
+
+function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+begin
+  return metaLabelOk( firstStorage,  secondStorage, thirdStorage ) and
+         metaLabelOk( secondStorage, thirdStorage,  fourthStorage ) and
+         metaLabelOk( firstStorage,  thirdStorage,  fourthStorage ) and
+         metalabelOk( firstStorage,  secondStorage, fourthStorage );
+end metaLabelOk;
+
+-----------------------------------------------------------------------------
+
+-- META DATA LABELS - this is a stub
+-- resolve which meta label is to be returned for a combination of meta data
+-- labels
+
+function resolveEffectiveMetaLabel( firstStorage, secondStorage : storage; thirdStorage : storage := nullStorage; fourthStorage : storage := nullStorage ) return identifier is
+begin
+  return firstStorage.metaLabel;
+end resolveEffectiveMetaLabel;
 
 -----------------------------------------------------------------------------
 --

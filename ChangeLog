@@ -37,3 +37,7 @@ CHANGES SINCE 2.6.3
 
 16. New: enum.pos / enum.val [tests needed].
 
+17. Fix: documentation corrected for calendar.to_julian.
+
+18. New: added type calendar.julian_date.
+

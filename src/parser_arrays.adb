@@ -169,6 +169,7 @@ end err_storage;
 --
 -- Syntax: arrays.first( arraytypeorvar );
 -- Source: arraytypeorvar'first
+-- Return the first (lowest) index of the array.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysFirst( result : out storage; kind : out identifier ) is
@@ -223,6 +224,7 @@ end ParseArraysFirst;
 --
 -- Syntax: arrays.last( arraytypeorvar );
 -- Source: arraytypeorvar'last
+-- Return the last (highest) index of the array.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysLast( result : out storage; kind : out identifier ) is
@@ -278,6 +280,7 @@ end ParseArraysLast;
 --
 -- Syntax: arrays.length( arraytypeorvar );
 -- Source: arraytypeorvar'length
+-- Return the number of elements in the array (last index - first index + 1).
 -----------------------------------------------------------------------------
 
 procedure ParseArraysLength( result : out storage; kind : out identifier ) is
@@ -475,6 +478,9 @@ end Lt_numeric_descending;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS BUBBLE SORT
 --
+-- Syntax: arrays.bubble_sort( a )
+-- Bubble sort the array, treating the elements as strings or numbers depending
+-- on the element type.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysBubbleSort is
@@ -522,6 +528,9 @@ end ParseArraysBubbleSort;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS BUBBLE SORT DESCENDING
 --
+-- Syntax: arrays.bubble_sort_descending( a )
+-- Bubble sort the array in descending order, treating the elements as strings
+-- or numbers depending on the element type.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysBubbleSortDescending is
@@ -569,6 +578,9 @@ end ParseArraysBubbleSortDescending;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS HEAP SORT
 --
+-- Syntax: arrays.heap_sort( a )
+-- Heap sort the array, treating the elements as strings or numbers depending
+-- on the element type.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysHeapSort is
@@ -616,6 +628,9 @@ end ParseArraysHeapSort;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS HEAP SORT DESCENDING
 --
+-- Syntax: arrays.heap_sort_descending( a )
+-- Heap sort the array in descending order, treating the elements as strings or
+-- numbers depending on the element type.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysHeapSortDescending is
@@ -663,7 +678,8 @@ end ParseArraysHeapSortDescending;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS SHUFFLE
 --
--- Fisher-Yates shuffle.
+-- Syntax: arrays.shuffle( a )
+-- Randomize the elements of the array with a Fisher-Yates shuffle.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShuffle is
@@ -731,6 +747,11 @@ end ParseArraysShuffle;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS FLIP
 --
+-- Syntax: arrays.flip( a )
+-- Reverse the order of the elements in the array, moving the last element to
+-- the first position and the first element to the last position. (Prior to
+-- version 1.1, this was arrays.reverse but was renamed to avoid a conflict
+-- with the Ada reserved word "reverse".)
 -----------------------------------------------------------------------------
 
 procedure ParseArraysFlip is
@@ -796,6 +817,9 @@ end ParseArraysFlip;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS SHIFT RIGHT
 --
+-- Syntax: arrays.shift_right( a )
+-- Move all elements of the array one element toward the last element,
+-- overwriting the last element.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShiftRight is
@@ -844,6 +868,9 @@ end ParseArraysShiftRight;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS SHIFT LEFT
 --
+-- Syntax: arrays.shift_left( a )
+-- Move all elements of the array one element toward the first element,
+-- overwriting the first element.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShiftLeft is
@@ -892,6 +919,9 @@ end ParseArraysShiftLeft;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS ROTATE RIGHT
 --
+-- Syntax: arrays.rotate_right( a )
+-- Move all elements of the array one element toward the last position, moving
+-- the last element to the first position.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysRotateRight is
@@ -946,6 +976,9 @@ end ParseArraysRotateRight;
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS ROTATE LEFT
 --
+-- Syntax: arrays.rotate_left( a )
+-- Move all elements of the array one element toward the first position, moving
+-- the first element to the last position.
 -----------------------------------------------------------------------------
 
 procedure ParseArraysRotateLeft is
@@ -1036,19 +1069,21 @@ begin
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
-     begin
-       DoJsonToArray( target_var_id, source_st.value, noMetaLabel );
-     exception when constraint_error =>
-        err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
-               contextAltText( source_st.value,"decoding the JSON string" ),
-             subject => target_var_id,
-             subjectType => identifiers( target_var_id ).kind,
-             reason =>  +"the decoding failed because",
-             obstructorNotes => +"a constraint error was raised"
-        );
-     when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( source_st ) then
+       begin
+         DoJsonToArray( target_var_id, source_st.value, noMetaLabel );
+       exception when constraint_error =>
+          err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
+                 contextAltText( source_st.value,"decoding the JSON string" ),
+               subject => target_var_id,
+               subjectType => identifiers( target_var_id ).kind,
+               reason =>  +"the decoding failed because",
+               obstructorNotes => +"a constraint error was raised"
+          );
+       when others =>
+         err_exception_raised;
+       end;
+     end if;
   end if;
 end ParseArraysToArray;
 

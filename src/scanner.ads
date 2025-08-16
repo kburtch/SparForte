@@ -341,6 +341,14 @@ procedure discardUnusedIdentifier( id : identifier );
 function metaLabelOk( theStorage : storage ) return boolean;
 function metaLabelOk( leftStorage, rightStorage : storage ) return boolean;
 function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean;
+function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
+
+------------------------------------------------------------------------------
+-- Data Meta Label Resolution
+--
+------------------------------------------------------------------------------
+
+function resolveEffectiveMetaLabel( firstStorage, secondStorage : storage; thirdStorage : storage := nullStorage; fourthStorage : storage := nullStorage ) return identifier;
 
 -----------------------------------------------------------------------------
 -- JSON

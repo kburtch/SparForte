@@ -27,6 +27,7 @@ Long term Ongoing Work
   - issue of retagging something already tagged...what are the rules?
   - factors can be labelled but continue with expressions and labels
     - related unit tests
+  - function result tags (e.g. calendar.clock, or user functions)
   - begin with meta should probably be begin meta
   - a structure to escallate and descallate the global meta mode
   - a package dealing with strings + meta tags
@@ -40,6 +41,15 @@ Long term Ongoing Work
   - System package values should be labelled secure
   - should counts have there meta value checked?
   - tags on user proc/func parameters or at least out parameters
+  - arrays.to_json
+    - json routines need to test meta data labels
+    - arrays.to_array may not need meta data label test if implemented
+      in json
+  - resolveEffectiveMetaLabel should be applied to data structure
+    packages?  In essence, what is stored is being retreived as-is
+    so labels should be as-is.
+  - resolveEffectiveMetaLabel should be applied to single items were
+    the values are not being mixed?
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -52,6 +62,8 @@ Long term Ongoing Work
     (e.g. labelled not tagged?)
   - metaLabelOk should provide addition context (such as the values
     associated to the labels when not secured)
+    - metaLabelOk 4-way should be redesigned for better errors
+  - resolving combinations of meta labels
   - package sound updates (gstreamer)
     - sound shouldn't really print message strings but throw exceptions
 
