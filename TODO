@@ -14,9 +14,7 @@ Long term Ongoing Work
 - value meta labels project
 
   - the global meta mode for the language
-  - doubly/insert and mark allocates a return cursor but if it's in-out
-    it should reuse the existing cursor??  You can't delete the cursor
-    without changing the numbering.
+    - ? policy tagged, uom tagged, class tagged
 
   - docs
     - document the behaviour of doubly.assemble/disassemble for meta

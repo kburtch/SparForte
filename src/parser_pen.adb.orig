@@ -21525,10 +21525,16 @@ begin
   baseTypesOK( ref.kind, pen_gl_byte_array_t );
   ParseLastNumericParameter( eof_t, len_expr, len_kind, natural_t );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     len := size_t( to_numeric( len_expr.value ) );
-     declareResource( resId, gl_byte_array, getIdentifierBlock( ref.id ), len );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        len := size_t( to_numeric( len_expr.value ) );
+        declareResource( resId, gl_byte_array, getIdentifierBlock( ref.id ), len );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParsePenNewGLByteArray;
 
@@ -21598,10 +21604,16 @@ begin
   baseTypesOK( ref.kind, pen_gl_int_array_t );
   ParseLastNumericParameter( eof_t, len_expr, len_kind, natural_t );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     len := size_t( to_numeric( len_expr.value ) );
-     declareResource( resId, gl_int_array, getIdentifierBlock( ref.id ), len );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        len := size_t( to_numeric( len_expr.value ) );
+        declareResource( resId, gl_int_array, getIdentifierBlock( ref.id ), len );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParsePenNewGLIntArray;
 
@@ -21672,10 +21684,16 @@ begin
   baseTypesOK( ref.kind, pen_gl_short_array_t );
   ParseLastNumericParameter( eof_t, len_expr, len_kind, natural_t );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     len := size_t( to_numeric( len_expr.value ) );
-     declareResource( resId, gl_short_array, getIdentifierBlock( ref.id ), len );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        len := size_t( to_numeric( len_expr.value ) );
+        declareResource( resId, gl_short_array, getIdentifierBlock( ref.id ), len );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParsePenNewGLShortArray;
 
@@ -21745,10 +21763,16 @@ begin
   baseTypesOK( ref.kind, pen_gl_float_array_t );
   ParseLastNumericParameter( eof_t, len_expr, len_kind, natural_t );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     len := size_t( to_numeric( len_expr.value ) );
-     declareResource( resId, gl_float_array, getIdentifierBlock( ref.id ), len );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        len := size_t( to_numeric( len_expr.value ) );
+        declareResource( resId, gl_float_array, getIdentifierBlock( ref.id ), len );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParsePenNewGLFloatArray;
 
@@ -21818,10 +21842,16 @@ begin
   baseTypesOK( ref.kind, pen_gl_double_array_t );
   ParseLastNumericParameter( eof_t, len_expr, len_kind, natural_t );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     len := size_t( to_numeric( len_expr.value ) );
-     declareResource( resId, gl_double_array, getIdentifierBlock( ref.id ), len );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        len := size_t( to_numeric( len_expr.value ) );
+        declareResource( resId, gl_double_array, getIdentifierBlock( ref.id ), len );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParsePenNewGLDoubleArray;
 

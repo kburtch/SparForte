@@ -847,6 +847,8 @@ procedure ParseDoublyInsertBeforeAndMark is
   ref        : reference;
   b          : boolean;
   hasOutCursor : boolean := false;
+  hasNewOutCursor : boolean := false;
+  secondCursorResourceIdStorage : storage;
   subprogramId : constant identifier := doubly_insert_before_and_mark_t;
 begin
   expect( subprogramId );
@@ -863,6 +865,7 @@ begin
   -- a cursor type.
   if identifiers( token ).kind = new_t then
      hasOutCursor := true;
+     hasNewOutCursor := true;
   elsif identifiers( token ).class = varClass then
      if getUniType( identifiers( token ).kind ) = doubly_cursor_t then
         hasOutCursor := true;
@@ -909,11 +912,29 @@ begin
      begin
        findResource( to_resource_id( identifiers( listId ).store.value ), theList );
        findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
-       -- the second cursor is the out parameter.  Declare it.  Then fetch it.
-       identifiers( ref.id ).resource := true;
-       declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( ref.id ) );
-       AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
-       findResource( resId, theSecondCursor );
+
+       -- Declare or fetch the second cursor
+       --
+       -- If the second cursor is being auto-declared, declare it and fetch the
+       -- resource.
+       --
+       -- If the second cursor exists, then fetch the cursor.
+       -- The second cursor is an out mode parameters.  However, the second
+       -- cursor variable is limited (cannot be copied) and the resource was
+       -- created upon declaration.  We need to treat it as an in out mode,
+       -- retrieving the existing cursor rather than creating a new one.
+       -- If we keep creating cursors, it consumes space in the resource table
+       -- and is a potential memory leak.
+
+       if hasNewOutCursor then
+          identifiers( ref.id ).resource := true;
+          declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( ref.id ) );
+          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+          findResource( resId, theSecondCursor );
+       else
+          GetParameterValue( ref, secondCursorResourceIdStorage );
+          findResource( to_resource_id( secondCursorResourceIdStorage.value ), theSecondCursor );
+       end if;
 
        -- there are four variations
        if hasItem and hasCnt then

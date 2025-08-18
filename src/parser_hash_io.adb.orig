@@ -230,42 +230,6 @@ end configureBDBEnv;
 
 #if BDB
 
---procedure ParseHashNewFile is
---  -- Syntax: hash.new_file( f, t );
---  -- Ada:    N/A
---  resId : resHandleId;
---  ref : reference;
---  genKindId : identifier;
---  theFile : resPtr;
---begin
---  expect( hash_new_file_t );
---  ParseFirstOutParameter( ref, hash_file_t );
---  baseTypesOK( ref.kind, hash_file_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---     -- DEBUG: trying aggregates
---     null;
---     --if identifiers( genKindId ).list then
---     --   err( "element type should be a scalar type" );
---     -- elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
---     --    err( "element type should be a scalar type" );
---     --end if;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, hash_file, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---     -- TODO: this won't work if the cursor is in an array or other
---     -- aggregate type
---     identifiers( ref.id ).wasWritten := true;
---     findResource( resId, theFile );
---     theFile.hash.isOpen := false;
---  end if;
---end ParseHashNewFile;
-
 #else
 
 pragma warnings( off );
@@ -1728,46 +1692,7 @@ end ParseHashTruncate;
 procedure ParseHashTruncate renames not_configured;
 
 #end if;
-#if BDB
 
---procedure ParseHashNewCursor is
---  -- Syntax: hash.new_cursor( c, t );
---  -- Ada:    N/A
---  resId : resHandleId;
---  ref : reference;
---  genKindId : identifier;
---begin
---  expect( hash_new_cursor_t );
---  ParseFirstOutParameter( ref, hash_cursor_t );
---  baseTypesOK( ref.kind, hash_cursor_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---     --DEBUG
---     null;
---     --if identifiers( genKindId ).list then
---     --   err( "element type should be a scalar type" );
---     --elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
---     --   err( "element type should be a scalar type" );
---     --end if;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, hash_cursor, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---     -- Note: this won't work if the cursor is in an array or other
---     -- aggregate type
---     identifiers( ref.id ).wasWritten := true;
---  end if;
---end ParseHashNewCursor;
-
-#else
-
---procedure ParseHashNewCursor renames not_configured;
-
-#end if;
 #if BDB
 
 procedure ParseHashOpenCursor is

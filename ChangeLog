@@ -41,3 +41,5 @@ CHANGES SINCE 2.6.3
 
 18. New: added type calendar.julian_date.
 
+19. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
+

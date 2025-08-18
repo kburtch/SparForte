@@ -98,9 +98,15 @@ begin
   identifiers( ref.id ).genKind := genKindId;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     -- Attach the resource
+     --
+     -- If it's already a resource, don't create another one to avoid memory
+     -- leaks in the resource table.
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
   end if;
 end ParseTSNewSocketServer;
 

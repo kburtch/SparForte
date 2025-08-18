@@ -3966,6 +3966,7 @@ pragma assert( name( current_error ) = name( standard_error ) );
 
 -- Calendar package
 
+jd : calendar.julian_date;
 current_time : calendar.time := calendar.clock;
 cy : calendar.year_number := calendar.year( current_time );
 pragma assert( cy > 1900 and cy < 2200 );
@@ -3991,9 +3992,9 @@ pragma assert( cm = cm2 );
 pragma assert( cd1 = cd2 );
 pragma assert( cs = cs2 );
 another_time := calendar.time_of( 2016, 3, 15, 0 );
-li := calendar.to_julian( another_time );
-pragma assert( li = 2457463 );
-another_time2 : calendar.time := calendar.to_time( li );
+jd := calendar.to_julian( another_time );
+pragma assert( jd = 2457463 );
+another_time2 : calendar.time := calendar.to_time( jd );
 calendar.split( another_time2, cy, cm, cd1, cs );
 pragma assert( cy = 2016 );
 pragma assert( cm = 3 );

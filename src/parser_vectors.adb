@@ -395,12 +395,16 @@ begin
      if isExecutingCommand then
 
         -- Attach the resource
-
-        declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-        identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
-        identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
-        identifiers( cursRef.id ).resource := true;
+        --
+        -- If it's already a resource, don't create another one to avoid memory
+        -- leaks in the resource table.
+        if not identifiers( cursRef.id ).resource then
+           declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
+           identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
+           identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
+           identifiers( cursRef.id ).resource := true;
+        end if;
      end if;
   else
      ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
@@ -434,12 +438,16 @@ begin
      if isExecutingCommand then
 
         -- Attach the resource
-
-        declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-        identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
-        identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
-        identifiers( cursRef.id ).resource := true;
+        --
+        -- If it's already a resource, don't create another one to avoid memory
+        -- leaks in the resource table.
+        if not identifiers( cursRef.id ).resource then
+           declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
+           identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
+           identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
+           identifiers( cursRef.id ).resource := true;
+        end if;
      end if;
   else
      ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
@@ -2221,6 +2229,7 @@ procedure ParseVectorsInsertSpace is
   cnt        : ada.containers.count_type := 1;
   hasIdx     : boolean := false;
   hasCnt     : boolean := false;
+  positionCursorResourceIdStorage : storage;
   subprogramId : constant identifier := vectors_insert_space_t;
 begin
   expect( subprogramId );
@@ -2276,19 +2285,35 @@ begin
                  theBeforeCursor
              );
 
-             -- the second cursor is the out parameter.  Declare it.  Then fetch it.
-             -- TODO: if out is overwriting a resource, delete old resource(s)
-             identifiers( positionCursorRef.id ).resource := true;
-             declareResource(
-                 positionCursorResourceId,
-                 vector_storage_list_cursor,
-                 getIdentifierBlock( positionCursorRef.id )
-             );
-             AssignParameter(
-                 positionCursorRef,
-                 storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
-             );
-             findResource( positionCursorResourceId, thePositionCursor );
+             -- Declare or fetch the second cursor
+             --
+             -- If the second cursor is being auto-declared, declare it and fetch the
+             -- resource.
+             --
+             -- If the second cursor already has a resouce, do not declare another
+             -- The second cursor is an out mode parameters.  However, the second
+             -- cursor variable is limited (cannot be copied) and the resource was
+             -- created upon declaration.  We need to treat it as an in out mode,
+             -- retrieving the existing cursor rather than creating a new one.
+             -- If we keep creating cursors, it consumes space in the resource table
+              -- and is a potential memory leak.
+
+             if not identifiers( positionCursorRef.id ).resource then
+                identifiers( positionCursorRef.id ).resource := true;
+                declareResource(
+                    positionCursorResourceId,
+                    vector_storage_list_cursor,
+                    getIdentifierBlock( positionCursorRef.id )
+                );
+                AssignParameter(
+                    positionCursorRef,
+                    storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
+                );
+                findResource( positionCursorResourceId, thePositionCursor );
+             else
+                GetParameterValue( positionCursorRef, positionCursorResourceIdStorage );
+                findResource( to_resource_id( positionCursorResourceIdStorage.value ), thePositionCursor );
+             end if;
              Vector_Storage_Lists.Insert_Space(
                 theVector.vslVector,
                 theBeforeCursor.vslCursor,

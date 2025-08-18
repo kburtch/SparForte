@@ -377,24 +377,6 @@ begin
   end;
 end ParseDirOpsExpandPath;
 
---procedure ParseDirOpsNewDirType is
---  -- Syntax: dirops.new_dir_type( q )
---  -- Source: N/A
---  resId : resHandleId;
---  ref : reference;
---begin
---  expect( dirops_new_directory_t );
---  ParseSingleOutParameter( ref, dirops_dir_type_t );
---  if baseTypesOK( ref.kind, dirops_dir_type_t ) then
---      null;
---  end if;
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, directory, blocks_top );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---  end if;
---end ParseDirOpsNewDirType;
-
 procedure ParseDirOpsOpen is
   -- Syntax: dirops.open( d, s )
   -- Source: Open (Dir : out Dir_Type; Dir_Name : Dir_Name_Str);

@@ -2796,9 +2796,21 @@ begin
       null;
   end if;
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, postgresql_connection, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+
+     -- Declare or fetch the connection
+     --
+     -- If the connection is being auto-declared, declare it and fetch the
+     -- resource.
+     --
+     -- If the connection exists, do nothing and assumed it's already defined
+     -- to avoid memory leaks in the resource list.
+
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        declareResource( resId, postgresql_connection, getIdentifierBlock( ref.id ) );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
+
   end if;
 end ParseDBMNewConnection;
 
@@ -2826,9 +2838,21 @@ begin
       null;
   end if;
   if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, postgresql_query, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+
+     -- Declare or fetch the query
+     --
+     -- If the query is being auto-declared, declare it and fetch the
+     -- resource.
+     --
+     -- If the query exists, do nothing and assumed it's already defined
+     -- to avoid memory leaks in the resource list.
+
+     if not identifiers( ref.id ).resource then
+        identifiers( ref.id ).resource := true;
+        declareResource( resId, postgresql_query, getIdentifierBlock( ref.id ) );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+     end if;
+
   end if;
 end ParseDBMNewQuery;
 

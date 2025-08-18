@@ -154,11 +154,16 @@ begin
      if isExecutingCommand then
 
         -- Attach the resource
+        --
+        -- If the identifier already has a resource, don't create a second one
+        -- to avoid a memory leak in the resource table.
 
-        declareResource( resId, storage_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
-        identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
-        identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
-        identifiers( cursRef.id ).resource := true;
+        if not identifiers( cursRef.id ).resource then
+           declareResource( resId, storage_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
+           identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
+           identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
+           identifiers( cursRef.id ).resource := true;
+        end if;
      end if;
   else
      ParseInOutInstantiatedParameter( cursRef.id , hashed_maps_cursor_t );
