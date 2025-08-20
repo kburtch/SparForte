@@ -43,3 +43,6 @@ CHANGES SINCE 2.6.3
 
 19. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
+20. New: tags package.  Name may change.  [docs needed][tests needed][name may change].
+
+

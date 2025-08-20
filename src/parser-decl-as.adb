@@ -2610,8 +2610,7 @@ procedure ParseBeginBlock is
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
-  if token = with_t then
-     expect( with_t );
+  if token = meta_t then
      expect( meta_t );
      ParseIdentifier( newMetaLabel );
      sparMetaLabel := newMetaLabel;

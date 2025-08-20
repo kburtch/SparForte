@@ -16,19 +16,19 @@ Long term Ongoing Work
   - the global meta mode for the language
     - ? policy tagged, uom tagged, class tagged
 
+  - issue of retagging something already tagged...what are the rules?
+    retag y as pci;
+
   - docs
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
    - vector package index has no storage type because it is defined
      by the package, not a key assisgned by a user.  Should be documented.
 
-  - issue of retagging something already tagged...what are the rules?
   - factors can be labelled but continue with expressions and labels
     - related unit tests
   - function result tags (e.g. calendar.clock, or user functions)
-  - begin with meta should probably be begin meta
   - a structure to escallate and descallate the global meta mode
-  - a package dealing with strings + meta tags
   - deploying strings + meta tags
   - assignments using strings + meta tags
   - consider other issues like decision making on the meta tags and
