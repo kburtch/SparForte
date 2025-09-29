@@ -1314,7 +1314,7 @@ procedure ParseStringsReplace is
 begin
   expect( replace_t );
   expect( symbol_t, "(" );
-  ParseInOutParameter( src_ref );
+  ParseInOutParameter( replace_t, src_ref, eof_t );
   if uniTypesOk( src_ref.kind, Uni_String_T ) then
      ParseNextNumericParameter( replace_t, cntExpr, cnt_type, natural_t );
      ParseNextStringParameter( replace_t, tarExpr, tar_type, Uni_String_T );
@@ -1369,7 +1369,7 @@ procedure ParseStringsCSVReplace is
 begin
   expectAdaScript( subject => csv_replace_t );
   expect( symbol_t, "(" );
-  ParseInOutParameter( src_ref );
+  ParseInOutParameter( csv_replace_t, src_ref, eof_t );
   if uniTypesOk( src_ref.kind, Uni_String_t ) then
      ParseNextNumericParameter( csv_replace_t, cntExpr, cnt_type, natural_t );
      ParseNextStringParameter( csv_replace_t, tarExpr, tar_type );
@@ -1977,7 +1977,7 @@ procedure ParseStringsSetUnboundedString is
 begin
   expect( set_unbounded_string_t );
   expect( symbol_t, "(" );
-  ParseInOutParameter( src_ref );
+  ParseInOutParameter( set_unbounded_string_t, src_ref, eof_t );
   if uniTypesOk( src_ref.kind, unbounded_string_t ) then
      ParseLastStringParameter( set_unbounded_string_t, strExpr, str_type );
   end if;

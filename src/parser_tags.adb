@@ -56,7 +56,7 @@ tags_get_tags_image_t : identifier;
 ------------------------------------------------------------------------------
 --  HAS TAGS
 --
--- Syntax: b := tags.has_tags( ex )
+-- Syntax: b := tags.has_tags( x )
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
@@ -79,22 +79,32 @@ end ParseTagsHasTags;
 ------------------------------------------------------------------------------
 --  TAGS CONTAINS
 --
--- Syntax: b := tags.contains( x, t)
+-- Syntax: b := tags.contains( x, t )
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
 procedure ParseTagsContains( result : out storage; kind : out identifier ) is
-  expr : storage;
-  expr_type : identifier;
-  tagId : identifier;
+  expr         : storage;
+  expr_type    : identifier;
+  tagId        : identifier;
+  limitedVarId : identifier;
   subprogramId : constant identifier := tags_contains_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( expr, expr_type );
+  -- An arbitrary expression can be tested.  However, expressions cannot
+  -- contain a limited variable, such as file or directory resource, and
+  -- those also need to be checked.  Abstract variables do not exist.
+  -- What about arrays?
+  if identifiers( token ).usage = limitedUsage then
+     Parseidentifier( limitedVarId );
+     expr := identifiers( limitedVarId ).sstorage;
+  else
+     ParseExpression( expr, expr_type );
+  end if;
   expect( symbol_t, "," );
-  if identifiers( token ).kind = meta_t then
+  if getUniType( identifiers( token ).kind ) = meta_t then
      ParseIdentifier( tagId );
      expect( symbol_t, ")" );
   else
@@ -109,7 +119,7 @@ end ParseTagsContains;
 ------------------------------------------------------------------------------
 --  TAGS GET TAGS IMAGE
 --
--- Syntax: s := tags.get_tags_image( ex )
+-- Syntax: s := tags.get_tags_image( x )
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 

@@ -47,6 +47,7 @@ begin
   return hash_position( hash );
 end String_Hash;
 
+
 -- PUT PERF SUMMARY
 --
 -- Display static code metrics and performance stats
@@ -90,25 +91,25 @@ begin
   put_line_retry( "Static Metrics" );
   new_line_retry;
   put_retry( "LOC:        " );
-  put_line_retry( perfStats.loc'img );
+  put_line_right_justified( perfStats.loc'img );
   put_retry( "Procedures: " );
-  put_line_retry( perfStats.numProcs'img );
+  put_line_right_justified( perfStats.numProcs'img );
   put_retry( "Functions:  " );
-  put_line_retry( perfStats.numFuncs'img );
+  put_line_right_justified( perfStats.numFuncs'img );
   put_retry( "Blocks:     " );
-  put_line_retry( perfStats.numBlocks'img );
+  put_line_right_justified( perfStats.numBlocks'img );
   put_retry( "Structure:  " );
-  put_retry( linesBlock'img );
+  put_right_justified( linesBlock'img );
   put_line_retry( " Lines/Block" );
   put_retry( "Comments:   " );
-  put_line_retry( perfStats.numComments'img );
+  put_line_right_justified( perfStats.numComments'img );
   put_retry( "Commenting: " );
-  put_retry( commentsBlock'img );
+  put_right_justified( commentsBlock'img );
   put_line_retry( " Lines/Block" );
   put_retry( "Branches:   " );
-  put_line_retry( perfStats.numBranches'img );
+  put_line_right_justified( perfStats.numBranches'img );
   put_retry( "Branching:  " );
-  put_retry( branchesBlock'img );
+  put_right_justified( branchesBlock'img );
   put_line_retry( " Branches/Block" );
 
   -- Performance Stats

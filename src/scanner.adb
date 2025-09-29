@@ -3035,6 +3035,11 @@ begin
   elsif original = exception_t then
         return exception_t;
 
+  -- top-level meta type, just return it and don't bother to walk the tree
+
+  elsif original = meta_t then
+        return meta_t;
+
   -- generics are themselves
 
   elsif identifiers( original ).class = genericTypeClass then
@@ -3065,9 +3070,12 @@ begin
   -- If there are more than 100 dereferences, assume this
   -- is a circular relationship (this should only occur in
   -- an internal error in SparForte).
+  --
+  -- META DATA LABELS: for now, treat meta as the root of meta tag hierarchy
+  -- until it becomes more fully formed.
 
   temp_id := original;
-  while identifiers( temp_id ).kind /= variable_t loop
+  while identifiers( temp_id ).kind /= variable_t and identifiers( temp_id ).kind /= meta_t loop
      temp_id := identifiers( temp_id ).kind;
      count := count + 1;
      if count >= 100 then
@@ -4357,7 +4365,6 @@ begin
 end metaLabelOk;
 
 -- META DATA LABELS - this doesn't produce meaningful error messages
-
 function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
 begin
   return metaLabelOk( firstStorage,  secondStorage, thirdStorage ) and
@@ -4367,15 +4374,45 @@ begin
 end metaLabelOk;
 
 -----------------------------------------------------------------------------
+-- Data Meta Label Resolution
+-----------------------------------------------------------------------------
 
--- META DATA LABELS - this is a stub
--- resolve which meta label is to be returned for a combination of meta data
--- labels
+-----------------------------------------------------------------------------
+--  RESOLVE EFFECTIVE META LABEL
+--
+-- Decide on which data labels to return based on 1 to 4 sources for data
+-- labels.  If the target type is an enumerated type, which has no significant
+-- value, return no meta label.  Booleans are an enumerated type.
+-- This is an incomplete stub.  For now, it returns only the first label.
+-----------------------------------------------------------------------------
 
-function resolveEffectiveMetaLabel( firstStorage, secondStorage : storage; thirdStorage : storage := nullStorage; fourthStorage : storage := nullStorage ) return identifier is
+function resolveEffectiveMetaLabel(
+   kind          : identifier;
+   firstStorage  : storage;
+   secondStorage : storage := nullStorage;
+   thirdStorage  : storage := nullStorage;
+   fourthStorage : storage := nullStorage ) return identifier is
 begin
-  return firstStorage.metaLabel;
+   if getUniType( kind ) = root_enumerated_t then
+      return noMetaLabel;
+   end if;
+   if firstStorage = nullStorage then
+      return sparMetaLabel;
+   end if;
+   return firstStorage.metaLabel;
 end resolveEffectiveMetaLabel;
+
+-----------------------------------------------------------------------------
+--  ASSIGN SYSTEM INDEX META LABEL
+--
+-- When something is a system-assigned index, assign this meta label
+-----------------------------------------------------------------------------
+
+function assignSystemIndexMetaLabel return identifier is
+begin
+  return noMetaLabel;
+end assignSystemIndexMetaLabel;
+
 
 -----------------------------------------------------------------------------
 --

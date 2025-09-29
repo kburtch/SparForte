@@ -13,8 +13,29 @@ Long term Ongoing Work
 
 - value meta labels project
 
+  - should in-out parameters be references?
+    - gnat.crc32 should use references for update and get value
+    - regression test for gnat.crc32.initialize()
+    - all out parameters should probably be checked and have reg. tests
+    - directory_operations.close/is_open/read/etc. takes a simple identifier
+      but should it take a reference so you can have an array of files to close?
+      Open takes a reference but close does not.
+   - text_io.parseOpenFile requires special type checking
+
+  - subsystems involving files or other output do not necessarily
+    have a tag but perhaps they should.  For example, CGI.Argument_Count
+    takes no parameter so can only be secured if the CGI package has
+    a meta label assigned somehow.
+
+  - Does change_dir affect current_working_directory?
+  - setting the meta label for files such as btree_io
+  - setting the meta label for files such as database packages
+
   - the global meta mode for the language
     - ? policy tagged, uom tagged, class tagged
+
+  - array built-in help vs. summary vs. docs - should functions have x :=
+   in front or not?  Thought this was already consistent.
 
   - issue of retagging something already tagged...what are the rules?
     retag y as pci;
@@ -22,12 +43,21 @@ Long term Ongoing Work
   - docs
     - document the behaviour of doubly.assemble/disassemble for meta
       tags
-   - vector package index has no storage type because it is defined
-     by the package, not a key assisgned by a user.  Should be documented.
+    - vector package index has no storage type because it is defined
+      by the package, not a key assisgned by a user.  Should be documented.
+      That is, meta data labels do not apply.
+   - cgi package will require extensive testing
+   - cgi needs ParseExpression replaced with parser_param functions
 
+  - tags.contains handles expressions but should handle limiteds,
+    arrays, etc.
   - factors can be labelled but continue with expressions and labels
     - related unit tests
   - function result tags (e.g. calendar.clock, or user functions)
+    calendar.clock [tagged tag] may not be the best syntax
+    - removing tagged tag
+  - designing how meta labels apply to database columns
+  - designing how meta labels apply to fields in a file of records
   - a structure to escallate and descallate the global meta mode
   - deploying strings + meta tags
   - assignments using strings + meta tags
@@ -46,8 +76,7 @@ Long term Ongoing Work
   - resolveEffectiveMetaLabel should be applied to data structure
     packages?  In essence, what is stored is being retreived as-is
     so labels should be as-is.
-  - resolveEffectiveMetaLabel should be applied to single items were
-    the values are not being mixed?
+    a meta tag.
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -113,6 +142,10 @@ Long term Ongoing Work
     - investigate switching from OpenGL to Vulkan 3D libraries
   - interfacing to more Standard Ada Libraries
   - complex data structures
+- standardize comments in new format
+  - new fields such as in parser_arrays
+  -- A uniting of two worlds by a thread tightly drawn between SparForte and
+  -- AdaCGI, run on-demand.
 
 
 Priority Issues (Fix These First)
@@ -332,6 +365,8 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- doubly_linked_lists.unique and/or arrays.unique
+  - double_linked_lists/arrays.max_position / min_position?
 - investigate the possibility of a simple ada-to-python code converter to
   leverage python code scanning tools which are more abundant than ada ones.
 - less command issues

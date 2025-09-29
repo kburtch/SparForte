@@ -20,7 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
      gnat.source_info,
@@ -165,11 +165,12 @@ end err_storage;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS FIRST
+--  PARSE ARRAYS FIRST                                    (built-in function)
 --
--- Syntax: arrays.first( arraytypeorvar );
--- Source: arraytypeorvar'first
--- Return the first (lowest) index of the array.
+-- AdaScript Syntax: arrays.first( arraytypeorvar );
+--       Ada Target: arraytypeorvar'first
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.first
 -----------------------------------------------------------------------------
 
 procedure ParseArraysFirst( result : out storage; kind : out identifier ) is
@@ -220,11 +221,12 @@ end ParseArraysFirst;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS LAST
+--  PARSE ARRAYS LAST                                     (built-in function)
 --
--- Syntax: arrays.last( arraytypeorvar );
--- Source: arraytypeorvar'last
--- Return the last (highest) index of the array.
+-- AdaScript Syntax: arrays.last( arraytypeorvar );
+--       Ada Target: arraytypeorvar'last
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.last
 -----------------------------------------------------------------------------
 
 procedure ParseArraysLast( result : out storage; kind : out identifier ) is
@@ -276,11 +278,12 @@ end ParseArraysLast;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS LENGTH
+--  PARSE ARRAYS LENGTH                                   (built-in function)
 --
--- Syntax: arrays.length( arraytypeorvar );
--- Source: arraytypeorvar'length
--- Return the number of elements in the array (last index - first index + 1).
+-- AdaScript Syntax: arrays.length( arraytypeorvar );
+--       Ada Target: arraytypeorvar'length
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.length
 -----------------------------------------------------------------------------
 
 procedure ParseArraysLength( result : out storage; kind : out identifier ) is
@@ -476,11 +479,12 @@ end Lt_numeric_descending;
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS BUBBLE SORT
+--  PARSE ARRAYS BUBBLE SORT                             (built-in procedure)
 --
--- Syntax: arrays.bubble_sort( a )
--- Bubble sort the array, treating the elements as strings or numbers depending
--- on the element type.
+-- AdaScript Syntax: arrays.bubble_sort( a )
+--       Ada Target: GNAT.Bubble_Sort_A
+--   GNAT Spec File: g-busora.ads
+--   SparForte Docs: doc/pkg_arrays.html#arrays.bubble_sort
 -----------------------------------------------------------------------------
 
 procedure ParseArraysBubbleSort is
@@ -526,11 +530,12 @@ end ParseArraysBubbleSort;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS BUBBLE SORT DESCENDING
+--  PARSE ARRAYS BUBBLE SORT DESCENDING                  (built-in procedure)
 --
--- Syntax: arrays.bubble_sort_descending( a )
--- Bubble sort the array in descending order, treating the elements as strings
--- or numbers depending on the element type.
+-- AdaScript Syntax: arrays.bubble_sort_descending( a )
+--       Ada Target: GNAT.Bubble_Sort_A
+--   GNAT Spec File: g-busora.ads
+--   SparForte Docs: doc/pkg_arrays.html#arrays.bubble_sort_descending
 -----------------------------------------------------------------------------
 
 procedure ParseArraysBubbleSortDescending is
@@ -576,11 +581,12 @@ end ParseArraysBubbleSortDescending;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS HEAP SORT
+--  PARSE ARRAYS HEAP SORT                               (built-in procedure)
 --
--- Syntax: arrays.heap_sort( a )
--- Heap sort the array, treating the elements as strings or numbers depending
--- on the element type.
+-- AdaScript Syntax: arrays.heap_sort( a )
+--       Ada Target: GNAT.Heap_Sort_A
+--   GNAT Spec File: g-hesora.ads
+--   SparForte Docs: doc/pkg_arrays.html#arrays.heap_sort
 -----------------------------------------------------------------------------
 
 procedure ParseArraysHeapSort is
@@ -626,9 +632,12 @@ end ParseArraysHeapSort;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS HEAP SORT DESCENDING
+--  PARSE ARRAYS HEAP SORT DESCENDING                    (built-in procedure)
 --
--- Syntax: arrays.heap_sort_descending( a )
+-- AdaScript Syntax: arrays.heap_sort_descending( a )
+--       Ada Target: GNAT.Heap_Sort_A
+--   GNAT Spec File: g-hesora.ads
+--   SparForte Docs: doc/pkg_arrays.html#arrays.heap_sort_descending
 -- Heap sort the array in descending order, treating the elements as strings or
 -- numbers depending on the element type.
 -----------------------------------------------------------------------------
@@ -676,10 +685,12 @@ end ParseArraysHeapSortDescending;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS SHUFFLE
+--  PARSE ARRAYS SHUFFLE                                 (built-in procedure)
 --
--- Syntax: arrays.shuffle( a )
--- Randomize the elements of the array with a Fisher-Yates shuffle.
+-- AdaScript Syntax: arrays.shuffle( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.shuffle
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShuffle is
@@ -745,13 +756,12 @@ end ParseArraysShuffle;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS FLIP
+--  PARSE ARRAYS FLIP                                    (built-in procedure)
 --
--- Syntax: arrays.flip( a )
--- Reverse the order of the elements in the array, moving the last element to
--- the first position and the first element to the last position. (Prior to
--- version 1.1, this was arrays.reverse but was renamed to avoid a conflict
--- with the Ada reserved word "reverse".)
+-- AdaScript Syntax: arrays.flip( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.flip
 -----------------------------------------------------------------------------
 
 procedure ParseArraysFlip is
@@ -815,11 +825,12 @@ end ParseArraysFlip;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS SHIFT RIGHT
+--  PARSE ARRAYS SHIFT RIGHT                             (built-in procedure)
 --
--- Syntax: arrays.shift_right( a )
--- Move all elements of the array one element toward the last element,
--- overwriting the last element.
+-- AdaScript Syntax: arrays.shift_right( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.rotate_right
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShiftRight is
@@ -866,11 +877,12 @@ end ParseArraysShiftRight;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS SHIFT LEFT
+--  PARSE ARRAYS SHIFT LEFT                              (built-in procedure)
 --
--- Syntax: arrays.shift_left( a )
--- Move all elements of the array one element toward the first element,
--- overwriting the first element.
+-- AdaScript Syntax: arrays.shift_left( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.shift_left
 -----------------------------------------------------------------------------
 
 procedure ParseArraysShiftLeft is
@@ -917,11 +929,12 @@ end ParseArraysShiftLeft;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS ROTATE RIGHT
+--  PARSE ARRAYS ROTATE RIGHT                            (built-in procedure)
 --
--- Syntax: arrays.rotate_right( a )
--- Move all elements of the array one element toward the last position, moving
--- the last element to the first position.
+-- AdaScript Syntax: arrays.rotate_right( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.rotate_right
 -----------------------------------------------------------------------------
 
 procedure ParseArraysRotateRight is
@@ -974,11 +987,12 @@ end ParseArraysRotateRight;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS ROTATE LEFT
+--  PARSE ARRAYS ROTATE LEFT                             (built-in procedure)
 --
--- Syntax: arrays.rotate_left( a )
--- Move all elements of the array one element toward the first position, moving
--- the first element to the last position.
+-- AdaScript Syntax: arrays.rotate_left( a )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.rotate_left
 -----------------------------------------------------------------------------
 
 procedure ParseArraysRotateLeft is
@@ -1030,15 +1044,16 @@ end ParseArraysRotateLeft;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS TO ARRAY
+--  PARSE ARRAYS TO ARRAY                                 (built-in function)
 --
--- JSON string to array.
--- Syntax: to_array( str_array | num_array, string )
+-- AdaScript Syntax: to_array( str_array | num_array, string )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.to_array
 -- Example: arrays.to_array( a, "[1,2]" )
 --          arrays.to_array( d, "[" & ASCII.Quotation & "foo" &
 --          ASCII.Quotation & "," & ASCII.Quotation & "bar" &
 --          ASCII.Quotation & "]" );
--- Source: N/A
 -----------------------------------------------------------------------------
 
 procedure ParseArraysToArray is
@@ -1089,12 +1104,13 @@ end ParseArraysToArray;
 
 
 -----------------------------------------------------------------------------
---  PARSE ARRAYS TO JSON
+--  PARSE ARRAYS TO JSON                                  (built-in function)
 --
--- Array to JSON string.
--- Syntax: to_json( string, array )
+-- AdaScript Syntax: to_json( string, array )
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_arrays.html#arrays.to_json
 -- Example: arrays.to_json( s, a )
--- Source: N/A
 -----------------------------------------------------------------------------
 
 procedure ParseArraysToJSON is

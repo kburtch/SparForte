@@ -173,7 +173,12 @@ procedure ParseLastNumericParameter(
 -- In/Out Parameters
 ------------------------------------------------------------------------------
 
-procedure ParseInOutParameter( ref : out reference );
+
+procedure ParseInOutParameter(
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 -- TODO: should modify others to also use a reference
 
 procedure ParseSingleInOutParameter(

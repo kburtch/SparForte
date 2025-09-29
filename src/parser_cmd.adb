@@ -26,14 +26,17 @@ with ada.command_line,
     pegasoft,
     world,
     symbol_table,
+    message_strings,
     scanner,
     scanner.communications,
     parser;
 use ada.command_line,
+    ada.strings,
     ada.strings.unbounded,
     pegasoft,
     world,
     symbol_table,
+    message_strings,
     scanner,
     scanner.communications,
     parser;
@@ -67,20 +70,29 @@ cmd_envval_t      : identifier;
 procedure ParseArgument( result : out storage; kind : out identifier ) is
   expr  : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := cmd_argument_t;
 begin
   kind := uni_string_t;
   result := nullStorage;
-  expect( cmd_argument_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
      begin
        result := storage'( to_unbounded_string( Argument( integer'value(
-         to_string( expr.value ) ) + optionOffset ) ), noMetaLabel );
-     exception when others =>
+         to_string( expr.value ) ) + optionOffset ) ), sparMetaLabel );
+     exception when constraint_error =>
+       err( context => subprogramId,
+            subjectNotes => pl( "position " ) & em_value( trim( expr.value, both ) ),
+            reason => +"is not in range",
+            obstructorNotes => pl( "1 .." ) & pl( integer'image( Argument_Count-optionOffset ) ),
+            seeAlso => + "doc/pkg_cmdline.html"
+       );
+     when others =>
        err_exception_raised;
      end;
   end if;
@@ -95,11 +107,14 @@ end ParseArgument;
 ------------------------------------------------------------------------------
 
 procedure ParseArgument_Count( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cmd_argcount_t;
 begin
   kind := natural_t;
-  expect( cmd_argcount_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset )), noMetaLabel );
+     result := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset )),
+        sparMetaLabel );
   end if;
 end ParseArgument_Count;
 
@@ -112,11 +127,13 @@ end ParseArgument_Count;
 ------------------------------------------------------------------------------
 
 procedure ParseCommand_Name( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cmd_commandname_t;
 begin
   kind := string_t;
-  expect( cmd_commandname_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Command_Name ), noMetaLabel );
+     result := storage'( to_unbounded_string( Command_Name ), sparMetaLabel );
   end if;
 end ParseCommand_Name;
 
@@ -129,19 +146,28 @@ end ParseCommand_Name;
 ------------------------------------------------------------------------------
 
 procedure ParseSetExitStatus is
-  expr  : storage;
-  expr_type : identifier;
+  statusExpr  : storage;
+  statusType : identifier;
+  subprogramId : constant identifier := cmd_setexit_t;
 begin
-  expect( cmd_setexit_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( expr, expr_type );
-  if baseTypesOk( expr_type, short_short_integer_t ) then
+  ParseExpression( statusExpr, statusType );
+  if baseTypesOk( statusType, short_short_integer_t ) then
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
      begin
-       last_status := aStatusCode( to_numeric( expr.value ) );
-     exception when others =>
+       last_status := aStatusCode( to_numeric( statusExpr.value ) );
+     exception when constraint_error =>
+       err( context => subprogramId,
+            subjectNotes => pl( "status code " ) & em_value( trim( statusExpr.value , both ) ),
+            reason => +"is not in range",
+            obstructorNotes => pl( aStatusCode'first'img ) & pl( " .." ) & pl( aStatusCode'last'img ),
+            seeAlso => + "doc/pkg_cmdline.html"
+       );
+     when others =>
        err_exception_raised;
      end;
   end if;
@@ -156,11 +182,14 @@ end ParseSetExitStatus;
 ------------------------------------------------------------------------------
 
 procedure ParseEnvironment_Count( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cmd_envcnt_t;
 begin
   kind := natural_t;
-  expect( cmd_envcnt_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( integer'image( Environment_Count )), noMetaLabel );
+     result := storage'( to_unbounded_string( integer'image( Environment_Count )),
+        sparMetaLabel );
   end if;
 end ParseEnvironment_Count;
 
@@ -175,21 +204,24 @@ end ParseEnvironment_Count;
 procedure ParseEnvironment_Value( result : out storage; kind : out identifier ) is
   expr  : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := cmd_envval_t;
 begin
   kind := uni_string_t;
   result := nullStorage;
-  expect( cmd_envval_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseExpression( expr, expr_type );
   if baseTypesOk( expr_type, positive_t ) then
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
+     -- the meta label is not checked since it is a position
      begin
-       result := storage'( to_unbounded_string( Environment_Value( integer'value(
-         to_string( expr.value ) ) ) ), noMetaLabel );
+        result := storage'( to_unbounded_string( Environment_Value( integer'value(
+           to_string( expr.value ) ) ) ), sparMetaLabel );
      exception when others =>
-       err_exception_raised;
+        err_exception_raised;
      end;
   end if;
 end ParseEnvironment_Value;

@@ -33,16 +33,29 @@ CHANGES SINCE 2.6.3
 
 14. Refactor: world package was refactored especially moving the symbol table into a separate file.
 
-15. Fix: documentation corrected for doubly_linked_lists.insert_before.
+15. Fix: documentation corrected for doubly_linked_lists.insert_before, cgi package, calendar.to_julian.
 
 16. New: enum.pos / enum.val [tests needed].
 
-17. Fix: documentation corrected for calendar.to_julian.
+17. New: added type calendar.julian_date.
 
-18. New: added type calendar.julian_date.
+18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
-19. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
+19. New: tags package.  Name may change.  [docs needed][tests needed][name may change].
 
-20. New: tags package.  Name may change.  [docs needed][tests needed][name may change].
+20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
 
+21. Change: performance static metrics are right-justified.
+
+22. Fix: command_line.argument has an error message with a position is out-of-range rather than reporting an unexpected exception.
+
+23. Fix: exit status codes are limited to range 0..255 and a new error message in command_line.set_exit_status when a status code is out-of-range.
+
+24. Fix: directory_operations.dir_name missing entry added to package documentation.
+
+25. Change: directory_operations.change_dir now updates the PWD and OLDPWD variables for Bourne shell compatibility, even though the Ada version does not update these variables.
+
+26. Fix: array out parameters now type checked against their element type not the array type.
+
+27. Fix: gnat.crc32 package can now work with arrays of crc items.  gnat.crc32.initialize() no longer checks the parameter type twice.
 

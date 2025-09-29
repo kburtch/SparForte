@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with ada.text_io; use ada.text_io;
+-- with ada.text_io; use ada.text_io;
 
 with gnat.crc32,
     ada.strings.unbounded,
@@ -62,19 +62,18 @@ procedure ParseGnatCRC32Initialize is
   record_ref : reference;
 begin
   expect( gnat_crc32_initialize_t );
-  expect( symbol_t, "(" );
-  ParseOutParameter( record_ref, gnat_crc32_crc32_t );
-  if baseTypesOk( record_ref.kind, gnat_crc32_crc32_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseSingleOutParameter( gnat_crc32_initialize_t, record_ref, gnat_crc32_crc32_t );
 
   if isExecutingCommand then
      declare
        c : Gnat.CRC32.CRC32;
      begin
        Gnat.CRC32.Initialize( C );
-       --identifiers( record_ref.id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
-       identifiers( record_ref.id ).store.value := to_unbounded_string( numericValue( C ) );
+       --identifiers( record_ref.id ).value := to_unbounded_string(
+       --  numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
+       AssignParameter( record_ref,
+          storage'( to_unbounded_string( numericValue( C ) ), sparMetaLabel )
+       );
      exception when others =>
        err_exception_raised;
      end;
@@ -83,54 +82,62 @@ end ParseGnatCRC32Initialize;
 
 procedure ParseGnatCRC32Update is
   -- gnat.crc32.update( crc32 )
-  var_id  : identifier;
+  --var_id  : identifier;
   expr  : storage;
   expr_type : identifier;
+  crc_ref : reference;
+  crc     : storage;
 begin
   expect( gnat_crc32_update_t );
   expect( symbol_t, "(" );
-  ParseIdentifier( var_id );
-  if baseTypesOk( identifiers( var_id ).kind, gnat_crc32_crc32_t ) then
-     expectParameterComma;
-     ParseExpression( expr, expr_type );
-     --if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
-     if uniTypesOk( expr_type, uni_string_t ) then
-        expect( symbol_t, ")" );
-     end if;
+  ParseInOutParameter( gnat_crc32_update_t, crc_ref, gnat_crc32_crc32_t );
+  expectParameterComma;
+  ParseExpression( expr, expr_type );
+  --if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
+  if uniTypesOk( expr_type, uni_string_t ) then
+     expect( symbol_t, ")" );
   end if;
+  --end if;
 
   if isExecutingCommand then
-     declare
-       c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
-           identifiers( var_id ).store.value ) );
-     begin
-       Gnat.CRC32.Update( C, to_string( expr.value ) );
-       --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
-       identifiers( var_id ).store.value := to_unbounded_string( numericValue( C ) );
-     exception when others =>
-       err_exception_raised;
-     end;
+      getParameterValue( crc_ref, crc );
+     if metaLabelOk( crc ) then
+        declare
+          c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
+              crc.value ) );
+        begin
+          Gnat.CRC32.Update( C, to_string( expr.value ) );
+          --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
+          AssignParameter( crc_ref,
+             storage'( to_unbounded_string( numericValue( C ) ), sparMetaLabel )
+          );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseGnatCRC32Update;
 
 procedure ParseGnatCRC32GetValue( result : out storage; kind : out identifier ) is
   -- integer := gnat.crc32.update( crc32 )  -- really, unsigned 32
-  var_id  : identifier;
+  crc_ref : reference;
+  crc     : storage;
 begin
   kind := integer_t;
   expect( gnat_crc32_get_value_t );
   expect( symbol_t, "(" );
-  ParseIdentifier( var_id );
-  if baseTypesOk( identifiers( var_id ).kind, gnat_crc32_crc32_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  ParseInOutParameter( gnat_crc32_get_value_t, crc_ref, gnat_crc32_crc32_t );
+  expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     begin
-       result := storage'( identifiers( var_id ).store.value, noMetaLabel );
-     exception when others =>
-       err_exception_raised;
-     end;
+     getParameterValue( crc_ref, crc );
+     if metaLabelOk( crc ) then
+        begin
+          result := crc;
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseGnatCRC32GetValue;
 

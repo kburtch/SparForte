@@ -999,9 +999,8 @@ begin
   ref.index := 0;
   ref.kind := eof_t;
 
-  -- Basic type check on the parameter
-
-  discard :=  baseTypesOk(identifiers(ref.id).kind, defaultType );
+  -- The types cannot be checked until we know what whether or not it is
+  -- an array with an index.
 
   -- If this is an array reference, read the index value.  Check that
   -- the index value is within the index bounds for the array.
@@ -1009,6 +1008,8 @@ begin
   if identifiers( ref.id ).list then        -- array variable?
      ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      expect( symbol_t, "(" );
+     -- Basic type check on the parameter
+     discard := type_checks_done or else baseTypesOk(ref.kind, defaultType );
      ParseExpression( expr_se, expr_type );
      if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
         identifiers( getBaseType( expr_type ) ).list then
@@ -1047,6 +1048,9 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
+     -- Basic type check on the parameter
+     discard := type_checks_done or else baseTypesOk(identifiers(ref.id).kind, defaultType );
+
      if isNew then
         for i in 1..integer'value( to_string( identifiers( ref.kind ).store.value ) ) loop
             for j in 1..identifiers_top-1 loop
@@ -1179,33 +1183,48 @@ end ParseLastOutParameter;
 --  PARSE IN OUT PARAMETER
 --
 -- Parse an "in out" parameter for a procedure call.  Return a reference
--- to it.  The variable being referenced must already exist.
+-- to it.  The variable being referenced must already exist.  If expected type
+-- is eof_t, type checks will be skipped and left to the caller.  This is for
+-- special checking by text_io and a few other functions.
+--
+-- syntax: identifier [ (index) ]
 --
 -- TODO: check this fits with the other in out param fns here
 ------------------------------------------------------------------------------
 
-procedure ParseInOutParameter( ref : out reference ) is
-  -- syntax: identifier [ (index) ]
+procedure ParseInOutParameter(
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  ) is
   expr_type : identifier;
   expr_se   : storage;
   arrayIndex: long_integer;
+  discard   : boolean;
 begin
+  -- In Out parameters do not auto-declare so just parse the identifier
   ParseIdentifier( ref.id );
+
+  -- Sensible defaults
+  -- The kind will have been given to us since there's no auto-declare
+  -- of in out parameters
+
   ref.index := 0;
-  if identifiers( token ).list then        -- array variable?
-     expect( symbol_t, "(" );
-     ParseExpression( expr_se, expr_type );
-     expectParameterClose;
-  end if;
-  ref.index := 0;
-  if identifiers( ref.id ).list then        -- array variable?
-     ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
+
+  if identifiers( ref.id ).list then                              -- array variable?
+     ref.kind := identifiers( identifiers( ref.id ).kind ).kind;  -- element kind
+     -- Basic type check on the parameter
+     if expected_type /= eof_t then
+        discard := type_checks_done or else baseTypesOk(ref.kind, expected_type );
+     end if;
      expect( symbol_t, "(" );
      ParseExpression( expr_se, expr_type );
      if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
         identifiers( getBaseType( expr_type ) ).list then
         err( +"array index must be a scalar type" );
-     end if;                                   -- variables are not
+     end if;
+
+     -- the array index only has a value at run-time
      if isExecutingCommand then                -- declared in syntax chk
          begin
             arrayIndex := long_integer(to_numeric(expr_se.value));-- convert to number
@@ -1213,7 +1232,7 @@ begin
             err_exception_raised;
             arrayIndex := 0;
          end;
-         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then -- TODO: probably needs a better error message
+         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then
             if arrayIndex not in identifiers( ref.id ).astorage'range then
                err( pl( "array index " & to_string( trim( expr_se.value, ada.strings.both ) ) &
                   " not in" & identifiers( ref.id ).astorage'first'img & " .." &
@@ -1233,6 +1252,10 @@ begin
 
      -- ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      ref.kind := identifiers( ref.id ).kind;
+     if expected_type /= eof_t then
+        discard := type_checks_done or else baseTypesOk(identifiers(ref.id).kind, expected_type );
+     end if;
+
      for i in 1..integer'value( to_string( identifiers( ref.kind ).store.value ) ) loop
         for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = ref.kind then
@@ -1272,8 +1295,10 @@ begin
   if syntax_check and then not error_found then
      if identifiers( ref.id ).field_of /= eof_t then
         identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
+        identifiers( identifiers( ref.id ).field_of ).writtenByFlow := getDataFlowName;
      else
         identifiers( ref.id ).wasWritten := true;
+        identifiers( ref.id ).writtenByFlow := getDataFlowName;
      end if;
   end if;
   if isExecutingCommand then

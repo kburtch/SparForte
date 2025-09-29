@@ -58,7 +58,7 @@ begin
      if err_exception.deleted then
         result := nullStorage;
      else
-        result := storage'( err_exception.name, noMetaLabel );
+        result := storage'( err_exception.name, sparMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionName;
@@ -73,7 +73,7 @@ begin
      if err_exception.deleted then
         result := nullStorage;
      else
-        result := storage'( fullErrorMessage.gccMessage, noMetaLabel );
+        result := storage'( fullErrorMessage.gccMessage, sparMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionInfo;
@@ -86,9 +86,9 @@ begin
   expect( exceptions_exception_status_code_t );
   if isExecutingCommand then
      if err_exception.deleted then
-        result := storage'( to_unbounded_string( "0" ), noMetaLabel );
+        result := storage'( to_unbounded_string( "0" ), sparMetaLabel );
      else
-        result := storage'( to_unbounded_string( numericValue( character'pos( element( err_exception.store.value, 1 ) ) ) ), noMetaLabel );
+        result := storage'( to_unbounded_string( numericValue( character'pos( element( err_exception.store.value, 1 ) ) ) ), sparMetaLabel );
      end if;
   end if;
 end ParseExceptionsExceptionStatusCode;

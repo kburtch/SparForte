@@ -89,7 +89,7 @@ begin
   result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFileOrSocket( file_ref, file_kind );
+  ParseOpenFileOrSocket( end_of_file_t, file_ref, file_kind );
   if isExecutingCommand then
      if file_kind = file_type_t then
         if identifier'value( to_string( stringField( file_ref, mode_field ) ) ) /= in_file_t then
@@ -112,7 +112,7 @@ begin
   result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( end_of_line_t, file_ref );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      result.value := stringField( file_ref, eol_field );
@@ -128,7 +128,7 @@ begin
   result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
   getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( line_t, file_ref );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      result.value := stringField( file_ref, line_field );
@@ -144,7 +144,7 @@ begin
   result := nullStorage;
   getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( name_t, file_ref );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      result.value := stringField( file_ref, name_field );
@@ -160,7 +160,7 @@ begin
   result := nullStorage;
   expect( mode_t ); -- getNextToken;
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( mode_t, file_ref );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      result.value := stringField( file_ref, mode_field );
@@ -210,7 +210,7 @@ begin
   getNextToken;
   if token = symbol_t and then identifiers( Token ).store.value = "(" then
       expect( symbol_t, "(" );
-      ParseOpenFileOrSocket( file_ref, file_kind );
+      ParseOpenFileOrSocket( get_line_t, file_ref, file_kind );
       expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
@@ -247,7 +247,7 @@ begin
   end if;
 end ParseGetLine;
 
-procedure ParseOpenFile( return_ref : out reference ) is
+procedure ParseOpenFile( subprogram_id : identifier; return_ref : out reference ) is
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
   ref : reference;
@@ -280,9 +280,9 @@ begin
      end if;
      getNextToken;
   else
-     ParseInOutParameter( ref );
+     ParseInOutParameter( subprogram_id, ref, eof_t );
      if getUniType( ref.kind ) /= file_type_t then
-       err( +"file_type expected" );
+        err( +"file_type expected" );
      end if;
   end if;
 
@@ -299,7 +299,7 @@ begin
   end if;
 end ParseOpenFile;
 
-procedure ParseOpenSocket( return_ref : out reference ) is
+procedure ParseOpenSocket( subprogram_id : identifier; return_ref : out reference ) is
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
   ref : reference;
@@ -332,7 +332,7 @@ begin
      end if;
      getNextToken;
   else
-     ParseInOutParameter( ref );
+     ParseInOutParameter( subprogram_id, ref, eof_t );
      if getUniType( ref.kind ) /= socket_type_t then
         err( +"file_type or socket_type variable expected" );
      end if;
@@ -351,7 +351,7 @@ begin
   end if;
 end ParseOpenSocket;
 
-procedure ParseOpenFileOrSocket( return_ref : out reference; kind : out identifier ) is
+procedure ParseOpenFileOrSocket( subprogram_id : identifier; return_ref : out reference; kind : out identifier ) is
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
   ref : reference;
@@ -386,7 +386,7 @@ begin
      end if;
      getNextToken;
   else
-     ParseInOutParameter( ref );
+     ParseInOutParameter( subprogram_id, ref, eof_t );
      if ref.kind /= file_type_t and ref.kind /= socket_type_t then
         err( +"file_type or socket_type variable expected" );
      end if;
@@ -842,7 +842,7 @@ procedure ParseReset is
 begin
   expect( reset_t );
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( reset_t, file_ref );
   if token = symbol_t and identifiers( token ).store.value = "," then
      getNextToken;
      if baseTypesOk( identifiers( token ).kind, file_mode_t ) then
@@ -890,7 +890,7 @@ procedure ParseClose is
 begin
   expect( close_t );
   expect( symbol_t, "(" );
-  ParseOpenFileOrSocket( file_ref, kind );
+  ParseOpenFileOrSocket( close_t, file_ref, kind );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
@@ -927,7 +927,7 @@ procedure ParseDelete is
 begin
   expect( delete_t );
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( delete_t, file_ref );
   expect( symbol_t, ")" );
   if rshOpt then
      err( +"delete is not allowed in a " & em( "restricted shell" ) );
@@ -975,7 +975,7 @@ begin
   --fd := stdin;
   if token = symbol_t and then identifiers( Token ).store.value = "(" then
       getNextToken;
-      ParseOpenFileOrSocket( file_ref, kind );
+      ParseOpenFileOrSocket( skip_line_t, file_ref, kind );
       expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
@@ -1047,7 +1047,7 @@ begin
   fd := stdin;
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
-     ParseOpenFileOrSocket( file_ref, kind );
+     ParseOpenFileOrSocket( get_t, file_ref, kind );
      expectParameterComma;
   else
      file_ref.id := standard_input_t;
@@ -1121,7 +1121,7 @@ begin
   if identifiers( token ).kind /= keyword_t then
      kind := getUniType( token );
      if kind = file_type_t then
-        ParseOpenFile( target_ref );
+        ParseOpenFile( put_line_t, target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
               err( +"This is a in_mode file" );
@@ -1129,7 +1129,7 @@ begin
         end if;
         expectParameterComma;
      elsif kind = socket_type_t then
-        ParseOpenSocket( target_ref );
+        ParseOpenSocket( put_line_t, target_ref );
         expectParameterComma;
      else
         target_ref.id := standard_output_t;
@@ -1386,7 +1386,7 @@ begin
   if identifiers( token ).kind /= keyword_t then
      kind := getUniType( token );
      if kind = file_type_t then
-        ParseOpenFile( target_ref );
+        ParseOpenFile( put_t, target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
               err( +"This is a in_mode file" );
@@ -1394,7 +1394,7 @@ begin
         end if;
         expectParameterComma;
      elsif kind = socket_type_t then
-        ParseOpenSocket( target_ref );
+        ParseOpenSocket( put_t, target_ref );
         expectParameterComma;
      else
         target_ref.id := standard_output_t;
@@ -1496,7 +1496,7 @@ begin
   expect( new_line_t );
   if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
-     ParseOpenFileOrSocket( target_ref, kind );
+     ParseOpenFileOrSocket( new_line_t, target_ref, kind );
      expect( symbol_t, ")" );
   else
      target_ref.id := standard_output_t;
@@ -1529,7 +1529,7 @@ procedure ParseSetInput is
 begin
   expect( set_input_t );
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( set_input_t, file_ref );
   if file_ref.id = standard_output_t then
      err( em( "standard_output" ) & pl( " cannot be assigned for " ) &
           em( "input" ) );
@@ -1568,7 +1568,7 @@ procedure ParseSetOutput is
 begin
   expect( set_output_t );
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( set_output_t, file_ref );
   if file_ref.id = standard_input_t then
      err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
           em( "output" ) );
@@ -1604,7 +1604,7 @@ procedure ParseSetError is
 begin
   expect( set_error_t );
   expect( symbol_t, "(" );
-  ParseOpenFile( file_ref );
+  ParseOpenFile( set_error_t, file_ref );
   if file_ref.id = standard_input_t then
      err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
           em( " standard error" ) );
@@ -1651,7 +1651,7 @@ begin
   if kind /= new_t then
      baseType := getBaseType( kind );
      if baseType = file_type_t or baseType = socket_type_t then
-        ParseOpenFileOrSocket( file_ref, kind );
+        ParseOpenFileOrSocket( get_immediate_t, file_ref, kind );
         expectParameterComma;
      else
         -- default is standard input

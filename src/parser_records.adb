@@ -127,7 +127,7 @@ begin
   -- ParseIdentifier( target_var_id );
   -- ParseOutParameter( target_ref, json_string_t );
   pushBlock( newScope => true );
-  ParseInOutParameter( target_ref );
+  ParseInOutParameter( subprogramId, target_ref, eof_t );
   pullBlock;
   baseType := getBaseType( identifiers( target_ref.id ).kind );
   if identifiers( baseType ).kind /= root_record_t then

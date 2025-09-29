@@ -122,10 +122,10 @@ slash or back slash).</li>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
+<td><p><a href="#directory_operations.dir_name">directory_operations.dir_name</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Dir_Name<br>PHP: dirname</p></td>
+<td><p>Ada: Ada.Directories.Full_Name<br>PHP: dirname</p></td>
 </tr>
 </table>
 
@@ -214,6 +214,11 @@ slash or back slash).</li>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: GNAT.Directory_Operations.Change_Dir<br>PHP:chdir</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>As of SparForte 3.0, the PWD and OLDPWD variables are updated
+to prevent corruption when mixing cd and Change_Dir.  Ada's version does
+not affect the PWD and OLDPWD variables.</p></td>
 </tr>
 </table>
 
@@ -251,6 +256,56 @@ slash or back slash).</li>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: GNAT.Directory_Operations.Open</p></td>
+</tr>
+</table>
+
+<a name="directory_operations.dir_name"></a><h3>s := directory_operations.dir_name( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Returns directory name for Path. This is similar to the UNIX dirname
+command. Everything after the last directory separator is removed. If
+there is no directory separator the current working directory is
+returned. Note that the contents of Path is case-sensitive on
+systems that have case-sensitive file names (like Unix), and
+non-case-sensitive on systems where the file system is also non-
+case-sensitive (such as Windows).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := directory_operations.dir_name( "../myfile.txt" ); -- returns "/tmp/" if myfile is in /tmp</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>directory_operations.dir_name_str</span></td>
+<td><span>required</span></td>
+<td><span>the directory portion of the pathname</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#directory_operations.absolute_dir_name">directory_operations.absolute_dir_name</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Dir_Name<br>PHP: dirname</p></td>
 </tr>
 </table>
 

@@ -345,10 +345,17 @@ function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: 
 
 ------------------------------------------------------------------------------
 -- Data Meta Label Resolution
---
 ------------------------------------------------------------------------------
 
-function resolveEffectiveMetaLabel( firstStorage, secondStorage : storage; thirdStorage : storage := nullStorage; fourthStorage : storage := nullStorage ) return identifier;
+function resolveEffectiveMetaLabel(
+   kind          : identifier;
+   firstStorage  : storage;
+   secondStorage : storage := nullStorage;
+   thirdStorage  : storage := nullStorage;
+   fourthStorage : storage := nullStorage ) return identifier;
+
+function assignSystemIndexMetaLabel return identifier;
+pragma inline( assignSystemIndexMetaLabel );
 
 -----------------------------------------------------------------------------
 -- JSON

@@ -94,9 +94,9 @@ procedure DoSocketOpen( file_ref : reference; name : unbounded_string );
 -- format).  The default port is port 80 (usually HTTP).  Update the socket_type
 -- variable referenced by ref to reflect the open file.
 
-procedure ParseOpenFile( return_ref : out reference );
-procedure ParseOpenSocket( return_ref : out reference );
-procedure ParseOpenFileOrSocket( return_ref : out reference; kind : out identifier );
+procedure ParseOpenFile( subprogram_id : identifier; return_ref : out reference );
+procedure ParseOpenSocket( subprogram_id : identifier; return_ref : out reference );
+procedure ParseOpenFileOrSocket( subprogram_id : identifier; return_ref : out reference; kind : out identifier );
 procedure ParseClosedFile( r : out reference );
 procedure ParseClosedSocket( f : out identifier );
 procedure ParseClosedFileOrSocket( return_ref : out reference; kind : out identifier );

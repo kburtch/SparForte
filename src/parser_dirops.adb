@@ -83,412 +83,600 @@ dirops_close_t          : identifier;
 dirops_is_open_t        : identifier;
 dirops_read_t          : identifier;
 
---procedure ParseSingleDirNameStrExpression( expr : out unbounded_string;
---  expr_type : out identifier ) is
---begin
---  expect( symbol_t, "(" );
---  ParseExpression( expr, expr_type );
---  if baseTypesOk( expr_type, dirops_dir_name_str_t ) then
---     expect( symbol_t, ")" );
---  end if;
---end ParseSingleDirNameStrExpression;
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS DIR SEPARATOR                           (built-in function)
 --
---procedure ParseSinglePathNameExpression( expr : out unbounded_string;
---  expr_type : out identifier ) is
---begin
---  expect( symbol_t, "(" );
---  ParseExpression( expr, expr_type );
---  if baseTypesOk( expr_type, dirops_path_name_t ) then
---     expect( symbol_t, ")" );
---  end if;
---end ParseSinglePathNameExpression;
+-- AdaScript Syntax: c := directory_operations.dir_separator
+--       Ada Target: GNAT.Directory_Operations.Dir_Separator
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.dir_separator
+-----------------------------------------------------------------------------
 
 procedure ParseDirOpsDirSeparator( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
+  subprogramId : constant identifier := dirops_dir_separator_t;
 begin
   kind := character_t;
-  expect( dirops_dir_separator_t );
-  begin
-    if isExecutingCommand then
+  expect( subprogramId );
+  if isExecutingCommand then
+     begin
        result := storage'( null_unbounded_string & dir_separator, noMetaLabel );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+     exception when directory_error =>
+       err( +"directory not accessible" );
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
 end ParseDirOpsDirSeparator;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS CHANGE SEPARATOR                       (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.change_dir( p )
+--       Ada Target: GNAT.Directory_Operations.Change_Dir
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.change_dir
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsChangeDir is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  pwdId : identifier;
+  oldPwdId : identifier;
+  subprogramId : constant identifier := dirops_change_dir_t;
 begin
-  expect( dirops_change_dir_t );
-  ParseSingleStringParameter( dirops_change_dir_t, expr, expr_type, dirops_dir_name_str_t );
-  begin
-    if isExecutingCommand then
-       Change_Dir( dir_name_str( to_string( expr.value ) ) );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          Change_Dir( dir_name_str( to_string( expr.value ) ) );
+        exception when directory_error =>
+          err( +"directory not accessible" );
+        when others =>
+          err_exception_raised;
+        end;
+        -- SparForte 3.0
+        -- Ada doesn't do any of this but we'll do it for Bourne shell
+        -- compatibility.  If we don't, mixing Change_Dir and the cd command
+        -- will corrupt the environment variables.  When changing directories,
+        -- we update the current working directory.  This is copied from the cd
+        -- builtin.
+        current_working_directory := expr.value;
+        findident( to_unbounded_string( "PWD" ), pwdId );
+        findident( to_unbounded_string( "OLDPWD" ), oldPwdId );
+        if pwdId /= eof_t then
+           if oldPwdId /= eof_t then
+              identifiers( oldPwdId ).store.value := identifiers( pwdId ).store.value;
+           end if;
+           identifiers( pwdId ).store.value := current_working_directory;
+        end if;
+     end if;
+  end if;
 end ParseDirOpsChangeDir;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS MAKE DIR                               (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.make_dir( p )
+--       Ada Target: GNAT.Directory_Operations.Make_Dir
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.make_dir
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsMakeDir is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  subprogramId : constant identifier := dirops_make_dir_t;
 begin
-  expect( dirops_make_dir_t );
-  ParseSingleStringParameter( dirops_make_dir_t, expr, expr_type, dirops_dir_name_str_t );
-  begin
-    if isExecutingCommand then
-       Make_Dir( dir_name_str( to_string( expr.value ) ) );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          Make_Dir( dir_name_str( to_string( expr.value ) ) );
+        exception when directory_error =>
+          err(
+            contextNotes => pl( "in " )  & unb_pl( current_working_directory ),
+            subjectNotes => em_value( expr.value ),
+            reason => +"could not be selected because",
+            obstructorNotes => em( "the directory not accessible or already exists" )
+         );
+        when others =>
+          err_exception_raised;
+        end;
+      end if;
+  end if;
 end ParseDirOpsMakeDir;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS REMOVE DIR                             (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.remove_dir( p [, r] )
+--       Ada Target: GNAT.Directory_Operations.Remove_Dir
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.remove_dir
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsRemoveDir is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
   expr2 : storage;
   expr_type2: identifier;
+  subprogramId : constant identifier := dirops_remove_dir_t;
 begin
-  expect( dirops_remove_dir_t );
-  ParseFirstStringParameter( dirops_remove_dir_t, expr, expr_type, dirops_dir_name_str_t );
+  expect( subprogramId );
+  ParseFirstStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastEnumParameter( dirops_remove_dir_t, expr2, expr_type2, boolean_t );
+     ParseLastEnumParameter( subprogramId, expr2, expr_type2, boolean_t );
   else
      expect( symbol_t, ")" );
   end if;
-  declare
-    recursive : constant boolean := expr2.value = to_unbounded_string( "1" );
-  begin
-    if isExecutingCommand then
-       Remove_Dir( dir_name_str( to_string( expr.value ) ), recursive);
-    end if;
-  exception when directory_error =>
-    err( +"directory cannot be removed" );
-  when others =>
-    err_exception_raised;
-  end;
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        declare
+          recursive : constant boolean := expr2.value = to_unbounded_string( "1" );
+        begin
+          Remove_Dir( dir_name_str( to_string( expr.value ) ), recursive);
+        exception when directory_error =>
+          err( +"directory cannot be removed" );
+        when others =>
+          err_exception_raised;
+        end;
+      end if;
+  end if;
 end ParseDirOpsRemoveDir;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS REMOVE DIR                             (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.remove_dir( p [, r] )
+--       Ada Target: GNAT.Directory_Operations.Remove_Dir
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.remove_dir
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsGetCurrentDir( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
+  subprogramId : constant identifier := dirops_get_current_dir_t;
 begin
   kind := dirops_dir_name_str_t;
-  expect( dirops_get_current_dir_t );
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( get_current_dir ), noMetaLabel );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+
+  if isExecutingCommand then
+     begin
+       result := storage'( to_unbounded_string( get_current_dir ), sparMetaLabel );
+     exception when directory_error =>
+       err( +"directory not accessible" );
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
 end ParseDirOpsGetCurrentDir;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS ABSOLUTE DIR NAME                       (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.absolute_dir_name( p )
+--       Ada Target: Ada.Directories.Full_Name
+--   GNAT Spec File: a-direct.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.absolute_dir_name
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsAbsoluteDirName( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  subprogramId : constant identifier := dirops_absolute_dir_name_t;
 begin
   kind := dirops_absolute_dir_name_str_t;
-  expect( dirops_absolute_dir_name_t );
-  ParseSingleStringParameter( dirops_absolute_dir_name_t, expr, expr_type, dirops_path_name_t );
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( Containing_Directory (
-          Full_Name( path_name( to_string( expr.value ))))), noMetaLabel );
-    end if;
-  exception when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_unbounded_string( Containing_Directory (
+             Full_Name( path_name( to_string( expr.value ))))), expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+      end if;
+   end if;
 end ParseDirOpsAbsoluteDirName;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS DIR NAME                                (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.dir_name( p )
+--       Ada Target: GNAT.Directory_Operations.Dir_Name
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.dir_name
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsDirName( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  subprogramId : constant identifier := dirops_dir_name_t;
 begin
   kind := dirops_dir_name_str_t;
-  expect( dirops_dir_name_t );
-  ParseSingleStringParameter( dirops_dir_name_t, expr, expr_type, dirops_path_name_t );
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
-    end if;
-  exception when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ),
+            expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
+  end if;
 end ParseDirOpsDirName;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS BASE NAME                               (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.base_name( p [, f] )
+--       Ada Target: GNAT.Directory_Operations.Base_Name
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.base_name
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsBaseName( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
   expr2 : storage;
   expr_type2: identifier;
+  subprogramId : constant identifier := dirops_base_name_t;
 begin
   kind := string_t;
-  expect( dirops_base_name_t );
-  ParseFirstStringParameter( dirops_base_name_t, expr, expr_type, dirops_path_name_t );
+  expect( subprogramId );
+  ParseFirstStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastStringParameter( dirops_base_name_t, expr2, expr_type2, string_t );
+     ParseLastStringParameter( subprogramId, expr2, expr_type2, string_t );
   else
      expect( symbol_t, ")" );
   end if;
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ), noMetaLabel );
-    end if;
-  exception when others =>
-    err_exception_raised;
-  end;
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ),
+             expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
+  end if;
 end ParseDirOpsBaseName;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS FILE EXTENSION                          (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.file_extension( p )
+--       Ada Target: GNAT.Directory_Operations.File_Extension
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.file_extension
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsFileExtension( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  subprogramId : constant identifier := dirops_file_extension_t;
 begin
   kind := string_t;
-  expect( dirops_file_extension_t );
-  ParseSingleStringParameter( dirops_file_extension_t, expr, expr_type, dirops_path_name_t );
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ),
+            expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
     end if;
-  exception when others =>
-    err_exception_raised;
-  end;
+  end if;
 end ParseDirOpsFileExtension;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS FILE NAME                               (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.file_name( p )
+--       Ada Target: GNAT.Directory_Operations.File_Name
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.file_name
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsFileName( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
+  subprogramId : constant identifier := dirops_file_name_t;
 begin
   kind := string_t;
-  expect( dirops_file_name_t );
-  ParseSingleStringParameter( dirops_file_name_t, expr, expr_type, dirops_path_name_t );
-  begin
-    if isExecutingCommand then
-       result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ), noMetaLabel );
-    end if;
-  exception when others =>
-    err_exception_raised;
-  end;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ),
+             expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
+  end if;
 end ParseDirOpsFileName;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS FORMAT PATHNAME                         (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.format_pathname( p [,t] )
+--       Ada Target: GNAT.Directory_Operations.Format_Pathname
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.format_pathname
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsFormatPathname( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
   expr2 : storage;
   expr_type2: identifier;
+  subprogramId : constant identifier := dirops_format_pathname_t;
 begin
   kind := dirops_path_name_t;
-  expect( dirops_format_pathname_t );
-  ParseFirstStringParameter( dirops_format_pathname_t, expr, expr_type, dirops_path_name_t );
+  expect( subprogramId );
+  ParseFirstStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastEnumParameter( dirops_format_pathname_t, expr2, expr_type2, dirops_path_style_t );
+     ParseLastEnumParameter( subprogramId, expr2, expr_type2, dirops_path_style_t );
   else
      expect( symbol_t, ")" );
   end if;
-  declare
-    style : path_style := system_default;
-  begin
-    if isExecutingCommand then
-       -- not very elegant
-       if expr2.value = to_unbounded_string( "0" ) then
-          style := UNIX;
-       elsif expr2.value = to_unbounded_string( "1" ) then
-          style := DOS;
-       elsif expr2.value = to_unbounded_string( "2" ) then
-          style := System_Default;
-       end if;
-       result := storage'( to_unbounded_string( format_pathname( path_name( to_string( expr.value ) ), style ) ), noMetaLabel );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        declare
+          style : path_style := system_default;
+        begin
+             -- TODO: not very elegant
+             if expr2.value = to_unbounded_string( "0" ) then
+                style := UNIX;
+             elsif expr2.value = to_unbounded_string( "1" ) then
+                style := DOS;
+             elsif expr2.value = to_unbounded_string( "2" ) then
+                style := System_Default;
+             end if;
+             result := storage'( to_unbounded_string( format_pathname( path_name( to_string( expr.value ) ), style ) ),
+                expr.metaLabel );
+        exception when directory_error =>
+          err( +"directory not accessible" );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
+  end if;
 end ParseDirOpsFormatPathname;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS EXPAND PATH                             (built-in function)
+--
+-- AdaScript Syntax: s := directory_operations.expand_path( p [,t] )
+--       Ada Target: GNAT.Directory_Operations.Format_Pathname
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.expand_path
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsExpandPath( result : out storage; kind : out identifier ) is
-  -- Syntax:
-  -- Source:
   expr : storage;
   expr_type: identifier;
   expr2 : storage;
   expr_type2: identifier;
+  subprogramId : constant identifier := dirops_expand_path_t;
 begin
   kind := dirops_path_name_t;
-  expect( dirops_expand_path_t );
-  ParseFirstStringParameter( dirops_expand_path_t, expr, expr_type, dirops_path_name_t );
+  expect( subprogramId );
+  ParseFirstStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastEnumParameter( dirops_expand_path_t, expr2, expr_type2, dirops_env_style_t );
+     ParseLastEnumParameter( subprogramId, expr2, expr_type2, dirops_env_style_t );
   else
      expect( symbol_t, ")" );
   end if;
-  declare
-    style : environment_style := System_Default;
-  begin
-    if isExecutingCommand then
-       -- not very elegant
-       if expr2.value= to_unbounded_string( "0" ) then
-          style := UNIX;
-       elsif expr2.value = to_unbounded_string( "1" ) then
-          style := DOS;
-       elsif expr2.value = to_unbounded_string( "2" ) then
-          style := Both;
-       elsif expr2.value = to_unbounded_string( "3" ) then
-          style := System_Default;
-       end if;
-       result := storage'( to_unbounded_string( expand_path( path_name( to_string( expr.value ) ), style ) ), noMetaLabel );
-    end if;
-  exception when directory_error =>
-    err( +"directory not accessible" );
-  when others =>
-    err_exception_raised;
-  end;
+
+  if isExecutingCommand then
+     if metaLabelOk( expr ) then
+        declare
+          style : environment_style := System_Default;
+        begin
+          -- TODO: not very elegant
+          if expr2.value= to_unbounded_string( "0" ) then
+             style := UNIX;
+          elsif expr2.value = to_unbounded_string( "1" ) then
+             style := DOS;
+          elsif expr2.value = to_unbounded_string( "2" ) then
+             style := Both;
+          elsif expr2.value = to_unbounded_string( "3" ) then
+             style := System_Default;
+          end if;
+          result := storage'( to_unbounded_string( expand_path( path_name( to_string( expr.value ) ), style ) ),
+             expr.metaLabel );
+       exception when directory_error =>
+          err( +"directory not accessible" );
+       when others =>
+          err_exception_raised;
+       end;
+     end if;
+  end if;
 end ParseDirOpsExpandPath;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS OPEN                                   (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.open( d, p )
+--       Ada Target: GNAT.Directory_Operations.Open
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.open
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsOpen is
-  -- Syntax: dirops.open( d, s )
-  -- Source: Open (Dir : out Dir_Type; Dir_Name : Dir_Name_Str);
   resId : resHandleId;
   ref : reference;
   expr : storage;
   expr_type: identifier;
   theDir : resPtr;
+  subprogramId : constant identifier := dirops_open_t;
 begin
-  expect( dirops_open_t );
-  ParseFirstOutParameter( dirops_open_t, ref, dirops_dir_type_t );
+  expect( subprogramId );
+  ParseFirstOutParameter( subprogramId, ref, dirops_dir_type_t );
   if baseTypesOK( ref.kind, dirops_dir_type_t ) then
-     ParseLastStringParameter( dirops_open_t, expr, expr_type, string_t );
+     ParseLastStringParameter( subprogramId, expr, expr_type, string_t );
   end if;
+
   if isExecutingCommand then
-     begin
-       if not identifiers( ref.id ).resource then
-          identifiers( ref.id ).resource := true;
-          declareResource( resId, directory, getIdentifierBlock( ref.id ) );
-          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
-          findResource( resId, theDir );
-       else
-          -- Reuse existing resource
-          findResource( to_resource_id( identifiers( ref.id ).store.value ), theDir );
-       end if;
-       Open( theDir.dir, to_string( expr.value ) );
-     exception when DIRECTORY_ERROR =>
-       err( +"directory does not exist" );
-     when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( expr ) then
+        begin
+          if not identifiers( ref.id ).resource then
+             identifiers( ref.id ).resource := true;
+             declareResource( resId, directory, getIdentifierBlock( ref.id ) );
+             AssignParameter( ref, storage'( to_unbounded_string( resId ), expr.metaLabel ) );
+             findResource( resId, theDir );
+          else
+             -- Reuse existing resource
+             findResource( to_resource_id( identifiers( ref.id ).store.value ), theDir );
+          end if;
+          Open( theDir.dir, to_string( expr.value ) );
+        exception when DIRECTORY_ERROR =>
+          err(
+            contextNotes => pl( "in " )  & unb_pl( current_working_directory ),
+            subjectNotes => em_value( expr.value ),
+            reason => +"could not be opened because",
+            obstructorNotes => em( "the directory does not exist" )
+         );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseDirOpsOpen;
 
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS CLOSE                                  (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.close( d )
+--       Ada Target: GNAT.Directory_Operations.Close
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.close
+-----------------------------------------------------------------------------
+
 procedure ParseDirOpsClose is
-  -- Syntax: dirops.close( d )
-  -- Source: Close (Dir : out Dir_Type);
   dirId : identifier;
   theDir : resPtr;
+  subprogramId : constant identifier := dirops_close_t;
 begin
-  expect( dirops_close_t );
-  ParseSingleInOutParameter( dirops_close_t, dirId, dirops_dir_type_t );
+  expect( subprogramId );
+  ParseSingleInOutParameter( subprogramId, dirId, dirops_dir_type_t );
   if isExecutingCommand then
-     if identifiers( dirId ).resource then
+     if metaLabelOk( identifiers( dirId ).sstorage ) then
+        if identifiers( dirId ).resource then
+           begin
+             findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
+             Close( theDir.dir );
+           exception when DIRECTORY_ERROR =>
+             err( +"directory is not open" );
+           when others =>
+             err_exception_raised;
+           end;
+        else
+           err( +"directory is not open" );
+        end if;
+     end if;
+  end if;
+end ParseDirOpsClose;
+
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS IS OPEN                                 (built-in function)
+--
+-- AdaScript Syntax: directory_operations.is_open( d )
+--       Ada Target: GNAT.Directory_Operations.Close
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.is_open
+-----------------------------------------------------------------------------
+
+procedure ParseDirOpsIsOpen( result : out storage; kind : out identifier ) is
+  dirId : identifier;
+  theDir : resPtr;
+  subprogramId : constant identifier := dirops_is_open_t;
+begin
+  kind := boolean_t;
+  expect( subprogramId );
+  ParseSingleInOutParameter( subprogramId, dirId, dirops_dir_type_t );
+
+  if isExecutingCommand then
+     if metaLabelOk( identifiers( dirId ).sstorage ) then
+        if identifiers( dirId ).resource then
+           begin
+             findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
+             result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), sparMetaLabel );
+           exception when others =>
+             err_exception_raised;
+           end;
+        else
+           -- probably not open
+           result := storage'( to_spar_boolean( false ),
+              identifiers( dirId ).sstorage.metaLabel );
+        end if;
+     end if;
+  end if;
+end ParseDirOpsIsOpen;
+
+-----------------------------------------------------------------------------
+--  PARSE DIR OPS READ                                   (built-in procedure)
+--
+-- AdaScript Syntax: directory_operations.read( d, s )
+--       Ada Target: GNAT.Directory_Operations.Read
+--   GNAT Spec File: g-dirope.ads
+--   SparForte Docs: doc/pkg_dirops.html#directory_operations.read
+-----------------------------------------------------------------------------
+
+procedure ParseDirOpsRead is
+  dirId : identifier;
+  strRef   : reference;
+  --lastRef  : reference;
+  theDir   : resPtr;
+  subprogramId : constant identifier := dirops_read_t;
+begin
+  expect( subprogramId );
+  ParseFirstInOutParameter( subprogramId, dirId, dirops_dir_type_t );
+  ParseLastOutParameter( subprogramId, strRef, string_t );
+  --ParseLastOutParameter( lastRef, natural_t );
+  if isExecutingCommand then
+     if metaLabelOk( identifiers( dirId ).sstorage ) then
+        declare
+          s : string(1..1024);
+          last : natural;
         begin
           findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
-          Close( theDir.dir );
+          Read( theDir.dir, s, last );
+          AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ),
+             identifiers( dirId ).sstorage.metaLabel ) );
+          --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
         exception when DIRECTORY_ERROR =>
           err( +"directory is not open" );
         when others =>
           err_exception_raised;
         end;
-     else
-        err( +"directory is not open" );
      end if;
-  end if;
-end ParseDirOpsClose;
-
-procedure ParseDirOpsIsOpen( result : out storage; kind : out identifier ) is
-  -- Syntax: dirops.is_open( d )
-  -- Source: Is_Open (Dir : Dir_Type) return Boolean;
-  dirId : identifier;
-  theDir : resPtr;
-begin
-  kind := boolean_t;
-  expect( dirops_is_open_t );
-  ParseSingleInOutParameter( dirops_is_open_t, dirId, dirops_dir_type_t );
-  if isExecutingCommand then
-     if identifiers( dirId ).resource then
-        begin
-          findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
-          result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaLabel );
-        exception when others =>
-          err_exception_raised;
-        end;
-     else
-        -- probably not open
-        result := storage'( to_spar_boolean( false ), noMetaLabel );
-     end if;
-  end if;
-end ParseDirOpsIsOpen;
-
--- is_open
-
-procedure ParseDirOpsRead is
-  -- Syntax: dirops.read( d, s )
-  -- Source: Read (Dir : Dir_Type; Str : out String; Last : out Natural)
-  dirId : identifier;
-  strRef   : reference;
-  --lastRef  : reference;
-  theDir   : resPtr;
-begin
-  expect( dirops_read_t );
-  ParseFirstInOutParameter( dirops_read_t, dirId, dirops_dir_type_t );
-  ParseLastOutParameter( dirops_read_t, strRef, string_t );
-  --ParseLastOutParameter( lastRef, natural_t );
-  if isExecutingCommand then
-     declare
-       s : string(1..1024);
-       last : natural;
-     begin
-       findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
-       Read( theDir.dir, s, last );
-       AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ), noMetaLabel ) );
-       --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
-     exception when DIRECTORY_ERROR =>
-       err( +"directory is not open" );
-     when others =>
-       err_exception_raised;
-     end;
   end if;
 end ParseDirOpsRead;
+
+-----------------------------------------------------------------------------
+--
+-- HOUSEKEEPING
+--
+-----------------------------------------------------------------------------
+
 
 procedure StartupDirOps is
 begin

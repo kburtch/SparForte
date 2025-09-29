@@ -33,12 +33,6 @@ use  ada.strings.unbounded,
 
 package builtins is
 
--- PWD
--- loosely modelled on bash/builtins/cd.def
-
-current_working_directory : unbounded_string := null_unbounded_string;
--- NULL if not known
-
 procedure findpwd( cmd : identifier := eof_t );
 -- run this on startup to initialize current_working_directory
 

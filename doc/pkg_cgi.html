@@ -49,16 +49,16 @@ It provides form processing, string encoding, and cookie operations.</p>
         <center>
         <div class="code">
 <pre>
-  <a href="#cgi.parsing_errors">parsing_errors</a>             <a href="#cgi.input_received">input_received</a>             <a href="#cgi.is_index">is_index</a>
-  <a href="#cgi.cgi_method">cgi_method</a>                 <a href="#cgi.value">value( k, i, b )</a>           <a href="#cgi.key_exists">key_exists( k, i )</a>
-  <a href="#cgi.key_count">key_count( k )</a>             <a href="#cgi.argument_count">argument_count</a>             <a href="#cgi.key">key( p )</a>
-  <a href="#cgi.key_value_exists">key_value_exists( k, v )</a>   <a href="#cgi.put_cgi_header">put_cgi_header( s )</a>        <a href="#cgi.put_html_head">put_html_head( t, m )</a>
-  <a href="#cgi.put_html_heading">put_html_heading( s, p )</a>   <a href="#cgi.put_html_tail">put_html_tail</a>              <a href="#cgi.put_error_message">put_error_message( s )</a>
-  <a href="#cgi.my_url">my_url</a>                     <a href="#cgi.put_variables">put_variables</a>              <a href="#cgi.line_count">line_count</a>
-  <a href="#cgi.line_count_of_value">line_count_of_value</a>        <a href="#cgi.line">line( v )</a>                  <a href="#cgi.value_of_line">value_of_line( k, p )</a>
-  <a href="#cgi.url_decode">url_decode</a>                 <a href="#cgi.url_encode">url_encode( s )</a>            <a href="#cgi.html_encode">html_encode( s )</a>
-  <a href="#cgi.set_cookie">set_cookie( k,v,e,p,d,s )</a>  <a href="#cgi.cookie_value">cookie_value( p )</a>          <a href="#cgi.cookie_count">cookie_count</a>
-  <a href="#cgi.key_value">s := key_value( p )</a>
+  <a href="#cgi.argument_count">n := argument_count</a>            <a href="#cgi.cgi_method">m := cgi_method</a>           <a href="#cgi.cookie_count">n := cookie_count</a>
+  <a href="#cgi.cookie_value">s := cookie_value( c [, p] )</a>   <a href="#cgi.html_encode">h := html_encode( s )</a>     <a href="#cgi.input_received">b := input_received</a>
+  <a href="#cgi.is_index">b := is_index</a>                  <a href="#cgi.key">s := key( p )</a>             <a href="#cgi.key_count">n := key_count( k )</a>
+  <a href="#cgi.key_exists">b := key_exists( k, i )</a>        <a href="#cgi.key_value">s := key_value( p )</a>       <a href="#cgi.key_value_exists">b := key_value_exists( k, s )</a>
+  <a href="#cgi.line">l := line( v, p )</a>              <a href="#cgi.line_count">n := line_count( s )</a>      <a href="#cgi.line_count_of_value">n := line_count_of_value( v )</a>
+  <a href="#cgi.my_url">s := my_url</a>                    <a href="#cgi.parsing_errors">b := parsing_errors</a>       <a href="#cgi.put_cgi_header">put_cgi_header[( h )]</a>
+  <a href="#cgi.put_error_message">put_error_message( s )</a>         <a href="#cgi.put_html_head">put_html_head( t, m )</a>     <a href="#cgi.put_html_heading">put_html_heading( s, l )</a>
+  <a href="#cgi.put_html_tail">put_html_tail</a>                  <a href="#cgi.put_variables">put_variables</a>             <a href="#cgi.set_cookie">set_cookie( k,v,x,p,d,b )</a>
+  <a href="#cgi.url_decode">s := url_decode( u, b )</a>        <a href="#cgi.url_encode">u := url_encode( s, b )</a>   <a href="#cgi.value">s := value( k, i, b )</a>
+  <a href="#cgi.value_of_line">l := value_of_line( k, p )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -629,11 +629,11 @@ with the given name.</p></td>
 </tr>
 </table>
 
-<a name="cgi.key_value_exists"></a><h3>b := cgi.key_value_exists( v, s )</h3>
+<a name="cgi.key_value_exists"></a><h3>b := cgi.key_value_exists( k, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if an HTTP GET or POST variable v has a value of s.</p></td>
+<td><p>True if an HTTP GET or POST variable k has a value of s.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">if cgi.key_value_exists( "country", "US" ) then ...</span></td>
@@ -654,7 +654,7 @@ with the given name.</p></td>
 <td><span>true if the variable has the value</span></td>
 </tr>
 <tr>
-<td><span>v</span></td>
+<td><span>k</span></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
@@ -893,7 +893,7 @@ with the given name.</p></td>
 </tr>
 </table>
 
-<a name="cgi.put_cgi_header"></a><h3>cgi.put_cgi_header( h )</h3>
+<a name="cgi.put_cgi_header"></a><h3>cgi.put_cgi_header[( h )]</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1102,7 +1102,7 @@ optional mailto link to the page author.</p></td>
 </tr>
 </table>
 
-<a name="cgi.set_cookie"></a><h3>cgi.set_cookie( v, s, x, p, d, b )</h3>
+<a name="cgi.set_cookie"></a><h3>cgi.set_cookie( k, s, x, p, d, b )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1120,7 +1120,7 @@ optional mailto link to the page author.</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>v</span></td>
+<td><span>k</span></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
@@ -1283,7 +1283,7 @@ characters.  If b is true, translate spaces to plus signs.</p></td>
 </tr>
 </table>
 
-<a name="cgi.value"></a><h3>s := cgi.value( v, i, b )</h3>
+<a name="cgi.value"></a><h3>s := cgi.value( k, i, b )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1311,7 +1311,7 @@ is no variable if b is true.</p></td>
 <td><span>the value of the variable</span></td>
 </tr>
 <tr>
-<td><span>v</span></td>
+<td><span>k</span></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
@@ -1344,7 +1344,7 @@ is no variable if b is true.</p></td>
 </tr>
 </table>
 
-<a name="cgi.value_of_line"></a><h3>l := cgi.value_of_line( v, p )</h3>
+<a name="cgi.value_of_line"></a><h3>l := cgi.value_of_line( k, p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -1369,7 +1369,7 @@ is no variable if b is true.</p></td>
 <td><span>the line</span></td>
 </tr>
 <tr>
-<td><span>v</span></td>
+<td><span>k</span></td>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>

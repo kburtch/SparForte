@@ -1458,16 +1458,16 @@ begin
      categoryPackage( e );
      description( e, "A collection of common routines for web programming and cookies.  " &
          "Based on the ADACGI project.  See also gnat.cgi.");
-     content( e, "parsing_errors","input_received","is_index" );
-     content( e, "cgi_method","value( k, i, b )","key_exists( k, i )" );
-     content( e, "key_count( k )","argument_count","key( p )" );
-     content( e, "key_value_exists( k, v )","put_cgi_header( s )","put_html_head( t, m )" );
-     content( e, "put_html_heading( s, p )","put_html_tail","put_error_message( s )" );
-     content( e, "my_url","put_variables","line_count" );
-     content( e, "line_count_of_value","line( v )","value_of_line( k, p )" );
-     content( e, "url_decode","url_encode( s )","html_encode( s )" );
-     content( e, "set_cookie( k,v,e,p,d,s )","cookie_value( p )","cookie_count" );
-     content( e, "s := key_value( p )" );
+     content( e, "n := argument_count", "m := cgi_method", "n := cookie_count" );
+     content( e, "s := cookie_value( c [, p] )", "h := html_encode( s )", "b := input_received" );
+     content( e, "b := is_index", "s := key( p )", "n := key_count( k )" );
+     content( e, "b := key_exists( k, i )", "s := key_value( p )", "b := key_value_exists( k, s )" );
+     content( e, "l := line( v, p )", "n := line_count( s )", "n := line_count_of_value( v )" );
+     content( e, "s := my_url", "b := parsing_errors", "put_cgi_header[( h )]" );
+     content( e, "put_error_message( s )", "put_html_head( t, m )", "put_html_heading( s, l )" );
+     content( e, "put_html_tail", "put_variables", "set_cookie( k,v,x,p,d,b )" );
+     content( e, "s := url_decode( u, b )", "u := url_encode( s, b )", "s := value( k, i, b )" );
+     content( e, "l := value_of_line( k, p )" );
      seeAlso( e, "doc/pkg_cgi.html" );
      endHelp( e );
   elsif helpTopic = "chains" then
@@ -2542,6 +2542,17 @@ begin
      content( e, "System.Testing_Phase", "System.Development_Phase" );
      content( e, "System.Session_Name" );
      seeAlso( e, "doc/pkg_system.html" );
+     endHelp( e );
+  elsif helpTopic = "tags" then
+     startHelp( e, "tags" );
+     summary( e, "tags package" );
+     authorKen( e );
+     categoryPackage( e );
+     description( e, "A collection of common routines using data meta labels." );
+     content( e, "b := has_tags( x )" );
+     content( e, "b := contains( x, t )" );
+     content( e, "s := get_tags_image( x )" );
+     --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "teams" then
      startHelp( e, "teams" );

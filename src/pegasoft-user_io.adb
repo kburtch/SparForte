@@ -154,6 +154,23 @@ begin
   end loop;
 end put_retry;
 
+procedure put_right_justified( s : string; column_width : integer := 5 ) is
+  justify : integer;
+  outstr  : unbounded_string;
+begin
+  justify := column_width - s'length;
+  if justify > 0 then
+     outstr  := (justify * ' ' ) & s;
+  end if;
+  put_retry( outstr );
+end put_right_justified;
+
+procedure put_line_right_justified( s : string ) is
+begin
+  put_right_justified( s );
+  put_line_retry("");
+end put_line_right_justified;
+
 
 -----------------------------------------------------------------------------
 --  BEEP

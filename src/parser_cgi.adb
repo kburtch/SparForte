@@ -32,6 +32,7 @@ with ada.strings.unbounded,
     value_conversion,
     scanner,
     scanner.communications,
+    parser_params,
     parser;
 use ada.strings.unbounded,
     world,
@@ -41,6 +42,7 @@ use ada.strings.unbounded,
     pegasoft,
     scanner,
     scanner.communications,
+    parser_params,
     parser;
 
 package body parser_cgi is
@@ -85,109 +87,121 @@ cgi_cookie_count_t     : identifier;
 
 
 -----------------------------------------------------------------------------
---  PARSE PARSING ERRORS
+--  PARSE PARSING ERRORS                                  (built-in function)
 --
--- cgi.parsing_errors return boolean
--- True if Error on Parse.
+-- AdaScript Syntax: b := cgi.parsing_errors
+--       Ada Target: CGI.Parsing_Errors
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.parsing_errors
 -----------------------------------------------------------------------------
 
 procedure ParseParsing_Errors( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_parsing_errors_t;
 begin
   kind := boolean_t;
-  expect( cgi_parsing_errors_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.parsing_errors ), noMetaLabel );
+     result := storage'( to_spar_boolean( cgi.parsing_errors ), sparMetaLabel );
   end if;
 end ParseParsing_Errors;
 
 
 -----------------------------------------------------------------------------
---  PARSE INPUT RECEIVED
+--  PARSE INPUT RECEIVED                                  (built-in function)
 --
--- cgi.input_received return boolean
--- True if Input Received.
+-- AdaScript Syntax: b := cgi.input_received
+--       Ada Target: CGI.Input_Received
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.input_received
 -----------------------------------------------------------------------------
 
 procedure ParseInput_Received( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_input_received_t;
 begin
   kind := boolean_t;
-  expect( cgi_input_received_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.input_received ), noMetaLabel );
+     result := storage'( to_spar_boolean( cgi.input_received ), sparMetaLabel );
   end if;
 end ParseInput_Received;
 
 
 -----------------------------------------------------------------------------
---  PARSE IS INDEX
+--  PARSE IS INDEX                                        (built-in function)
 --
--- cgi.is_index return boolean
--- True if an Isindex request made. An "Isindex" request is turned
--- into a Key of "isindex" at position 1, with Value(1) as the actual
--- query.
+-- AdaScript Syntax: b := cgi.is_index
+--       Ada Target: CGI.Is_Index
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.is_index
 -------------------------------------------------------------------------------
 
 procedure ParseIs_Index( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_is_index_t;
 begin
   kind := boolean_t;
-  expect( cgi_is_index_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.is_index ), noMetaLabel );
+     result := storage'( to_spar_boolean( cgi.is_index ), sparMetaLabel );
   end if;
 end ParseIs_Index;
 
 
 -----------------------------------------------------------------------------
---  PARSE CGI METHOD
+--  PARSE CGI METHOD                                      (built-in function)
 --
--- cgi.cgi_method return CGI_Method_Type
--- Report the CGI Method; where possible, don't depend on this.
--- type CGI_Method_Type is (Get, Post, Unknown);
+-- AdaScript Syntax: m := cgi.cgi_method
+--       Ada Target: CGI.CGI_Method
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.cgi_method
 -----------------------------------------------------------------------------
 
 procedure ParseCGI_Method( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_cgi_method_t;
 begin
   kind := cgi_cgi_method_type_t;
-  expect( cgi_cgi_method_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" ), noMetaLabel );
+     result := storage'( To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" ),
+        sparMetaLabel );
   end if;
 end ParseCGI_Method;
 
 
 -----------------------------------------------------------------------------
---  PARSE VALUE
+--  PARSE VALUE                                           (built-in function)
 --
--- function ParseValue(Key : in Unbounded_String; Index : in Positive := 1;
---               Required : in Boolean := False) return Unbounded_String is
--- Access data as an associative array - given a key, return its value.
--- The Key value is case-sensitive.
--- If a key is required but not present, raise Constraint_Error;
--- otherwise a missing key's value is considered to be "".
--- These routines find the Index'th value of that key (normally the first one).
+-- AdaScript Syntax: s := cgi.value( v, i, b )
+--       Ada Target: CGI.Value
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.value
 -----------------------------------------------------------------------------
 
 procedure ParseValue( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  exprExpr2 : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel ); -- default
-  expr_type2: identifier;
-  exprExpr3 : storage := storage'( identifiers( false_t ).store.value, noMetalabel );
-  expr_type3: identifier;
+  keyExpr  : storage;
+  keyType  : identifier;
+  idxExpr  : storage := storage'( to_unbounded_string( " 1" ), sparMetaLabel ); -- default
+  idxType  : identifier;
+  reqExpr  : storage := storage'( identifiers( false_t ).store.value, sparMetalabel );
+  reqType  : identifier;
+  subprogramId : constant identifier := cgi_value_t;
 begin
   kind := string_t;
-  expect( cgi_value_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        ParseExpression( exprExpr2, expr_type2 );
-        if uniTypesOk( expr_type2, positive_t ) then
+        ParseExpression( idxExpr, idxType );
+        if uniTypesOk( idxType, positive_t ) then
            if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
-              ParseExpression( exprExpr3, expr_type3 );
-              if uniTypesOk( expr_type3, boolean_t ) then
+              ParseExpression( reqExpr, reqType );
+              if uniTypesOk( reqType, boolean_t ) then
                  null;
               end if;
            end if;
@@ -195,118 +209,128 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-       result := storage'( cgi.Value( exprExpr.value,
-         positive'value( to_string( exprExpr2.value ) ),
-         exprExpr3.value = identifiers( true_t ).store.value ), noMetaLabel );
-     exception when constraint_error =>
-         err( +"key does not exist" );
-     when others =>
-         err_exception_raised;
-     end;
+     if metaLabelOk( keyExpr ) and metaLabelOk( idxExpr ) then
+        begin
+          result := storage'( cgi.Value( keyExpr.value,
+            positive'value( to_string( idxExpr.value ) ),
+            reqExpr.value = identifiers( true_t ).store.value ), keyExpr.metaLabel);
+        exception when constraint_error =>
+            err( +"key does not exist" );
+        when others =>
+            err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseValue;
 
 
 -----------------------------------------------------------------------------
---  PARSE KEY EXISTS
+--  PARSE KEY EXISTS                                      (built-in function)
 --
--- function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1
---         return Boolean is
--- Was a given key provided?
+-- AdaScript Syntax: b := cgi.key_exists( k, i )
+--       Ada Target: CGI.Key_Exists
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.key_exists
 -----------------------------------------------------------------------------
 
 procedure ParseKey_Exists( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  exprExpr2 : storage;
-  expr_type2: identifier;
+  keyExpr  : storage;
+  keyType  : identifier;
+  idxExpr  : storage;
+  idxType : identifier;
+  subprogramId : constant identifier := cgi_key_exists_t;
 begin
   kind := boolean_t;
-  expect( cgi_key_exists_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expectParameterComma;
-     ParseExpression( exprExpr2, expr_type2 );
-     if uniTypesOk( expr_type2, positive_t ) then
-        expect( symbol_t, ")" );
-     end if;
-  end if;
+  expect( subprogramId );
+  ParseFirstStringParameter( subprogramId, keyExpr, KeyType );
+  ParseLastNumericParameter( subprogramId, idxExpr, idxtype, positive_t );
+
   if isExecutingCommand then
-     result := storage'( to_spar_boolean(
-          cgi.key_exists( exprExpr.value, positive'value( to_string( exprExpr2.value ) ) )
-       ), noMetaLabel );
+     if metaLabelOk( keyExpr ) and metaLabelOK( idxExpr ) then
+        result := storage'( to_spar_boolean(
+             cgi.key_exists( keyExpr.value, positive'value( to_string( idxExpr.value ) ) )
+           ), sparMetaLabel );
 -- RESULT SHOULD BE NUMERIC BOOLEAN, NOT STRING.  UTIL FUNCTION FOR THIS?
+     end if;
   end if;
 end ParseKey_Exists;
 
 
 -----------------------------------------------------------------------------
---  PARSE KEY COUNT
+--  PARSE KEY COUNT                                       (built-in function)
 --
---function ParseKey_Count(Key : in Unbounded_String) return Natural is
--- How many of a given key were provided?
+-- AdaScript Syntax: n := cgi.key_count( k )
+--       Ada Target: CGI.Key_Count
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.key_count
 -----------------------------------------------------------------------------
 
 procedure ParseKey_Count( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  keyExpr  : storage;
+  keyType  : identifier;
+  subprogramId : constant identifier := cgi_key_count_t;
 begin
   kind := natural_t;
-  expect( cgi_key_count_t );
-  expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, ")" );
-  end if;
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, keyExpr, keyType );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( cgi.key_count( exprExpr.value )'img ), noMetaLabel );
+     if metaLabelOk( keyExpr ) then
+        result := storage'( to_unbounded_string( cgi.key_count( keyExpr.value )'img ),
+           sparMetaLabel );
+     end if;
   end if;
 end ParseKey_Count;
 
 
 -----------------------------------------------------------------------------
---  CGI ARGUMENT COUNT
+--  CGI ARGUMENT COUNT                                    (built-in function)
 --
--- Access data as an ordered list (it was sent as Key=Value);
--- Keys and Values may be retrieved from Position (1 .. Argument_Count).
--- Constraint_Error will be raised if Position<1 or Position>Argument_Count
--- function ParseArgument_Count return Natural is
--- 0 means no data sent.
+-- AdaScript Syntax: n := cgi.argument_count
+--       Ada Target: CGI.Argument_Count
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.argument_count
 -----------------------------------------------------------------------------
 
 procedure ParseCGIArgument_Count( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_argument_count_t;
 begin
-   kind := natural_t;
-  expect( cgi_argument_count_t );
+  kind := natural_t;
+  expect( subprogramId );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( natural'image( cgi.Argument_Count )), noMetaLabel );
+     result := storage'( to_unbounded_string( natural'image( cgi.Argument_Count )), sparMetaLabel );
   end if;
 end ParseCGIArgument_Count;
 
 
 -----------------------------------------------------------------------------
---  PARSE KEY
+--  PARSE KEY                                             (built-in function)
 --
--- function ParseKey(Position : in Positive) return Unbounded_String is
+-- AdaScript Syntax: s := cgi.key( p )
+--       Ada Target: CGI.Key
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.key
 -----------------------------------------------------------------------------
 
 procedure ParseKey( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  posExpr  : storage;
+  posType  : identifier;
+  subprogramId : constant identifier := cgi_key_t;
 begin
   kind := string_t;
-  expect( cgi_key_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if baseTypesOk( expr_type, positive_t ) then
+  ParseExpression( posExpr, posType );
+  if baseTypesOk( posType, positive_t ) then
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
      begin
-       result := storage'( cgi.key( positive( to_numeric( exprExpr.value ) ) ), noMetaLabel );
+       result := storage'( cgi.key( positive( to_numeric( posExpr.value ) ) ), sparMetaLabel );
      exception when constraint_error =>
        err( +"no key at this position" );
      when others =>
@@ -317,30 +341,37 @@ end ParseKey;
 
 
 -----------------------------------------------------------------------------
---  PRASE KEY VALUE
+--  PARSE KEY VALUE                                       (built-in function)
 --
--- function ParseKeyValue(Position : in Positive) return Unbounded_String is
+-- AdaScript Syntax: s := cgi.key_value( p )
+--       Ada Target: CGI.Value
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.key_value
 -----------------------------------------------------------------------------
 
 procedure ParseKeyValue( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  posExpr  : storage;
+  posType : identifier;
+  subprogramId : constant identifier := cgi_key_value_t;
 begin
   kind := string_t;
-  expect( cgi_key_value_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if baseTypesOk( expr_type, positive_t ) then
+  ParseExpression( posExpr, posType );
+  if baseTypesOk( posType, positive_t ) then
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
-     begin
-       result := storage'( cgi.value( positive( to_numeric( exprExpr.value ) ) ), noMetaLabel );
-     exception when constraint_error =>
-       err( +"no key at this position" );
-     when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( posExpr ) then
+        begin
+          result := storage'( cgi.value( positive( to_numeric( posExpr.value ) ) ), sparMetaLabel );
+        exception when constraint_error =>
+          err( +"no key at this position" );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseKeyValue;
 
@@ -351,32 +382,38 @@ end ParseKeyValue;
 
 
 -----------------------------------------------------------------------------
---  PARSE KEY VALUE EXISTS
+--  PARSE KEY VALUE EXISTS                                (built-in function)
 --
---function ParseKey_Value_Exists(Key : in Unbounded_String;
---                          Value : in Unbounded_String) return Boolean is
--- Returns True if a given Key has exactly Value as one of its values.
+-- AdaScript Syntax: b := cgi.key_value_exists( v, s )
+--       Ada Target: CGI.Key_Value_Exists
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.key_value_exists
 -----------------------------------------------------------------------------
 
 procedure ParseKey_Value_Exists( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  expr2Expr  : storage := storage'( to_unbounded_string( "1" ), noMetaLabel );
-  expr2_type : identifier;
+  keyExpr       : storage;
+  keyType       : identifier;
+  keyValueExpr  : storage := storage'( to_unbounded_string( "1" ), sparMetaLabel );
+  keyValueType  : identifier;
+  subprogramId  : constant identifier := cgi_key_value_exists_t;
 begin
   kind := boolean_t;
-  expect( cgi_key_value_exists_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( expr2Expr, expr2_type );
-     if uniTypesOk( expr2_type, uni_string_t ) then
+     ParseExpression( keyValueExpr, keyValueType );
+     if uniTypesOk( keyValueType, uni_string_t ) then
         expect( symbol_t, ")" );
      end if;
   end if;
+
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.key_value_exists( exprExpr.value, expr2Expr.value ) ), noMetaLabel );
+     if metaLabelOk( keyExpr ) and metaLabelOk( keyValueExpr ) then
+        result := storage'( to_spar_boolean( cgi.key_value_exists( keyExpr.value, keyValueExpr.value ) ),
+          sparMetaLabel );
+     end if;
   end if;
 end ParseKey_Value_Exists;
 
@@ -387,159 +424,205 @@ end ParseKey_Value_Exists;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT CGI HEADER
+--  PARSE PUT CGI HEADER                                 (built-in procedure)
 --
--- procedure ParsePut_CGI_Header(Header : in String := "Content-type: text/html") is
--- Put CGI Header to Current_Output, followed by two carriage returns.
--- This header determines what the program's reply type is.
--- Default is to return a generated HTML document.
--- Warning: Make calls to Set_Cookie before calling this procedure!
+-- AdaScript Syntax: cgi.put_cgi_header[( h )]
+--       Ada Target: CGI.Put_CGI_Header
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_cgi_header
 -----------------------------------------------------------------------------
 
 procedure ParsePut_CGI_Header is
-  exprExpr  : storage := storage'( to_unbounded_string( "Content-Type: text/html" ), noMetaLabel );
-  expr_type : identifier;
+  headerExpr : storage := storage'( to_unbounded_string( "Content-Type: text/html" ), sparMetaLabel );
+  headerType : identifier;
+  subprogramId : constant identifier := cgi_put_cgi_header_t;
 begin
-  expect( cgi_put_cgi_header_t );
+  expect( subprogramId );
+  -- headerExpr is optional
   if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
-     ParseExpression( exprExpr, expr_type );
-     if uniTypesOk( expr_type, uni_string_t ) then
+     ParseExpression( headerExpr, headerType );
+     if uniTypesOk( headerType, uni_string_t ) then
          null;
      end if;
      expect( symbol_t, ")" );
   end if;
+
   if isExecutingCommand then
-     cgi.put_cgi_header( to_string( exprExpr.value ) );
+     begin
+       cgi.put_cgi_header( to_string( headerExpr.value ) );
+     exception when others =>
+       err_exception_raised;
+     end;
   end if;
 end ParsePut_CGI_Header;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT HTML HEAD
+--  PARSE PUT HTML HEAD                                  (built-in procedure)
 --
---procedure ParsePut_HTML_Head(Title : in String; Mail_To : in String := "") is
--- Puts to Current_Output an HTML header with title "Title".  This is:
---   <html><head><title> _Title_ </title>
---   <link rev="made" href="mailto:  _Mail_To_ ">
---   </head><body>
--- If Mail_To is omitted, the "made" reverse link is omitted.
+-- AdaScript Syntax: cgi.put_html_head( t, m )
+--       Ada Target: CGI.Put_HTML_Head
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_html_head
 -----------------------------------------------------------------------------
 
 procedure ParsePut_HTML_Head is
-  exprExpr  : storage;
-  expr_type : identifier;
-  expr2Expr  : storage := nullStorage;
-  expr2_type : identifier;
+  webPageTitleExpr : storage;
+  webPageTitleType : identifier;
+  mailToExpr       : storage := nullStorage;
+  mailToType       : identifier;
+  subprogramId : constant identifier := cgi_put_html_head_t;
 begin
-  expect( cgi_put_html_head_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  -- webPageTitleExpr.value can be an empty string although an empty string
+  -- is not useful
+  parseExpression( webPageTitleExpr, webPageTitleType );
+  if uniTypesOk( webPageTitleType, uni_string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
+        -- authorEmailExpr.value can be an empty string although an empty
+        -- string is not useful
         expectParameterComma;
-        ParseExpression( expr2Expr, expr2_type );
-        if uniTypesOk( expr2_type, uni_string_t ) then
+        parseExpression( mailToExpr, mailToType );
+        if uniTypesOk( mailToType, uni_string_t ) then
            null;
         end if;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     cgi.put_HTML_head( to_string( exprExpr.value ), to_string( expr2Expr.value ) );
+     if metaLabelOk( webPageTitleExpr ) and metaLabelOk( mailToExpr ) then
+        begin
+          cgi.put_HTML_head( to_string( webPageTitleExpr.value ), to_string( mailToExpr.value ) );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_HTML_Head;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT HTML HEADIG
+--  PARSE PUT HTML HEADING                               (built-in procedure)
 --
--- procedure ParsePut_HTML_Heading(Title : in String; Level : in Positive) is
--- Put an HTML heading at the given level with the given text.
--- If level=1, this puts:  <h1>Title</h1>.
+-- AdaScript Syntax: cgi.put_html_heading( s, l )
+--       Ada Target: CGI.Put_HTML_Heading
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_html_heading
 -----------------------------------------------------------------------------
 
 procedure ParsePut_HTML_Heading is
-  exprExpr  : storage;
-  expr_type : identifier;
+  titleExpr  : storage;
+  titleType : identifier;
   levelExpr  : storage;
-  level_type : identifier;
+  levelType : identifier;
+  subprogramId : constant identifier := cgi_put_html_heading_t;
 begin
-  expect( cgi_put_html_heading_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( titleExpr, titleType );
+  if uniTypesOk( titleType, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( levelExpr, level_type );
-     if baseTypesOk( level_type, positive_t ) then
+     ParseExpression( levelExpr, levelType );
+     if baseTypesOk( levelType, positive_t ) then
         null;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-        cgi.put_HTML_heading( to_string( exprExpr.value ),
-           positive( to_numeric( levelExpr.value ) ) );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( titleExpr ) and metaLabelOk( levelExpr ) then
+        begin
+           cgi.put_HTML_heading( to_string( titleExpr.value ),
+              positive( to_numeric( levelExpr.value ) ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_HTML_Heading;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT HTML TAIL
+--  PARSE PUT HTML TAIL                                  (built-in procedure)
 --
--- This is called at the end of an HTML document. It puts to Current_Output:
---   </body></html>
+-- AdaScript Syntax: cgi.put_html_tail
+--       Ada Target: CGI.Put_HTML_Tail
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_html_tail
 -----------------------------------------------------------------------------
 
 procedure ParsePut_HTML_Tail is
+  subprogramId : constant identifier := cgi_put_html_tail_t;
 begin
-  expect( cgi_put_html_tail_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     cgi.put_HTML_tail;
+     begin
+        cgi.put_HTML_tail;
+     exception when others =>
+        err_exception_raised;
+     end;
   end if;
 end ParsePut_HTML_Tail;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT ERROR MESSAGE
+--  PARSE PUT ERROR MESSAGE                              (built-in procedure)
 --
---procedure ParsePut_Error_Message(Message : in String) is
--- Put to Current_Output an error message.
--- This Puts an HTML_Head, an HTML_Heading, and an HTML_Tail.
--- Call "Put_CGI_Header" before calling this.
+-- AdaScript Syntax: cgi.put_html_tail
+--       Ada Target: CGI.Put_Error_Message
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_html_tail
 -----------------------------------------------------------------------------
 
 procedure ParsePut_Error_Message is
-  exprExpr  : storage;
-  expr_type : identifier;
+  messageExpr : storage;
+  messageType : identifier;
+  subprogramId : constant identifier := cgi_put_error_message_t;
 begin
-  expect( cgi_put_error_message_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( messageExpr, messageType );
+  if uniTypesOk( messageType, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     cgi.put_error_message( to_string( exprExpr.value ) );
+     if metaLabelOk( messageExpr ) then
+        begin
+           cgi.put_error_message( to_string( messageExpr.value ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_Error_Message;
 
 
 -----------------------------------------------------------------------------
---  PARSE PUT VARIABLES
+--  PARSE PUT VARIABLES                                  (built-in procedure)
 --
--- Put to Current_Output all of the CGI variables as an HTML-formatted String.
+-- AdaScript Syntax: cgi.put_variables
+--       Ada Target: CGI.Put_Variables
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.put_variables
 -----------------------------------------------------------------------------
 
 procedure ParsePut_Variables is
+  subprogramId : constant identifier := cgi_put_variables_t;
 begin
-  expect( cgi_put_variables_t );
+  expect( subprogramId );
+
   if isExecutingCommand then
-     cgi.put_variables;
+     begin
+        cgi.put_variables;
+     exception when others =>
+        err_exception_raised;
+     end;
   end if;
 end ParsePut_Variables;
 
@@ -550,155 +633,188 @@ end ParsePut_Variables;
 
 
 -----------------------------------------------------------------------------
---  PARSE MY URL
+--  PARSE MY URL                                          (built-in function)
 --
---function ParseMy_URL return String is
--- Returns the URL of this script.
+-- AdaScript Syntax: s := cgi.my_url
+--       Ada Target: CGI.My_URL
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.my_url
 -----------------------------------------------------------------------------
 
 procedure ParseMy_URL( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_my_url_t;
 begin
   kind := string_t;
-  expect( cgi_my_url_t );
-  result := storage'( to_unbounded_string( cgi.my_url ), noMetaLabel );
+  expect( subprogramId );
+
+  if isExecutingCommand then
+     begin
+        result := storage'( to_unbounded_string( cgi.my_url ), sparMetaLabel );
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
 end ParseMy_URL;
 
 --function ParseGet_Environment(Variable : in String) return String is
--- Return the given environment variable's value.
--- Returns "" if the variable does not exist.
--- Not implemented: already available in BUSH through pragma import
+-- Not implemented: already available in SparForte through pragma import
 
 -- Multi-Line data support:
 
 
 -----------------------------------------------------------------------------
---  PARSE LINE COUNT
+--  PARSE LINE COUNT                                      (built-in function)
 --
---function ParseLine_Count (Value : in String) return Natural is
--- Given a value that may have multiple lines, count the lines.
--- Returns 0 if Value is the empty/null string (i.e., length=0)
+-- AdaScript Syntax: n := cgi.line_count( s )
+--       Ada Target: CGI.Line_Count
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.line_count
 -----------------------------------------------------------------------------
 
 procedure ParseLine_Count( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  keyExpr : storage;
+  keyType : identifier;
+  subprogramId : constant identifier := cgi_line_count_t;
 begin
   kind := natural_t;
-  expect( cgi_line_count_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( cgi.line_count( to_string(exprExpr.value))'img), noMetaLabel );
+     if metaLabelOk( keyExpr ) then
+        begin
+           result := storage'( to_unbounded_string( cgi.line_count( to_string(keyExpr.value))'img),
+              keyExpr.MetaLabel );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseLine_Count;
 
 
 -----------------------------------------------------------------------------
---  PARSE LINE COUNT OF VALUE
+--  PARSE LINE COUNT OF VALUE                             (built-in function)
 --
---function ParseLine_Count_of_Value (Key : String) return Natural is
--- Given a Key which has a Value that may have multiple lines,
--- count the lines.  Returns 0 if Key's Value is the empty/null
--- string (i.e., length=0) or if there's no such Key.
--- This is the same as Line_Count(Value(Key)).
+-- AdaScript Syntax: n := cgi.line_count_of_value( v )
+--       Ada Target: CGI.Line_Count_of_Value
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.line_count_of_value
 -----------------------------------------------------------------------------
 
 procedure ParseLine_Count_Of_Value( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  keyExpr : storage;
+  keyType : identifier;
+  subprogramId : constant identifier := cgi_line_count_of_value_t;
 begin
   kind := natural_t;
-  expect( cgi_line_count_of_value_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( cgi.line_count_of_value(
-       to_string(exprExpr.value))'img), noMetaLabel );
+     if metaLabelOk( keyExpr ) then
+        begin
+           result := storage'( to_unbounded_string( cgi.line_count_of_value(
+             to_string(keyExpr.value))'img), keyExpr.metaLabel );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseLine_Count_of_Value;
 
 
 -----------------------------------------------------------------------------
---  PARSE CGI LINE
+--  PARSE CGI LINE                                        (built-in function)
 --
---function ParseLine (Value : in String; Position : in Positive) return String
--- Given a value that may have multiple lines, return the given line.
--- If there's no such line, raise Constraint_Error.
+-- AdaScript Syntax: l := cgi.line( s, p )
+--       Ada Target: CGI.Line
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.line
 -----------------------------------------------------------------------------
 
 procedure ParseCGILine (result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  posExpr  : storage;
-  pos_type : identifier;
+  keyExpr : storage;
+  keyType : identifier;
+  posExpr : storage;
+  posType : identifier;
+  subprogramId : constant identifier := cgi_line_t;
 begin
   kind := string_t;
-  expect( cgi_line_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( posExpr, pos_type );
-     if baseTypesOk( pos_type, positive_t ) then
+     ParseExpression( posExpr, posType );
+     if baseTypesOk( posType, positive_t ) then
         null;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-        result := storage'( to_unbounded_string( cgi.line( to_string( exprExpr.value ),
-           positive( to_numeric( posExpr.value ) ) ) ), noMetaLabel );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( keyExpr ) and metaLabelOk( posExpr ) then
+        begin
+           result := storage'( to_unbounded_string( cgi.line( to_string( keyExpr.value ),
+              positive( to_numeric( posExpr.value ) ) ) ),
+              resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseCGILine;
 
 
 -----------------------------------------------------------------------------
---  PARSE VALUE OF LINE
+--  PARSE VALUE OF LINE                                   (built-in function)
 --
---function ParseValue_of_Line (Key : String; Position : Positive)
---                        return String is
--- Given a Key which has a Value that may have multiple lines,
--- return the given line.  If there's no such line, raise Constraint_Error.
--- If there's no such Key, return the null string.
--- This is the same as Line(Value(Key), Position).
+-- AdaScript Syntax: s := cgi.value( k, i, b )
+--       Ada Target: CGI.Value_of_Line
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.value_of_line
 -----------------------------------------------------------------------------
 
 procedure ParseValue_of_Line( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  keyExpr  : storage;
+  keyType  : identifier;
   posExpr  : storage;
-  pos_type : identifier;
+  posType  : identifier;
+  subprogramId : constant identifier := cgi_value_of_line_t;
 begin
   kind := string_t;
-  expect( cgi_value_of_line_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      expectParameterComma;
-     ParseExpression( posExpr, pos_type );
-     if baseTypesOk( pos_type, positive_t ) then
+     ParseExpression( posExpr, posType );
+     if baseTypesOk( posType, positive_t ) then
         null;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-        result := storage'( to_unbounded_string( cgi.value_of_line( to_string( exprExpr.value ),
-           positive( to_numeric( posExpr.value ) ) ) ), noMetaLabel );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOK( keyExpr ) and metaLabelOK( posExpr ) then
+        begin
+           result := storage'( to_unbounded_string( cgi.value_of_line( to_string( keyExpr.value ),
+              positive( to_numeric( posExpr.value ) ) ) ),
+              resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseValue_of_Line;
 
@@ -709,81 +825,87 @@ end ParseValue_of_Line;
 
 
 -----------------------------------------------------------------------------
---  PARSE URL DECODE
+--  PARSE URL DECODE                                      (built-in function)
 --
---function ParseURL_Decode(Data : in Unbounded_String;
---                Translate_Plus : Boolean := True) return Unbounded_String is
--- In the given string, convert pattern %HH into alphanumeric characters,
--- where HH is a hex number. Since this encoding only permits values
--- from %00 to %FF, there's no need to handle 16-bit characters.
--- If "Translate_Plus" is True, translate '+' to ' '.
--- Returns the decoded value (instead of tranlating in-place)
--- NOTE: procedure version not implemented
+-- AdaScript Syntax: s := cgi.url_decode( u, b )
+--       Ada Target: CGI.URL_Decode
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.url_decode
+-- NOTE: procedure version of CGI.URL_Decode not implemented
 -----------------------------------------------------------------------------
 
 procedure ParseURL_Decode( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  boolExpr : storage := storage'( identifiers( true_t ).store.value, noMetaLabel );
-  bool_type : identifier;
+  dataExpr : storage;
+  dataType : identifier;
+  boolExpr : storage := storage'( identifiers( true_t ).store.value, sparMetaLabel );
+  boolType : identifier;
+  subprogramId : constant identifier := cgi_url_decode_t;
 begin
   kind := string_t;
-  expect( cgi_url_decode_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( dataExpr, dataType );
+  if uniTypesOk( dataType, uni_string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        ParseExpression( boolExpr, bool_type );
-        if baseTypesOk( bool_type, boolean_t ) then
+        ParseExpression( boolExpr, boolType );
+        if baseTypesOk( boolType, boolean_t ) then
            null;
         end if;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-        result := storage'( cgi.URL_Decode( exprExpr.value, boolExpr.value = identifiers( true_t ).store.value ), noMetaLabel );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOK( dataExpr ) and metaLabelOK( boolExpr ) then
+        begin
+           result := storage'( cgi.URL_Decode( dataExpr.value, boolExpr.value = identifiers( true_t ).store.value ),
+              resolveEffectiveMetaLabel( kind, dataExpr, boolExpr ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseURL_Decode;
 
 
 -----------------------------------------------------------------------------
---  PARSE URL ENCODE
+--  PARSE URL ENCODE                                      (built-in function)
 --
---function ParseURL_Encode(Data : in Unbounded_String;
---                    Translate_Plus : Boolean := False)
---         return Unbounded_String is
+-- AdaScript Syntax: u := cgi.url_encode( s, b )
+--       Ada Target: CGI.URL_Encode
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.url_encode
 -- Same as procedure, but returns a new Unbounded_String.
 -----------------------------------------------------------------------------
 
 procedure ParseURL_Encode( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  boolExpr  : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
-  bool_type : identifier;
+  dataExpr : storage;
+  dataType : identifier;
+  boolExpr : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  boolType : identifier;
+  subprogramId : constant identifier := cgi_url_encode_t;
 begin
   kind := string_t;
-  expect( cgi_url_encode_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( dataExpr, dataType );
+  if uniTypesOk( dataType, uni_string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        ParseExpression( boolExpr, bool_type );
-        if baseTypesOk( bool_type, boolean_t ) then
+        ParseExpression( boolExpr, boolType );
+        if baseTypesOk( boolType, boolean_t ) then
            null;
         end if;
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
      begin
-        result := storage'( cgi.URL_Encode( exprExpr.value, boolExpr.value = identifiers( true_t
-).store.value ), noMetaLabel );
+        result := storage'( cgi.URL_Encode( dataExpr.value, boolExpr.value = identifiers( true_t
+).store.value ),
+           resolveEffectiveMetaLabel( kind, dataExpr, boolExpr ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -792,36 +914,37 @@ end ParseURL_Encode;
 
 
 -----------------------------------------------------------------------------
---  PARSE HTML ENCODE
+--  PARSE HTML ENCODE                                     (built-in function)
 --
---function ParseHTML_Encode(Data : in Unbounded_String) return Unbounded_String
--- is
--- Given string, perform HTML encoding, so the text can be included
--- in an HTML file.  This means '&' becomes '&amp;', '<' becomes '&lt;',
--- '>' becomes '&gt;', and '"' becomes '&quot;'.
--- All other characters are untouched.
--- ALL VARIABLE DATA sent from the application should be filtered through
--- HTML_Encode unless it's already in HTML format or you know that
--- it can't have these special characters.
--- Even if the data appears to have come from the user, it should be filtered;
--- the user may be unknowingly clicking though a malicious link.
--- Same as procedure, but returns a new value.
+-- AdaScript Syntax: h := cgi.html_encode( s )
+--       Ada Target: CGI.HTML_Encode
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.html_encode
 -----------------------------------------------------------------------------
 
 procedure ParseHTML_Encode( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
+  dataExpr : storage;
+  dataType : identifier;
+  subprogramId : constant identifier := cgi_html_encode_t;
 begin
   kind := string_t;
-  expect( cgi_html_encode_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( dataExpr, dataType );
+  if uniTypesOk( dataType, uni_string_t ) then
      null;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     result := storage'( cgi.HTML_encode( exprExpr.value ), noMetaLabel );
+     if metaLabelOK( dataExpr ) then
+        begin
+          result := storage'( cgi.HTML_encode( dataExpr.value ),
+             dataExpr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseHTML_Encode;
 
@@ -833,67 +956,63 @@ end ParseHTML_Encode;
 
 
 -----------------------------------------------------------------------------
---  PARSE SET COOKIE
+--  PARSE SET COOKIE                                     (built-in procedure)
 --
---procedure ParseSet_Cookie(Key : String;
---                     Value : String;
---                     Expires : String := "";
---                     --Path: String := Get_Environment("PATH_INFO");
---                     --Domain: String := Get_Environment("SERVER_NAME");
---                     Secure: Boolean := False ) is
--- Sets a cookie value; call this BEFORE calling Put_CGI_Header.
--- If you don't want to send values for Expires, Path, or Domain,
--- just make them "".
+-- AdaScript Syntax: cgi.set_cookie( k, s, x, p, d, b )
+--       Ada Target: CGI.Set_Cookie
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.set_cookie
 -----------------------------------------------------------------------------
 
 procedure ParseSet_Cookie is
   keyExpr      : storage;
-  key_type     : identifier;
+  keyType      : identifier;
   cookieExpr   : storage;
-  cookie_type  : identifier;
+  cookieType   : identifier;
   pathExpr     : storage := nullStorage;
-  path_type    : identifier;
+  pathType     : identifier;
   domainExpr   : storage := nullStorage;
-  domain_type  : identifier;
+  domainType   : identifier;
   expiresExpr  : storage := nullStorage;
-  expires_type : identifier;
-  secureExpr   : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
-  secure_type  : identifier;
+  expiresType  : identifier;
+  secureExpr   : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  secureType   : identifier;
+  subprogramId : constant identifier := cgi_set_cookie_t;
 begin
   -- lookup defaults
-  findIdent( to_unbounded_string( "PATH_INFO" ), path_type );
-  if path_type /= eof_t then
-     pathExpr.value := identifiers( path_type ).store.value;
+  findIdent( to_unbounded_string( "PATH_INFO" ), pathType );
+  if pathType /= eof_t then
+     pathExpr.value := identifiers( pathType ).store.value;
   end if;
-  findIdent( to_unbounded_string( "SERVER_NAME" ), domain_type );
-  if domain_type /= eof_t then
-     domainExpr.value:= identifiers( domain_type ).store.value;
+  findIdent( to_unbounded_string( "SERVER_NAME" ), domainType );
+  if domainType /= eof_t then
+     domainExpr.value:= identifiers( domainType ).store.value;
   end if;
-  expect( cgi_set_cookie_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( keyExpr, key_type );
-  if baseTypesOK( key_type, string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if baseTypesOK( keyType, string_t ) then
      expectParameterComma;
   end if;
-  ParseExpression( cookieExpr, cookie_type );
-  if baseTypesOK( cookie_type, string_t ) then
+  ParseExpression( cookieExpr, cookieType );
+  if baseTypesOK( cookieType, string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        ParseExpression( expiresExpr, expires_type );
-        if baseTypesOK( expires_type, string_t ) then
+        ParseExpression( expiresExpr, expiresType );
+        if baseTypesOK( expiresType, string_t ) then
   if token = symbol_t and identifiers( token ).store.value = "," then
      getNextToken;
-     ParseExpression( pathExpr, path_type );
-     if baseTypesOK( path_type, string_t ) then
+     ParseExpression( pathExpr, pathType );
+     if baseTypesOK( pathType, string_t ) then
         if token = symbol_t and identifiers( token ).store.value = "," then
            getNextToken;
-           ParseExpression( domainExpr, domain_type );
-           if baseTypesOK( domain_type, string_t ) then
+           ParseExpression( domainExpr, domainType );
+           if baseTypesOK( domainType, string_t ) then
 
            if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
-              ParseExpression( secureExpr, secure_type );
-              if baseTypesOK( secure_type, boolean_t ) then
+              ParseExpression( secureExpr, secureType );
+              if baseTypesOK( secureType, boolean_t ) then
                  null;
               end if;
            end if;
@@ -905,6 +1024,7 @@ begin
   end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
      cgi.set_cookie( to_string( keyExpr.value ),
        to_string( cookieExpr.value ),
@@ -917,35 +1037,36 @@ end ParseSet_Cookie;
 
 
 -----------------------------------------------------------------------------
---  PARSE COOKIE VALUE
+--  PARSE COOKIE VALUE                                    (built-in function)
 --
---function ParseCookie_Value(Key : in Unbounded_String;
--- Index : in Positive := 1;
--- Required : in Boolean := False)
--- return Unbounded_String is
+-- AdaScript Syntax: s := cgi.cookie_value( c [, p] )
+--       Ada Target: CGI.Cookie_Value
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.cookie_value
 -----------------------------------------------------------------------------
 
 procedure ParseCookie_Value( result : out storage; kind : out identifier ) is
-  exprExpr  : storage;
-  expr_type : identifier;
-  posExpr   : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel );
-  pos_type : identifier;
-  boolExpr  : storage := storage'( identifiers( false_t ).store.value, noMetaLabel );
-  bool_type : identifier;
+  keyExpr  : storage;
+  keyType  : identifier;
+  posExpr  : storage := storage'( to_unbounded_string( " 1" ), sparMetaLabel );
+  posType  : identifier;
+  boolExpr : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  boolType : identifier;
+  subprogramId : constant identifier := cgi_cookie_value_t;
 begin
   kind := string_t;
-  expect( cgi_cookie_value_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseExpression( exprExpr, expr_type );
-  if uniTypesOk( expr_type, uni_string_t ) then
+  ParseExpression( keyExpr, keyType );
+  if uniTypesOk( keyType, uni_string_t ) then
      if token = symbol_t and identifiers( token ).store.value = "," then
         getNextToken;
-        ParseExpression( posExpr, pos_type );
-        if baseTypesOk( pos_type, positive_t ) then
+        ParseExpression( posExpr, posType );
+        if baseTypesOk( posType, positive_t ) then
            if token = symbol_t and identifiers( token ).store.value = "," then
               getNextToken;
-              ParseExpression( boolExpr, bool_type );
-              if baseTypesOk( bool_type, boolean_t ) then
+              ParseExpression( boolExpr, boolType );
+              if baseTypesOk( boolType, boolean_t ) then
                  null;
               end if;
            end if;
@@ -953,32 +1074,41 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     begin
-        result := storage'( cgi.cookie_value( exprExpr.value,
-           positive( to_numeric( posExpr.value ) ),
-           boolExpr.value = identifiers( true_t ).store.value ), noMetaLabel );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOK( keyExpr ) and metaLabelOk( posExpr ) then
+        begin
+           result := storage'( cgi.cookie_value( keyExpr.value,
+              positive( to_numeric( posExpr.value ) ),
+              boolExpr.value = identifiers( true_t ).store.value ),
+                 resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseCookie_Value;
 
 
 -----------------------------------------------------------------------------
---  PARSE COOKIE COUNT
+--  PARSE COOKIE COUNT                                    (built-in function)
 --
--- Returns the number of cookies (0 if none)
+-- AdaScript Syntax: n := cgi.cookie_count
+--       Ada Target: CGI.Cookie_Count
+--   GNAT Spec File: adacgi-1.6/cgi.ads
+--   SparForte Docs: doc/pkg_cgi.html#cgi.cookie_count
 -----------------------------------------------------------------------------
 
 procedure ParseCookie_Count( result : out storage; kind : out identifier ) is
+  subprogramId : constant identifier := cgi_cookie_count_t;
 begin
   kind := natural_t;
-  expect( cgi_cookie_count_t );
+  expect( subprogramId );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( cgi.cookie_count'img ), noMetaLabel );
+     result := storage'( to_unbounded_string( cgi.cookie_count'img ), sparMetaLabel );
   end if;
 end ParseCookie_Count;
+
 
 -----------------------------------------------------------------------------
 -- Housekeeping

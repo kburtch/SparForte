@@ -80,7 +80,11 @@ procedure ParseCalClock( result : out storage; kind : out identifier ) is
 begin
   kind := cal_time_t;
   expect( cal_clock_t );
-  ParseMetaLabelSuffix( result.metaLabel );
+  if token = tagged_t then
+     ParseMetaLabelSuffix( result.metaLabel );
+  else
+     result.metaLabel := sparMetaLabel;
+  end if;
   result.value := to_unbounded_string( clock'img );
 end ParseCalClock;
 
@@ -281,7 +285,7 @@ begin
                        month_number( to_numeric( monthExpr.value ) ),
                        day_number( to_numeric( dayExpr.value ) ),
                        day_duration( to_numeric( secsExpr.value ) ) )'img ),
-                 resolveEffectiveMetaLabel( yearExpr, monthExpr, dayExpr, secsExpr )
+                 resolveEffectiveMetaLabel( kind, yearExpr, monthExpr, dayExpr, secsExpr )
               );
         exception when time_error =>
           err( +"time error: illegal time value" );

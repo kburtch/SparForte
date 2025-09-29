@@ -61,7 +61,8 @@ procedure put_retry( us : unbounded_string );
 procedure put_retry( ch : character );
 procedure new_line_retry( output_file : file_type );
 procedure new_line_retry;
-
+procedure put_right_justified( s : string; column_width : integer := 5 );
+procedure put_line_right_justified( s : string );
 
 ------------------------------------------------------
 -- Command History

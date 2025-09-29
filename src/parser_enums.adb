@@ -56,6 +56,11 @@ enums_val_t          : identifier;
 
 ---------------------------------------------------------
 -- PARSE THE ENUMS PACKAGE
+--
+-- For business considerations, enums cannot possess meta labels.  The enum
+-- values are their ordinal position and constants, and the true value, if any,
+-- is their names which do not possess labels.  It's not clear that giving
+-- enums tags bring significant business value.
 ---------------------------------------------------------
 
 procedure ParseEnumsFirst( result : out storage; kind : out identifier ) is
