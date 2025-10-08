@@ -275,21 +275,23 @@ procedure ParseMemcacheRegisterServer is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_register_server_t );
-  ParseFirstInOutParameter( memcache_register_server_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_register_server_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_register_server_t, expr, expr_type );
   ParseLastNumericParameter( memcache_register_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterServer( cluster_entry.cluster, expr.value, port );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -304,18 +306,20 @@ procedure ParseMemcacheClearServers is
 -- Syntax: clear_servers( cluster )
 -- Source: pegasock.memcache.clear_servers
   cluster_entry : aMemcacheClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_clear_servers_t );
-  ParseSingleInOutParameter( memcache_clear_servers_t, cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_clear_servers_t, clusterRef, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -332,19 +336,21 @@ procedure ParseMemcacheSetClusterName is
   cluster_entry : aMemcacheClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_set_cluster_name_t );
-  ParseFirstInOutParameter( memcache_set_cluster_name_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_set_cluster_name_t, clusterRef, memcache_cluster_t  );
   ParseLastStringParameter( memcache_set_cluster_name_t, expr, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -362,15 +368,17 @@ procedure ParseMemcacheSetClusterType is
   cluster_entry : aMemcacheClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
   mct : aMemcacheClusterType;
 begin
   checkRestrictedShell;
   expect( memcache_set_cluster_type_t );
-  ParseFirstInOutParameter( memcache_set_cluster_type_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_set_cluster_type_t, clusterRef, memcache_cluster_t  );
   ParseLastEnumParameter( memcache_set_cluster_type_t, expr, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
      exception when constraint_error =>
@@ -379,10 +387,10 @@ begin
         err_exception_raised;
      end;
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -401,20 +409,22 @@ procedure ParseMemcacheSet is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_set_t );
-  ParseFirstInOutParameter( memcache_set_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_set_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_set_t, expr, expr_type );
   ParseLastStringParameter( memcache_set_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -435,20 +445,22 @@ procedure ParseMemcacheAdd is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_add_t );
-  ParseFirstInOutParameter( memcache_add_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_add_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_add_t, expr, expr_type );
   ParseLastStringParameter( memcache_add_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -469,20 +481,22 @@ procedure ParseMemcacheReplace is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_replace_t );
-  ParseFirstInOutParameter( memcache_replace_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_replace_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_replace_t, expr, expr_type );
   ParseLastStringParameter( memcache_replace_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -501,20 +515,22 @@ procedure ParseMemcacheAppend is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_append_t );
-  ParseFirstInOutParameter( memcache_append_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_append_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_append_t, expr, expr_type );
   ParseLastStringParameter( memcache_append_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -533,20 +549,22 @@ procedure ParseMemcachePrepend is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_prepend_t );
-  ParseFirstInOutParameter( memcache_prepend_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_prepend_t, clusterRef, memcache_cluster_t  );
   ParseNextStringParameter( memcache_prepend_t, expr, expr_type );
   ParseLastStringParameter( memcache_prepend_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr.value, expr2.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -563,20 +581,22 @@ procedure ParseMemcacheGet( result : out storage; kind : out identifier ) is
   cluster_entry : aMemcacheClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( memcache_get_t );
-  ParseFirstInOutParameter( memcache_get_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_get_t, clusterRef, memcache_cluster_t  );
   ParseLastStringParameter( memcache_get_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            result := nullStorage;
            Get( cluster_entry.cluster, expr.value, result.value );
@@ -596,19 +616,21 @@ procedure ParseMemcacheDelete is
   cluster_entry : aMemcacheClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_delete_t );
-  ParseFirstInOutParameter( memcache_delete_t, cluster_id, memcache_cluster_t  );
+  ParseFirstInOutParameter( memcache_delete_t, clusterRef, memcache_cluster_t  );
   ParseLastStringParameter( memcache_delete_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -625,19 +647,21 @@ procedure ParseMemcacheStats( result : out storage; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.stats
   cluster_entry : aMemcacheClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( memcache_stats_t );
-  ParseSingleInOutParameter( memcache_stats_t, cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_stats_t, clusterRef, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Stats( cluster_entry.cluster, result.value );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -652,19 +676,21 @@ procedure ParseMemcacheVersion( result : out storage; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.version
   cluster_entry : aMemcacheClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( memcache_version_t );
-  ParseSingleInOutParameter( memcache_version_t, cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_version_t, clusterRef, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            result := nullStorage;
            pegasock.memcache.Version( cluster_entry.cluster, result.value );
@@ -682,18 +708,20 @@ procedure ParseMemcacheFlush is
 -- Syntax: flush( cluster )
 -- Source: pegasock.memcache.flush
   cluster_entry : aMemcacheClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( memcache_flush_t );
-  ParseSingleInOutParameter( memcache_flush_t, cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_flush_t, clusterRef, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
@@ -741,21 +769,23 @@ procedure ParseHighreadRegisterAlphaServer is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_register_alpha_server_t );
-  ParseFirstInOutParameter( highread_register_alpha_server_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_register_alpha_server_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_register_alpha_server_t, expr, expr_type );
   ParseLastNumericParameter( highread_register_alpha_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterAlphaServer( cluster_entry.cluster, expr.value, port );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -774,21 +804,23 @@ procedure ParseHighreadRegisterBetaServer is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_register_beta_server_t );
-  ParseFirstInOutParameter( highread_register_beta_server_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_register_beta_server_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_register_beta_server_t, expr, expr_type );
   ParseLastNumericParameter( highread_register_beta_server_t, expr2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         port : constant natural := natural( to_numeric( expr2.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            RegisterBetaServer( cluster_entry.cluster, expr.value, port );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -803,18 +835,20 @@ procedure ParseHighreadClearServers is
 -- Syntax: clear_servers( cluster )
 -- Source: pegasock.memcache.highread.clear_servers
   cluster_entry : aMemcacheDualClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_clear_servers_t );
-  ParseSingleInOutParameter( highread_clear_servers_t, cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_clear_servers_t, clusterRef, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            ClearServers( cluster_entry.cluster );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -831,19 +865,21 @@ procedure ParseHighreadSetClusterName is
   cluster_entry : aMemcacheDualClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_set_cluster_name_t );
-  ParseFirstInOutParameter( highread_set_cluster_name_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_set_cluster_name_t, clusterRef, highread_cluster_t  );
   ParseLastStringParameter( highread_set_cluster_name_t, expr, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterName( cluster_entry.cluster, expr.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -861,15 +897,17 @@ procedure ParseHighreadSetClusterType is
   cluster_entry : aMemcacheDualClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
   mct : aMemcacheClusterType;
 begin
   checkRestrictedShell;
   expect( highread_set_cluster_type_t );
-  ParseFirstInOutParameter( highread_set_cluster_type_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_set_cluster_type_t, clusterRef, highread_cluster_t  );
   ParseLastEnumParameter( highread_set_cluster_type_t, expr, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
      exception when constraint_error =>
@@ -878,10 +916,10 @@ begin
         err_exception_raised;
      end;
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            SetClusterType( cluster_entry.cluster, mct );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -900,20 +938,22 @@ procedure ParseHighreadSet is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_set_t );
-  ParseFirstInOutParameter( highread_set_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_set_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_set_t, expr, expr_type );
   ParseLastStringParameter( highread_set_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Set( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -934,20 +974,22 @@ procedure ParseHighreadAdd is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_add_t );
-  ParseFirstInOutParameter( highread_add_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_add_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_add_t, expr, expr_type );
   ParseLastStringParameter( highread_add_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Add( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -968,20 +1010,22 @@ procedure ParseHighreadReplace is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_replace_t );
-  ParseFirstInOutParameter( highread_replace_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_replace_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_replace_t, expr, expr_type );
   ParseLastStringParameter( highread_replace_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Replace( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -1000,20 +1044,22 @@ procedure ParseHighreadAppend is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_append_t );
-  ParseFirstInOutParameter( highread_append_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_append_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_append_t, expr, expr_type );
   ParseLastStringParameter( highread_append_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Append( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -1032,20 +1078,22 @@ procedure ParseHighreadPrepend is
   expr_type : identifier;
   expr2 : storage;
   expr_type2 : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_prepend_t );
-  ParseFirstInOutParameter( highread_prepend_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_prepend_t, clusterRef, highread_cluster_t  );
   ParseNextStringParameter( highread_prepend_t, expr, expr_type );
   ParseLastStringParameter( highread_prepend_t, expr2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Prepend( cluster_entry.cluster, expr.value, expr2.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -1062,20 +1110,22 @@ procedure ParseHighreadGet( result : out storage; kind : out identifier ) is
   cluster_entry : aMemcacheDualClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( highread_get_t );
-  ParseFirstInOutParameter( highread_get_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_get_t, clusterRef, highread_cluster_t  );
   ParseLastStringParameter( highread_get_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            result := nullStorage;
            Get( cluster_entry.cluster, expr.value, result.value );
@@ -1095,19 +1145,21 @@ procedure ParseHighreadDelete is
   cluster_entry : aMemcacheDualClusterEntry;
   expr : storage;
   expr_type : identifier;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_delete_t );
-  ParseFirstInOutParameter( highread_delete_t, cluster_id, highread_cluster_t  );
+  ParseFirstInOutParameter( highread_delete_t, clusterRef, highread_cluster_t  );
   ParseLastStringParameter( highread_delete_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Delete( cluster_entry.cluster, expr.value );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
@@ -1124,19 +1176,21 @@ procedure ParseHighreadStats( result : out storage; kind : out identifier ) is
 -- Syntax: stats( cluster )
 -- Source: pegasock.memcache.highread.stats
   cluster_entry : aMemcacheDualClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( highread_stats_t );
-  ParseSingleInOutParameter( highread_stats_t, cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_stats_t, clusterRef, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            result := nullStorage;
            Stats( cluster_entry.cluster, result.value);
@@ -1152,19 +1206,21 @@ procedure ParseHighreadVersion( result : out storage; kind : out identifier ) is
 -- Syntax: version( cluster )
 -- Source: pegasock.memcache.highread.version
   cluster_entry : aMemcacheDualClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   kind := string_t;
   checkRestrictedShell;
   expect( highread_version_t );
-  ParseSingleInOutParameter( highread_version_t, cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_version_t, clusterRef, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            result := nullStorage;
            pegasock.memcache.highread.Version( cluster_entry.cluster, result.value );
@@ -1182,18 +1238,20 @@ procedure ParseHighreadFlush is
 -- Syntax: flush( cluster )
 -- Source: pegasock.memcache.highread.flush
   cluster_entry : aMemcacheDualClusterEntry;
-  cluster_id : identifier;
+  clusterRef : reference;
+  cluster    : storage;
 begin
   checkRestrictedShell;
   expect( highread_flush_t );
-  ParseSingleInOutParameter( highread_flush_t, cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_flush_t, clusterRef, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
+     getParameterValue( clusterRef, cluster );
      declare
-        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).store.value ) );
+        theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
-        GetCluster( cluster, cluster_entry, clusterIndex );
+        GetCluster( theCluster, cluster_entry, clusterIndex );
         if clusterIndex /= 0 then
            Flush( cluster_entry.cluster );
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );

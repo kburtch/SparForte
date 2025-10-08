@@ -100,7 +100,7 @@ begin
   --end if;
 
   if isExecutingCommand then
-      getParameterValue( crc_ref, crc );
+     getParameterValue( crc_ref, crc );
      if metaLabelOk( crc ) then
         declare
           c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(

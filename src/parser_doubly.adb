@@ -104,36 +104,36 @@ doubly_parcel_t        : identifier;
 ------------------------------------------------------------------------------
 -- TODO: these should be removed
 
-procedure ParseSingleListParameter( subprogram : identifier; listId : out identifier ) is
+procedure ParseSingleListParameter( subprogram : identifier; listRef : out reference ) is
 begin
-  ParseSingleInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, listRef, doubly_list_t );
 end ParseSingleListParameter;
 
-procedure ParseNextListParameter( subprogram : identifier; listId : out identifier ) is
+procedure ParseNextListParameter( subprogram : identifier; listRef : out reference ) is
 begin
-  ParseNextInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
+  ParseNextInOutInstantiatedParameter( subprogram, listRef, doubly_list_t );
 end ParseNextListParameter;
 
-procedure ParseLastListParameter( subprogram : identifier; listId : out identifier ) is
+procedure ParseLastListParameter( subprogram : identifier; listRef : out reference ) is
 begin
-  ParseLastInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
+  ParseLastInOutInstantiatedParameter( subprogram, listRef, doubly_list_t );
 end ParseLastListParameter;
 
 ------------------------------------------------------------------------------
 
-procedure ParseSingleCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseSingleCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseSingleInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, cursRef, doubly_cursor_t );
 end ParseSingleCursorParameter;
 
-procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseNextInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursRef, doubly_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseLastInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursRef, doubly_cursor_t );
 end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------
@@ -197,17 +197,19 @@ end insertTypesOk;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyClear is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   subprogramId : constant identifier := doubly_clear_t;
 begin
   expect( subprogramId );
-  ParseSingleListParameter( doubly_clear_t, listId );
+  ParseSingleListParameter( doubly_clear_t, listRef );
   if isExecutingCommand then
      -- Technically, I should check each item for the right to delete but
      -- I have not done so here.
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value ), theList );
        Doubly_Linked_Storage_Lists.Clear( theList.dlslList );
      end;
   end if;
@@ -223,16 +225,18 @@ end ParseDoublyClear;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyIsEmpty( result : out storage; kind : out identifier ) is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   subprogramId : constant identifier := doubly_is_empty_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
+  ParseSingleListParameter( subprogramId, listRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ),
           noMetaLabel );
      end;
@@ -249,16 +253,18 @@ end ParseDoublyIsEmpty;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyLength( result : out storage; kind : out identifier ) is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   subprogramId : constant identifier := doubly_length_t;
 begin
   kind := containers_count_type_t;
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
+  ParseSingleListParameter( subprogramId, listRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaLabel );
      end;
   end if;
@@ -274,8 +280,9 @@ end ParseDoublyLength;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyAppend is
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
+  listResId: storage;
   itemExpr  : storage;
   itemType  : identifier;
   cntExpr   : storage;
@@ -284,11 +291,11 @@ procedure ParseDoublyAppend is
   subprogramId : constant identifier := doubly_append_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -300,7 +307,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_Storage_Lists.Append( theList.dlslList, itemExpr, cnt );
@@ -325,7 +333,8 @@ end ParseDoublyAppend;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyPrepend is
-  listId : identifier;
+  listRef : reference;
+  listResId: storage;
   itemExpr  : storage;
   itemType  : identifier;
   theList  : resPtr;
@@ -335,11 +344,11 @@ procedure ParseDoublyPrepend is
   subprogramId : constant identifier := doubly_prepend_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -351,7 +360,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           Doubly_Linked_Storage_Lists.Prepend( theList.dlslList, itemExpr, cnt );
@@ -376,23 +386,25 @@ end ParseDoublyPrepend;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyFirstElement( result : out storage; kind : out identifier ) is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   oldElem  : storage;
   subprogramId : constant identifier := doubly_first_element_t;
 begin
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseSingleListParameter( subprogramId, listRef );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     kind := identifiers( listId ).genKind;
+     kind := identifiers( listRef.id ).genKind;
   else
      kind := eof_t;
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        oldElem := Doubly_Linked_Storage_Lists.First_Element( theList.dlslList );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -411,23 +423,25 @@ end ParseDoublyFirstElement;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyLastElement( result : out storage; kind : out identifier ) is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   oldElem  : storage;
   subprogramId : constant identifier := doubly_last_element_t;
 begin
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseSingleListParameter( subprogramId, listRef );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     kind := identifiers( listId ).genKind;
+     kind := identifiers( listRef.id ).genKind;
   else
      kind := eof_t;
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        oldElem := Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -447,15 +461,16 @@ end ParseDoublyLastElement;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyDeleteFirst is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := doubly_delete_first_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -466,7 +481,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -503,15 +519,16 @@ end ParseDoublyDeleteFirst;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyDeleteLast is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := doubly_delete_last_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -522,7 +539,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_last has a count parameter, we cannot use it.
@@ -554,24 +572,28 @@ procedure ParseDoublyFirst is
   -- Ada:    c := doubly_linked_list.first( l );
   -- Move the cursor to the first element in the list.
   -- doubly_linked_lists.has_element will be false if the list is empty.
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
-  cursId    : identifier;
+  listResId : storage;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_first_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseLastCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseLastCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.First( theList.dlslList );
      end;
   end if;
@@ -582,24 +604,28 @@ procedure ParseDoublyLast is
   -- Ada:    c := doubly_linked_list.last( l );
   -- Move the cursor to the last element in the list.
   -- doubly_linked_lists.has_element will be false if the list is empty.
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
-  cursId    : identifier;
+  listResId: storage;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_last_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseLastCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseLastCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Last( theList.dlslList );
      end;
   end if;
@@ -613,15 +639,17 @@ procedure ParseDoublyNext is
   -- reached. Moving when there is no element will not move the cursor.
   --cursExpr  : unbounded_string;
   --cursType  : identifier;
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_next_t;
 begin
   expect( subprogramId );
-  ParseSingleCursorParameter( subprogramId, cursId );
+  ParseSingleCursorParameter( subprogramId, cursRef);
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        Doubly_Linked_Storage_Lists.Next( theCursor.dlslCursor );
      end;
   end if;
@@ -635,15 +663,17 @@ procedure ParseDoublyPrevious is
   -- reached. Moving when there is no element will not move the cursor.
   --cursExpr  : unbounded_string;
   --cursType  : identifier;
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_previous_t;
 begin
   expect( subprogramId );
-  ParseSingleCursorParameter( subprogramId, cursId );
+  ParseSingleCursorParameter( subprogramId, cursRef);
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        Doubly_Linked_Storage_Lists.Previous( theCursor.dlslCursor );
      end;
   end if;
@@ -653,23 +683,25 @@ procedure ParseDoublyElement( result : out storage; kind : out identifier ) is
   -- Syntax: s := doubly_linked_list.element( c );
   -- Ada:    s := doubly_linked_list.element( c );
   -- Return the list element at the cursor.
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   oldElem   : storage;
   subprogramId : constant identifier := doubly_element_t;
 begin
   expect( subprogramId );
-  ParseSingleCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseSingleCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     kind := identifiers( cursId ).genKind;
+     kind := identifiers( cursRef.Id ).genKind;
   else
      kind := eof_t;
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        oldElem := Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -686,24 +718,26 @@ procedure ParseDoublyReplaceElement is
   -- Replace the list element at the cursor position with c.
   --listExpr  : unbounded_string;
   --listType  : identifier;
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
-  cursId    : identifier;
+  listResId: storage;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   itemExpr  : storage;
   itemType  : identifier;
   subprogramId : constant identifier := doubly_replace_element_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   end if;
   if not error_found then
-     ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
   if isExecutingCommand then
      -- Replace is delete then insert.  The meta labels of the existing element
@@ -711,8 +745,10 @@ begin
      -- Note: check-before-use.  This will be an issue if concurrency is
      -- introduced.
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ), itemExpr ) then
           Doubly_Linked_Storage_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
@@ -771,10 +807,12 @@ end ParseDoublyReplaceElement;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyInsertBefore is
-  listId     : identifier;
+  listRef    : reference;
   theList    : resPtr;
-  cursId     : identifier;
+  listResId: storage;
+  cursRef    : reference;
   theCursor  : resPtr;
+  cursResId  : storage;
   itemExpr   : storage;
   itemType   : identifier;
   cntExpr    : storage;
@@ -783,11 +821,11 @@ procedure ParseDoublyInsertBefore is
   subprogramId : constant identifier := doubly_insert_before_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
-  genTypesOk( identifiers( listId ).genKind, itemType );
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, cursRef);
+  genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
+  genTypesOk( identifiers( listRef.id ).genKind, itemType );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType );
      hasCnt := true;
@@ -800,8 +838,10 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        if metaLabelOk( itemExpr ) then
           if hasCnt then
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -832,10 +872,12 @@ end ParseDoublyInsertBefore;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyInsertBeforeAndMark is
-  listId     : identifier;
+  listRef    : reference;
   theList    : resPtr;
-  cursId     : identifier;
+  listResId: storage;
+  cursRef    : reference;
   theCursor  : resPtr;
+  cursResId : storage;
   theSecondCursor : resPtr;
   itemExpr   : storage;
   itemType   : identifier;
@@ -852,9 +894,9 @@ procedure ParseDoublyInsertBeforeAndMark is
   subprogramId : constant identifier := doubly_insert_before_and_mark_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, cursRef);
+  genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   expectParameterComma;
   -- The third parameter can be a cursor or a new item.  Since a cursor
   -- is a single variable, it will either be the token or else new_t
@@ -875,7 +917,7 @@ begin
   if hasOutCursor then
      ParseOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
-     identifiers( ref.id ).genKind := identifiers( listId ).genKind;
+     identifiers( ref.id ).genKind := identifiers( listRef.id ).genKind;
      -- A cursor may be followed by an optional count
      if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -888,14 +930,14 @@ begin
   else
      -- If it's a new item value, check the generic item type and
      -- then get the cursor
-     ParseGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseGenItemParameter( itemExpr, itemType, identifiers( listRef.id ).genKind );
      -- Instead of genTypeOK, we'll show a custom message explaining
      -- the two different variations for the third parameter.
-     b := insertTypesOk( itemType, identifiers( listId ).genKind );
+     b := insertTypesOk( itemType, identifiers( listRef.id ).genKind );
      hasItem := true;
      ParseNextOutParameter( subprogramId, ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
-     identifiers( ref.id ).genKind := identifiers( listId ).genKind;
+     identifiers( ref.id ).genKind := identifiers( listRef.id ).genKind;
      if token = symbol_t and identifiers( token ).store.value = "," then
         ParseLastNumericParameter( subprogramId, cntExpr, cntType );
         hasCnt := true;
@@ -910,8 +952,10 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
 
        -- Declare or fetch the second cursor
        --
@@ -997,22 +1041,24 @@ end ParseDoublyInsertBeforeAndMark;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyDelete is
-  listId   : identifier;
+  listRef  : reference;
   theList   : resPtr;
-  cursId    : identifier;
+  listResId: storage;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := doubly_delete_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -1024,8 +1070,10 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        if hasCnt then
          begin
            cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -1062,23 +1110,25 @@ end ParseDoublyDelete;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyContains( result : out storage; kind : out identifier ) is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   itemExpr : storage;
   itemType : identifier;
   subprogramId : constant identifier := doubly_contains_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaLabel);
      end;
   end if;
@@ -1096,31 +1146,35 @@ end ParseDoublyContains;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyFind is
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
+  listResId: storage;
   itemExpr  : storage;
   itemType  : identifier;
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_find_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
-  ParseLastCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseLastCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -1139,31 +1193,35 @@ end ParseDoublyFind;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyReverseFind is
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
+  listResId: storage;
   itemExpr  : storage;
   itemType  : identifier;
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := doubly_reverse_find_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
-  ParseLastCursorParameter( subprogramId, cursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseLastCursorParameter( subprogramId, cursRef);
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.dlslCursor := Doubly_Linked_Storage_Lists.Reverse_Find( theList.dlslList, itemExpr );
      end;
   end if;
@@ -1180,15 +1238,17 @@ end ParseDoublyReverseFind;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyReverseElements is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   subprogramId : constant identifier := doubly_reverse_elements_t;
 begin
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
+  ParseSingleListParameter( subprogramId, listRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        Doubly_Linked_Storage_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -1205,15 +1265,17 @@ end ParseDoublyReverseElements;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyFlip is
-  listId   : identifier;
+  listRef  : reference;
   theList  : resPtr;
+  listResId: storage;
   subprogramId : constant identifier := doubly_flip_t;
 begin
   expect( subprogramId );
-  ParseSingleListParameter( subprogramId, listId );
+  ParseSingleListParameter( subprogramId, listRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        Doubly_Linked_Storage_Lists.Reverse_Elements( theList.dlslList );
      end;
   end if;
@@ -1230,24 +1292,28 @@ end ParseDoublyFlip;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyAssign is
-  sourceListId  : identifier;
+  sourceListRef : reference;
   theSourceList : resPtr;
-  targetListId  : identifier;
+  targetlistRef : reference;
+  sourceListResId: storage;
   theTargetList : resPtr;
+  targetListResId: storage;
   subprogramId : constant identifier := doubly_assign_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetListId, doubly_list_t );
-  ParseLastListParameter( subprogramId, sourceListId );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetListRef, doubly_list_t );
+  ParseLastListParameter( subprogramId, sourceListRef );
   if not error_found then
-     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+     genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( sourceListRef.id ).genKind );
   end if;
   if isExecutingCommand then
      declare
        sourceCursor : Doubly_Linked_Storage_Lists.Cursor;
      begin
-       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
+       getParameterValue( sourcelistRef, sourceListResId );
+       getParameterValue( targetlistRef, targetListResId );
+       findResource( to_resource_id( sourceListResId.value ), theTargetList );
+       findResource( to_resource_id( targetListResId.value ), theSourceList );
        -- this is only available starting in GCC Ada 4.7 or 4.8 or newer
        --Doubly_Linked_Storage_Lists.Assign( theTargetList.dlslList, theSourceList.dlslList );
        -- we'll write our own
@@ -1273,24 +1339,28 @@ end ParseDoublyAssign;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyMove is
-  sourceListId   : identifier;
+  sourceListRef  : reference;
   theSourceList  : resPtr;
-  targetListId   : identifier;
+  sourceListResId: storage;
+  targetListRef  : reference;
   theTargetList  : resPtr;
+  targetListResId: storage;
   subprogramId : constant identifier := doubly_move_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetListId, doubly_list_t );
-  ParseLastListParameter( subprogramId, sourceListId );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetListRef, doubly_list_t );
+  ParseLastListParameter( subprogramId, sourceListRef );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+     genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( sourceListRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
-       findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
+       getParameterValue( sourceListRef, sourceListResId );
+       getParameterValue( targetListRef, targetListResId );
+       findResource( to_resource_id( sourceListResId.value ), theTargetList );
+       findResource( to_resource_id( targetListResId.value ), theSourceList );
        Doubly_Linked_Storage_Lists.Move( theTargetList.dlslList, theSourceList.dlslList );
      end;
   end if;
@@ -1306,33 +1376,39 @@ end ParseDoublyMove;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublySwap is
-  listId         : identifier;
+  listRef        : reference;
   theList        : resPtr;
-  firstCursId    : identifier;
+  listResId      : storage;
+  firstCursRef   : reference;
   theFirstCursor : resPtr;
-  secondCursId   : identifier;
+  firstcursResId : storage;
+  secondCursRef  : reference;
   theSecondCursor: resPtr;
+  secondcursResId : storage;
   subprogramId : constant identifier := doubly_swap_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, firstCursId );
-  -- if an error occurred, the listId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, firstcursRef);
+  -- if an error occurred, the listRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( firstCursRef.Id ).genKind );
   end if;
-  ParseLastCursorParameter( subprogramId, secondCursId );
+  ParseLastCursorParameter( subprogramId, secondcursRef);
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+     genTypesOk( identifiers( listRef.id ).genKind, identifiers( secondCursRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).store.value ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).store.value ), theSecondCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( firstCursRef, firstCursResId );
+       getParameterValue( secondCursRef, secondCursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( firstCursResId.value ), theFirstCursor );
+       findResource( to_resource_id( secondCursResId.value ), theSecondCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap( theList.dlslList,
@@ -1359,33 +1435,39 @@ end ParseDoublySwap;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublySwapLinks is
-  listId         : identifier;
+  listRef        : reference;
   theList        : resPtr;
-  firstCursId    : identifier;
+  listResId      : storage;
+  firstCursRef   : reference;
   theFirstCursor : resPtr;
-  secondCursId   : identifier;
+  firstCursResId : storage;
+  secondCursRef  : reference;
   theSecondCursor: resPtr;
+  secondCursResId : storage;
   subprogramId : constant identifier := doubly_swap_links_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, firstCursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, firstcursRef);
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+     genTypesOk( identifiers( listRef.id).genKind, identifiers( firstCursRef.Id ).genKind );
   end if;
-  ParseLastCursorParameter( subprogramId, secondCursId );
-  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  ParseLastCursorParameter( subprogramId, secondcursRef );
+  -- if an error occurred, the cursRef may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+     genTypesOk( identifiers( listRef.id).genKind, identifiers( secondCursRef.Id ).genKind );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
-       findResource( to_resource_id( identifiers( firstCursId ).store.value ), theFirstCursor );
-       findResource( to_resource_id( identifiers( secondCursId ).store.value ), theSecondCursor );
+       getParameterValue( listRef, listResId );
+       getParameterValue( firstCursRef, firstCursResId );
+       getParameterValue( secondCursRef, secondCursResId );
+       findResource( to_resource_id( listResId.value), theList );
+       findResource( to_resource_id( firstCursResId.value ), theFirstCursor );
+       findResource( to_resource_id( secondCursResId.value ), theSecondCursor );
        if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap_Links( theList.dlslList,
@@ -1412,44 +1494,49 @@ end ParseDoublySwapLinks;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublySplice is
-  sourceListId    : identifier;
+  sourceListRef   : reference;
   theSourceList   : resPtr;
-  targetListId    : identifier;
+  sourceListResId : storage;
+  targetListRef   : reference;
   theTargetList   : resPtr;
-  cursId          : identifier;
+  targetListResId : storage;
+  cursRef         : reference;
   theCursor       : resPtr;
-  curs2Id         : identifier;
+  cursResId       : storage;
+  curs2Ref        : reference;
   theSecondCursor : resPtr;
-  tempId          : identifier;
-  hasSourceId     : boolean := false;
+  curs2ResId      : storage;
+  tempRef         : reference;
+  hasSource       : boolean := false;
   hasCurs2        : boolean := false;
-  subprogramId : constant identifier := doubly_splice_t;
+  subprogramId    : constant identifier := doubly_splice_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetListId, doubly_list_t );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genTypesOk( identifiers( targetListId ).genKind, identifiers( cursId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetListRef, doubly_list_t );
+  ParseNextCursorParameter( subprogramId, cursRef );
+  genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( cursRef.Id ).genKind );
   -- There's no easy way to handle this.  Two optional parameters, one is
   -- in out and one isn't.
   expectParameterComma( subprogramId );
-  ParseIdentifier( tempId );
-  if getUniType( identifiers( tempId ).kind ) = doubly_list_t then
-     sourceListId := tempId;
-     hasSourceId := true;
-     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
-     if token = symbol_t and identifiers( token ).store.value = "," then
-        ParseLastCursorParameter( subprogramId, curs2Id );
-        hasCurs2 := true;
-        genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
+  --ParseIdentifier( tempRef );                                          -- some kind of ref
+  ParseInOutInstantiatedParameter( subprogramId, tempRef, eof_t );       -- some kind of ref
+  if getUniType( identifiers( tempRef.Id ).kind ) = doubly_list_t then   -- is it list ref?
+     sourceListRef := tempRef;                                           -- then it's src list
+     hasSource := true;                                                  -- note the variant
+     genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( sourceListRef.Id ).genKind );
+     if token = symbol_t and identifiers( token ).store.value = "," then -- optional cursor?
+        ParseLastCursorParameter( subprogramId, curs2Ref );              -- get the cursor
+        hasCurs2 := true;                                                -- note the variant
+        genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( curs2Ref.Id ).genKind );
      else
-        expect( symbol_t, ")" );
+        expect( symbol_t, ")" );                                         -- no cursor
      end if;
-  elsif getUniType( identifiers( tempId ).kind ) = doubly_cursor_t then
+  elsif getUniType( identifiers( tempRef.id ).kind ) = doubly_cursor_t then  -- is it list no cursor?
      -- technically this is an in parameter so could be an expression.  But
      -- it never will be.
-     curs2Id := tempId;
-     hasCurs2 := true;
-     genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
+     curs2Ref := tempRef;                                                -- then it's cursor 2
+     hasCurs2 := true;                                                   -- not the variant
+     genTypesOk( identifiers( targetListRef.Id ).genKind, identifiers( curs2Ref.Id ).genKind );
      expect( symbol_t, ")" );
   else
      err( +"list or cursor expected" );
@@ -1457,13 +1544,17 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetListId ).store.value ), theTargetList );
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
-       if hasSourceId then
-          findResource( to_resource_id( identifiers( sourceListId ).store.value ), theSourceList );
+       getParameterValue( targetListRef, targetListResId );
+       findResource( to_resource_id( targetListResId.value ), theTargetList );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
+       if hasSource then
+          getParameterValue( sourceListRef, sourceListResId );
+          findResource( to_resource_id( sourceListResId.value ), theSourceList );
        end if;
        if hasCurs2 then
-          findResource( to_resource_id( identifiers( curs2Id ).store.value ), theSecondCursor );
+          getParameterValue( curs2Ref, curs2ResId );
+          findResource( to_resource_id( curs2ResId.value ), theSecondCursor );
        end if;
 
        -- There are 3 variations to this function
@@ -1473,7 +1564,7 @@ begin
 
        -- doubly_linked_list.splice( l1, c, l2 );
 
-       if not hasCurs2 and hasSourceId then
+       if not hasCurs2 and hasSource then
           begin
              if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
@@ -1488,7 +1579,7 @@ begin
           end;
 
        -- doubly_linked_list.splice( l1, c, l2, c2 );
-       elsif hasCurs2 and hasSourceId then
+       elsif hasCurs2 and hasSource then
           begin
              if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
@@ -1504,7 +1595,7 @@ begin
           end;
 
        -- doubly_linked_list.splice( l1, c, c2 );
-       elsif hasCurs2 and not hasSourceId then
+       elsif hasCurs2 and not hasSource then
           begin
              if metaLabelOK( Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
@@ -1537,17 +1628,19 @@ end ParseDoublySplice;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyHasElement( result : out storage; kind : out identifier ) is
-  cursId : identifier;
+  cursRef: reference;
   theCursor : resPtr;
+  cursResId : storage;
   use Doubly_Linked_Storage_Lists; -- needed for =
   subprogramId : constant identifier := doubly_has_element_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleCursorParameter( subprogramId, cursId );
+  ParseSingleCursorParameter( subprogramId, cursRef);
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaLabel );
      end;
   end if;
@@ -1572,8 +1665,9 @@ end ParseDoublyHasElement;
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyAssemble( result : out storage; kind : out identifier ) is
-  listId    : identifier;
+  listRef   : reference;
   theList   : resPtr;
+  listResId: storage;
   delimExpr : storage;
   delimType : identifier;
   hasDelim  : boolean := false;
@@ -1585,7 +1679,7 @@ procedure ParseDoublyAssemble( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expectAdaScript( subject => subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, listId, doubly_list_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, listRef, doubly_list_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( subprogramId, delimExpr, delimType, uni_string_t );
      hasDelim := true;
@@ -1607,7 +1701,8 @@ begin
           -- TODO: the eol delimiter should be based on the operating system
           delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel );
        end if;
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        curs := Doubly_Linked_Storage_Lists.First( theList.dlslList );
        result := nullStorage;
        if Doubly_Linked_Storage_Lists.Has_Element( curs ) then
@@ -1659,7 +1754,8 @@ end ParseDoublyAssemble;
 procedure ParseDoublyDisassemble is
   strExpr   : storage;
   strType   : identifier;
-  listId    : identifier;
+  listRef   : reference;
+  listResId: storage;
   delimExpr : storage;
   delimType : identifier;
   hasDelim  : boolean := false;
@@ -1670,7 +1766,7 @@ procedure ParseDoublyDisassemble is
 begin
   expectAdaScript( subject => subprogramId );
   ParseFirstStringParameter( subprogramId, strExpr, strType, uni_string_t );
-  ParseNextListParameter( subprogramId, listId );
+  ParseNextListParameter( subprogramId, listRef );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( subprogramId, delimExpr, delimType, uni_string_t );
      hasDelim := true;
@@ -1710,7 +1806,8 @@ begin
        delimLen := length( delimExpr.value );
        delimPos := 0;
        -- generate the list items
-       findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+       getParameterValue( listRef, listResId );
+       findResource( to_resource_id( listResId.value), theList );
        tempStore.metaLabel := strExpr.metaLabel;
        if metaLabelOk( strExpr ) then
           while l >= i loop
@@ -1760,7 +1857,8 @@ procedure ParseDoublyParcel is
   strType   : identifier;
   widthExpr : storage;
   widthType : identifier;
-  listId    : identifier;
+  listRef   : reference;
+  listResId : storage;
 
   strLen   : natural;
   firstPos : positive;
@@ -1774,15 +1872,16 @@ begin
   expectAdaScript( subject => subprogramId );
   ParseFirstStringParameter( subprogramId, strExpr, strType, uni_string_t );
   ParseNextNumericParameter( subprogramId, widthExpr, widthType, positive_t );
-  ParseLastListParameter( subprogramId, listId );
-  elemType := getUniType( identifiers( listId ).genKind );
+  ParseLastListParameter( subprogramId, listRef );
+  elemType := getUniType( identifiers( listRef.id ).genKind );
   if elemType /= uni_string_t and elemType /= universal_t then
      err( +"list elements should be strings or typeless" );
   end if;
   if isExecutingCommand then
      begin
+        getParameterValue( listRef, listResId );
         -- generate the list items
-        findResource( to_resource_id( identifiers( listId ).store.value ), theList );
+        findResource( to_resource_id( listResId.value ), theList );
         width := positive'value( " " & to_string( widthExpr.value ) );
         -- width should be positive by this point
         firstPos := 1;

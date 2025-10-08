@@ -57,5 +57,11 @@ CHANGES SINCE 2.6.3
 
 26. Fix: array out parameters now type checked against their element type not the array type.
 
-27. Fix: gnat.crc32 package can now work with arrays of crc items.  gnat.crc32.initialize() no longer checks the parameter type twice.
+27. Fix: gnat.crc32.initialize() no longer checks the parameter type twice.
+
+28. Fix: dbm package calls using an uninitialized query object no longer show an error message with "connection" instead of "query".
+
+29. Fix: in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
+
+30. Fix: array index zero handling fixed for out and in out parameters.  That is, no longer treats a reference to a(0) as a scalar variable a.
 

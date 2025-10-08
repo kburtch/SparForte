@@ -182,24 +182,28 @@ procedure ParseInOutParameter(
 -- TODO: should modify others to also use a reference
 
 procedure ParseSingleInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseFirstInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseNextInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseLastInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseLastInOutRecordParameter( subprogram : identifier; param_id : out identifier );
 
@@ -207,29 +211,50 @@ procedure ParseLastInOutRecordParameter( subprogram : identifier; param_id : out
 -- Instantiated Generics Parameters
 ------------------------------------------------------------------------------
 
+--procedure ParseInOutInstantiatedParameter(
+-- param_id : out identifier;
+--  expected_type : identifier  );
 procedure ParseInOutInstantiatedParameter(
-  param_id : out identifier;
-  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseSingleInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier );
+--  subprogram : identifier;
+--  param_id : out identifier;
+--  expected_type : identifier );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseFirstInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+--  subprogram : identifier;
+--  param_id : out identifier;
+--  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseNextInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+--  subprogram : identifier;
+--  param_id : out identifier;
+--  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 procedure ParseLastInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  );
+--  subprogram : identifier;
+--  param_id : out identifier;
+--  expected_type : identifier  );
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  );
 
 ------------------------------------------------------------------------------
 -- Out Parameters

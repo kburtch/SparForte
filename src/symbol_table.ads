@@ -182,11 +182,15 @@ symbol_table_overflow : exception;
 ------------------------------------------------------------------------------
 
 -- a scalar reference
+--
+-- hasIndex is included because we cannot know if an index of zero is a
+-- legitimate index or not
 
 type reference is record
      id    : identifier;             -- the identifier
-     index : long_integer := 0;      -- the array index (if an array)
      kind  : identifier;             -- the type name
+     hasIndex : boolean := false;    -- true if array includes an index
+     index : long_integer := 0;      -- the array index (if exists)
 end record;
 
 -- a scalar or aggregate reference
@@ -196,9 +200,9 @@ end record;
 
 type renamingReference is record
      id    : identifier;             -- the identifier
+     kind  : identifier;             -- the type name
      hasIndex : boolean := false;    -- true if index
      index : long_integer := 0;      -- the array index (if an array)
-     kind  : identifier;             -- the type name
 end record;
 
 ------------------------------------------------------------------------------

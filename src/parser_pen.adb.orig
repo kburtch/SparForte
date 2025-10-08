@@ -2879,13 +2879,15 @@ end ParsePenglPolygonOffset;
 procedure ParsePenglPolygonStipple is
   -- Syntax: glPolygonStipple( mask : in out GLubyte );
   -- Source: spar_os.opengl.glPolygonStipple
-  mask_id : identifier;
+  maskRef: reference;
+  maskExpr : storage;
 begin
   expect( pen_glpolygonstipple_t );
-  ParseSingleInOutParameter( pen_glpolygonstipple_t, mask_id, pen_glubyte_t ); -- mask : GLubyte
+  ParseSingleInOutParameter( pen_glpolygonstipple_t, maskRef, pen_glubyte_t ); -- mask : GLubyte
   if isExecutingCommand then
+    getParameterValue( maskRef, maskExpr );
     declare
-      mask : GLUbyte := GLubyte( to_numeric( identifiers( mask_id ).store.value ) );
+      mask : GLUbyte := GLubyte( to_numeric( maskExpr.value ) );
     begin
       glPolygonStipple( mask );
     exception when others =>
@@ -2964,13 +2966,15 @@ end ParsePenglEdgeFlag;
 procedure ParsePenglEdgeFlagv is
   -- Syntax: glEdgeFlagv( flag : in out GLboolean );
   -- Source: spar_os.opengl.glEdgeFlagv
-  flag_id : identifier;
+  flagRef : reference;
+  flagVal : storage;
 begin
   expect( pen_gledgeflagv_t );
-  ParseSingleInOutParameter( pen_gledgeflagv_t, flag_id, pen_glboolean_t ); -- flag : GLboolean
+  ParseSingleInOutParameter( pen_gledgeflagv_t, flagRef, pen_glboolean_t ); -- flag : GLboolean
   if isExecutingCommand then
+    getParameterValue( flagRef, flagVal );
     declare
-      flag : GLboolean := GLboolean( to_numeric( identifiers( flag_id ).store.value ) );
+      flag : GLboolean := GLboolean( to_numeric( flagVal.value ) );
     begin
       glEdgeFlagv( flag );
     exception when others =>
@@ -21552,7 +21556,8 @@ end ParsePenNewGLByteArray;
 procedure ParsePenSetGLByteArray is
   -- TODO: we could use an easier way to get data in and out
   -- pen.set_gl_byte_array( a, p, v );
-  a_id        : identifier;
+  aRef        : reference;
+  aExpr       : storage;
   posExpr     : storage;
   pos_type    : identifier;
   newvalExpr  : storage;
@@ -21562,13 +21567,14 @@ procedure ParsePenSetGLByteArray is
   arrayExpr   : GLbyte;
 begin
   expect( pen_set_gl_byte_array_t );
-  ParseFirstInOutParameter( pen_set_gl_byte_array_t, a_id, pen_gl_byte_array_t );
+  ParseFirstInOutParameter( pen_set_gl_byte_array_t, aRef, pen_gl_byte_array_t );
   ParseNextNumericParameter( eof_t,  posExpr, pos_type, natural_t );
   ParseLastNumericParameter( eof_t, newvalExpr, newval_type, pen_glbyte_t );
   if isExecutingCommand then
+     getParameterValue( aRef, aExpr );
      array_pos := size_t( to_numeric( posExpr.value ) );
      arrayExpr := GLbyte( to_numeric( newvalExpr.value ) );
-     findResource( to_resource_id( identifiers( a_id ).store.value ), theArray );
+     findResource( to_resource_id( aExpr.value ), theArray );
      if array_pos not in theArray.gl_ba'range then
         err( pl( "the array position" & to_string( posExpr.value ) & " is not in the range" & size_t'image( theArray.gl_ba'first ) & " .." & size_t'image( theArray.gl_ba'last ) ) );
      else
@@ -21631,7 +21637,8 @@ end ParsePenNewGLIntArray;
 procedure ParsePenSetGLIntArray is
   -- TODO: we could use an easier way to get data in and out
   -- pen.set_gl_int_array( a, p, v );
-  a_id        : identifier;
+  aRef        : reference;
+  aExpr       : storage;
   posExpr     : storage;
   pos_type    : identifier;
   newvalExpr  : storage;
@@ -21641,13 +21648,14 @@ procedure ParsePenSetGLIntArray is
   arrayExpr   : GLint;
 begin
   expect( pen_set_gl_int_array_t );
-  ParseFirstInOutParameter( pen_set_gl_int_array_t, a_id, pen_gl_int_array_t );
+  ParseFirstInOutParameter( pen_set_gl_int_array_t, aRef, pen_gl_int_array_t );
   ParseNextNumericParameter( eof_t,  posExpr, pos_type, natural_t );
   ParseLastNumericParameter( eof_t, newvalExpr, newval_type, pen_glint_t );
   if isExecutingCommand then
+     getParameterValue( aRef, aExpr );
      array_pos := size_t( to_numeric( posExpr.value ) );
      arrayExpr := GLint( to_numeric( newvalExpr.value ) );
-     findResource( to_resource_id( identifiers( a_id ).store.value ), theArray );
+     findResource( to_resource_id( aExpr.value ), theArray );
      if array_pos not in theArray.gl_ia'range then
         err( pl( "the array position" & to_string( posExpr.value ) & " is not in the range" & size_t'image( theArray.gl_ia'first ) & " .." & size_t'image( theArray.gl_ia'last ) ) );
      else
@@ -21711,7 +21719,8 @@ end ParsePenNewGLShortArray;
 procedure ParsePenSetGLShortArray is
   -- TODO: we could use an easier way to get data in and out
   -- pen.set_gl_short_array( a, p, v );
-  a_id        : identifier;
+  aRef        : reference;
+  aExpr       : storage;
   posExpr     : storage;
   pos_type    : identifier;
   newvalExpr  : storage;
@@ -21721,13 +21730,14 @@ procedure ParsePenSetGLShortArray is
   arrayExpr   : GLshort;
 begin
   expect( pen_set_gl_short_array_t );
-  ParseFirstInOutParameter( pen_set_gl_short_array_t, a_id, pen_gl_short_array_t );
+  ParseFirstInOutParameter( pen_set_gl_short_array_t, aRef, pen_gl_short_array_t );
   ParseNextNumericParameter( eof_t,  posExpr, pos_type, natural_t );
   ParseLastNumericParameter( eof_t, newvalExpr, newval_type, pen_glshort_t );
   if isExecutingCommand then
+     getParameterValue( aRef, aExpr );
      array_pos := size_t( to_numeric( posExpr.value ) );
      arrayExpr := GLShort( to_numeric( newvalExpr.value ) );
-     findResource( to_resource_id( identifiers( a_id ).store.value ), theArray );
+     findResource( to_resource_id( aExpr.value ), theArray );
      if array_pos not in theArray.gl_sa'range then
         err( pl( "the array position" & to_string( posExpr.value ) & " is not in the range" & size_t'image( theArray.gl_sa'first ) & " .." & size_t'image( theArray.gl_sa'last ) ) );
      else
@@ -21790,7 +21800,8 @@ end ParsePenNewGLFloatArray;
 procedure ParsePenSetGLFloatArray is
   -- TODO: we could use an easier way to get data in and out
   -- pen.set_gl_int_array( a, p, v );
-  a_id        : identifier;
+  aRef        : reference;
+  aExpr       : storage;
   posExpr     : storage;
   pos_type    : identifier;
   newvalExpr  : storage;
@@ -21800,13 +21811,14 @@ procedure ParsePenSetGLFloatArray is
   arrayExpr   : GLfloat;
 begin
   expect( pen_set_gl_float_array_t );
-  ParseFirstInOutParameter( pen_set_gl_float_array_t, a_id, pen_gl_float_array_t );
+  ParseFirstInOutParameter( pen_set_gl_float_array_t, aRef, pen_gl_float_array_t );
   ParseNextNumericParameter( eof_t,  posExpr, pos_type, natural_t );
   ParseLastNumericParameter( eof_t, newvalExpr, newval_type, pen_glfloat_t );
   if isExecutingCommand then
+     getParameterValue( aRef, aExpr );
      array_pos := size_t( to_numeric( posExpr.value ) );
      arrayExpr := GLfloat( to_numeric( newvalExpr.value ) );
-     findResource( to_resource_id( identifiers( a_id ).store.value ), theArray );
+     findResource( to_resource_id( aExpr.value ), theArray );
      if array_pos not in theArray.gl_fa'range then
         err( pl( "the array position" & to_string( posExpr.value ) & " is not in the range" & size_t'image( theArray.gl_fa'first ) & " .." & size_t'image( theArray.gl_fa'last ) ) );
      else
@@ -21869,7 +21881,8 @@ end ParsePenNewGLDoubleArray;
 procedure ParsePenSetGLDoubleArray is
   -- TODO: we could use an easier way to get data in and out
   -- pen.set_gl_double_array( a, p, v );
-  a_id        : identifier;
+  aRef        : reference;
+  aExpr       : storage;
   posExpr     : storage;
   pos_type    : identifier;
   newvalExpr  : storage;
@@ -21879,13 +21892,14 @@ procedure ParsePenSetGLDoubleArray is
   arrayExpr   : GLdouble;
 begin
   expect( pen_set_gl_double_array_t );
-  ParseFirstInOutParameter( pen_set_gl_double_array_t, a_id, pen_gl_double_array_t );
+  ParseFirstInOutParameter( pen_set_gl_double_array_t, aRef, pen_gl_double_array_t );
   ParseNextNumericParameter( eof_t,  posExpr, pos_type, natural_t );
   ParseLastNumericParameter( eof_t, newvalExpr, newval_type, pen_gldouble_t );
   if isExecutingCommand then
+     getParameterValue( aRef, aExpr );
      array_pos := size_t( to_numeric( posExpr.value ) );
      arrayExpr := GLdouble( to_numeric( newvalExpr.value ) );
-     findResource( to_resource_id( identifiers( a_id ).store.value ), theArray );
+     findResource( to_resource_id( aExpr.value ), theArray );
      if array_pos not in theArray.gl_da'range then
         err( pl( "the array position" & to_string( posExpr.value ) & " is not in the range" & size_t'image( theArray.gl_da'first ) & " .." & size_t'image( theArray.gl_da'last ) ) );
      else

@@ -68,7 +68,7 @@ discard_result : boolean;
 pragma inline( AssignParameter );
 procedure AssignParameter( ref : in reference; value_se : storage ) is
 begin
-   if ref.index = 0 then
+   if not ref.hasIndex then
       identifiers( ref.id ).sstorage := value_se;
    else
       -- assignElement( ref.a_id, ref.index, value ); -- OLDARRAY
@@ -88,7 +88,7 @@ end AssignParameter;
 pragma inline( GetParameterValue );
 procedure GetParameterValue( ref : in reference; value_se : out storage ) is
 begin
-   if ref.index = 0 then
+   if not ref.hasIndex then
       value_se := identifiers( ref.id ).sstorage;
    else
       --value := arrayElement( ref.a_id, ref.index );
@@ -348,22 +348,12 @@ end ParseSingleStringParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseFirstInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutParameter( subprogram, ref, expected_type );
 end ParseFirstInOutParameter;
 
 
@@ -375,22 +365,12 @@ end ParseFirstInOutParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseNextInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutParameter( subprogram, ref, expected_type );
 end ParseNextInOutParameter;
 
 
@@ -402,26 +382,12 @@ end ParseNextInOutParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseLastInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  --ParseExpression( expr_val, expr_type );
-  --if isExecutingCommand then
-  --   expr_val := castToType( expr_val, expected_type );
-  --end if;
-  discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutParameter( subprogram, ref, expected_type );
   expectParameterClose( subprogram );
 end ParseLastInOutParameter;
 
@@ -432,32 +398,42 @@ end ParseLastInOutParameter;
 -- Expect a first parameter that is an identifier.  Check for side-effects.
 ------------------------------------------------------------------------------
 
+--procedure ParseSingleInOutParameter(
+--  subprogram : identifier;
+--  param_id : out identifier;
+--  expected_type : identifier  ) is
+--begin
+--  expectParameterOpen( subprogram );
+--  ParseIdentifier( param_id ); -- in out
+--  discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
+--  if syntax_check and then not error_found then
+--     identifiers( param_id ).wasWritten := true;
+--  end if;
+--  if isExecutingCommand then
+--     checkExpressionFactorVolatilityOnWrite( param_id );
+--     checkDoubleDataFlowWrite( param_id );
+--     --checkDoubleGlobalWrite( param_id );
+--     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+--  end if;
+--  expectParameterClose( subprogram );
+--end ParseSingleInOutParameter;
+
 procedure ParseSingleInOutParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutParameter( subprogram, ref, expected_type );
   expectParameterClose( subprogram );
 end ParseSingleInOutParameter;
-
 
 ------------------------------------------------------------------------------
 --  PARSE LAST IN OUT RECORD PARAMETER
 --
 -- Expect a last parameter that is an in out identifier.  It is expected to be
 -- some kind of record, but we don't know the type beforehand.
+-- Note: Currently, a record cannot be an array.
 ------------------------------------------------------------------------------
 
 procedure ParseLastInOutRecordParameter( subprogram : identifier; param_id : out identifier ) is
@@ -515,21 +491,97 @@ end ParseNextInOutRecordParameter;
 --
 -- Expect an indentifier that derives from an instantiated generic type.
 -- The generic type is a universal type.  Check for side-effects.
+--
+-- Unlike in out parameter, we do no type checks...these are left for the
+-- caller.  The element "kind" is undefined because it comes from one of the
+-- generic types so the caller must distinguish which one applies.  Also, the
+-- generics are never records.
 ------------------------------------------------------------------------------
 
-procedure ParseInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+-- procedure ParseInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+procedure ParseInOutInstantiatedParameter(
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier
+  ) is
+  expr_type : identifier;
+  expr_se   : storage;
+  arrayIndex: long_integer;
+  discard   : boolean;
 begin
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  -- Originally
+  -- ParseIdentifier( param_id ); -- in out
+
+  -- In Out parameters do not auto-declare so just parse the identifier
+  ParseIdentifier( ref.id );
+
+  -- Sensible defaults
+  -- The kind will have been given to us since there's no auto-declare
+  -- of in out parameters
+
+  ref.hasIndex := false;
+  ref.index := 0;
+  ref.kind := eof_t;
+
+  if identifiers( ref.id ).list then                              -- array variable?
+     --ref.kind := identifiers( identifiers( ref.id ).kind ).kind;  -- element kind
+     -- Basic type check on the parameter
+     --if expected_type /= eof_t then
+     --   discard := type_checks_done or else baseTypesOk(ref.kind, expected_type );
+     --end if;
+     expect( symbol_t, "(" );
+     ParseExpression( expr_se, expr_type );
+     if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
+        identifiers( getBaseType( expr_type ) ).list then
+        err( +"array index must be a scalar type" );
+     end if;
+
+     -- the array index only has a value at run-time
+     if isExecutingCommand then                -- declared in syntax chk
+         begin
+            arrayIndex := long_integer(to_numeric(expr_se.value));-- convert to number
+         exception when others =>
+            err_exception_raised;
+            arrayIndex := 0;
+         end;
+         if type_checks_done then -- or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then
+            if arrayIndex not in identifiers( ref.id ).astorage'range then
+               err( pl( "array index " & to_string( trim( expr_se.value, ada.strings.both ) ) &
+                  " not in" & identifiers( ref.id ).astorage'first'img & " .." &
+                  identifiers( ref.id ).astorage'last'img ) );
+            else
+              ref.hasIndex := true;
+              ref.index := arrayIndex;
+            end if;
+         end if;
+      end if;
+      expect( symbol_t, ")");
+  end if;
+
+  -- Check the generic to ensure it's the expected generic type, unless it's
+  -- eof in which case the caller is expected to check.
+  if expected_type = eof_t then
+     discard_result := type_checks_done or else uniTypesOK( identifiers( ref.id ).kind, expected_type );
+  end if;
+
+  -- Mark the variable as having been written for future tests.
+  -- Not sure if data flow is meaningful here but leaving it in for now.
   if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
+     if identifiers( ref.id ).field_of /= eof_t then
+        identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
+        identifiers( identifiers( ref.id ).field_of ).writtenByFlow := getDataFlowName;
+     else
+        identifiers( ref.id ).wasWritten := true;
+        identifiers( ref.id ).writtenByFlow := getDataFlowName;
+     end if;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+     checkExpressionFactorVolatilityOnWrite(ref.id );
+     checkDoubleDataFlowWrite( ref.id );
+     --checkDoubleGlobalWrite( ref.id );
+     identifiers( ref.id ).writtenOn := perfStats.lineCnt;
   end if;
+
 end ParseInOutInstantiatedParameter;
 
 
@@ -541,25 +593,12 @@ end ParseInOutInstantiatedParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseFirstInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  --if param_id /= eof_t and then identifiers( param_id ).genKind = eof_t then -- DEBUG
-  --   put_line( "parser_params: " & to_string( identifiers( param_id ).name ) & " has a genKind of EOF" ); -- DEBUG
-  --end if;
-  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutInstantiatedParameter( subprogram, ref, expected_type );
 end ParseFirstInOutInstantiatedParameter;
 
 
@@ -571,22 +610,12 @@ end ParseFirstInOutInstantiatedParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseNextInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier  ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutInstantiatedParameter( subprogram, ref, expected_type );
 end ParseNextInOutInstantiatedParameter;
 
 
@@ -598,22 +627,12 @@ end ParseNextInOutInstantiatedParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseLastInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutInstantiatedParameter( subprogram, ref, expected_type );
   expectParameterClose( subprogram );
 end ParseLastInOutInstantiatedParameter;
 
@@ -626,22 +645,12 @@ end ParseLastInOutInstantiatedParameter;
 ------------------------------------------------------------------------------
 
 procedure ParseSingleInOutInstantiatedParameter(
-  subprogram : identifier;
-  param_id : out identifier;
-  expected_type : identifier ) is
+     subprogram : identifier;
+     ref : out reference;
+     expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseIdentifier( param_id ); -- in out
-  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
+  ParseInOutInstantiatedParameter( subprogram, ref, expected_type );
   expectParameterClose( subprogram );
 end ParseSingleInOutInstantiatedParameter;
 
@@ -996,6 +1005,7 @@ begin
 
   -- Some sensible defaults for fields we will fill in
 
+  ref.hasIndex := false;
   ref.index := 0;
   ref.kind := eof_t;
 
@@ -1029,6 +1039,7 @@ begin
                   " not in" & identifiers( ref.id ).astorage'first'img & " .." &
                   identifiers( ref.id ).astorage'last'img ) );
             else
+              ref.hasIndex := true;
               ref.index := arrayIndex;
             end if;
          end if;
@@ -1209,6 +1220,7 @@ begin
   -- The kind will have been given to us since there's no auto-declare
   -- of in out parameters
 
+  ref.hasIndex := false;
   ref.index := 0;
 
   if identifiers( ref.id ).list then                              -- array variable?
@@ -1238,6 +1250,7 @@ begin
                   " not in" & identifiers( ref.id ).astorage'first'img & " .." &
                   identifiers( ref.id ).astorage'last'img ) );
             else
+              ref.hasIndex := true;
               ref.index := arrayIndex;
             end if;
          end if;

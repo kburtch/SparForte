@@ -90,14 +90,16 @@ dht_decrement_t     : identifier;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTReset is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
 begin
   expect( dht_reset_t );
-  ParseSingleInOutInstantiatedParameter( dht_reset_t, tableId, dht_table_t );
+  ParseSingleInOutInstantiatedParameter( dht_reset_t, tableRef, dht_table_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        Dynamic_Storage_Hash_Tables.Reset( theTable.dsht );
      exception when storage_error =>
        err( +"storage error raised" );
@@ -115,8 +117,9 @@ end ParseDHTReset;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTSet is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -124,12 +127,13 @@ procedure ParseDHTSet is
   oldElem  : storage;
 begin
   expect( dht_set_t );
-  ParseFirstInOutInstantiatedParameter( dht_set_t, tableId, dht_table_t ); -- TODO double gen
+  ParseFirstInOutInstantiatedParameter( dht_set_t, tableRef, dht_table_t ); -- TODO double gen
   ParseNextStringParameter( dht_set_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( dht_set_t, itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseLastGenItemParameter( dht_set_t, itemExpr, itemType, identifiers( tableRef.Id ).genKind );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        -- the key, value and existing value must all be checked.
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldElem /= nullStorage then
@@ -161,19 +165,21 @@ end ParseDHTSet;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGet( result : out storage; kind : out identifier ) is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   oldElem  : storage;
 begin
   expect( dht_get_t );
-  ParseFirstInOutInstantiatedParameter( dht_get_t, tableId, dht_table_t );
-  kind := identifiers( tableId ).genKind;
+  ParseFirstInOutInstantiatedParameter( dht_get_t, tableRef, dht_table_t );
+  kind := identifiers( tableRef.Id ).genKind;
   ParseLastStringParameter( dht_get_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -191,18 +197,20 @@ end ParseDHTGet;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTHasElement( result : out storage; kind : out identifier ) is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
 begin
   kind := boolean_t;
   expect( dht_has_element_t );
-  ParseFirstInOutInstantiatedParameter( dht_has_element_t, tableId, dht_table_t );
+  ParseFirstInOutInstantiatedParameter( dht_has_element_t, tableRef, dht_table_t );
   ParseLastStringParameter( dht_has_element_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel );
      end;
   end if;
@@ -217,18 +225,20 @@ end ParseDHTHasElement;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTRemove is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   oldElem  : storage;
 begin
   expect( dht_remove_t );
-  ParseFirstInOutInstantiatedParameter( dht_remove_t, tableId, dht_table_t );
+  ParseFirstInOutInstantiatedParameter( dht_remove_t, tableRef, dht_table_t );
   ParseLastStringParameter( dht_remove_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if metaLabelOk( oldElem ) and metaLabelOk( keyExpr ) then
           Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
@@ -249,22 +259,24 @@ end ParseDHTRemove;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGetFirst is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   itemRef  : reference;
   eofRef   : reference;
 begin
   expectAdaScriptDifferences( subject => dht_get_first_t );
-  ParseFirstInOutInstantiatedParameter( dht_get_first_t, tableId, dht_table_t );
-  ParseNextOutParameter( dht_get_first_t, itemRef, identifiers( tableId ).genKind );
-  baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
+  ParseFirstInOutInstantiatedParameter( dht_get_first_t, tableRef, dht_table_t );
+  ParseNextOutParameter( dht_get_first_t, itemRef, identifiers( tableRef.Id ).genKind );
+  baseTypesOK( itemRef.kind, identifiers( tableRef.Id ).genKind );
   ParseLastOutParameter( dht_get_first_t, eofRef, boolean_t );
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      declare
        s : storage;
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
        if metaLabelOk( s ) then
           AssignParameter( itemRef, s );
@@ -285,22 +297,24 @@ end ParseDHTGetFirst;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTGetNext is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   itemRef  : reference;
   eofRef   : reference;
 begin
   expectAdaScriptDifferences( subject => dht_get_next_t );
-  ParseFirstInOutInstantiatedParameter( dht_get_next_t, tableId, dht_table_t );
-  ParseNextOutParameter( dht_get_next_t, itemRef, identifiers( tableId ).genKind );
-  baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
+  ParseFirstInOutInstantiatedParameter( dht_get_next_t, tableRef, dht_table_t );
+  ParseNextOutParameter( dht_get_next_t, itemRef, identifiers( tableRef.Id ).genKind );
+  baseTypesOK( itemRef.kind, identifiers( tableRef.Id ).genKind );
   ParseLastOutParameter( dht_get_next_t, eofRef, boolean_t );
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      declare
        s : storage;
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
        if metaLabelOk( s ) then
           AssignParameter( itemRef, s );
@@ -320,8 +334,9 @@ end ParseDHTGetNext;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTAdd is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -329,12 +344,13 @@ procedure ParseDHTAdd is
   oldItem  : storage;
 begin
   expectAdaScript( subject => dht_add_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_add_t, tableId, dht_table_t );
+  ParseFirstInOutInstantiatedParameter( dht_add_t, tableRef, dht_table_t );
   ParseNextStringParameter( dht_add_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableRef.Id ).genKind );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) then
@@ -357,8 +373,9 @@ end ParseDHTAdd;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTReplace is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -366,12 +383,13 @@ procedure ParseDHTReplace is
   oldItem  : storage;
 begin
   expectAdaScript( subject => dht_replace_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_replace_t, tableId, dht_table_t );
+  ParseFirstInOutInstantiatedParameter( dht_replace_t, tableRef, dht_table_t );
   ParseNextStringParameter( dht_replace_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableRef.Id ).genKind );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) and
@@ -395,8 +413,9 @@ end ParseDHTReplace;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTAppend is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -404,15 +423,16 @@ procedure ParseDHTAppend is
   oldItem  : storage;
 begin
   expectAdaScript( subject => dht_append_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_append_t, tableId, dht_table_t );
-  if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
+  ParseFirstInOutInstantiatedParameter( dht_append_t, tableRef, dht_table_t );
+  if getUniType( identifiers( tableRef.Id ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( dht_append_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( dht_append_t, itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseLastGenItemParameter( dht_append_t, itemExpr, itemType, identifiers( tableRef.Id ).genKind );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr, oldItem ) then
@@ -437,8 +457,9 @@ end ParseDHTAppend;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTPrepend is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -446,15 +467,16 @@ procedure ParseDHTPrepend is
   oldItem  : storage;
 begin
   expectAdaScript( subject => dht_prepend_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_prepend_t, tableId, dht_table_t );
-  if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
+  ParseFirstInOutInstantiatedParameter( dht_prepend_t, tableRef, dht_table_t );
+  if getUniType( identifiers( tableRef.Id ).genKind ) /= uni_string_t then
      err( +"prepend requires a string item type" );
   end if;
   ParseNextStringParameter( dht_prepend_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( dht_prepend_t, itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseLastGenItemParameter( dht_prepend_t, itemExpr, itemType, identifiers( tableRef.Id ).genKind );
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           -- labels must be the same for the original value and the appending value
@@ -479,8 +501,9 @@ end ParseDHTPrepend;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTIncrement is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -490,8 +513,8 @@ procedure ParseDHTIncrement is
   oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_increment_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_increment_t, tableId, dht_table_t );
-  if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( dht_increment_t, tableRef, dht_table_t );
+  if getUniType( identifiers( tableRef.Id ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( dht_increment_t, keyExpr, keyType, uni_string_t );
@@ -504,8 +527,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           oldItemValue := to_numeric( oldItem.value );
@@ -541,8 +565,9 @@ end ParseDHTIncrement;
 -----------------------------------------------------------------------------
 
 procedure ParseDHTDecrement is
-  tableId  : identifier;
+  tableRef : reference;
   theTable : resPtr;
+  tableResId: storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -552,8 +577,8 @@ procedure ParseDHTDecrement is
   oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_decrement_t, remedy => +"use get and set" );
-  ParseFirstInOutInstantiatedParameter( dht_decrement_t, tableId, dht_table_t );
-  if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( dht_decrement_t, tableRef, dht_table_t );
+  if getUniType( identifiers( tableRef.Id ).genKind ) /= uni_numeric_t then
      err( +"decrement requires a numeric item type" );
   end if;
   ParseNextStringParameter( dht_decrement_t, keyExpr, keyType, uni_string_t );
@@ -566,8 +591,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
+     getParameterValue( tableRef, tableResId );
      begin
-       findResource( to_resource_id( identifiers( tableId ).store.value ), theTable );
+       findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           oldItemValue := to_numeric( oldItem.value );

@@ -59,16 +59,18 @@ begin
   end if;
 end CheckServerIsInitialized;
 
-procedure ParseSingleServerParameter( subprogram : identifier; serverId : out identifier ) is
+procedure ParseSingleServerParameter( subprogram : identifier; serverRef : out reference ) is
 begin
-  ParseSingleInOutParameter( subprogram, serverId, tinyserve_socket_server_t );
-  CheckServerIsInitialized( serverId );
+  ParseSingleInOutParameter( subprogram, serverRef, tinyserve_socket_server_t );
+  -- TODO: fix me after introducing storage type
+  CheckServerIsInitialized( serverRef.id );
 end ParseSingleServerParameter;
 
-procedure ParseFirstServerParameter( subprogram : identifier; serverId : out identifier ) is
+procedure ParseFirstServerParameter( subprogram : identifier; serverRef : out reference ) is
 begin
-  ParseFirstInOutParameter( subprogram, serverId, tinyserve_socket_server_t );
-  CheckServerIsInitialized( serverId );
+  ParseFirstInOutParameter( subprogram, serverRef, tinyserve_socket_server_t );
+  -- TODO: fix me after introducing storage type
+  CheckServerIsInitialized( serverRef.id );
 end ParseFirstServerParameter;
 
 procedure findServer( serverExpr : unbounded_string; server : in out resPtr ) is
@@ -113,7 +115,8 @@ end ParseTSNewSocketServer;
 procedure ParseTSStartUp is
   -- Syntax: tinyserve.startup( server, host, port, recv, send, queue, linger
   -- secs, usecs );
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   hostExpr   : storage;
   hostKind   : identifier;
   portExpr   : storage;
@@ -137,7 +140,7 @@ begin
         em( "restricted shell" ) );
   else
      expect( tinyserve_startup_t );
-     ParseFirstServerParameter( tinyserve_startup_t, serverId );
+     ParseFirstServerParameter( tinyserve_startup_t, serverRef );
      ParseNextStringParameter( tinyserve_startup_t, hostExpr, hostKind, string_t );
      ParseNextNumericParameter( tinyserve_startup_t, portExpr, portKind, integer_t );
      ParseNextNumericParameter( tinyserve_startup_t, recvExpr, recvKind, integer_t );
@@ -149,7 +152,8 @@ begin
 -- TODO: handle defaults
 -- TODO: out parameter works here?
      if isExecutingCommand then
-        findServer( identifiers( serverId ).store.value, server );
+        getParameterValue( serverRef, serverExpr );
+        findServer( serverExpr.value, server );
         if server /= null then
            -- TODO: number conversion could throw exception
            pegasock.tinyserve.startupTinyServe(
@@ -170,13 +174,15 @@ end ParseTSStartUp;
 
 procedure ParseTSShutdown is
   -- Syntax: tinyserve.shutdown( server )
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   server     : resPtr := null;
 begin
   expect( tinyserve_shutdown_t );
-  ParseSingleServerParameter( tinyserve_shutdown_t, serverId );
+  ParseSingleServerParameter( tinyserve_shutdown_t, serverRef );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).store.value, server );
+     getParameterValue( serverRef, serverExpr );
+     findServer( serverExpr.value, server );
      if server /= null then
         pegasock.tinyserve.shutdownTinyServe( server.tinyserve_server );
      end if;
@@ -185,16 +191,18 @@ end ParseTSShutdown;
 
 procedure ParseTSManageConnections is
   -- Syntax: tinyserve.manage_connections( server, client )
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   server     : resPtr := null;
   clientRef  : reference;
   client     : aClientID;
 begin
   expect( tinyserve_manage_connections_t );
-  ParseFirstServerParameter( tinyserve_manage_connections_t, serverId );
+  ParseFirstServerParameter( tinyserve_manage_connections_t, serverRef );
   ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).store.value, server );
+     getParameterValue( serverRef, serverExpr );
+     findServer( serverExpr.value, server );
      manageConnections( server.tinyserve_server, client );
      assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
   end if;
@@ -202,16 +210,18 @@ end ParseTSManageConnections;
 
 procedure ParseTSGetNextClient is
   -- Syntax: tinyserve.get_next_client( server, client )
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   server     : resPtr := null;
   clientRef  : reference;
   client     : aClientID := 0;
 begin
   expect( tinyserve_get_next_client_t );
-  ParseFirstServerParameter( tinyserve_get_next_client_t, serverId );
+  ParseFirstServerParameter( tinyserve_get_next_client_t, serverRef );
   ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).store.value, server );
+     getParameterValue( serverRef, serverExpr );
+     findServer( serverExpr.value, server );
      if server /= null then
         getNextClient( server.tinyserve_server, client );
         assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
@@ -221,16 +231,18 @@ end ParseTSGetNextClient;
 
 procedure ParseTSGetListenerSocket is
   -- Syntax: tinyserve.get_listener_socket( server, client )
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   server     : resPtr := null;
   clientRef  : reference;
   client     : aClientID;
 begin
   expect( tinyserve_get_listener_socket_t );
-  ParseFirstServerParameter( tinyserve_get_listener_socket_t, serverId );
+  ParseFirstServerParameter( tinyserve_get_listener_socket_t, serverRef );
   ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).store.value, server );
+     getParameterValue( serverRef, serverExpr );
+     findServer( serverExpr.value, server );
      if server /= null then
         getListenerSocket( server.tinyserve_server, client );
         assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
@@ -240,15 +252,17 @@ end ParseTSGetListenerSocket;
 
 procedure ParseTSCountClients( result : out storage; kind : out identifier ) is
   -- Syntax: count := tinyserve.count_clients( server )
-  serverId   : identifier;
+  serverRef  : reference;
+  serverExpr : storage;
   server     : resPtr := null;
   clients    : natural;
 begin
   kind := integer_t;
   expect( tinyserve_count_clients_t );
-  ParseFirstServerParameter( tinyserve_count_clients_t, serverId );
+  ParseFirstServerParameter( tinyserve_count_clients_t, serverRef );
   if isExecutingCommand then
-     findServer( identifiers( serverId ).store.value, server );
+     getParameterValue( serverRef, serverExpr );
+     findServer( serverExpr.value, server );
      if server /= null then
         clients := countClients( server.tinyserve_server );
         result := storage'( to_unbounded_string( clients'img ), noMetaLabel );

@@ -522,13 +522,15 @@ end ParseLevelBegin;
 
 procedure ParseLevelEnd is
   -- Syntax: level_end( lvl );
-  id : identifier;
+  logLvlRef : reference;
+  loglvl : storage;
 begin
   expect( logs_level_end_t );
-  ParseSingleInOutParameter( logs_level_end_t, id, log_level_t );
+  ParseSingleInOutParameter( logs_level_end_t, logLvlRef, log_level_t );
   if isExecutingCommand then
+     getParameterValue( loglvlRef, loglvl );
      begin
-        level := natural'value( ' ' & to_string( identifiers( id ).store.value ) );
+        level := natural'value( ' ' & to_string( loglvl.value ) );
      exception when constraint_error =>
         err( +"constraint_error raised" );
      when others =>

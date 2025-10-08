@@ -15,12 +15,17 @@ Long term Ongoing Work
 
   - should in-out parameters be references?
     - gnat.crc32 should use references for update and get value
-    - regression test for gnat.crc32.initialize()
-    - all out parameters should probably be checked and have reg. tests
-    - directory_operations.close/is_open/read/etc. takes a simple identifier
-      but should it take a reference so you can have an array of files to close?
-      Open takes a reference but close does not.
-   - text_io.parseOpenFile requires special type checking
+    - all out and in out parameters should probably be checked and have
+      reg. tests
+
+    - instantiated parameter handling should be able to take an array
+      reference and not just a simple scalar variable.
+    - text_io.parseOpenFile requires special type checking
+    - tinyserve needs to be fixed for storage
+     - a resource is an attribute associated with a value, not a variable
+       itself
+   - in parser-decl, renaming reference may not work with index 0. Logic
+     of renamingRef may need checking.  'not hasIndex' didn't work>
 
   - subsystems involving files or other output do not necessarily
     have a tag but perhaps they should.  For example, CGI.Argument_Count
@@ -146,6 +151,7 @@ Long term Ongoing Work
   - new fields such as in parser_arrays
   -- A uniting of two worlds by a thread tightly drawn between SparForte and
   -- AdaCGI, run on-demand.
+- hash_io error messages are not designed to handle an array of hashes
 
 
 Priority Issues (Fix These First)
@@ -219,10 +225,6 @@ Priority Issues (Fix These First)
   - creating cursors as out parameter on hashed_maps.find
   - check handling of universal types and hashed_maps
   - should insert be converted to insert and mark
-- arrays of containers
-  - array elements of vectors / doubly / hashed_maps and their cursors and
-    handling in the various package subprograms
-    - if cannot be done, at least provide an appropriate error when it is attempted
 - errors should support err_previous
 - logs package - whether or not something should be escallated
   to an "error" severity based on appearence of common stop words

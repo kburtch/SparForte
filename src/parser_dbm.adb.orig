@@ -139,25 +139,28 @@ dbm_append_for_update_t : identifier;
 -- findConnection and findQuery are to avoid throwing exceptions
 -- on uninitialized resources, giving a meaningful error instead.
 
-procedure findConnection( connectId : identifier; connection : in out resPtr ) is
-  expr : constant unbounded_string := identifiers( connectId ).store.value;
+procedure findConnection( connectRef : reference; connection : in out resPtr ) is
+  expr : storage;
 begin
-  if length( expr ) = 0 then
+  GetParameterValue( connectRef, expr );
+  if length( expr.value ) = 0 then
      err( em( "new_connnection" ) & pl( " has not been called to initialize the connection" ) );
   else
-     findResource( to_resource_id( expr ), connection );
+     findResource( to_resource_id( expr.value ), connection );
   end if;
 end findConnection;
 
---procedure findQuery( queryId : identifier; query : in out resPtr ) is
---  expr : constant unbounded_string := identifiers( queryId ).store.value;
---begin
---  if length( expr ) = 0 then
---     err( em( "new_query" ) & " has not been called to initialize the query" );
---  else
---     findResource( to_resource_id( expr ), query );
---  end if;
---end findQuery;
+procedure findQuery( queryRef : reference; query : in out resPtr ) is
+  expr : storage;
+begin
+  GetParameterValue( queryRef, expr );
+  if length( expr.value ) = 0 then
+     err( em( "new_query" ) & pl( " has not been called to initialize the query" ) );
+  else
+     findResource( to_resource_id( expr.value ), query );
+  end if;
+end findQuery;
+
 
 -----------------------------------------------------------------------------
 --  CONNECT
@@ -167,7 +170,7 @@ end findConnection;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMConnect is
-  connectId   : identifier;
+  connectRef : reference;
   dbnameExpr : storage;
   dbnameType : identifier;
   userExpr : storage;
@@ -189,7 +192,7 @@ begin
   --   err( "only one database connection may be open (a limitation of this verison of bush)" );
   --   return;
   --end if;
-  ParseFirstInOutParameter( dbm_connect_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_connect_t, connectRef, dbm_connection_t );
   ParseNextStringParameter( dbm_connect_t, dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_connect_t, userExpr, userType, string_t );
@@ -212,7 +215,7 @@ begin
         err( +"not allowed with " & em( "pragma restriction( no_postgresql_database )" ) );
      end if;
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        begin
          Set_DB_Name( connection.PG_C, to_string( dbnameExpr.value ) );
        exception when others =>
@@ -309,15 +312,15 @@ end ParseDBMConnect;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMEngineOf( result : out storage; kind : out identifier ) is
-  connectId   : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := db_database_type_t;
   expect( dbm_engine_of_t );
-  ParseSingleInOutParameter( dbm_engine_of_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_engine_of_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.PG_C ) ) ) ), noMetaLabel );
        if length( result.value ) > 0 then
           if element( result.value, 1 ) = ' ' then
@@ -387,11 +390,11 @@ procedure ParseDBMPrepare is
   afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_prepare_t );
-  ParseFirstInOutParameter( dbm_prepare_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_prepare_t, queryRef, dbm_query_t );
   ParseNextStringParameter( dbm_prepare_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_prepare_t, afterExpr, afterType, string_t );
@@ -400,7 +403,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        if hasAfter then
           Prepare( query.PG_Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
@@ -432,11 +435,11 @@ procedure ParseDBMAppend is
   afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_append_t );
-  ParseFirstInOutParameter( dbm_append_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_append_t, queryRef, dbm_query_t );
   ParseNextStringParameter( dbm_append_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_append_t, afterExpr, afterType, string_t );
@@ -445,7 +448,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        if hasAfter then
           Append( query.PG_Q, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
@@ -474,15 +477,15 @@ procedure ParseDBMAppend renames not_configured;
 procedure ParseDBMAppendLine is
   sqlExpr   : storage;
   sqlType   : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_append_line_t );
-  ParseFirstInOutParameter( dbm_append_line_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_append_line_t, queryRef, dbm_query_t );
   ParseLastStringParameter( dbm_append_line_t, sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        Append_Line( query.PG_Q, to_string( sqlExpr.value ) );
      exception when others =>
        err_exception_raised;
@@ -510,14 +513,14 @@ procedure ParseDBMAppendQuoted is
   afterExpr : storage;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_append_quoted_t );
-  ParseFirstInOutParameter( dbm_append_quoted_t, queryId, dbm_query_t );
-  ParseNextInOutParameter( dbm_append_quoted_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_append_quoted_t, queryRef, dbm_query_t );
+  ParseNextInOutParameter( dbm_append_quoted_t, connectRef, dbm_connection_t );
   ParseNextStringParameter( dbm_append_quoted_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_append_quoted_t, afterExpr, afterType, string_t );
@@ -526,8 +529,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
-       findConnection( queryId, query );
+       findConnection( connectRef, connection );
+       findQuery( queryRef, query );
        if hasAfter then
           Append_Quoted( query.PG_Q, connection.PG_C, to_string( sqlExpr.value ), to_string( afterExpr.value ) );
        else
@@ -554,18 +557,18 @@ procedure ParseDBMAppendQuoted renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMExecute is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_execute_t );
-  ParseFirstInOutParameter( dbm_execute_t, queryId, dbm_query_t );
-  ParseLastInOutParameter( dbm_execute_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_execute_t, queryRef, dbm_query_t );
+  ParseLastInOutParameter( dbm_execute_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
-       findConnection( queryId, query );
+       findConnection( connectRef, connection );
+       findQuery( queryRef, query );
        Execute( query.PG_Q, connection.PG_C );
      exception when not_connected =>
        err( +"not connected" );
@@ -597,14 +600,14 @@ procedure ParseDBMExecuteChecked is
   msgExpr   : storage;
   msgType   : identifier;
   hasMsg    : boolean := false;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_execute_checked_t );
-  ParseFirstInOutParameter( dbm_execute_checked_t, queryId, dbm_query_t );
-  ParseNextInOutParameter( dbm_execute_checked_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_execute_checked_t, queryRef, dbm_query_t );
+  ParseNextInOutParameter( dbm_execute_checked_t, connectRef, dbm_connection_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_execute_checked_t, msgExpr, msgType, string_t );
      hasMsg := true;
@@ -612,8 +615,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
-       findConnection( connectId, connection );
+       findQuery( queryRef, query );
+       findConnection( connectRef, connection );
        if hasMsg then
           Execute_Checked( query.PG_Q, connection.PG_C, to_string( msgExpr.value ) );
        else
@@ -658,14 +661,14 @@ procedure ParseDBMExecuteChecked renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMDisconnect is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_disconnect_t );
-  ParseSingleInOutParameter( dbm_disconnect_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_disconnect_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-        findConnection( connectId, connection );
+        findConnection( connectRef, connection );
         Disconnect( connection.PG_C );
         --engineOpen := false;
      exception when not_connected =>
@@ -693,15 +696,15 @@ procedure ParseDBMDisconnect renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMIsConnected( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_is_connected_t );
-  ParseSingleInOutParameter( dbm_is_connected_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_is_connected_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_spar_boolean( is_connected( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        result := storage'( to_spar_boolean( false ), noMetaLabel );
@@ -726,14 +729,14 @@ procedure ParseDBMIsConnected( result : out storage; kind : out identifier ) ren
 procedure ParseDBMReset is
   -- Syntax: dbm.reset
   -- Source: APQ.Reset
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_reset_t );
-  ParseSingleInOutParameter( dbm_reset_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_reset_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        Reset( connection.PG_C );
      exception when others =>
        err_exception_raised;
@@ -756,15 +759,15 @@ procedure ParseDBMReset renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMErrorMessage( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := string_t;
   expect( dbm_error_message_t );
-  ParseSingleInOutParameter( dbm_error_message_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_error_message_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_unbounded_string( Error_Message( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -787,15 +790,15 @@ procedure ParseDBMErrorMessage( result : out storage; kind : out identifier ) re
 -----------------------------------------------------------------------------
 --
 procedure ParseDBMNoticeMessage( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := string_t;
   expect( dbm_notice_message_t );
-  ParseSingleInOutParameter( dbm_notice_message_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_notice_message_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_unbounded_string( Notice_Message( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -818,15 +821,15 @@ procedure ParseDBMNoticeMessage( result : out storage; kind : out identifier ) r
 -----------------------------------------------------------------------------
 
 procedure ParseDBMInAbortState( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_in_abort_state_t );
-  ParseSingleInOutParameter( dbm_in_abort_state_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_in_abort_state_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_spar_boolean( In_Abort_State( connection.PG_C ) ), noMetaLabel );
      exception when not_connected =>
        err( +"not connected" );
@@ -851,15 +854,15 @@ procedure ParseDBMInAbortState( result : out storage; kind : out identifier ) re
 -----------------------------------------------------------------------------
 
 procedure ParseDBMOptions( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := string_t;
   expect( dbm_options_t );
-  ParseSingleInOutParameter( dbm_options_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_options_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_unbounded_string( Options( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -884,17 +887,17 @@ procedure ParseDBMOptions( result : out storage; kind : out identifier ) renames
 procedure ParseDBMSetRollbackOnFinalize is
   rollExpr : storage;
   rollType : identifier;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_set_rollback_on_finalize_t );
-  ParseFirstInOutParameter( dbm_set_rollback_on_finalize_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_set_rollback_on_finalize_t, connectRef, dbm_connection_t );
   ParseLastEnumParameter( dbm_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : constant boolean := rollExpr.value = to_unbounded_string( "1" );
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        Set_Rollback_On_Finalize( connection.PG_C, rollback );
      exception when others =>
        err_exception_raised;
@@ -917,15 +920,15 @@ procedure ParseDBMSetRollbackOnFinalize renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMWillRollbackOnFinalize( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_will_rollback_on_finalize_t );
-  ParseSingleInOutParameter( dbm_will_rollback_on_finalize_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_will_rollback_on_finalize_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_spar_boolean( Will_Rollback_On_Finalize( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -954,11 +957,11 @@ procedure ParseDBMOpenDBTrace is
   modeType  : identifier;
   traceMode : trace_mode_type;
   hasMode  : boolean := false;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_open_db_trace_t );
-  ParseFirstInOutParameter( dbm_open_db_trace_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_open_db_trace_t, connectRef, dbm_connection_t );
   ParseNextStringParameter( dbm_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextStringParameter( dbm_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
@@ -968,7 +971,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        if hasMode then
           Open_DB_Trace( connection.PG_C, to_string( fnameExpr.value ), traceMode );
        else
@@ -1001,14 +1004,14 @@ procedure ParseDBMOpenDBTrace renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMCloseDBTrace is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_close_db_trace_t );
-  ParseSingleInOutParameter( dbm_close_db_trace_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_close_db_trace_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        Close_DB_Trace( connection.PG_C );
      exception when others =>
        err_exception_raised;
@@ -1033,17 +1036,17 @@ procedure ParseDBMCloseDBTrace renames not_configured;
 procedure ParseDBMSetTrace is
   traceExpr : storage;
   traceType : identifier;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_set_trace_t );
-  ParseFirstinOutParameter( dbm_set_trace_t, connectId, dbm_connection_t );
+  ParseFirstinOutParameter( dbm_set_trace_t, connectRef, dbm_connection_t );
   ParseLastEnumParameter( dbm_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : constant boolean := traceExpr.value = to_unbounded_string( "1" );
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        Set_Trace( connection.PG_C, traceback );
      exception when others =>
        err_exception_raised;
@@ -1066,15 +1069,15 @@ procedure ParseDBMSetTrace renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMIsTrace( result : out storage; kind : out identifier ) is
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_is_trace_t );
-  ParseSingleInOutParameter( dbm_is_trace_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_is_trace_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
        result := storage'( to_spar_boolean( Is_Trace( connection.PG_C ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -1097,14 +1100,14 @@ procedure ParseDBMIsTrace( result : out storage; kind : out identifier ) renames
 -----------------------------------------------------------------------------
 
 procedure ParseDBMClear is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_clear_t );
-  ParseSingleInOutParameter( dbm_clear_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_clear_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        Clear( query.PG_Q );
      exception when CONSTRAINT_ERROR =>
        err( +"constraint error exception" );
@@ -1131,11 +1134,11 @@ procedure ParseDBMClear renames not_configured;
 procedure ParseDBMRaiseExceptions is
   raiseExpr : storage;
   raiseType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_raise_exceptions_t );
-  ParseFirstInOutParameter( dbm_raise_exceptions_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_raise_exceptions_t, queryRef, dbm_query_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextEnumParameter( dbm_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
@@ -1146,7 +1149,7 @@ begin
      declare
        raise_them : constant boolean := raiseExpr.value = to_unbounded_string( "1" );
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        Raise_Exceptions( query.PG_Q, raise_them );
      exception when others =>
        err_exception_raised;
@@ -1171,11 +1174,11 @@ procedure ParseDBMRaiseExceptions renames not_configured;
 procedure ParseDBMReportErrors is
   reportExpr : storage;
   reportType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_report_errors_t );
-  ParseFirstInOutParameter( dbm_report_errors_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_report_errors_t, queryRef, dbm_query_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextEnumParameter( dbm_report_errors_t, reportExpr, reportType, boolean_t );
   else
@@ -1186,7 +1189,7 @@ begin
      declare
        report_them : constant boolean := reportExpr.value = to_unbounded_string( "1" );
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        Report_Errors( query.PG_Q, report_them );
      exception when others =>
        err_exception_raised;
@@ -1209,18 +1212,18 @@ procedure ParseDBMReportErrors renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMBeginWork is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_begin_work_t );
-  ParseFirstInOutParameter( dbm_begin_work_t, queryId, dbm_query_t );
-  ParseLastInOutParameter( dbm_begin_work_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_begin_work_t, queryRef, dbm_query_t );
+  ParseLastInOutParameter( dbm_begin_work_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
-       findConnection( connectId, connection );
+       findQuery( queryRef, query );
+       findConnection( connectRef, connection );
        Begin_Work( query.PG_Q, connection.PG_C );
      exception when abort_state =>
        err( +"in abort state" );
@@ -1247,18 +1250,18 @@ procedure ParseDBMBeginWork renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMRollbackWork is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_rollback_work_t );
-  ParseFirstInOutParameter( dbm_rollback_work_t, queryId, dbm_query_t );
-  ParseLastInOutParameter( dbm_rollback_work_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_rollback_work_t, queryRef, dbm_query_t );
+  ParseLastInOutParameter( dbm_rollback_work_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
-       findConnection( queryId, query );
+       findConnection( connectRef, connection );
+       findQuery( queryRef, query );
        Rollback_Work( query.PG_Q, connection.PG_C );
      exception when abort_state =>
        err( +"in abort state" );
@@ -1285,18 +1288,18 @@ procedure ParseDBMRollbackWork renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMCommitWork is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
 begin
   expect( dbm_commit_work_t );
-  ParseFirstInOutParameter( dbm_commit_work_t, queryId, dbm_query_t );
-  ParseLastInOutParameter( dbm_commit_work_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_commit_work_t, queryRef, dbm_query_t );
+  ParseLastInOutParameter( dbm_commit_work_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
-       findConnection( queryId, query );
+       findConnection( connectRef, connection );
+       findQuery( queryRef, query );
        Commit_Work( query.PG_Q, connection.PG_C );
      exception when abort_state =>
        err( +"in abort state" );
@@ -1323,14 +1326,14 @@ procedure ParseDBMCommitWork renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMRewind is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_rewind_t );
-  ParseSingleInOutParameter( dbm_rewind_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_rewind_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        Rewind( query.PG_Q );
      exception when others =>
        err_exception_raised;
@@ -1356,11 +1359,11 @@ procedure ParseDBMFetch is
   expr : storage;
   expr_type : identifier;
   haveIndex : boolean := false;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   expect( dbm_fetch_t );
-  ParseFirstInOutParameter( dbm_fetch_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_fetch_t, queryRef, dbm_query_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextNumericParameter( dbm_fetch_t, expr, expr_type, dbm_tuple_index_type_t );
      haveIndex := true;
@@ -1368,7 +1371,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        if haveIndex then
           Fetch( query.PG_Q, Tuple_Index_Type( to_numeric( expr.value ) ) );
        else
@@ -1399,15 +1402,15 @@ procedure ParseDBMFetch renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMEndOfQuery( result : out storage; kind : out identifier ) is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_end_of_query_t );
-  ParseSingleInOutParameter( dbm_end_of_query_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_end_of_query_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_spar_boolean( End_Of_Query( query.PG_Q ) ), noMetaLabel );
      exception when others =>
        err_exception_raised;
@@ -1430,15 +1433,15 @@ procedure ParseDBMEndOfQuery( result : out storage; kind : out identifier ) rena
 -----------------------------------------------------------------------------
 
 procedure ParseDBMTuple( result : out storage; kind : out identifier ) is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := dbm_tuple_index_type_t;
   expect( dbm_tuple_t );
-  ParseSingleInOutParameter( dbm_tuple_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_tuple_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_unbounded_string( Tuple_Index_Type'image( Tuple( query.PG_Q ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
@@ -1463,15 +1466,15 @@ procedure ParseDBMTuple( result : out storage; kind : out identifier ) renames n
 -----------------------------------------------------------------------------
 
 procedure ParseDBMTuples( result : out storage; kind : out identifier ) is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := dbm_tuple_count_type_t;
   expect( dbm_tuples_t );
-  ParseSingleInOutParameter( dbm_tuples_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_tuples_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_unbounded_string( Tuple_Count_Type'image( Tuples( query.PG_Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
@@ -1496,15 +1499,15 @@ procedure ParseDBMTuples( result : out storage; kind : out identifier ) renames 
 -----------------------------------------------------------------------------
 
 procedure ParseDBMColumns( result : out storage; kind : out identifier ) is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := natural_t;
   expect( dbm_columns_t );
-  ParseSingleInOutParameter( dbm_columns_t, queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_columns_t, queryRef, dbm_query_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_unbounded_string( Natural'image( Columns( query.PG_Q ) ) ), noMetaLabel );
      exception when no_result =>
        err( +"no result" );
@@ -1531,16 +1534,16 @@ procedure ParseDBMColumns( result : out storage; kind : out identifier ) renames
 procedure ParseDBMColumnName( result : out storage; kind : out identifier ) is
   expr : storage;
   exprType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := string_t;
   expect( dbm_column_name_t );
-  ParseFirstInOutParameter( dbm_column_name_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_column_name_t, queryRef, dbm_query_t );
   ParseLastNumericParameter( dbm_column_name_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_unbounded_string(
           Column_Name( query.PG_Q, Column_Index_Type( to_numeric( expr.value ) ) )
        ), noMetaLabel );
@@ -1569,16 +1572,16 @@ procedure ParseDBMColumnName( result : out storage; kind : out identifier ) rena
 procedure ParseDBMColumnIndex( result : out storage; kind : out identifier ) is
   expr : storage;
   exprType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := dbm_column_index_type_t;
   expect( dbm_column_index_t );
-  ParseFirstInOutParameter( dbm_column_index_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_column_index_t, queryRef, dbm_query_t );
   ParseLastStringParameter( dbm_column_index_t, expr, exprType, string_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_unbounded_string( Column_Index_Type'image(
            Column_Index( query.PG_Q, to_string( expr.value ) )
        ) ), noMetaLabel );
@@ -1635,16 +1638,16 @@ procedure ParseDBMColumnIndex( result : out storage; kind : out identifier ) ren
 procedure ParseDBMIsNull( result : out storage; kind : out identifier ) is
   expr : storage;
   exprType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := boolean_t;
   expect( dbm_is_null_t );
-  ParseFirstInOutParameter( dbm_is_null_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_is_null_t, queryRef, dbm_query_t );
   ParseLastNumericParameter( dbm_is_null_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( to_spar_boolean(
           Is_Null( query.PG_Q,
           Column_Index_Type( to_numeric( expr.value ) ) )
@@ -1676,16 +1679,16 @@ procedure ParseDBMIsNull( result : out storage; kind : out identifier ) renames 
 procedure ParseDBMValue( result : out storage; kind : out identifier ) is
   expr  : storage;
   exprType : identifier;
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
 begin
   kind := universal_t;
   expect( dbm_value_t );
-  ParseFirstInOutParameter( dbm_value_t, queryId, dbm_query_t );
+  ParseFirstInOutParameter( dbm_value_t, queryRef, dbm_query_t );
   ParseLastNumericParameter( dbm_value_t, expr, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findConnection( queryId, query );
+       findQuery( queryRef, query );
        result := storage'( Value( query.PG_Q, Column_Index_Type( to_numeric( expr.value ) ) ), noMetaLabel );
      exception when no_tuple =>
        err( +"no tuple" );
@@ -1887,17 +1890,17 @@ end DBMShowIt;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMShow is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectionId : identifier;
+  connectionRef: reference;
   connection : resPtr;
 begin
   expect( dbm_show_t );
-  ParseFirstInOutParameter( dbm_show_t, queryId, dbm_query_t );
-  ParseLastInOutParameter( dbm_show_t, connectionId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_show_t, queryRef, dbm_query_t );
+  ParseLastInOutParameter( dbm_show_t, connectionRef, dbm_connection_t );
   if isExecutingCommand then
-     findConnection( connectionId, connection );
-     findConnection( queryId, query );
+     findConnection( connectionRef, connection );
+     findQuery( queryRef, query );
      DBMShowIt( Q => query.PG_Q, C => connection );
   end if;
 end ParseDBMShow;
@@ -1918,15 +1921,15 @@ procedure ParseDBMList is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_list_t );
-  ParseSingleInOutParameter( dbm_list_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_list_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
      if is_connected( connection.PG_C ) then
         -- Show tablename and kind, lookup owner from another table.
         -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
@@ -2113,16 +2116,16 @@ procedure ParseDBMSchema is
   width          : integer;
   exprType       : identifier;
   expr        : storage;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_schema_t );
-  ParseFirstInOutParameter( dbm_schema_t, connectId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_schema_t, connectRef, dbm_connection_t );
   ParseLastStringParameter( dbm_schema_t, expr, exprType, string_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
      if is_connected( connection.PG_C ) then
         -- Find column name, type, type length, not null and default flags
         -- Don't show dropped columns, columns with system types (oid, etc).
@@ -2373,15 +2376,15 @@ procedure ParseDBMUsers is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_users_t );
-  ParseSingleInOutParameter( dbm_users_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_users_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
      if is_connected( connection.PG_C ) then
         -- Show tablename and kind, lookup owner from another table.
         -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
@@ -2573,15 +2576,15 @@ procedure ParseDBMDatabases is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectId : identifier;
+  connectRef : reference;
   connection : resPtr;
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_databases_t );
-  ParseSingleInOutParameter( dbm_databases_t, connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_databases_t, connectRef, dbm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectId, connection );
+       findConnection( connectRef, connection );
      if is_connected( connection.PG_C ) then
         -- Show tablename and kind, lookup owner from another table.
         -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
@@ -2874,16 +2877,16 @@ procedure ParseDBMNewQuery renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMFetchValues is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectionId : identifier;
+  connectionRef : reference;
   connection : resPtr;
   id : identifier;
   --ref : reference;
 begin
   expect( dbm_fetch_values_t );
-  ParseFirstInOutParameter( dbm_fetch_values_t, queryId, dbm_query_t );
-  ParseNextInOutParameter( dbm_fetch_values_t, connectionId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_fetch_values_t, queryRef, dbm_query_t );
+  ParseNextInOutParameter( dbm_fetch_values_t, connectionRef, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( dbm_fetch_values_t, id  );
 -- TODO: is kind in the reference?
@@ -2899,8 +2902,8 @@ begin
        elementKind : identifier;
      begin
        -- get the resources
-       findConnection( connectionId, connection );
-       findConnection( queryId, query );
+       findConnection( connectionRef, connection );
+       findQuery( queryRef, query );
 
        -- fetch the next row
        Fetch( query.pg_q );
@@ -3013,15 +3016,15 @@ procedure ParseDBMFetchValues renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMAppendForInsert is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectionId : identifier;
+  connectionRef : reference;
   connection : resPtr;
   id : identifier;
 begin
   expect( dbm_append_for_insert_t );
-  ParseFirstInOutParameter( dbm_append_for_insert_t, queryId, dbm_query_t );
-  ParseNextInOutParameter( dbm_append_for_insert_t, connectionId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_append_for_insert_t, queryRef, dbm_query_t );
+  ParseNextInOutParameter( dbm_append_for_insert_t, connectionRef, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( dbm_append_for_insert_t, id  );
 -- TODO: is kind in the reference?
@@ -3039,8 +3042,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findConnection( connectionId, connection );
-       findConnection( queryId, query );
+       findConnection( connectionRef, connection );
+       findQuery( queryRef, query );
 
        append( query.PG_Q, " (" );
 
@@ -3138,15 +3141,15 @@ procedure ParseDBMAppendForInsert renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseDBMAppendForUpdate is
-  queryId : identifier;
+  queryRef : reference;
   query : resPtr;
-  connectionId : identifier;
+  connectionRef : reference;
   connection : resPtr;
   id : identifier;
 begin
   expect( dbm_append_for_update_t );
-  ParseFirstInOutParameter( dbm_append_for_update_t, queryId, dbm_query_t );
-  ParseNextInOutParameter( dbm_append_for_update_t, connectionId, dbm_connection_t );
+  ParseFirstInOutParameter( dbm_append_for_update_t, queryRef, dbm_query_t );
+  ParseNextInOutParameter( dbm_append_for_update_t, connectionRef, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( dbm_append_for_update_t, id  );
 -- TODO: is kind in the reference?
@@ -3164,8 +3167,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findConnection( connectionId, connection );
-       findConnection( queryId, query );
+       findConnection( connectionRef, connection );
+       findQuery( queryRef, query );
 
        Append( query.PG_Q, " SET " );
        -- The basic logic is copied from DoRecordToJson()

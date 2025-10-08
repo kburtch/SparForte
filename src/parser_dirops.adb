@@ -571,26 +571,29 @@ end ParseDirOpsOpen;
 -----------------------------------------------------------------------------
 
 procedure ParseDirOpsClose is
-  dirId : identifier;
+  dirRef : reference;
   theDir : resPtr;
+  dir    : storage;
   subprogramId : constant identifier := dirops_close_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutParameter( subprogramId, dirId, dirops_dir_type_t );
+  ParseSingleInOutParameter( subprogramId, dirRef, dirops_dir_type_t );
   if isExecutingCommand then
-     if metaLabelOk( identifiers( dirId ).sstorage ) then
-        if identifiers( dirId ).resource then
+     getParameterValue( dirRef, dir );
+     if metaLabelOk( dir ) then
+        -- TODO: how do we tell if the directory is open?
+        -- if identifiers( dirRef.id ).resource then
            begin
-             findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
+             findResource( to_resource_id( dir.value ), theDir );
              Close( theDir.dir );
            exception when DIRECTORY_ERROR =>
              err( +"directory is not open" );
            when others =>
              err_exception_raised;
            end;
-        else
-           err( +"directory is not open" );
-        end if;
+        --else
+        --   err( +"directory is not open" );
+        --end if;
      end if;
   end if;
 end ParseDirOpsClose;
@@ -605,19 +608,22 @@ end ParseDirOpsClose;
 -----------------------------------------------------------------------------
 
 procedure ParseDirOpsIsOpen( result : out storage; kind : out identifier ) is
-  dirId : identifier;
+  dirRef : reference;
+  dir    : storage;
   theDir : resPtr;
   subprogramId : constant identifier := dirops_is_open_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleInOutParameter( subprogramId, dirId, dirops_dir_type_t );
+  ParseSingleInOutParameter( subprogramId, dirRef, dirops_dir_type_t );
 
   if isExecutingCommand then
-     if metaLabelOk( identifiers( dirId ).sstorage ) then
-        if identifiers( dirId ).resource then
+     getParameterValue( dirRef, dir );
+     if metaLabelOk( dir ) then
+        -- TODO: probably cannot tell if it's open in an array
+        if dir.value /= null_unbounded_string then
            begin
-             findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
+             findResource( to_resource_id( dir.value ), theDir );
              result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), sparMetaLabel );
            exception when others =>
              err_exception_raised;
@@ -625,7 +631,7 @@ begin
         else
            -- probably not open
            result := storage'( to_spar_boolean( false ),
-              identifiers( dirId ).sstorage.metaLabel );
+              dir.metaLabel );
         end if;
      end if;
   end if;
@@ -641,26 +647,28 @@ end ParseDirOpsIsOpen;
 -----------------------------------------------------------------------------
 
 procedure ParseDirOpsRead is
-  dirId : identifier;
+  dirRef   : reference;
+  dir      : storage;
   strRef   : reference;
   --lastRef  : reference;
   theDir   : resPtr;
   subprogramId : constant identifier := dirops_read_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutParameter( subprogramId, dirId, dirops_dir_type_t );
+  ParseFirstInOutParameter( subprogramId, dirRef, dirops_dir_type_t );
   ParseLastOutParameter( subprogramId, strRef, string_t );
   --ParseLastOutParameter( lastRef, natural_t );
   if isExecutingCommand then
-     if metaLabelOk( identifiers( dirId ).sstorage ) then
+     getParameterValue( dirRef, dir );
+     if metaLabelOk( dir ) then
         declare
           s : string(1..1024);
           last : natural;
         begin
-          findResource( to_resource_id( identifiers( dirId ).store.value ), theDir );
+          findResource( to_resource_id( dir.value ), theDir );
           Read( theDir.dir, s, last );
           AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ),
-             identifiers( dirId ).sstorage.metaLabel ) );
+             dir.metaLabel ) );
           --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
         exception when DIRECTORY_ERROR =>
           err( +"directory is not open" );

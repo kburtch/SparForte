@@ -120,14 +120,14 @@ hash_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleFileParameter( subprogram : identifier; fileId : out identifier ) is
+procedure ParseSingleFileParameter( subprogram : identifier; fileRef : out reference ) is
 begin
-  ParseSingleInOutInstantiatedParameter( subprogram, fileId, hash_file_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, fileRef, hash_file_t );
 end ParseSingleFileParameter;
 
-procedure ParseFirstFileParameter( subprogram : identifier; fileId : out identifier ) is
+procedure ParseFirstFileParameter( subprogram : identifier; fileRef : out reference ) is
 begin
-  ParseFirstInOutInstantiatedParameter( subprogram, fileId, hash_file_t );
+  ParseFirstInOutInstantiatedParameter( subprogram, fileRef, hash_file_t );
 end ParseFirstFileParameter;
 
 --procedure ParseNextFileParameter( fileId : out identifier ) is
@@ -152,14 +152,14 @@ end ParseFirstFileParameter;
 --  ParseFirstInOutInstantiatedParameter( cursId, hash_cursor_t );
 --end ParseFirstCursorParameter;
 
-procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseNextInOutInstantiatedParameter( subprogram, cursId, hash_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursRef, hash_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseLastInOutInstantiatedParameter( subprogram, cursId, hash_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursRef, hash_cursor_t );
 end ParseLastCursorParameter;
 
 #if BDB
@@ -171,6 +171,8 @@ end ParseLastCursorParameter;
 function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return boolean is
   result : boolean := true;
 begin
+   -- TODO: here and elsewhere says the var name but not the position if an
+   -- array.
    if not theFile.hash.isOpen then
       err( +"file " &
       name_em( fileId ) &
@@ -253,16 +255,18 @@ end not_configured;
 procedure ParseHashClear is
   -- Syntax: hash.clear( f );
   -- Ada:    N/A;
-  fileId   : identifier;
-  theFile  : resPtr;
+  fileRef    : reference;
+  theFile    : resPtr;
+  fileResId : storage;
 begin
   expect( hash_clear_t );
-  ParseSingleFileParameter( hash_clear_t, fileId );
+  ParseSingleFileParameter( hash_clear_t, fileRef );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
        -- close any cursors.
-       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+       getParameterValue( fileRef, fileResid );
+       findResource( to_resource_id( fileResid.value ), theFile );
        if theFile.hash.isOpen then
           Close( theFile.hash.session );
           Close( theFile.hash.env );
@@ -289,8 +293,9 @@ procedure ParseHashClear renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseHashRecover is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   fnameExpr  : storage;
   fname_type : identifier;
 begin
@@ -298,7 +303,7 @@ begin
      err( +"recover not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_recover_t );
-  ParseFirstFileParameter( hash_recover_t, fileId );
+  ParseFirstFileParameter( hash_recover_t, fileRef );
   ParseLastStringParameter( hash_recover_t, fnameExpr, fname_type, string_t );
 
 
@@ -308,7 +313,8 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResid );
+        findResource( to_resource_id( fileResId.value ), theFile );
         init( theFile.hash.env );
 
         -- berkeley db paths must be absolute paths when creating (opening
@@ -357,8 +363,9 @@ procedure ParseHashCreate is
   -- Syntax: hash.create( f, path, keyLen, valLen );
   -- Ada:    hash.create( f, path, keyLen, valLen );
   -- this is impacted by --verbse
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
@@ -374,7 +381,7 @@ begin
   expect( hash_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( hash_create_t, fileId );
+  ParseFirstFileParameter( hash_create_t, fileRef );
   ParseNextStringParameter( hash_create_t, fnameExpr, fname_type, string_t );
   ParseNextNumericParameter( hash_create_t, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( hash_create_t, valLenExpr, valLenType, positive_t );
@@ -397,7 +404,8 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResid.value ), theFile );
 
         init( theFile.hash.env );
 
@@ -421,7 +429,7 @@ begin
 
         if theFile.hash.isOpen then
            err( +"file " &
-              name_em( fileId ) &
+              name_em( fileRef.Id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
               " is already open" ) );
         else
@@ -483,21 +491,23 @@ procedure ParseHashCreate renames not_configured;
 procedure ParseHashClose is
   -- Syntax: hash.create( f );
   -- Ada:    hash.create( f );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   expect( hash_close_t );
-  ParseSingleFileParameter( hash_close_t, fileId );
+  ParseSingleFileParameter( hash_close_t, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         if theFile.hash.isOpen then
            close( theFile.hash.session );
            close( theFile.hash.env );
            theFile.hash.isOpen := false;
         else
            err( +"file " &
-              name_em( fileId ) &
+              name_em( fileRef.Id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
                " is not open" ) );
         end if;
@@ -518,8 +528,9 @@ procedure ParseHashOpen is
   -- Syntax: hash.open( f, path, keyLen, valLen );
   -- Ada:    hash.open( f, path, keyLen, valLen );
   -- this is impacted by --verbse
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
@@ -532,7 +543,7 @@ begin
   expect( hash_open_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( hash_open_t, fileId );
+  ParseFirstFileParameter( hash_open_t, fileRef );
   ParseNextStringParameter( hash_open_t, fnameExpr, fname_type, string_t );
   -- TODO: can this be dynamic?
   ParseNextNumericParameter( hash_open_t, keyLenExpr, keyLenType, positive_t );
@@ -557,7 +568,8 @@ begin
         pwdId : identifier;
      begin
         -- TODO: pathname handling
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
 
         -- Create an environment
         init( theFile.hash.env );
@@ -583,8 +595,10 @@ begin
         configureBDBEnv( theFile.hash.env, to_string( dirname2 ) );
 
         if theFile.hash.isOpen then
+           -- TODO: this (and others like it) do not indicate the array position
+           -- for a reference
            err( +"file " &
-              name_em( fileId ) &
+              name_em( fileRef.Id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.hash.name ) & ASCII.Quotation & ") " &
               " is already open" ) );
         else
@@ -632,15 +646,17 @@ procedure ParseHashOpen renames not_configured;
 procedure ParseHashIsOpen( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.is_open( f );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   kind := boolean_t;
   expect( hash_is_open_t );
-  ParseSingleFileParameter( hash_is_open_t, fileId );
+  ParseSingleFileParameter( hash_is_open_t, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         result := storage'( to_spar_boolean( theFile.hash.isOpen ), noMetaLabel );
      exception when berkeley_error =>
         result := storage'( to_spar_boolean( false ), noMetaLabel );
@@ -658,15 +674,17 @@ procedure ParseHashIsOpen( result : out storage; kind : out identifier ) renames
 procedure ParseHashName( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.name( f );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   kind := string_t;
   expect( hash_name_t );
-  ParseSingleFileParameter( hash_name_t, fileId );
+  ParseSingleFileParameter( hash_name_t, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         result := storage'( theFile.hash.name, noMetaLabel );
      end;
   end if;
@@ -683,18 +701,20 @@ procedure ParseHashDelete is
   -- Syntax: hash.delete( f );
   -- Ada:    bdb.remove( f );
   -- TODO:   option to the keep environment in case other files use it
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   dirname2   : unbounded_string;
 begin
   if rshOpt then
      err( +"delete not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_delete_t );
-  ParseSingleFileParameter( hash_delete_t, fileId );
+  ParseSingleFileParameter( hash_delete_t, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         if theFile.hash.isOpen then
            begin
               close( theFile.hash.session );
@@ -710,7 +730,8 @@ begin
            pwdId : identifier;
         begin
            -- TODO: pathname handling
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResid.value ), theFile );
 
            -- Create an environment
            init( theFile.hash.env );
@@ -787,8 +808,9 @@ procedure ParseHashDelete renames not_configured;
 procedure ParseHashSet is
   -- Syntax: hash.set( f, key, value );
   -- Ada:    bdb.put( f, key, value );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   keyExpr    : storage;
   keyType    : identifier;
   valExpr    : storage;
@@ -802,10 +824,10 @@ begin
      err( +"set not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_set_t );
-  ParseFirstFileParameter( hash_set_t, fileId );
+  ParseFirstFileParameter( hash_set_t, fileRef );
   ParseNextStringParameter( hash_set_t, keyExpr, keyType, string_t );
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.Id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -824,8 +846,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -838,8 +861,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -853,8 +877,9 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            begin
               put( theFile.hash.session, to_string( keyExpr.value ), to_string( valExpr.value ) );
            exception when msg: berkeley_error =>
@@ -882,8 +907,9 @@ procedure ParseHashGet is
   -- This was originally a function but turned into a procedure because
   -- v can now be an aggregate (and we currently cannot return aggregates
   -- from a function)
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   keyExpr    : storage;
   keyType    : identifier;
   itemRef    : reference;
@@ -893,8 +919,8 @@ procedure ParseHashGet is
 begin
   -- TODO: null string instead of exception to parallel dht
   expect( hash_get_t );
-  ParseFirstFileParameter( hash_get_t, fileId );
-  genKindId := identifiers( fileId ).genKind;
+  ParseFirstFileParameter( hash_get_t, fileRef );
+  genKindId := identifiers( fileRef.Id ).genKind;
   ParseNextStringParameter( hash_get_t, keyExpr, keyType, string_t );
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -938,8 +964,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -956,8 +983,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -974,8 +1002,9 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               result : storage := nullStorage;
            begin
@@ -1005,18 +1034,20 @@ procedure ParseHashGet renames not_configured;
 procedure ParseHashHasElement( result : out storage; kind : out identifier ) is
   -- Syntax: v := hash.has_element( f, k );
   -- Ada:    bdb.exists( f, k );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   keyExpr    : storage;
   keyType    : identifier;
 begin
   kind := boolean_t;
   expect( hash_has_element_t );
-  ParseFirstFileParameter( hash_has_element_t, fileId );
+  ParseFirstFileParameter( hash_has_element_t, fileRef );
   ParseLastStringParameter( hash_has_element_t, keyExpr, keyType, string_t );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
            exists( theFile.hash.session, to_string( keyExpr.value ) );
            result := storage'( to_spar_boolean( true ), noMetaLabel );
@@ -1039,33 +1070,38 @@ procedure ParseHashHasElement( result : out storage; kind : out identifier ) ren
 procedure ParseHashRemove is
   -- Syntax: v := hash.remove( f, k | c );
   -- Ada:    bdb.delete( f, k | c );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier := eof_t;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyExpr    : storage;
   keyType    : identifier;
 begin
   if rshOpt then
      err( +"remove not allowed in a " & em( "restricted shell" ) );
   end if;
+  cursRef.id := eof_t;
   expect( hash_remove_t );
-  ParseFirstFileParameter( hash_remove_t, fileId );
+  ParseFirstFileParameter( hash_remove_t, fileRef );
   expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
-     ParseIdentifier( cursId );
-     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+     ParseInOutInstantiatedParameter( hash_remove_t, cursRef, hash_cursor_t );
+     genTypesOk( identifiers( fileRef.Id ).genKind, identifiers( cursRef.Id ).genKind );
   else
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
-        if cursId /= eof_t then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResid.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
+        if cursRef.Id /= eof_t then
            begin
-             findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+             getParameterValue( cursRef, cursResId );
+             findResource( to_resource_id( cursResId.value ), theCurs );
              delete( theFile.hash.session, theCurs.hash_cur.cursor );
            exception when msg: berkeley_error =>
                err( pl( exception_message( msg ) ) );
@@ -1097,8 +1133,9 @@ procedure ParseHashRemove renames not_configured;
 procedure ParseHashIncrement is
   -- Syntax: hash.increment( f, s [,n] );
   -- Ada:    N/A
-  fileId     : identifier;
-  theFile    : resPtr;
+  fileRef  : reference;
+  theFile  : resPtr;
+  fileResId : storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -1111,8 +1148,8 @@ begin
      err( +"increment not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_increment_t );
-  ParseFirstFileParameter( hash_increment_t, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
+  ParseFirstFileParameter( hash_increment_t, fileRef );
+  if getUniType( identifiers( fileRef.Id ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( hash_increment_t, keyExpr, keyType, uni_string_t );
@@ -1125,8 +1162,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
           get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
 
@@ -1164,8 +1202,9 @@ procedure ParseHashIncrement renames not_configured;
 procedure ParseHashDecrement is
   -- Syntax: hash.decrement( f, s [,n] );
   -- Ada:    N/A
-  fileId     : identifier;
-  theFile    : resPtr;
+  fileRef  : reference;
+  theFile  : resPtr;
+  fileResId : storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -1178,8 +1217,8 @@ begin
      err( +"decrement not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_decrement_t );
-  ParseFirstFileParameter( hash_decrement_t, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
+  ParseFirstFileParameter( hash_decrement_t, fileRef );
+  if getUniType( identifiers( fileRef.Id ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( hash_decrement_t, keyExpr, keyType, uni_string_t );
@@ -1192,8 +1231,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
        begin
          get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
          -- berkeley throws exception on not found
@@ -1230,8 +1270,9 @@ procedure ParseHashDecrement renames not_configured;
 procedure ParseHashAdd is
   -- Syntax: hash.add( f, s, e );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile  : resPtr;
+  fileResId : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1245,10 +1286,10 @@ begin
      err( +"add not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_add_t );
-  ParseFirstFileParameter( hash_add_t, fileId );
+  ParseFirstFileParameter( hash_add_t, fileRef );
   ParseNextStringParameter( hash_add_t, keyExpr, keyType, uni_string_t );
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.Id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1267,12 +1308,12 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
               exists( theFile.hash.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
@@ -1288,8 +1329,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1309,8 +1351,9 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            begin
               exists( theFile.hash.session, to_string( keyExpr.value ) );
            exception when storage_error =>
@@ -1340,34 +1383,37 @@ procedure ParseHashReplace is
   -- Syntax: hash.replace( f, c | k, v );
   -- Ada:    N/A
   -- Note: the key will not be overwritten if a cursor is used
-  fileId     : identifier;
-  theFile  : resPtr;
-  keyExpr  : storage;
-  keyType  : identifier;
-  itemExpr : storage;
-  itemType : identifier;
+  fileRef    : reference;
+  theFile    : resPtr;
+  fileResId : storage;
+  keyExpr    : storage;
+  keyType    : identifier;
+  itemExpr   : storage;
+  itemType   : identifier;
   itemId     : identifier;
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
-  cursId   : identifier := eof_t;
-  theCurs  : resPtr;
+  cursRef    : reference;
+  theCurs    : resPtr;
+  cursResId  : storage;
 begin
   if rshOpt then
      err( +"replace not allowed in a " & em( "restricted shell" ) );
   end if;
+  cursRef.id := eof_t;
   expect( hash_replace_t );
-  ParseFirstFileParameter( hash_replace_t, fileId );
+  ParseFirstFileParameter( hash_replace_t, fileRef );
   expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
-     ParseIdentifier( cursId );
-     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+     ParseInOutInstantiatedParameter( hash_replace_t, cursRef, hash_cursor_t );
+     genTypesOk( identifiers( fileRef.Id ).genKind, identifiers( cursRef.Id ).genKind );
   else
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.Id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1385,17 +1431,19 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if cursId /= eof_t then
+     if cursRef.Id /= eof_t then
         -- put where the cursor is
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
               declare
                  jsonString : unbounded_string;
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+                getParameterValue( cursRef, cursResId );
+                findResource( to_resource_id( cursResId.value ), theCurs );
                 get( theFile.hash.session,
                    theCurs.hash_cur.cursor,
                    temp_key,
@@ -1416,14 +1464,16 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
               declare
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
                  jsonString : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+                getParameterValue( cursRef, cursResId );
+                findResource( to_resource_id( cursResId.value ), theCurs );
                 get( theFile.hash.session,
                    theCurs.hash_cur.cursor,
                    temp_key,
@@ -1444,13 +1494,15 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
              declare
                temp_key    : unbounded_string;
                temp_string : unbounded_string;
              begin
-               findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+               getParameterValue( cursRef, cursResId );
+               findResource( to_resource_id( cursResId.value ), theCurs );
                get( theFile.hash.session,
                   theCurs.hash_cur.cursor,
                   temp_key,
@@ -1473,8 +1525,9 @@ begin
      else
        -- put, but only if the target exists
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1492,8 +1545,9 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1511,8 +1565,9 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
              begin
                 exists( theFile.hash.session, to_string( keyExpr.value ) );
                 put( theFile.hash.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
@@ -1541,8 +1596,9 @@ procedure ParseHashReplace renames not_configured;
 procedure ParseHashAppend is
   -- Syntax: hash.append( f, s, e );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef  : reference;
   theFile  : resPtr;
+  fileResId : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1553,15 +1609,16 @@ begin
      err( +"append not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_append_t );
-  ParseFirstFileParameter( hash_append_t, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
+  ParseFirstFileParameter( hash_append_t, fileRef );
+  if getUniType( identifiers( fileRef.Id ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( hash_append_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( hash_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseLastGenItemParameter( hash_append_t, itemExpr, itemType, identifiers( fileRef.Id ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
           get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
           put( theFile.hash.session, to_string( keyExpr.value ), to_string( oldItem & itemExpr.value ) );
@@ -1588,8 +1645,9 @@ procedure ParseHashAppend renames not_configured;
 procedure ParseHashPrepend is
   -- Syntax: hash.prepend( f, s, e );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef  : reference;
   theFile  : resPtr;
+  fileResId : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1600,15 +1658,16 @@ begin
      err( +"prepend not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_prepend_t );
-  ParseFirstFileParameter( hash_prepend_t, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
+  ParseFirstFileParameter( hash_prepend_t, fileRef );
+  if getUniType( identifiers( fileRef.Id ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( hash_prepend_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( hash_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseLastGenItemParameter( hash_prepend_t, itemExpr, itemType, identifiers( fileRef.Id ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
           get( theFile.hash.session, to_string( keyExpr.value ), oldItem );
           put( theFile.hash.session, to_string( keyExpr.value ), to_string( itemExpr.value & oldItem ) );
@@ -1635,14 +1694,16 @@ procedure ParseHashPrepend renames not_configured;
 procedure ParseHashFlush is
   -- Syntax: hash.flush( f, flags );
   -- Ada:    bbd.sync( f, flags );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   expect( hash_flush_t );
-  ParseSingleFileParameter( hash_flush_t, fileId );
+  ParseSingleFileParameter( hash_flush_t, fileRef );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
            sync( theFile.hash.session );
         exception when msg: berkeley_error =>
@@ -1662,17 +1723,19 @@ procedure ParseHashFlush renames not_configured;
 procedure ParseHashTruncate is
   -- Syntax: hash.truncate( f );
   -- Ada:    bbd.sync( f, cnt );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   if rshOpt then
      err( +"truncate not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_truncate_t );
-  ParseSingleFileParameter( hash_truncate_t, fileId );
+  ParseSingleFileParameter( hash_truncate_t, fileRef );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
         declare
            cnt : natural;
         begin
@@ -1698,21 +1761,25 @@ procedure ParseHashTruncate renames not_configured;
 procedure ParseHashOpenCursor is
   -- Syntax: hash_io.open_cursor( f, c );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
 begin
   expect( hash_open_cursor_t );
-  ParseFirstFileParameter( hash_open_cursor_t, fileId );
-  ParseLastCursorParameter( hash_open_cursor_t, cursId );
+  ParseFirstFileParameter( hash_open_cursor_t, fileRef );
+  ParseLastCursorParameter( hash_open_cursor_t, cursRef);
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
-        findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( fileRef.Id, theFile ) then
+        getParameterValue( cursRef, cursResId );
+        findResource( to_resource_id( cursResId.value ), theCurs );
         if theCurs.hash_cur.isOpen then
            err( +"cursor " &
-              name_em( cursId ) &
+              name_em( cursRef.Id ) &
               pl( " is already open" ) );
         else
            new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur.cursor );
@@ -1733,22 +1800,26 @@ procedure ParseHashOpenCursor renames not_configured;
 procedure ParseHashCloseCursor is
   -- Syntax: hash_io.close_cursor( f,c );
   -- Ada:    bdb.close_cursor( f,c );
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
 begin
   expect( hash_close_cursor_t );
-  ParseFirstFileParameter( hash_close_cursor_t, fileId );
-  ParseLastCursorParameter( hash_close_cursor_t, cursId );
+  ParseFirstFileParameter( hash_close_cursor_t, fileRef );
+  ParseLastCursorParameter( hash_close_cursor_t, cursRef);
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
-           findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
+           getParameterValue( cursRef, cursResId );
+           findResource( to_resource_id( cursResId.value ), theCurs );
            if not theCurs.hash_cur.isOpen then
               err( +"cursor " &
-                 name_em( cursId ) &
+                 name_em( cursRef.Id ) &
                  pl( " is not open" ) );
            else
               close( theFile.hash.session, theCurs.hash_cur.cursor );
@@ -1774,10 +1845,12 @@ procedure ParseHashGetFirst is
   -- Ada:    bdb.get_first( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -1788,10 +1861,10 @@ begin
      err( +"get_first not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_get_first_t );
-  ParseFirstFileParameter( hash_get_first_t, fileId );
-  ParseNextCursorParameter( hash_get_first_t, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( hash_get_first_t, fileRef );
+  ParseNextCursorParameter( hash_get_first_t, cursRef);
+  genKindId := identifiers( fileRef.Id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( hash_get_first_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
@@ -1831,16 +1904,18 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -1860,16 +1935,18 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -1889,16 +1966,18 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               key : unbounded_string;
               data : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -1933,10 +2012,12 @@ procedure ParseHashGetNext is
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -1947,10 +2028,10 @@ begin
      err( +"get_next not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_get_next_t );
-  ParseFirstFileParameter( hash_get_next_t, fileId );
-  ParseNextCursorParameter( hash_get_next_t, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( hash_get_next_t, fileRef );
+  ParseNextCursorParameter( hash_get_next_t, cursRef);
+  genKindId := identifiers( fileRef.Id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( hash_get_next_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
@@ -1986,12 +2067,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2015,12 +2098,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2044,12 +2129,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2084,10 +2171,12 @@ procedure ParseHashGetLast is
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -2098,10 +2187,10 @@ begin
      err( +"get_last not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_get_last_t );
-  ParseFirstFileParameter( hash_get_last_t, fileId );
-  ParseNextCursorParameter( hash_get_last_t, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( hash_get_last_t, fileRef );
+  ParseNextCursorParameter( hash_get_last_t, cursRef);
+  genKindId := identifiers( fileRef.Id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( hash_get_last_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
@@ -2145,12 +2234,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2174,12 +2265,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2203,12 +2296,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2243,10 +2338,12 @@ procedure ParseHashGetPrevious is
   -- Ada:    bdb.get( f );
   -- Note: Unlike Ada lists, Berkeley will also return the element when
   -- positioning the cursor.
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -2257,10 +2354,10 @@ begin
      err( +"get_previous not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( hash_get_previous_t );
-  ParseFirstFileParameter( hash_get_previous_t, fileId );
-  ParseNextCursorParameter( hash_get_previous_t, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( hash_get_previous_t, fileRef );
+  ParseNextCursorParameter( hash_get_previous_t, cursRef);
+  genKindId := identifiers( fileRef.Id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( hash_get_previous_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
@@ -2296,12 +2393,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2325,12 +2424,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2354,12 +2455,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( fileRef.Id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.hash_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.Id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.hash.session,
@@ -2391,16 +2494,18 @@ procedure ParseHashGetPrevious renames not_configured;
 procedure ParseHashWillRaise( result : out storage; kind : out identifier ) is
   -- Syntax: b := hash.will_raise( f );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   kind := boolean_t;
   expect( hash_will_raise_t );
-  ParseSingleFileParameter( hash_will_raise_t, fileId );
+  ParseSingleFileParameter( hash_will_raise_t, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            result := storage'( to_spar_boolean( will_raise( theFile.hash.session ) ), noMetaLabel );
         end if;
      exception when berkeley_error =>
@@ -2419,16 +2524,18 @@ procedure ParseHashWillRaise( result : out storage; kind : out identifier ) rena
 procedure ParseHashLastError( result : out storage; kind : out identifier ) is
   -- Syntax: n := hash_io.last_error( f );
   -- Ada:    N/A
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
 begin
   kind := bdb_db_error_t;
   expect( hash_last_error_t );
-  ParseSingleFileParameter( hash_last_error_t, fileId );
+  ParseSingleFileParameter( hash_last_error_t, fileRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-       if isVerifiedOpenFile( fileId, theFile ) then
+       getParameterValue( fileRef, fileResId );
+       findResource( to_resource_id( fileResId.value ), theFile );
+       if isVerifiedOpenFile( fileRef.Id, theFile ) then
           result := storage'( to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) ), noMetaLabel );
        end if;
      exception when msg: berkeley_error =>
@@ -2448,20 +2555,22 @@ procedure ParseHashRaiseExceptions is
   -- Syntax: hash_io.raise_exceptions( f, b );
   -- Ada:    bdb.raise_exceptions
   -- this is impacted by --trace
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId : storage;
   boolExpr   : storage;
   boolType   : identifier;
 begin
   expect( hash_raise_exceptions_t );
-  ParseFirstFileParameter( hash_raise_exceptions_t, fileId );
+  ParseFirstFileParameter( hash_raise_exceptions_t, fileRef );
   ParseLastEnumParameter( hash_raise_exceptions_t, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
        raise_them : constant boolean := boolExpr.value = to_unbounded_string( "1" );
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( fileRef.Id, theFile ) then
            raise_exceptions( theFile.hash.session, raise_them, boolean( traceOpt ) );
         end if;
      exception when msg: berkeley_error =>

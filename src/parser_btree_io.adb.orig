@@ -123,14 +123,14 @@ btree_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleFileParameter( subprogram : identifier; fileId : out identifier ) is
+procedure ParseSingleFileParameter( subprogram : identifier; fileRef : out reference ) is
 begin
-  ParseSingleInOutInstantiatedParameter( subprogram, fileId, btree_file_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, fileRef, btree_file_t );
 end ParseSingleFileParameter;
 
-procedure ParseFirstFileParameter( subprogram : identifier; fileId : out identifier ) is
+procedure ParseFirstFileParameter( subprogram : identifier; fileRef : out reference ) is
 begin
-  ParseFirstInOutInstantiatedParameter( subprogram, fileId, btree_file_t );
+  ParseFirstInOutInstantiatedParameter( subprogram, fileRef, btree_file_t );
 end ParseFirstFileParameter;
 
 --procedure ParseNextFileParameter( fileId : out identifier ) is
@@ -143,6 +143,12 @@ end ParseFirstFileParameter;
 --  ParseLastInOutInstantiatedParameter( fileId, btree_file_t );
 --end ParseLastFileParameter;
 
+--  GetParameterValue( fileRef, expr );
+--  if length( expr.value ) = 0 then
+--     err( em( "open" ) & pl( " has not been called to initialize the file" ) );
+--  else
+ --    findResource( to_resource_id( expr.value ), connection );
+--  end if;
 ------------------------------------------------------------------------------
 
 --procedure ParseSingleCursorParameter( cursId : out identifier ) is
@@ -155,14 +161,14 @@ end ParseFirstFileParameter;
 --  ParseFirstInOutInstantiatedParameter( cursId, btree_cursor_t );
 --end ParseFirstCursorParameter;
 
-procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseNextInOutInstantiatedParameter( subprogram, cursId, btree_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursRef, btree_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursRef : out reference ) is
 begin
-  ParseLastInOutInstantiatedParameter( subprogram, cursId, btree_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursRef, btree_cursor_t );
 end ParseLastCursorParameter;
 
 #if BDB
@@ -280,17 +286,19 @@ end not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeClear is
-  fileId   : identifier;
+  fileRef   : reference;
   theFile  : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_clear_t;
 begin
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
        -- close any cursors.
-       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+       getParameterValue( fileRef, fileResId );
+       findResource( to_resource_id( fileResId.value ), theFile );
        if theFile.btree.isOpen then
           Close( theFile.btree.session );
           Close( theFile.btree.env );
@@ -324,15 +332,16 @@ procedure ParseBTreeClear renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeRecover is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   fnameExpr  : storage;
   fname_type : identifier;
   subprogramId : constant identifier := btree_recover_t;
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseLastStringParameter( subprogramId, fnameExpr, fname_type, string_t );
 
   if isExecutingCommand then
@@ -341,7 +350,8 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         init( theFile.btree.env );
 
         -- berkeley db paths must be absolute paths when creating (opening
@@ -402,8 +412,9 @@ procedure ParseBTreeRecover renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeCreate is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
@@ -418,7 +429,7 @@ begin
   expect( subprogramId );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseNextStringParameter( subprogramId, fnameExpr, fname_type, string_t );
   ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( subprogramId, valLenExpr, valLenType, positive_t );
@@ -440,7 +451,8 @@ begin
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
 
         init( theFile.btree.env );
 
@@ -464,7 +476,7 @@ begin
 
         if theFile.btree.isOpen then
            err( pl( "file " ) &
-              name_em( fileId ) &
+              name_em( fileRef.id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" ) );
         else
@@ -531,22 +543,24 @@ procedure ParseBTreeCreate renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeClose is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_close_t;
 begin
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResid.value ), theFile );
         if theFile.btree.isOpen then
            close( theFile.btree.session );
            close( theFile.btree.env );
            theFile.btree.isOpen := false;
         else
            err( +"file " &
-              name_em( fileId ) &
+              name_em( fileRef.id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
                " is not open" ) );
         end if;
@@ -572,8 +586,9 @@ procedure ParseBTreeClose renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeOpen is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   fnameExpr  : storage;
   fname_type : identifier;
   keyLen     : interfaces.C.size_t;
@@ -587,7 +602,7 @@ begin
   expect( subprogramId );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseNextStringParameter( subprogramId, fnameExpr, fname_type, string_t );
   -- TODO: can this be dynamic?
   ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
@@ -611,7 +626,8 @@ begin
         pwdId : identifier;
      begin
         -- TODO: pathname handling
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
 
         -- Create an environment
         init( theFile.btree.env );
@@ -638,7 +654,7 @@ begin
 
         if theFile.btree.isOpen then
            err( +"file " &
-              name_em( fileId ) &
+              name_em( fileRef.id ) &
               pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" ) );
         else
@@ -691,16 +707,18 @@ procedure ParseBTreeOpen renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeIsOpen( result : out storage; kind : out identifier ) is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_is_open_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         result := storage'( to_spar_boolean( theFile.btree.isOpen ), noMetaLabel );
      exception when berkeley_error =>
         result := storage'( to_spar_boolean( false ), noMetaLabel );
@@ -723,16 +741,18 @@ procedure ParseBTreeIsOpen( result : out storage; kind : out identifier ) rename
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeName( result : out storage; kind : out identifier ) is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_name_t;
 begin
   kind := string_t;
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         result := storage'( theFile.btree.name, noMetaLabel );
      end;
   end if;
@@ -754,17 +774,19 @@ procedure ParseBTreeName( result : out storage; kind : out identifier ) renames 
 -- TODO:   option to the keep environment in case other files use it
 
 procedure ParseBTreeDelete is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   dirname2 : unbounded_string;
   subprogramId : constant identifier := btree_delete_t;
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
         if theFile.btree.isOpen then
            begin
               close( theFile.btree.session );
@@ -781,7 +803,8 @@ begin
            pwdId : identifier;
         begin
            -- TODO: pathname handling
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
 
            -- Create an environment
            init( theFile.btree.env );
@@ -894,8 +917,9 @@ procedure ParseBTreeDelete renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeSet is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   keyExpr    : storage;
   keyType    : identifier;
   valExpr    : storage;
@@ -908,10 +932,10 @@ procedure ParseBTreeSet is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseNextStringParameter( subprogramId, keyExpr, keyType, string_t );
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -930,8 +954,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -944,8 +969,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -959,8 +985,9 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            begin
               put( theFile.btree.session, to_string( keyExpr.value ), to_string( valExpr.value ) );
            exception when msg: berkeley_error =>
@@ -993,8 +1020,9 @@ procedure ParseBTreeSet renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeGet is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   keyExpr    : storage;
   keyType    : identifier;
   itemRef    : reference;
@@ -1005,8 +1033,8 @@ procedure ParseBTreeGet is
 begin
   -- TODO: null string instead of exception to parallel dht
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  genKindId := identifiers( fileId ).genKind;
+  ParseFirstFileParameter( subprogramId, fileRef );
+  genKindId := identifiers( fileRef.id ).genKind;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, string_t );
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -1050,8 +1078,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1070,8 +1099,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1090,8 +1120,9 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               result : unbounded_string;
            begin
@@ -1126,19 +1157,21 @@ procedure ParseBTreeGet renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeHasElement( result : out storage; kind : out identifier ) is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   keyExpr    : storage;
   keyType    : identifier;
   subprogramId : constant identifier := btree_has_element_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseLastStringParameter( subprogramId, keyExpr, keyType, string_t );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         begin
            exists( theFile.btree.session, to_string( keyExpr.value ) );
            result := storage'( to_spar_boolean( true ), noMetaLabel );
@@ -1168,32 +1201,37 @@ procedure ParseBTreeHasElement( result : out storage; kind : out identifier ) re
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeRemove is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier := eof_t;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyExpr    : storage;
   keyType    : identifier;
   subprogramId : constant identifier := btree_remove_t;
 begin
+  cursRef.id := eof_t;
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   expectParameterComma( subprogramId );
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
-     ParseIdentifier( cursId );
-     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+     ParseInOutInstantiatedParameter( subprogramId, cursRef, btree_cursor_t );
+     genTypesOk( identifiers( fileRef.id ).genKind, identifiers( cursRef.Id ).genKind );
   else
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-        if cursId /= eof_t then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+        if cursRef.Id /= eof_t then
            begin
-             findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+             getParameterValue( cursRef, cursResId );
+             findResource( to_resource_id( cursResid.value ), theCurs );
              delete( theFile.btree.session, theCurs.btree_cur.cursor );
            exception when msg: berkeley_error =>
                err( pl( exception_message( msg ) ) );
@@ -1230,8 +1268,9 @@ procedure ParseBTreeRemove renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreeIncrement is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -1243,8 +1282,8 @@ procedure ParseBtreeIncrement is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
+  ParseFirstFileParameter( subprogramId, fileRef );
+  if getUniType( identifiers( fileRef.id ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
@@ -1257,8 +1296,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
           -- berkeley throws exception on not found
@@ -1302,8 +1342,9 @@ procedure ParseBTreeIncrement renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreeDecrement is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   amtExpr  : storage;
@@ -1315,8 +1356,8 @@ procedure ParseBtreeDecrement is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
+  ParseFirstFileParameter( subprogramId, fileRef );
+  if getUniType( identifiers( fileRef.id ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
@@ -1329,8 +1370,9 @@ begin
      err( +", or ) expected" );
   end if;
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
        begin
          get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
          -- berkeley throws exception on not found
@@ -1374,8 +1416,9 @@ procedure ParseBTreeDecrement renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreeAdd is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile  : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1388,10 +1431,10 @@ procedure ParseBtreeAdd is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1410,12 +1453,14 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
+              getParameterValue( fileRef, fileResId );
+              findResource( to_resource_id( fileResId.value ), theFile );
               exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
              err( +"storage error raised" );
@@ -1435,8 +1480,9 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1458,8 +1504,9 @@ begin
         end if;
      else
         -- normal scalar expression
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            begin
               exists( theFile.btree.session, to_string( keyExpr.value ) );
            exception when storage_error =>
@@ -1496,8 +1543,9 @@ procedure ParseBTreeAdd renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreeReplace is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile  : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1506,23 +1554,25 @@ procedure ParseBtreeReplace is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
-  cursId   : identifier := eof_t;
+  cursRef    : reference;
   theCurs  : resPtr;
+  cursResId  : storage;
   subprogramId : constant identifier := btree_replace_t;
 begin
+  cursRef.id := eof_t;
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
-     ParseIdentifier( cursId );
-     genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
+     ParseInOutInstantiatedParameter( subprogramId, cursRef, btree_cursor_t);
+     genTypesOk( identifiers( fileRef.id ).genKind, identifiers( cursRef.id ).genKind );
   else
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
   expectParameterComma;
-  genKindId := identifiers( fileId ).genKind;
+  genKindId := identifiers( fileRef.id ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1540,17 +1590,19 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if cursId /= eof_t then
+     if cursRef.Id /= eof_t then
         -- put where the cursor is
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
               declare
                  jsonString : unbounded_string;
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+                getParameterValue( cursRef, cursResId );
+                findResource( to_resource_id( cursResid.value ), theCurs );
                 get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
                    temp_key,
@@ -1573,14 +1625,16 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
               declare
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
                  jsonString : unbounded_string;
               begin
-                findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+                getParameterValue( cursRef, cursResId );
+                findResource( to_resource_id( cursResId.value ), theCurs );
                 get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
                    temp_key,
@@ -1603,13 +1657,15 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
              declare
                temp_key    : unbounded_string;
                temp_string : unbounded_string;
              begin
-               findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+               getParameterValue( cursRef, cursResId );
+               findResource( to_resource_id( cursResId.value ), theCurs );
                get( theFile.btree.session,
                   theCurs.btree_cur.cursor,
                   temp_key,
@@ -1634,8 +1690,9 @@ begin
      else
        -- put, but only if the target exists
         if isRecord then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1655,8 +1712,9 @@ begin
               end;
            end if;
         elsif isArray then
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1676,8 +1734,9 @@ begin
               end;
            end if;
         else
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
              begin
                exists( theFile.btree.session, to_string( keyExpr.value ) );
                put( theFile.btree.session, to_string( keyExpr.value ), to_string( itemExpr.value ) );
@@ -1713,8 +1772,9 @@ procedure ParseBTreeReplace renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreeAppend is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile  : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1724,15 +1784,16 @@ procedure ParseBtreeAppend is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
+  ParseFirstFileParameter( subprogramId, fileRef );
+  if getUniType( identifiers( fileRef.id ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileRef.id ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
           put( theFile.btree.session, to_string( keyExpr.value ), to_string( oldItem & itemExpr.value ) );
@@ -1764,8 +1825,9 @@ procedure ParseBTreeAppend renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBtreePrepend is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile  : resPtr;
+  fileResId  : storage;
   keyExpr  : storage;
   keyType  : identifier;
   itemExpr : storage;
@@ -1775,15 +1837,16 @@ procedure ParseBtreePrepend is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
+  ParseFirstFileParameter( subprogramId, fileRef );
+  if getUniType( identifiers( fileRef.id ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileRef.id ).genKind );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr.value ), oldItem );
           put( theFile.btree.session, to_string( keyExpr.value ), to_string( itemExpr.value & oldItem ) );
@@ -1815,15 +1878,17 @@ procedure ParseBTreePrepend renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeFlush is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_flush_t;
 begin
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         begin
            sync( theFile.btree.session );
         exception when msg: berkeley_error =>
@@ -1848,16 +1913,18 @@ procedure ParseBTreeFlush renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeTruncate is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_truncate_t;
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
         declare
            cnt : natural;
         begin
@@ -1888,22 +1955,26 @@ procedure ParseBTreeTruncate renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeOpenCursor is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   subprogramId : constant identifier := btree_open_cursor_t;
 begin
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseLastCursorParameter( subprogramId, cursId );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseLastCursorParameter( subprogramId, cursRef );
   if isExecutingCommand then
-     findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-        findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+     getParameterValue( fileRef, fileResId );
+     findResource( to_resource_id( fileResId.value ), theFile );
+     if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+        getParameterValue( cursRef, cursResId );
+        findResource( to_resource_id( cursResId.value ), theCurs );
         if theCurs.btree_cur.isOpen then
            err( +"cursor " &
-              name_em( cursId ) &
+              name_em( cursRef.id ) &
               pl( " is already open" ) );
         else
            new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur.cursor );
@@ -1929,23 +2000,27 @@ procedure ParseBTreeOpenCursor renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeCloseCursor is
-  fileId     : identifier;
+  fileRef     : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   subprogramId : constant identifier := btree_close_cursor_t;
 begin
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseLastCursorParameter( subprogramId, cursId );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseLastCursorParameter( subprogramId, cursRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-           findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+           getParameterValue( cursRef, cursResId );
+           findResource( to_resource_id( cursResId.value ), theCurs );
            if not theCurs.btree_cur.isOpen then
               err( +"cursor " &
-                 name_em( cursId ) &
+                 name_em( cursRef.id ) &
                  pl( " is not open" ) );
            else
               close( theFile.btree.session, theCurs.btree_cur.cursor );
@@ -1975,10 +2050,12 @@ procedure ParseBTreeCloseCursor renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeGetFirst is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -1988,10 +2065,10 @@ procedure ParseBTreeGetFirst is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseNextCursorParameter( subprogramId, cursRef );
+  genKindId := identifiers( fileRef.id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
@@ -2031,16 +2108,18 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if isRecord then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2062,16 +2141,18 @@ begin
            end;
         end if;
      elsif isArray then
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( fileRef, fileResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                      name_em( cursId ) &
+                      name_em( cursRef.id ) &
                       pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2093,16 +2174,18 @@ begin
            end;
         end if;
      else
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            declare
               key : unbounded_string;
               data : unbounded_string;
            begin
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2144,10 +2227,12 @@ procedure ParseBTreeGetFirst renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeGetNext is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -2157,10 +2242,10 @@ procedure ParseBTreeGetNext is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseNextCursorParameter( subprogramId, cursRef );
+  genKindId := identifiers( fileRef.id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
@@ -2196,12 +2281,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2227,12 +2314,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2258,12 +2347,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2305,10 +2396,12 @@ procedure ParseBTreeGetNext renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeGetLast is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -2318,10 +2411,10 @@ procedure ParseBTreeGetLast is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseNextCursorParameter( subprogramId, cursRef );
+  genKindId := identifiers( fileRef.id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
@@ -2365,12 +2458,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2396,12 +2491,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2427,12 +2524,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2474,10 +2573,12 @@ procedure ParseBTreeGetLast renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeGetPrevious is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
-  cursId     : identifier;
+  fileResId  : storage;
+  cursRef    : reference;
   theCurs    : resPtr;
+  cursResId  : storage;
   keyRef     : reference;
   valRef     : reference;
   isRecord   : boolean := false;
@@ -2487,10 +2588,10 @@ procedure ParseBTreeGetPrevious is
 begin
   expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
-  ParseNextCursorParameter( subprogramId, cursId );
-  genKindId := identifiers( fileId ).genKind;
-  genTypesOk( genKindId, identifiers( cursId ).genKind );
+  ParseFirstFileParameter( subprogramId, fileRef );
+  ParseNextCursorParameter( subprogramId, cursRef );
+  genKindId := identifiers( fileRef.id ).genKind;
+  genTypesOk( genKindId, identifiers( cursRef.Id ).genKind );
   ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
@@ -2526,12 +2627,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2557,12 +2660,14 @@ begin
            key : unbounded_string;
            jsonString : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2588,12 +2693,14 @@ begin
            key : unbounded_string;
            data : unbounded_string;
         begin
-           findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-              findResource( to_resource_id( identifiers( cursId ).store.value ), theCurs );
+           getParameterValue( fileRef, fileResId );
+           findResource( to_resource_id( fileResId.value ), theFile );
+           if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
+              getParameterValue( cursRef, cursResId );
+              findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
-                    name_em( cursId ) &
+                    name_em( cursRef.id ) &
                     pl( " is not open" ) );
               else
                  get( theFile.btree.session,
@@ -2632,17 +2739,19 @@ procedure ParseBTreeGetPrevious renames not_configured;
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeWillRaise( result : out storage; kind : out identifier ) is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_will_raise_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            result := storage'( to_spar_boolean( will_raise( theFile.btree.session ) ), noMetaLabel );
         end if;
      exception when berkeley_error =>
@@ -2666,17 +2775,19 @@ procedure ParseBTreeWillRaise( result : out storage; kind : out identifier ) ren
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeLastError( result : out storage; kind : out identifier ) is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
+  fileResId  : storage;
   subprogramId : constant identifier := btree_last_error_t;
 begin
   kind := bdb_db_error_t;
   expect( subprogramId );
-  ParseSingleFileParameter( subprogramId, fileId );
+  ParseSingleFileParameter( subprogramId, fileRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-       if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+       getParameterValue( fileRef, fileResId );
+       findResource( to_resource_id( fileResId.value ), theFile );
+       if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
           result := storage'( to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) ), noMetaLabel );
        end if;
      exception when msg: berkeley_error =>
@@ -2703,21 +2814,23 @@ procedure ParseBTreeLastError( result : out storage; kind : out identifier ) ren
 -----------------------------------------------------------------------------
 
 procedure ParseBTreeRaiseExceptions is
-  fileId     : identifier;
+  fileRef    : reference;
   theFile    : resPtr;
   boolExpr   : storage;
   boolType   : identifier;
   subprogramId : constant identifier := btree_raise_exceptions_t;
 begin
   expect( subprogramId );
-  ParseFirstFileParameter( subprogramId, fileId );
+  ParseFirstFileParameter( subprogramId, fileRef );
   ParseLastEnumParameter( subprogramId, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
+       fileResId : storage;
        raise_them : constant boolean := boolExpr.value = to_unbounded_string( "1" );
      begin
-        findResource( to_resource_id( identifiers( fileId ).store.value ), theFile );
-        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
+        getParameterValue( fileRef, fileResId );
+        findResource( to_resource_id( fileResId.value ), theFile );
+        if isVerifiedOpenFile( subprogramId, fileRef.id, theFile ) then
            raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
         end if;
      exception when msg: berkeley_error =>
