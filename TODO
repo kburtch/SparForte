@@ -13,19 +13,21 @@ Long term Ongoing Work
 
 - value meta labels project
 
+  - check vectorIndexOrCursorOk for references
+
   - should in-out parameters be references?
     - gnat.crc32 should use references for update and get value
     - all out and in out parameters should probably be checked and have
       reg. tests
-
-    - instantiated parameter handling should be able to take an array
-      reference and not just a simple scalar variable.
-    - text_io.parseOpenFile requires special type checking
-    - tinyserve needs to be fixed for storage
-     - a resource is an attribute associated with a value, not a variable
-       itself
+   - instantiated out parameters and auto-declaration?
+     - cmp. doubly ParseNextOutMapCursor
    - in parser-decl, renaming reference may not work with index 0. Logic
      of renamingRef may need checking.  'not hasIndex' didn't work>
+
+    - text_io.parseOpenFile requires special type checking
+    - tinyserve needs to be fixed for storage
+      - a resource is an attribute associated with a value, not a variable
+        itself
 
   - subsystems involving files or other output do not necessarily
     have a tag but perhaps they should.  For example, CGI.Argument_Count

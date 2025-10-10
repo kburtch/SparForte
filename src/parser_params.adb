@@ -560,7 +560,7 @@ begin
 
   -- Check the generic to ensure it's the expected generic type, unless it's
   -- eof in which case the caller is expected to check.
-  if expected_type = eof_t then
+  if expected_type /= eof_t then
      discard_result := type_checks_done or else uniTypesOK( identifiers( ref.id ).kind, expected_type );
   end if;
 

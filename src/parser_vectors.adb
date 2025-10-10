@@ -407,7 +407,7 @@ begin
         end if;
      end if;
   else
-     ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
+     ParseInOutInstantiatedParameter( subprogram, cursRef, vectors_cursor_t );
      -- Check the type against the vector
      if not error_found then
         vectorItemIndicesOk( vectors_insert_vector_and_mark_t, cursRef.id, vectorId );
@@ -450,7 +450,7 @@ begin
         end if;
      end if;
   else
-     ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
+     ParseInOutInstantiatedParameter( subprogram, cursRef, vectors_cursor_t );
      -- Check the type against the vector
      if not error_found then
         vectorItemIndicesOk( vectors_insert_vector_and_mark_t, cursRef.id, vectorId );
@@ -627,15 +627,17 @@ end toUserVectorIndex;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsClear is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   subprogramId : constant identifier := vectors_clear_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        Vector_Storage_Lists.Clear( theVector.vslVector );
      end;
   end if;
@@ -651,8 +653,9 @@ end ParseVectorsClear;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsToVector is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   itemExpr   : storage;
   itemType   : identifier;
   cntExpr    : storage;
@@ -660,12 +663,13 @@ procedure ParseVectorsToVector is
   subprogramId : constant identifier := vectors_to_vector_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        if metaLabelOk( itemExpr ) then
           theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
              ada.containers.count_type'value( to_string( cntExpr.value ) ) );
@@ -685,16 +689,18 @@ end ParseVectorsToVector;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsCapacity( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   subprogramId : constant identifier := vectors_capacity_t;
 begin
   kind := containers_count_type_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'(
          to_unbounded_string(
             ada.containers.count_type'image( Vector_Storage_Lists.Capacity( theVector.vslVector ) )
@@ -715,21 +721,23 @@ end ParseVectorsCapacity;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsReserveCapacity is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   cntExpr    : storage;
   cntType    : identifier;
   subprogramId : constant identifier := vectors_reserve_capacity_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      declare
        cnt : ada.containers.count_type;
      begin
+       getParameterValue( vectorRef, vecResId );
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( vecResId.value ), theVector );
        Vector_Storage_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
@@ -757,16 +765,18 @@ end ParseVectorsReserveCapacity;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsLength( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   subprogramId : constant identifier := vectors_length_t;
 begin
   kind := containers_count_type_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'(
          to_unbounded_string( ada.containers.count_type'image( Vector_Storage_Lists.Length( theVector.vslVector ) ) ),
          noMetaLabel
@@ -786,21 +796,23 @@ end ParseVectorsLength;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsSetLength is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   cntExpr    : storage;
   cntType    : identifier;
   subprogramId : constant identifier := vectors_set_length_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      declare
        cnt : ada.containers.count_type;
      begin
+       getParameterValue( vectorRef, vecResId );
        cnt := ada.containers.count_type( to_numeric( cntExpr.value ) );
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       findResource( to_resource_id( vecResId.value ), theVector );
        Vector_Storage_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
@@ -828,16 +840,18 @@ end ParseVectorsSetLength;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsIsEmpty( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   subprogramId : constant identifier := vectors_is_empty_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
      end;
   end if;
@@ -854,8 +868,9 @@ end ParseVectorsIsEmpty;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsAppendElements is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   itemExpr  : storage;
   itemType  : identifier;
   cntExpr   : storage;
@@ -864,8 +879,8 @@ procedure ParseVectorsAppendElements is
   subprogramId : constant identifier := vectors_append_elements_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -876,7 +891,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           if metaLabelOk( itemExpr ) then
@@ -908,8 +924,9 @@ end ParseVectorsAppendElements;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsPrependElements is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   itemExpr  : storage;
   itemType  : identifier;
   cntExpr   : storage;
@@ -918,8 +935,8 @@ procedure ParseVectorsPrependElements is
   subprogramId : constant identifier := vectors_prepend_elements_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -930,7 +947,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           if metaLabelOk( itemExpr ) then
@@ -964,8 +982,9 @@ end ParseVectorsPrependElements;
 -- TODO: subject defaults to current token?
 
 procedure ParseVectorsAppend is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   idxExpr   : storage;
   idxType   : identifier;
   strExpr   : storage;
@@ -973,15 +992,16 @@ procedure ParseVectorsAppend is
   subprogramId : constant identifier := vectors_append_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
-  ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
+  ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorRef.Id ).genKind2 );
   if isExecutingCommand then
      declare
        idx : vector_index;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
        -- Append( theVector.vslVector, idx, strExpr );
        declare
          the_string : storage;
@@ -1013,8 +1033,9 @@ end ParseVectorsAppend;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsPrepend is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   idxExpr   : storage;
   idxType   : identifier;
   strExpr   : storage;
@@ -1022,15 +1043,16 @@ procedure ParseVectorsPrepend is
   subprogramId : constant identifier := vectors_prepend_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
-  ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
+  ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorRef.Id ).genKind2 );
   if isExecutingCommand then
      declare
        idx : vector_index;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
        -- Prepend( theVector.vslVector, idx, strExpr );
        declare
          the_string : storage;
@@ -1060,21 +1082,23 @@ end ParseVectorsPrepend;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFirstIndex( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   userIdx    : Vector_Storage_Lists.Extended_Index;
   subprogramId : constant identifier := vectors_first_index_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   --kind := identifiers( vectorId ).genKind;
   kind := long_integer_t;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( long_integer'image(
-            toUserVectorIndex( subprogramId, vectorId, userIdx ) ) ),
+            toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ),
          noMetaLabel );
      end;
   end if;
@@ -1089,20 +1113,22 @@ end ParseVectorsFirstIndex;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsLastIndex( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   userIdx    : Vector_Storage_Lists.Extended_Index;
   subprogramId : constant identifier := vectors_last_index_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   --kind := identifiers( vectorId ).genKind;
   kind := long_integer_t;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
-       result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorId, userIdx ) ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel );
      end;
   end if;
 end ParseVectorsLastIndex;
@@ -1116,15 +1142,18 @@ end ParseVectorsLastIndex;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsElement( result : out storage; kind : out identifier ) is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   idxExpr   : storage;
   idxType   : identifier;
-  cursorId  : identifier := eof_t;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   oldElem   : storage;
   subprogramId : constant identifier := vectors_element_t;
 begin
+  cursorRef.id := eof_t;
   expect( subprogramId );
   -- A cursor is a single identifier.  An index is an expression.
   expectParameterOpen( subprogramId );
@@ -1145,10 +1174,10 @@ begin
        ParseIdentifier( discardId );
     end;
   elsif getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-     ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+     ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   elsif getUniType( identifiers( token ).kind ) = vectors_vector_t then
-     ParseInOutInstantiatedParameter( vectorId, vectors_vector_t );
-     ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
+     ParseInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+     ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
   else
      err( context => subprogramId,
           subject => token,
@@ -1165,10 +1194,10 @@ begin
   -- If there was an error, the id might be invalid and genKind2 undefined.
 
   if not error_found then
-     if cursorId /= eof_t then
-          kind := identifiers( cursorId ).genKind2;
+     if cursorRef.Id /= eof_t then
+          kind := identifiers( cursorRef.Id ).genKind2;
      else
-          kind := identifiers( vectorId ).genKind2;
+          kind := identifiers( vectorRef.Id ).genKind2;
      end if;
   else
      kind := eof_t;
@@ -1178,16 +1207,18 @@ begin
      declare
        idx : vector_index;
      begin
-       if cursorId /= eof_t then
-         findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       if cursorRef.Id /= eof_t then
+         getParameterValue( cursorRef, cursResId );
+         findResource( to_resource_id( cursResId.value ), theCursor );
          oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
          if metaLabelOk( oldElem ) then
             result := oldElem;
          end if;
        else
-         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+         getParameterValue( vectorRef, vecResId );
+         findResource( to_resource_id( vecResId.value ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
-         idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
          oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
          if metaLabelOk( oldElem ) then
             result := oldElem;
@@ -1213,23 +1244,25 @@ end ParseVectorsElement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFirstElement( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   oldElem    : storage;
   subprogramId : constant identifier := vectors_first_element_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  kind := identifiers( vectorId ).genKind2;
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  kind := identifiers( vectorRef.Id ).genKind2;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.First_Element( theVector.vslVector );
        if metaLabelOk( oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
-       err_empty( subprogramId, vectorId );
+       err_empty( subprogramId, vectorRef.Id );
      when others =>
        err_exception_raised;
      end;
@@ -1245,23 +1278,25 @@ end ParseVectorsFirstElement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsLastElement( result : out storage; kind : out identifier ) is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   oldElem    : storage;
   subprogramId : constant identifier := vectors_last_element_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  kind := identifiers( vectorId ).genKind2;
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  kind := identifiers( vectorRef.Id ).genKind2;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.Last_Element( theVector.vslVector );
        if metaLabelOk( oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
-       err_empty( subprogramId, vectorId );
+       err_empty( subprogramId, vectorRef.Id );
      when others =>
        err_exception_raised;
      end;
@@ -1279,15 +1314,16 @@ end ParseVectorsLastElement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDeleteFirst is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_delete_first_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -1298,7 +1334,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -1337,15 +1374,16 @@ end ParseVectorsDeleteFirst;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDeleteLast is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   cntExpr   : storage;
   cntType   : identifier;
   hasCnt    : boolean := false;
   subprogramId : constant identifier := vectors_delete_last_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseLastNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -1356,7 +1394,8 @@ begin
      declare
        cnt : Ada.Containers.Count_Type;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
           -- Although delete_first has a count parameter, we cannot use it.
@@ -1394,19 +1433,21 @@ end ParseVectorsDeleteLast;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsContains( result : out storage; kind : out identifier ) is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   itemExpr  : storage;
   itemType  : identifier;
   subprogramId : constant identifier := vectors_contains_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel );
      end;
   end if;
@@ -1422,21 +1463,25 @@ end ParseVectorsContains;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsMove is
-  sourceVectorId   : identifier;
+  sourceVectorRef  : reference;
   theSourceVector  : resPtr;
-  targetVectorId   : identifier;
+  sourceVecResId   : storage;
+  targetVectorRef  : reference;
   theTargetVector  : resPtr;
+  targetVecResId   : storage;
   subprogramId : constant identifier := vectors_move_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, sourceVectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, targetVectorId, vectors_vector_t );
-  vectorItemIndicesOk( subprogramId, sourceVectorId, targetVectorid );
-  genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, sourcevectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, targetvectorRef, vectors_vector_t );
+  vectorItemIndicesOk( subprogramId, sourceVectorRef.Id, targetVectorRef.Id );
+  genTypesOk( identifiers( targetVectorRef.Id ).genKind2, identifiers( sourceVectorRef.Id ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetVectorId ).store.value ), theTargetVector );
-       findResource( to_resource_id( identifiers( sourceVectorId ).store.value ), theSourceVector );
+       getParameterValue( targetVectorRef, targetVecResId );
+       findResource( to_resource_id( targetVecResId.value ), theTargetVector );
+       getParameterValue( sourceVectorRef, sourceVecResId );
+       findResource( to_resource_id( sourceVecResId.value ), theSourceVector );
        Vector_Storage_Lists.Move( theTargetVector.vslVector, theSourceVector.vslVector );
      end;
   end if;
@@ -1452,15 +1497,17 @@ end ParseVectorsMove;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsReverseElements is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   subprogramId : constant identifier := vectors_reverse_elements_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -1476,15 +1523,17 @@ end ParseVectorsReverseElements;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFlip is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   subprogramId : constant identifier := vectors_flip_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use reverse_elements" );
-  ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
        Vector_Storage_Lists.Reverse_Elements( theVector.vslVector );
      end;
   end if;
@@ -1500,28 +1549,33 @@ end ParseVectorsFlip;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFirst is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   theCursor  : resPtr;
   --cursRef    : reference;
-  cursorId   : identifier;
+  cursorRef  : reference;
+  cursResid  : storage;
   subprogramId : constant identifier := vectors_first_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, cursorId , vectors_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
 
   -- Check the type against the vector
 
   if not error_found then
-     vectorItemIndicesOk( subprogramId, vectorId, cursorId );
-     genElementsOk( subprogramId, vectorId, cursorId, identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     vectorItemIndicesOk( subprogramId, vectorRef.Id, cursorRef.Id );
+     genElementsOk( subprogramId, vectorRef.Id, cursorRef.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
      -- genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.vslCursor := Vector_Storage_Lists.First( theVector.vslVector );
      end;
   end if;
@@ -1537,24 +1591,28 @@ end ParseVectorsFirst;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsLast is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
-  cursorId   : identifier;
+  vecResId   : storage;
+  cursorRef  : reference;
   theCursor  : resPtr;
+  cursResId  : storage;
   subprogramId : constant identifier := vectors_last_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   -- Check the type against the vector
   if not error_found then
-     vectorItemIndicesOk( subprogramId, vectorid, cursorId );
-     genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     vectorItemIndicesOk( subprogramId, vectorRef.id, cursorRef.Id );
+     genTypesOk( identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.vslCursor := Vector_Storage_Lists.Last( theVector.vslVector );
      end;
   end if;
@@ -1571,15 +1629,17 @@ end ParseVectorsLast;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsNext is
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := vectors_next_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursId, vectors_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursRef, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        Vector_Storage_Lists.Next( theCursor.vslCursor );
      end;
   end if;
@@ -1596,15 +1656,17 @@ end ParseVectorsNext;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsPrevious is
-  cursId    : identifier;
+  cursRef   : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := vectors_previous_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursId, vectors_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursRef, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursId ).store.value ), theCursor );
+       getParameterValue( cursRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        Vector_Storage_Lists.Previous( theCursor.vslCursor );
      end;
   end if;
@@ -1623,10 +1685,12 @@ end ParseVectorsPrevious;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDelete is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
-  cursorId  : identifier;
+  vecResId  : storage;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   idxExpr   : storage;
   idxType   : identifier;
   hasIdx    : boolean := false;
@@ -1639,13 +1703,13 @@ procedure ParseVectorsDelete is
   subprogramId : constant identifier := vectors_delete_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   expectParameterComma( subprogramId );
   if identifiers( token ).class = varClass and then
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-     ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+     ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   else
-     ParseGenItemParameter( idxExpr, idxType, identifiers( vectorId ).genKind );
+     ParseGenItemParameter( idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
      -- This will not stronly match natural, positive and integer, as these
      -- subtypes.  But it will detect new data types derived from integer.
      --ParseExpression( idxExpr, idxType );
@@ -1660,13 +1724,14 @@ begin
   expectParameterClose( subprogramId );
   if isExecutingCommand then
      begin
-        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+        getParameterValue( vectorRef, vecResId );
+        findResource( to_resource_id( vecResId.value ), theVector );
         if hasIdx then
            if hasCnt then
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-              idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
                   if metaLabelOk( oldElem ) then
@@ -1675,14 +1740,15 @@ begin
               end loop;
               -- Vector_Storage_Lists.Delete( theVector.vslVector, idx, cnt );
            else
-              idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
               if metaLabelOk( oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
               end if;
            end if;
         else
-           findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+           getParameterValue( cursorRef, cursResId );
+           findResource( to_resource_id( cursResId.value ), theCursor );
            if hasCnt then
               -- the problem with a count and a cursor is that the cursor becomes
               -- invalid when the item beneath it is deleted
@@ -1741,16 +1807,18 @@ end ParseVectorsDelete;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsHasElement( result : out storage; kind : out identifier ) is
-  cursorId   : identifier;
+  cursorRef  : reference;
   theCursor  : resPtr;
+  cursResId  : storage;
   subprogramId : constant identifier := vectors_has_element_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
      end;
   end if;
@@ -1765,26 +1833,30 @@ end ParseVectorsHasElement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsEqual( result : out storage; kind : out identifier ) is
-  leftVectorId  : identifier;
-  rightVectorId : identifier;
+  leftVectorRef : reference;
+  rightVectorRef: reference;
   leftVector    : resPtr;
   rightVector   : resPtr;
+  leftVecResId  : storage;
+  rightVecResId  : storage;
   use Vector_Storage_Lists;
   subprogramId : constant identifier := vectors_equal_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, leftVectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, rightVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, leftVectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, rightVectorRef, vectors_vector_t );
   if not error_found then
-     vectorItemIndicesOk( vectors_insert_before_t, leftVectorId, rightVectorId );
-     genElementsOk( vectors_insert_before_t, leftVectorId, rightVectorId,
-        identifiers( leftVectorId ).genKind2, identifiers( rightVectorId ).genKind2 );
+     vectorItemIndicesOk( vectors_insert_before_t, leftVectorRef.Id, rightVectorRef.Id );
+     genElementsOk( vectors_insert_before_t, leftVectorRef.Id, rightVectorRef.Id,
+        identifiers( leftVectorRef.Id ).genKind2, identifiers( rightVectorRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftVectorId ).store.value ), leftVector );
-       findResource( to_resource_id( identifiers( rightVectorId ).store.value ), rightVector );
+       getParameterValue( leftVectorRef, leftVecResId );
+       findResource( to_resource_id( leftVecResId.value ), leftVector );
+       getParameterValue( rightVectorRef, rightVecResId );
+       findResource( to_resource_id( rightVecResId.value ), rightVector );
        result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel );
      exception when storage_error =>
        err_storage;
@@ -1825,8 +1897,9 @@ end ParseVectorsEqual;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsert is
-  vectorId   : identifier;
+  vectorRef  : reference;
   theVector  : resPtr;
+  vecResId   : storage;
   beforeExpr  : storage;
   beforeType : identifier;
   elemExpr    : storage;
@@ -1837,8 +1910,8 @@ procedure ParseVectorsInsert is
   subprogramId : constant identifier := vectors_insert_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextNumericParameter( subprogramId, beforeExpr, beforeType, identifiers( vectorId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextNumericParameter( subprogramId, beforeExpr, beforeType, identifiers( vectorRef.Id ).genKind );
 
   -- In Ada, the element can be missing, the count can be missing, or both.
   -- If the count type and element type are the same, SparForte cannot
@@ -1848,7 +1921,7 @@ begin
   --if token = symbol_t and identifiers( token ).store.value = "," then
      expectParameterComma( subprogramId );
      ParseExpression( elemExpr, elemType );
-     if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+     if type_checks_done or else baseTypesOk( elemType, identifiers( vectorRef.Id ).genKind2 ) then
         if token = symbol_t and identifiers( token ).store.value = "," then
            ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
@@ -1862,8 +1935,9 @@ begin
        idx : vector_index;
        cnt : ada.containers.count_type := 1;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( beforeExpr.value ) ) );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( beforeExpr.value ) ) );
        if hasCnt then
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -1900,27 +1974,27 @@ end ParseVectorsInsert;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertVector is
-  vectorId   : identifier;
-  cursorId   : identifier;
-  vector2Id  : identifier;
+  vectorRef  : reference;
+  cursorRef  : reference;
+  vector2Ref : reference;
   subprogramId : constant identifier := vectors_insert_vector_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, vector2Id, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, vector2Ref, vectors_vector_t );
 
   if not error_found then
      -- both vectors and the cursor must be type checked
-     vectorItemIndicesOk( subprogramId, vectorId, cursorId, vector2Id );
+     vectorItemIndicesOk( subprogramId, vectorRef.Id, cursorRef.Id, vector2Ref.Id );
      -- TODO: should be a 3-way version of genElementsOk but would require
      -- refactoring of uniTypesOk also.
-     genElementsOk( subprogramId, vectorId, cursorId,
-        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
-     genElementsOk( subprogramId, cursorId, vectorId,
-        identifiers( cursorId ).genKind2, identifiers( vectorId ).genKind2 );
-     genElementsOk( subprogramId, vectorId, vector2Id,
-        identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
+     genElementsOk( subprogramId, vectorRef.Id, cursorRef.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
+     genElementsOk( subprogramId, cursorRef.Id, vectorRef.Id,
+        identifiers( cursorRef.Id ).genKind2, identifiers( vectorRef.Id ).genKind2 );
+     genElementsOk( subprogramId, vectorRef.Id, vector2Ref.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( vector2Ref.Id ).genKind2 );
   end if;
 
   if isExecutingCommand then
@@ -1928,10 +2002,16 @@ begin
        theVector  : resPtr;
        theCursor  : resPtr;
        theVector2 : resPtr;
+       vecResId   : storage;
+       cursResId  : storage;
+       vec2ResId  : storage;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
-       findResource( to_resource_id( identifiers( vector2Id ).store.value ), theVector2 );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
+       getParameterValue( vector2Ref, vec2ResId );
+       findResource( to_resource_id( vec2ResId.value ), theVector2 );
        Vector_Storage_Lists.Insert(
           theVector.vslVector,
           theCursor.vslCursor,
@@ -1960,8 +2040,8 @@ end ParseVectorsInsertVector;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertBefore is
-  vectorId   : identifier;
-  cursorId   : identifier;
+  vectorRef  : reference;
+  cursorRef  : reference;
   elemExpr    : storage;
   elemType   : identifier;
   cntExpr    : storage;
@@ -1971,17 +2051,17 @@ procedure ParseVectorsInsertBefore is
   subprogramId : constant identifier := vectors_insert_before_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
-  ParseNextGenItemParameter( subprogramId, elemExpr, elemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
+  ParseNextGenItemParameter( subprogramId, elemExpr, elemType, identifiers( vectorRef.Id ).genKind2 );
   if token = symbol_t and identifiers( token ).store.value = "," then
      ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
   if not error_found then
-     vectorItemIndicesOk( subprogramId, cursorId, vectorId );
-     genElementsOk( subprogramId, vectorId, cursorId,
-        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     vectorItemIndicesOk( subprogramId, cursorRef.Id, vectorRef.Id );
+     genElementsOk( subprogramId, vectorRef.Id, cursorRef.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
   end if;
 
   expectParameterClose( subprogramId );
@@ -1991,9 +2071,13 @@ begin
        cnt        : ada.containers.count_type := 1;
        theVector  : resPtr;
        theCursor  : resPtr;
+       vecResId   : storage;
+       cursResId  : storage;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        if hasCnt then
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -2025,31 +2109,31 @@ end ParseVectorsInsertBefore;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertVectorAndMark is
-  vectorId   : identifier;
-  cursorId   : identifier;
-  vector2Id  : identifier;
+  vectorRef  : reference;
+  cursorRef  : reference;
+  vector2Ref : reference;
   cursor2Ref : reference;
   subprogramId : constant identifier := vectors_insert_vector_and_mark_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, vector2Id, vectors_vector_t );
-  ParseLastOutVectorCursor( subprogramId, vectorId, cursor2Ref );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, vector2Ref, vectors_vector_t );
+  ParseLastOutVectorCursor( subprogramId, vectorRef.Id, cursor2Ref );
 
   -- I haven't written a 4-way type test.
 
   if not error_found then
      -- both vectors and the cursor must be type checked
-     vectorItemIndicesOk( subprogramId, vectorId, cursorId, vector2Id );
+     vectorItemIndicesOk( subprogramId, vectorRef.Id, cursorRef.Id, vector2Ref.Id );
      -- TODO: should be a 3-way version of genElementsOk but would require
      -- refactoring of uniTypesOk also.
-     genElementsOk( subprogramId, vectorId, cursorId,
-        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
-     genElementsOk( subprogramId, cursorId, vectorId,
-        identifiers( cursorId ).genKind2, identifiers( vectorId ).genKind2 );
-     genElementsOk( subprogramId, vectorId, vector2Id,
-        identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
+     genElementsOk( subprogramId, vectorRef.Id, cursorRef.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
+     genElementsOk( subprogramId, cursorRef.Id, vectorRef.Id,
+        identifiers( cursorRef.Id ).genKind2, identifiers( vectorRef.Id ).genKind2 );
+     genElementsOk( subprogramId, vectorRef.Id, vector2Ref.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( vector2Ref.Id ).genKind2 );
      -- the second cursor generic types are checked by last out vector cursor
   end if;
 
@@ -2059,24 +2143,19 @@ begin
        theCursor  : resPtr;
        theVector2 : resPtr;
        theCursor2 : resPtr;
+       vecResId   : storage;
+       vec2ResId  : storage;
+       cursResId  : storage;
+       curs2ResId : storage;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
-       findResource( to_resource_id( identifiers( vector2Id ).store.value ), theVector2 );
-
-       -- For a reference, the index is significant if it is an array.
-       -- I cannot remember if value is set for me in the reference.  I will
-       -- assume I handle it manually.
-       -- TODO: even if someone were to try this, the cursor functions are
-       -- not written to support an array element.
-
-       if identifiers( cursor2ref.id ).list then
-          findResource( to_resource_id(
-             identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
-             theCursor2 );
-       else
-          findResource( to_resource_id( identifiers( cursor2ref.id ).store.value ), theCursor2 );
-       end if;
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
+       getParameterValue( vector2Ref, vec2ResId );
+       findResource( to_resource_id( vec2ResId.value ), theVector2 );
+       getParameterValue( cursor2Ref, curs2ResId );
+       findResource( to_resource_id( curs2ResId.value ), theCursor2 );
 
        -- If the second cursor was auto-declared, the cursor would have been
        -- created by LastOutVectorCursor.
@@ -2115,8 +2194,8 @@ end ParseVectorsInsertVectorAndMark;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertBeforeAndMark is
-  vectorId   : identifier;
-  cursorId   : identifier;
+  vectorRef  : reference;
+  cursorRef  : reference;
   elemExpr   : storage;
   elemType   : identifier;
   cursor2Ref : reference;
@@ -2126,13 +2205,13 @@ procedure ParseVectorsInsertBeforeAndMark is
   subprogramId : constant identifier := vectors_insert_before_and_mark_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
 
   expectParameterComma( subprogramId );
   ParseExpression( elemExpr, elemType );
-  if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
-     ParseNextOutVectorCursor( subprogramId, vectorId, cursor2Ref );
+  if type_checks_done or else baseTypesOk( elemType, identifiers( vectorRef.Id ).genKind2 ) then
+     ParseNextOutVectorCursor( subprogramId, vectorRef.Id, cursor2Ref );
      if token = symbol_t and identifiers( token ).store.value = "," then
         ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
@@ -2145,10 +2224,10 @@ begin
 
   if not error_found then
      -- the vector, element and cursor must be type checked
-     vectorItemIndicesOk( subprogramId, vectorId, cursorId, cursor2Ref.id );
-     genElementsOk( subprogramId, vectorId, cursorId,
-        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
-     genTypesOk( elemType, identifiers( vectorId ).genKind2 );
+     vectorItemIndicesOk( subprogramId, vectorRef.Id, cursorRef.Id, cursor2Ref.id );
+     genElementsOk( subprogramId, vectorRef.Id, cursorRef.Id,
+        identifiers( vectorRef.Id ).genKind2, identifiers( cursorRef.Id ).genKind2 );
+     genTypesOk( elemType, identifiers( vectorRef.Id ).genKind2 );
      -- the second cursor generic types are checked by last out vector cursor
   end if;
 
@@ -2158,23 +2237,16 @@ begin
        theVector  : resPtr;
        theCursor  : resPtr;
        theCursor2 : resPtr;
+       vecResId   : storage;
+       cursResId  : storage;
+       curs2ResId : storage;
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
-
-       -- For a reference, the index is significant if it is an array.
-       -- I cannot remember if value is set for me in the reference.  I will
-       -- assume I handle it manually.
-       -- TODO: even if someone were to try this, the cursor functions are
-       -- not written to support an array element.
-
-       if identifiers( cursor2ref.id ).list then
-          findResource( to_resource_id(
-             identifiers( cursor2ref.id ).aStorage( cursor2ref.index ).value ),
-             theCursor2 );
-       else
-          findResource( to_resource_id( identifiers( cursor2ref.id ).store.value ), theCursor2 );
-       end if;
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
+       getParameterValue( cursor2Ref, curs2ResId );
+       findResource( to_resource_id( curs2ResId.value ), theCursor2 );
        -- TODO: the cursor may not exist
 
        if hasCnt then
@@ -2218,14 +2290,16 @@ end ParseVectorsInsertBeforeAndMark;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertSpace is
-  vectorId   : identifier;
-  beforeCursorId : identifier;
+  vectorRef  : reference;
+  beforeCursorRef : reference;
   beforeIdxExpr  : storage;
   beforeIdxType  : identifier;
   positionCursorRef : reference;
   cntExpr    : storage;
   cntType    : identifier;
   theVector  : resPtr;
+  vecResId   : storage;
+  beforeCursorResId : storage;
   cnt        : ada.containers.count_type := 1;
   hasIdx     : boolean := false;
   hasCnt     : boolean := false;
@@ -2233,15 +2307,15 @@ procedure ParseVectorsInsertSpace is
   subprogramId : constant identifier := vectors_insert_space_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   expectParameterComma( subprogramId );
   if identifiers( token ).class = varClass and then
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-     ParseInOutInstantiatedParameter( beforeCursorId, vectors_cursor_t );
-     ParseNextOutVectorCursor( subprogramId, vectorId, positionCursorRef );
+     ParseInOutInstantiatedParameter( subprogramId, beforeCursorRef, vectors_cursor_t );
+     ParseNextOutVectorCursor( subprogramId, vectorRef.Id, positionCursorRef );
   else
      ParseExpression( beforeIdxExpr, beforeIdxType );
-     vectorIndexOrCursorOk( subprogramId, beforeIdxType, vectorId );
+     vectorIndexOrCursorOk( subprogramId, beforeIdxType, vectorRef.Id );
      hasIdx := true;
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
@@ -2252,7 +2326,8 @@ begin
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+       getParameterValue( vectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), theVector );
 
        -- Either variation can have a count
 
@@ -2271,7 +2346,7 @@ begin
           declare
              idx : vector_index;
           begin
-             idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( beforeIdxExpr.value ) ) );
+             idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( beforeIdxExpr.value ) ) );
              Vector_Storage_Lists.Insert_Space( theVector.vslVector, idx, cnt );
           end;
        else
@@ -2280,8 +2355,9 @@ begin
              theBeforeCursor  : resPtr;
              thePositionCursor : resPtr;
           begin
+             getParameterValue( beforeCursorRef, beforeCursorResId );
              findResource(
-                 to_resource_id( identifiers( beforeCursorId ).store.value ),
+                 to_resource_id( beforeCursorResId.value ),
                  theBeforeCursor
              );
 
@@ -2344,24 +2420,28 @@ end ParseVectorsInsertSpace;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsAppendVector is
-  leftVectorId  : identifier;
-  rightVectorId : identifier;
+  leftvectorRef : reference;
+  rightvectorRef: reference;
   leftVector    : resPtr;
   rightVector   : resPtr;
+  vecResId      : storage;
+  vec2ResId     : storage;
   use Vector_Storage_Lists;
   subprogramId : constant identifier := vectors_append_vector_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, leftVectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, rightVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, leftvectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, rightvectorRef, vectors_vector_t );
   if not error_found then
-     genTypesOk( identifiers( leftVectorId ).genKind, identifiers( rightVectorId ).genKind );
-     genTypesOk( identifiers( leftVectorId ).genKind2, identifiers( rightVectorId ).genKind2 );
+     genTypesOk( identifiers( leftvectorRef.Id ).genKind, identifiers( rightvectorRef.Id ).genKind );
+     genTypesOk( identifiers( leftvectorRef.Id ).genKind2, identifiers( rightvectorRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftVectorId ).store.value ), leftVector );
-       findResource( to_resource_id( identifiers( rightVectorId ).store.value ), rightVector );
+       getParameterValue( leftvectorRef, vecResId );
+       findResource( to_resource_id( vecResId.value ), leftVector );
+       getParameterValue( rightvectorRef, vec2ResId );
+       findResource( to_resource_id( vec2ResId.value ), rightVector );
        leftVector.vslVector := leftVector.vslVector & rightVector.vslVector;
      exception when storage_error =>
        err_storage;
@@ -2382,9 +2462,9 @@ end ParseVectorsAppendVector;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsSwap is
-  vectorId   : identifier;
-  cursorId   : identifier;
-  cursorId2  : identifier;
+  vectorRef  : reference;
+  cursorRef  : reference;
+  cursorRef2 : reference;
   theVector  : resPtr;
   theCursor  : resPtr;
   theCursor2 : resPtr;
@@ -2392,19 +2472,22 @@ procedure ParseVectorsSwap is
   idxType1   : identifier;
   idx2Expr   : storage;
   idxType2   : identifier;
+  vecResId   : storage;
+  cursResId  : storage;
+  cursResId2 : storage;
   hasIdx     : boolean := false;
   subprogramId : constant identifier := vectors_swap_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   expectParameterComma( subprogramId );
   if identifiers( token ).class = varClass and then
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-     ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
-     ParseLastInOutInstantiatedParameter( subprogramId, cursorId2, vectors_cursor_t );
+     ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
+     ParseLastInOutInstantiatedParameter( subprogramId, cursorRef2, vectors_cursor_t );
   else
      ParseExpression( idx1Expr, idxType1 );
-     vectorIndexOrCursorOk( subprogramId, idxType1, vectorId );
+     vectorIndexOrCursorOk( subprogramId, idxType1, vectorRef.Id );
      expectParameterComma( subprogramId );
      -- special case error to improve readability and avoid an more general
      -- error on limited variables
@@ -2421,7 +2504,7 @@ begin
      end if;
      ParseExpression( idx2Expr, idxType2 );
      if not type_checks_done then
-        baseTypesOK( idxType2, identifiers( vectorId ).genKind );
+        baseTypesOK( idxType2, identifiers( vectorRef.Id ).genKind );
      end if;
      hasIdx := true;
      expectParameterClose( subprogramId );
@@ -2433,9 +2516,10 @@ begin
            idx1 : vector_index;
            idx2 : vector_index;
         begin
-           idx1 := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idx1Expr.value ) ) );
-           idx2 := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idx2Expr.value ) ) );
-           findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+           idx1 := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idx1Expr.value ) ) );
+           idx2 := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idx2Expr.value ) ) );
+           getParameterValue( vectorRef, vecResId );
+           findResource( to_resource_id( vecResId.value ), theVector );
            if metaLabelOK( Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
                            Vector_Storage_Lists.Element( theVector.vslVector, idx2 ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, idx1, idx2 );
@@ -2447,9 +2531,12 @@ begin
         end;
      else
         begin
-           findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-           findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
-           findResource( to_resource_id( identifiers( cursorId2 ).store.value ), theCursor2 );
+           getParameterValue( vectorRef, vecResId );
+           findResource( to_resource_id( vecResId.value ), theVector );
+           getParameterValue( cursorRef, cursResId );
+           findResource( to_resource_id( cursResId.value ), theCursor );
+           getParameterValue( cursorRef2, cursResId2 );
+           findResource( to_resource_id( cursResId2.value ), theCursor2 );
            if metaLabelOK( Vector_Storage_Lists.Element( theCursor.vslCursor),
                            Vector_Storage_Lists.Element( theCursor2.vslCursor ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
@@ -2475,15 +2562,15 @@ end ParseVectorsSwap;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFind is
-  vectorId      : identifier;
+  vectorRef     : reference;
   itemExpr      : storage;
   itemType      : identifier;
-  startCursorId : identifier;
+  startCursorRef : reference;
   positionCursorRef : reference;
   subprogramId : constant identifier := vectors_find_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   -- special case error to improve readability and avoid an more general
   -- error on limited variables.  For this reason, "NextGenItem" is not used.
   expectParameterComma( subprogramId );
@@ -2493,28 +2580,32 @@ begin
         err(
           context => subprogramId,
           subjectNotes => pl( qp( "a vector element" ) ),
-          subjectType => identifiers( vectorId ).genKind2,
+          subjectType => identifiers( vectorRef.Id ).genKind2,
           reason => +"is expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
   end if;
-  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
-  ParseNextInOutInstantiatedParameter( subprogramId, startCursorId, vectors_cursor_t );
-  ParseLastOutVectorCursor( subprogramId, vectorId, positionCursorRef );
+  ParseNextInOutInstantiatedParameter( subprogramId, startCursorRef, vectors_cursor_t );
+  ParseLastOutVectorCursor( subprogramId, vectorRef.Id, positionCursorRef );
 
   if isExecutingCommand then
      declare
-        theVector : resPtr;
-        theCursor : resPtr;
+        theVector  : resPtr;
+        vecResId   : storage;
+        theCursor  : resPtr;
+        startCursResId  : storage;
         --
         positionCursorResourceId : resHandleId;
         thePositionCursor : resPtr;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-        findResource( to_resource_id( identifiers( startCursorId ).store.value ), theCursor );
+        getParameterValue( vectorRef, vecResId );
+        findResource( to_resource_id( vecResId.value ), theVector );
+        getParameterValue( startCursorRef, startCursResId );
+        findResource( to_resource_id( startCursResId.value ), theCursor );
 
         -- the second cursor is the out parameter.  Declare it.  Then fetch it.
         -- TODO: if out is overwriting a resource, delete old resource(s)
@@ -2556,15 +2647,15 @@ end ParseVectorsFind;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsReverseFind is
-  vectorId      : identifier;
+  vectorRef     : reference;
   itemExpr      : storage;
   itemType      : identifier;
-  startCursorId : identifier;
+  startCursorRef : reference;
   positionCursorRef : reference;
   subprogramId : constant identifier := vectors_reverse_find_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   -- special case error to improve readability and avoid an more general
   -- error on limited variables.  For this reason, "NextGenItem" is not used.
   expectParameterComma( subprogramId );
@@ -2574,28 +2665,32 @@ begin
         err(
           context => subprogramId,
           subjectNotes => pl( qp( "a vector element" ) ),
-          subjectType => identifiers( vectorId ).genKind2,
+          subjectType => identifiers( vectorRef.Id ).genKind2,
           reason => +"is expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
   end if;
-  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
-  ParseNextInOutInstantiatedParameter( subprogramId, startCursorId, vectors_cursor_t );
-  ParseLastOutVectorCursor( subprogramId, vectorId, positionCursorRef );
+  ParseNextInOutInstantiatedParameter( subprogramId, startCursorRef, vectors_cursor_t );
+  ParseLastOutVectorCursor( subprogramId, vectorRef.Id, positionCursorRef );
 
   if isExecutingCommand then
      declare
         theVector : resPtr;
         theCursor : resPtr;
+        vecResId   : storage;
+        startCursResId  : storage;
         --
         positionCursorResourceId : resHandleId;
         thePositionCursor : resPtr;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-        findResource( to_resource_id( identifiers( startCursorId ).store.value ), theCursor );
+        getParameterValue( vectorRef, vecResId );
+        findResource( to_resource_id( vecResId.value ), theVector );
+        getParameterValue( startCursorRef, startCursResId );
+        findResource( to_resource_id( startCursResId.value ), theCursor );
 
         -- the second cursor is the out parameter.  Declare it.  Then fetch it.
         -- TODO: if out is overwriting a resource, delete old resource(s)
@@ -2637,7 +2732,7 @@ end ParseVectorsReverseFind;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsFindIndex is
-  vectorId      : identifier;
+  vectorRef     : reference;
   itemExpr      : storage;
   itemType      : identifier;
   startIdxExpr  : storage;
@@ -2646,28 +2741,30 @@ procedure ParseVectorsFindIndex is
   subprogramId : constant identifier := vectors_find_index_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   -- in Ada, the next parameter is optional but is easier to make optional
   -- than find with two cursors
-  ParseNextGenItemParameter( subprogramId, startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseNextGenItemParameter( subprogramId, startIdxExpr, startIdxType, identifiers( vectorRef.Id ).genKind );
   ParseLastOutParameter( subprogramId, positionIdxRef, long_integer_t );
 
   if isExecutingCommand then
      declare
         theVector   : resPtr;
+        vecResId    : storage;
         startIdx    : vector_index;
         positionIdx : Vector_Storage_Lists.Extended_Index;
         positionValue : unbounded_string;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-        startIdx := toRealVectorIndex( subprogramId, vectorId, long_integer(
+        getParameterValue( vectorRef, vecResId );
+        findResource( to_resource_id( vecResId.value ), theVector );
+        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer(
            to_numeric( startIdxExpr.value ) ) );
         if metaLabelOk( itemExpr ) then
            positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector,
              itemExpr, startIdx );
         end if;
-        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( subprogramId, vectorId, positionIdx ) ) );
+        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( subprogramId, vectorRef.Id, positionIdx ) ) );
         AssignParameter(
            positionIdxRef,
            storage'( positionValue, noMetaLabel )
@@ -2692,7 +2789,7 @@ end ParseVectorsFindIndex;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsReverseFindIndex is
-  vectorId      : identifier;
+  vectorRef     : reference;
   itemExpr      : storage;
   itemType      : identifier;
   startIdxExpr  : storage;
@@ -2701,30 +2798,32 @@ procedure ParseVectorsReverseFindIndex is
   subprogramId : constant identifier := vectors_reverse_find_index_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, itemExpr, itemType, identifiers( vectorRef.Id ).genKind2 );
   -- in Ada, the next parameter is optional but is easier to make optional
   -- than find with two cursors
-  ParseNextGenItemParameter( subprogramId, startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseNextGenItemParameter( subprogramId, startIdxExpr, startIdxType, identifiers( vectorRef.Id ).genKind );
   ParseLastOutParameter( subprogramId, positionIdxRef, long_integer_t );
 
   if isExecutingCommand then
      declare
         theVector   : resPtr;
+        vecResId    : storage;
         startIdx    : vector_index;
         positionIdx : Vector_Storage_Lists.Extended_Index;
         positionValue : unbounded_string;
      begin
-        findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+        getParameterValue( vectorRef, vecResId );
+        findResource( to_resource_id( vecResId.value ), theVector );
 
-        startIdx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( startIdxExpr.value ) ) );
+        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( startIdxExpr.value ) ) );
 
         if metaLabelOk( itemExpr ) then
            positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector,
               itemExpr, startIdx );
         end if;
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex(
-           subprogramId, vectorId, positionIdx ) ) );
+           subprogramId, vectorRef.Id, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
@@ -2749,8 +2848,9 @@ end ParseVectorsReverseFindIndex;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsIncrement is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   idxExpr   : storage;
   idxType   : identifier;
   numExpr   : storage;
@@ -2759,19 +2859,19 @@ procedure ParseVectorsIncrement is
   subprogramId : constant identifier := vectors_increment_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
-  if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
+  if getUniType( identifiers( vectorRef.Id ).genKind2 ) /= uni_numeric_t then
      err( context => subprogramId,
-          subject => vectorId,
-          subjectType => identifiers( vectorId ).kind,
+          subject => vectorRef.Id,
+          subjectType => identifiers( vectorRef.Id ).kind,
           reason  => +"must have numeric elements but the elements are type",
-          obstructor => identifiers( vectorId ).genKind2
+          obstructor => identifiers( vectorRef.Id ).genKind2
      );
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
-     ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorId ).genKind2 );
+     ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorRef.Id ).genKind2 );
   elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
@@ -2793,9 +2893,10 @@ begin
        declare
          idx : vector_index;
        begin
-         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
+         getParameterValue( vectorRef, vecResId );
+         findResource( to_resource_id( vecResId.value ), theVector );
          begin
-           idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
            err( context => subprogramId,
@@ -2843,8 +2944,9 @@ end ParseVectorsIncrement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDecrement is
-  vectorId  : identifier;
+  vectorRef : reference;
   theVector : resPtr;
+  vecResId  : storage;
   idxExpr   : storage;
   idxType   : identifier;
   numExpr   : storage;
@@ -2853,19 +2955,19 @@ procedure ParseVectorsDecrement is
   subprogramId : constant identifier := vectors_decrement_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
-  if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
+  if getUniType( identifiers( vectorRef.Id ).genKind2 ) /= uni_numeric_t then
      err( context => subprogramId,
-          subject => vectorId,
-          subjectType => identifiers( vectorId ).kind,
+          subject => vectorRef.Id,
+          subjectType => identifiers( vectorRef.Id ).kind,
           reason  => +"must have numeric elements but the elements are type",
-          obstructor => identifiers( vectorId ).genKind2
+          obstructor => identifiers( vectorRef.Id ).genKind2
      );
   end if;
   if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
-     ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorId ).genKind2 );
+     ParseLastStringParameter( subprogramId, numExpr, numType, identifiers( vectorRef.Id ).genKind2 );
   elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
@@ -2888,7 +2990,7 @@ begin
          idx : vector_index;
        begin
          begin
-           idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
            err( context => subprogramId,
@@ -2899,8 +3001,9 @@ begin
              remedy => +"the value should be >= 0"
            );
          end;
-         findResource( to_resource_id( identifiers( vectorId ).store.value ), theVector );
-         idx := toRealVectorIndex( subprogramId, vectorId, long_integer( to_numeric( idxExpr.value ) ) );
+         getParameterValue( vectorRef, vecResId );
+         findResource( to_resource_id( vecResId.value ), theVector );
+         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
          -- Decrement( theVector.vslVector, idx, floatVal );
          declare
            the_string : storage;
@@ -2938,23 +3041,27 @@ end ParseVectorsDecrement;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsAssign is
-  targetVectorId   : identifier;
-  sourceVectorId   : identifier;
+  targetvectorRef  : reference;
+  sourcevectorRef  : reference;
   targetVector  : resPtr;
   sourceVector  : resPtr;
+  targetVecResId  : storage;
+  sourceVecResId  : storage;
   subprogramId : constant identifier := vectors_assign_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetVectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, sourceVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetvectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, sourcevectorRef, vectors_vector_t );
   if not error_found then
-     vectorItemIndicesOk( subprogramId, sourceVectorId, targetVectorid );
-     genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
+     vectorItemIndicesOk( subprogramId, sourceVectorRef.Id, targetVectorRef.Id );
+     genTypesOk( identifiers( targetVectorRef.Id ).genKind2, identifiers( sourceVectorRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetVectorId ).store.value ), targetVector );
-       findResource( to_resource_id( identifiers( sourceVectorId ).store.value ), sourceVector );
+       getParameterValue( targetvectorRef, targetVecResId );
+       findResource( to_resource_id( targetVecResId.value ), targetVector );
+       getParameterValue( sourcevectorRef, sourceVecResId );
+       findResource( to_resource_id( sourceVecResId.value ), sourceVector );
        Vector_Storage_Lists.Assign( targetVector.vslVector, sourceVector.vslVector );
      exception when storage_error =>
        err_storage;
@@ -2974,21 +3081,23 @@ end ParseVectorsAssign;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsToIndex( result : out storage; kind : out identifier ) is
-  cursorId   : identifier;
-  vectorId   : identifier;
+  cursorRef   : reference;
+  vectorRef  : reference;
   theCursor  : resPtr;
+  cursResId  : storage;
   convertedIdx : long_integer;
   subprogramId : constant identifier := vectors_to_index_t;
 begin
   -- kind := identifiers( vectorId ).genKind;
   kind := long_integer_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, cursorId, vectors_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
-       convertedIdx := toUserVectorIndex( subprogramId, vectorId,
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
+       convertedIdx := toUserVectorIndex( subprogramId, vectorRef.Id,
            Vector_Storage_Lists.To_Index( theCursor.vslCursor ) );
        result := storage'(
          to_unbounded_string(

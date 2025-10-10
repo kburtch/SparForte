@@ -139,7 +139,7 @@ end err_key_exists;
 -- If necessary, declare a out cursor parameter.  Attach the resource.
 ------------------------------------------------------------------------------
 
-procedure ParseOutMapCursor( mapId : identifier; cursRef : in out reference ) is
+procedure ParseOutMapCursor( subprogramId : identifier; mapId : identifier; cursRef : in out reference ) is
   resId : resHandleId;
 begin
   --expect( symbol_t, "," );
@@ -166,7 +166,7 @@ begin
         end if;
      end if;
   else
-     ParseInOutInstantiatedParameter( cursRef.id , hashed_maps_cursor_t );
+     ParseInOutInstantiatedParameter( subprogramId, cursRef, hashed_maps_cursor_t );
 
      -- Check the type against the map
 
@@ -178,10 +178,10 @@ begin
   --expect( symbol_t, ")" );
 end ParseOutMapCursor;
 
-procedure ParseNextOutMapCursor( mapId : identifier; cursRef : in out reference ) is
+procedure ParseNextOutMapCursor( subprogramId : identifier; mapId : identifier; cursRef : in out reference ) is
 begin
   expectParameterComma;
-  ParseOutMapCursor( mapId, cursRef );
+  ParseOutMapCursor( subprogramId, mapId, cursRef );
 end ParseNextOutMapCursor;
 
 
@@ -194,15 +194,17 @@ end ParseNextOutMapCursor;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsClear is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   subprogramId : constant identifier := hashed_maps_clear_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        Storage_Hashed_Maps.Clear( theMap.shmMap );
      end;
   end if;
@@ -218,16 +220,18 @@ end ParseHashedMapsClear;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsIsEmpty( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   subprogramId : constant identifier := hashed_maps_is_empty_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel );
      end;
   end if;
@@ -243,16 +247,18 @@ end ParseHashedMapsIsEmpty;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsCapacity( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   subprogramId : constant identifier := hashed_maps_capacity_t;
 begin
   kind := containers_count_type_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
@@ -268,20 +274,22 @@ end ParseHashedMapsCapacity;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReserveCapacity is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   capExpr : storage;
   capType : identifier;
   subprogramId : constant identifier := hashed_maps_reserve_capacity_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   ParseLastNumericParameter( subprogramId, capExpr, capType, containers_count_type_t );
   if isExecutingCommand then
      declare
        cap : constant Ada.Containers.Count_Type := Ada.Containers.Count_Type( to_numeric( capExpr.value ) );
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        Storage_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );
      exception when storage_error =>
        err_storage;
@@ -304,8 +312,9 @@ end ParseHashedMapsReserveCapacity;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInsert is
-  mapId     : identifier;
+  mapRef    : reference;
   theMap    : resPtr;
+  mapResId  : storage;
   keyExpr   : storage;
   keyType   : identifier;
   elemExpr  : storage;
@@ -318,8 +327,8 @@ procedure ParseHashedMapsInsert is
   subprogramId : constant identifier := hashed_maps_insert_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   expectParameterComma;
 
   -- There are 3 variants to an insert
@@ -327,16 +336,16 @@ begin
   -- If a token is undefind, we have to assume it is an out mode cursor.
 
   if identifiers( token ).kind = new_t or else getUniType( identifiers( token ).kind ) = hashed_maps_cursor_t then
-     ParseOutMapCursor( mapId, cursorRef );
+     ParseOutMapCursor( subprogramId, mapRef.Id, cursorRef );
      --ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
      ParseLastOutParameter( subprogramId, insertRef, boolean_t );
      version := 2;
   else
-    ParseGenItemParameter( elemExpr, elemType, identifiers( mapId ).genKind2 );
+    ParseGenItemParameter( elemExpr, elemType, identifiers( mapRef.Id ).genKind2 );
     if token = symbol_t and identifiers( token ).store.value = ")" then
        expect( symbol_t, ")" );
     else
-       ParseNextOutMapCursor( mapId, cursorRef );
+       ParseNextOutMapCursor( subprogramId, mapRef.Id, cursorRef );
        --ParseNextInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
        ParseLastOutParameter( subprogramId, insertRef, boolean_t );
        version := 3;
@@ -344,7 +353,8 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
 
        case version is
        -- ( m, k, e )
@@ -398,8 +408,9 @@ end ParseHashedMapsInsert;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInclude is
-  mapId     : identifier;
+  mapRef    : reference;
   theMap    : resPtr;
+  mapResId  : storage;
   keyExpr   : storage;
   keyType   : identifier;
   elemExpr  : storage;
@@ -408,12 +419,13 @@ procedure ParseHashedMapsInclude is
   subprogramId : constant identifier := hashed_maps_include_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
+  ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapRef.Id ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked. The map
        -- may also be empty but existence is optional.
        if Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) then
@@ -444,8 +456,9 @@ end ParseHashedMapsInclude;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReplace is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId : storage;
   keyExpr : storage;
   keyType : identifier;
   elemExpr : storage;
@@ -454,12 +467,13 @@ procedure ParseHashedMapsReplace is
   subprogramId : constant identifier := hashed_maps_replace_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
+  ParseLastGenItemParameter( subprogramId, elemExpr, elemType, identifiers( mapRef.Id ).genKind2 );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and
@@ -487,19 +501,21 @@ end ParseHashedMapsReplace;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsExclude is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
   oldElem : storage;
   subprogramId : constant identifier := hashed_maps_exclude_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
@@ -526,30 +542,34 @@ end ParseHashedMapsExclude;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsDelete is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
-  cursorId : identifier := eof_t;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   oldElem : storage;
   subprogramId : constant identifier := hashed_maps_delete_t;
 begin
+  cursorRef.id := eof_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   expectParameterComma;
   if identifiers( token ).class = varClass and then
      getUniType( identifiers( token ).kind ) = hashed_maps_cursor_t then
-     ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+     ParseInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
   else
-     ParseGenItemParameter( keyExpr, keyType, identifiers( mapId ).genKind );
+     ParseGenItemParameter( keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   end if;
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
-       if cursorId = eof_t then
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
+       if cursorRef.Id = eof_t then
           -- the key and existing value must be checked. The map
           -- may also be empty or the key may not exist.
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
@@ -557,7 +577,8 @@ begin
              Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
           end if;
        else
-          findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+          getParameterValue( cursorRef, cursResId );
+          findResource( to_resource_id( cursResId.value ), theCursor );
           -- the existing value must be checked
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
           if metaLabelOK( oldElem ) then
@@ -586,19 +607,21 @@ end ParseHashedMapsDelete;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsContains( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
   subprogramId : constant identifier := hashed_maps_contains_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        result := storage'(
           to_spar_boolean(
              Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr )
@@ -618,12 +641,14 @@ end ParseHashedMapsContains;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsElement( result : out storage; kind : out identifier ) is
-  mapId     : identifier;
+  mapRef    : reference;
   theMap    : resPtr;
+  mapResId  : storage;
   keyExpr   : storage;
   keyType   : identifier;
-  cursorId  : identifier := eof_t;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   firstParamUniType : identifier;
   oldElem   : storage;
   discard   : identifier;
@@ -631,6 +656,7 @@ procedure ParseHashedMapsElement( result : out storage; kind : out identifier ) 
 begin
   -- in the event of an error, we don't know what the data type is
   kind := eof_t;
+  cursorRef.id := eof_t;
 
   expect( subprogramId );
 
@@ -652,11 +678,11 @@ begin
   else
      firstParamUniType := getUniType( token );
      if firstParamUniType = hashed_maps_cursor_t then
-        ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+        ParseInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
         expect( symbol_t, ")" );
      elsif firstParamUniType = hashed_maps_map_t then
-        ParseInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-        ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+        ParseInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+        ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
      elsif firstParamUniType = new_t then
         ParseIdentifier( discard );
      else
@@ -677,23 +703,25 @@ begin
   -- If there was an error, the id might be invalid and genKind2 undefined.
 
   if not error_found then
-     if cursorId /= eof_t then
-         kind := identifiers( cursorId ).genKind2;
+     if cursorRef.Id /= eof_t then
+         kind := identifiers( cursorRef.Id ).genKind2;
      else
-         kind := identifiers( mapId ).genKind2;
+         kind := identifiers( mapRef.Id ).genKind2;
      end if;
   end if;
 
   if isExecutingCommand then
      begin
-       if cursorId /= eof_t then
-          findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       if cursorRef.Id /= eof_t then
+          getParameterValue( cursorRef, cursResId );
+          findResource( to_resource_id( cursResId.value ), theCursor );
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
           if metaLabelOK( oldElem ) then
              result := oldElem;
           end if;
        else
-          findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+          getParameterValue( mapRef, mapResId );
+          findResource( to_resource_id( mapResId.value ), theMap );
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
           if metaLabelOK( keyExpr ) and metaLabelOK( oldElem ) then
              result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
@@ -717,16 +745,18 @@ end ParseHashedMapsElement;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsLength( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   subprogramId : constant identifier := hashed_maps_length_t;
 begin
   kind := containers_count_type_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel );
      end;
   end if;
@@ -743,8 +773,9 @@ end ParseHashedMapsLength;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsAppend is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
   elemExpr : storage;
@@ -752,17 +783,18 @@ procedure ParseHashedMapsAppend is
   subprogramId : constant identifier := hashed_maps_append_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  if getUniType( identifiers( mapRef.Id ).genKind2 ) /= uni_string_t then
      err( +"append requires a string element type" );
   end if;
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
+  ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapRef.Id ).genKind2 );
   if isExecutingCommand then
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- Append( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        -- labels must be the same for the original value and the appending value
@@ -791,8 +823,9 @@ end ParseHashedMapsAppend;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsPrepend is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
   elemExpr : storage;
@@ -800,17 +833,18 @@ procedure ParseHashedMapsPrepend is
   subprogramId : constant identifier := hashed_maps_prepend_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  if getUniType( identifiers( mapRef.Id ).genKind2 ) /= uni_string_t then
      err( +"prepend requires a string element type" );
   end if;
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapId ).genKind2 );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
+  ParseLastStringParameter( subprogramId, elemExpr, elemType, identifiers( mapRef.Id ).genKind2 );
   if isExecutingCommand then
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- Prepend( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOk( elemExpr, original ) then
@@ -836,8 +870,9 @@ end ParseHashedMapsPrepend;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsIncrement is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr  : storage;
   keyType : identifier;
   incExpr  : storage;
@@ -847,14 +882,14 @@ procedure ParseHashedMapsIncrement is
   subprogramId : constant identifier := hashed_maps_increment_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  if getUniType( identifiers( mapRef.Id ).genKind2 ) /= uni_numeric_t then
      err( +"increment requires a numeric element type" );
   end if;
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
-     ParseLastNumericParameter( subprogramId, incExpr, incType, identifiers( mapId ).genKind2 );
+     ParseLastNumericParameter( subprogramId, incExpr, incType, identifiers( mapRef.Id ).genKind2 );
   elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
@@ -873,7 +908,8 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- increment( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
@@ -907,8 +943,9 @@ end ParseHashedMapsIncrement;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsDecrement is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId : storage;
   keyExpr  : storage;
   keyType : identifier;
   decExpr  : storage;
@@ -918,14 +955,14 @@ procedure ParseHashedMapsDecrement is
   subprogramId : constant identifier := hashed_maps_decrement_t;
 begin
   expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  if getUniType( identifiers( mapRef.Id ).genKind2 ) /= uni_numeric_t then
      err( +"decrement requires a numeric element type" );
   end if;
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   if token = symbol_t and identifiers( token ).store.value = "," then
      hasAmt := true;
-     ParseLastNumericParameter( subprogramId, decExpr, decType, identifiers( mapId ).genKind2 );
+     ParseLastNumericParameter( subprogramId, decExpr, decType, identifiers( mapRef.Id ).genKind2 );
   elsif token = symbol_t and identifiers( token ).store.value = ")" then
      expect( symbol_t, ")" );
   else
@@ -944,7 +981,8 @@ begin
      declare
        original : storage;
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        -- decrement( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
@@ -980,8 +1018,9 @@ end ParseHashedMapsDecrement;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsExtract( result : out storage; kind : out identifier ) is
-  mapId   : identifier;
+  mapRef  : reference;
   theMap  : resPtr;
+  mapResId: storage;
   keyExpr : storage;
   keyType : identifier;
   oldElem : storage;
@@ -990,14 +1029,15 @@ begin
   -- in the event of an error, we don't know what the data type is
   kind := eof_t;
   expectAdaScript( subject => subprogramId, remedy => +"use element and delete" );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseLastGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
   if not error_found then
-     kind := identifiers( mapId ).genKind2;
+     kind := identifiers( mapRef.Id ).genKind2;
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
           result := oldElem;
@@ -1023,23 +1063,27 @@ end ParseHashedMapsExtract;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsAssign is
-  targetMapId   : identifier;
-  sourceMapId   : identifier;
+  targetmapRef  : reference;
+  sourcemapRef  : reference;
   targetMap  : resPtr;
   sourceMap  : resPtr;
+  targetMapResId : storage;
+  sourceMapResId : storage;
   subprogramId : constant identifier := hashed_maps_assign_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetMapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, sourceMapId, hashed_maps_map_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetMapRef, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, sourceMapRef, hashed_maps_map_t );
   if not error_found then
-     genTypesOk( identifiers( targetMapId ).genKind, identifiers( sourceMapId ).genKind );
-     genTypesOk( identifiers( targetMapId ).genKind2, identifiers( sourceMapId ).genKind2 );
+     genTypesOk( identifiers( targetMapRef.Id ).genKind, identifiers( sourceMapRef.Id ).genKind );
+     genTypesOk( identifiers( targetMapRef.Id ).genKind2, identifiers( sourceMapRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetMapId ).store.value ), targetMap );
-       findResource( to_resource_id( identifiers( sourceMapId ).store.value ), sourceMap );
+       getParameterValue( targetMapRef, targetMapResId );
+       findResource( to_resource_id( targetMapResId.value ), targetMap );
+       getParameterValue( sourceMapRef, sourceMapResId );
+       findResource( to_resource_id( sourceMapResId.value ), sourceMap );
        Storage_Hashed_Maps.Assign( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1058,19 +1102,23 @@ end ParseHashedMapsAssign;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsMove is
-  targetMapId   : identifier;
-  sourceMapId   : identifier;
+  targetMapRef  : reference;
+  sourceMapRef  : reference;
   targetMap  : resPtr;
   sourceMap  : resPtr;
+  targetMapResId : storage;
+  sourceMapResId : storage;
   subprogramId : constant identifier := hashed_maps_move_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, targetMapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, sourceMapId, hashed_maps_map_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, targetMapRef, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, sourceMapRef, hashed_maps_map_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( targetMapId ).store.value ), targetMap );
-       findResource( to_resource_id( identifiers( sourceMapId ).store.value ), sourceMap );
+       getParameterValue( targetMapRef, targetMapResId );
+       findResource( to_resource_id( targetMapResId.value ), targetMap );
+       getParameterValue( sourceMapRef, sourceMapResId );
+       findResource( to_resource_id( sourceMapResId.value ), sourceMap );
        Storage_Hashed_Maps.Move( targetMap.shmMap, sourceMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1089,21 +1137,24 @@ end ParseHashedMapsMove;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsFirst is
-  mapId : identifier;
-  cursorId : identifier;
-  --cursRef : reference;
+  mapRef: reference;
+  cursorRef : reference;
   theMap : resPtr;
+  mapResId : storage;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := hashed_maps_first_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
   --ParseLastOutMapCursor( mapId, cursRef );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.First( theMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1122,15 +1173,17 @@ end ParseHashedMapsFirst;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsNext is
-  cursorId : identifier;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := hashed_maps_next_t;
 begin
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.Next( theCursor.shmCursor );
      exception when storage_error =>
        err_storage;
@@ -1150,18 +1203,20 @@ end ParseHashedMapsNext;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsKey( result : out storage; kind : out identifier ) is
-  cursorId  : identifier;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   oldElem   : storage;
   subprogramId : constant identifier := hashed_maps_key_t;
 begin
   -- in the event of an error, we don't know what the data type is
   kind := eof_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        oldElem := Storage_Hashed_Maps.Key( theCursor.shmCursor );
        if metaLabelOk( oldElem ) then
           result := oldElem;
@@ -1175,7 +1230,7 @@ begin
      end;
   end if;
   if not error_found then
-     kind := identifiers( cursorId ).genKind;
+     kind := identifiers( cursorRef.Id ).genKind;
   end if;
 end ParseHashedMapsKey;
 
@@ -1190,23 +1245,27 @@ end ParseHashedMapsKey;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsFind is
-  cursorId : identifier;
+  cursorRef : reference;
   theCursor : resPtr;
-  mapId : identifier;
+  cursResId : storage;
+  mapRef: reference;
   theMap : resPtr;
+  mapResId : storage;
   keyExpr : storage;
   keyType : identifier;
   subprogramId : constant identifier := hashed_maps_find_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapId ).genKind );
-  ParseLastInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseNextGenItemParameter( subprogramId, keyExpr, keyType, identifiers( mapRef.Id ).genKind );
+  ParseLastInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
  -- TODO: not really in out
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        theCursor.shmCursor := Storage_Hashed_Maps.Find( theMap.shmMap, keyExpr );
      exception when storage_error =>
        err_storage;
@@ -1227,22 +1286,26 @@ end ParseHashedMapsFind;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReplaceElement is
-  cursorId : identifier;
+  cursorRef : reference;
   theCursor : resPtr;
-  mapId : identifier;
+  cursResId : storage;
+  mapRef: reference;
+  mapResId : storage;
   theMap : resPtr;
   newExpr : storage;
   newType : identifier;
   subprogramId : constant identifier := hashed_maps_replace_element_t;
 begin
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
-  ParseNextInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
-  ParseLastGenItemParameter( subprogramId, newExpr, newType, identifiers( mapId ).genKind );
+  ParseFirstInOutInstantiatedParameter( subprogramId, mapRef, hashed_maps_map_t );
+  ParseNextInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
+  ParseLastGenItemParameter( subprogramId, newExpr, newType, identifiers( mapRef.Id ).genKind );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).store.value ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( mapRef, mapResId );
+       findResource( to_resource_id( mapResId.value ), theMap );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        if metaLabelOK( Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
           Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
        end if;
@@ -1270,16 +1333,18 @@ end ParseHashedMapsReplaceElement;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsHasElement( result : out storage; kind : out identifier ) is
-  cursorId  : identifier;
+  cursorRef : reference;
   theCursor : resPtr;
+  cursResId : storage;
   subprogramId : constant identifier := hashed_maps_has_element_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseSingleInOutInstantiatedParameter( subprogramId, cursorId, hashed_maps_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogramId, cursorRef, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( cursorId ).store.value ), theCursor );
+       getParameterValue( cursorRef, cursResId );
+       findResource( to_resource_id( cursResId.value ), theCursor );
        result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel );
      end;
   end if;
@@ -1295,25 +1360,29 @@ end ParseHashedMapsHasElement;
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsEqual( result : out storage; kind : out identifier ) is
-  leftMapId  : identifier;
-  rightMapId : identifier;
+  leftMapRef : reference;
+  rightMapRef: reference;
   leftMap    : resPtr;
   rightMap   : resPtr;
+  leftMapResId : storage;
+  rightMapResId : storage;
   subprogramId : constant identifier := hashed_maps_equal_t;
   use Storage_Hashed_Maps;
 begin
   kind := boolean_t;
   expect( subprogramId );
-  ParseFirstInOutInstantiatedParameter( subprogramId, leftMapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( subprogramId, rightMapId, hashed_maps_map_t );
+  ParseFirstInOutInstantiatedParameter( subprogramId, leftMapRef, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( subprogramId, rightMapRef, hashed_maps_map_t );
   if not error_found then
-     genTypesOk( identifiers( leftMapId ).genKind, identifiers( rightMapId ).genKind );
-     genTypesOk( identifiers( leftMapId ).genKind2, identifiers( rightMapId ).genKind2 );
+     genTypesOk( identifiers( leftMapRef.Id ).genKind, identifiers( rightMapRef.Id ).genKind );
+     genTypesOk( identifiers( leftMapRef.Id ).genKind2, identifiers( rightMapRef.Id ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( leftMapId ).store.value ), leftMap );
-       findResource( to_resource_id( identifiers( rightMapId ).store.value ), rightMap );
+       getParameterValue( leftMapRef, leftMapResId );
+       findResource( to_resource_id( leftMapResId.value ), leftMap );
+       getParameterValue( rightMapRef, rightMapResId );
+       findResource( to_resource_id( rightMapResId.value ), rightMap );
        result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaLabel );
      exception when storage_error =>
        err_storage;

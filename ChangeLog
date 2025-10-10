@@ -61,7 +61,9 @@ CHANGES SINCE 2.6.3
 
 28. Fix: dbm package calls using an uninitialized query object no longer show an error message with "connection" instead of "query".
 
-29. Fix: in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
+29. Fix: non-generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
 
 30. Fix: array index zero handling fixed for out and in out parameters.  That is, no longer treats a reference to a(0) as a scalar variable a.
+
+31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable. [tests needed]
 
