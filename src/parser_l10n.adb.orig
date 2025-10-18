@@ -21,6 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+--with ada.text_io; use ada.text_io;
+
 with ada.strings.unbounded,
 #if L10N
      spar_os.l10n,
@@ -122,7 +124,6 @@ begin
 end not_configured;
 #end if;
 
-
 -----------------------------------------------------------------------------
 --  PARSE L10N SETLOCALE
 --
@@ -141,11 +142,13 @@ begin
   ParseFirstNumericParameter( l10n_setlocale_t, catExpr, cat_kind, l10n_locale_category_t );
   ParseLastStringParameter( l10n_setlocale_t, locExpr,loc_kind );
   if isExecutingCommand then
-     -- checking errno is not reliable.  On first attempt to use an invalid
-     -- locale, errono will be 2 (file not found), probably because of another
-     -- function called by setlocale.  However, setlocale itself does not
-     -- return an error number.
-     setlocale( locale_category( to_numeric( catExpr.value ) ), to_string( locExpr.value ) );
+     if metaLabelOk( locExpr ) then
+        -- checking errno is not reliable.  On first attempt to use an invalid
+        -- locale, errono will be 2 (file not found), probably because of another
+        -- function called by setlocale.  However, setlocale itself does not
+        -- return an error number.
+        setlocale( locale_category( to_numeric( catExpr.value ) ), to_string( locExpr.value ) );
+     end if;
   end if;
 end ParseL10NSetLocale;
 #else
@@ -170,7 +173,7 @@ begin
   ParseSingleNumericParameter( l10n_getlocale_t, catExpr, cat_kind, l10n_locale_category_t );
   if isExecutingCommand then
      -- setlocale does not return an error number
-     result := storage'( getlocale( locale_category( to_numeric( catExpr.value ) ) ), noMetaLabel );
+     result := storage'( getlocale( locale_category( to_numeric( catExpr.value ) ) ), sparMetaLabel );
   end if;
 end ParseL10NGetLocale;
 #else
@@ -189,7 +192,7 @@ procedure ParseL10NCodeSet( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_codeset_t );
-  result := storage'( codeset, noMetaLabel );
+  result := storage'( codeset, sparMetaLabel );
 end ParseL10NCodeSet;
 #else
 procedure ParseL10NCodeSet( result : out storage; kind : out identifier ) renames not_configured;
@@ -208,7 +211,7 @@ begin
   kind := uni_string_t;
   expect( l10n_d_t_fmt_t );
   if isExecutingCommand then
-     result := storage'( d_t_fmt, noMetaLabel );
+     result := storage'( d_t_fmt, sparMetaLabel );
   end if;
 end ParseL10NDTFmt;
 #else
@@ -229,7 +232,7 @@ begin
   kind := uni_string_t;
   expect( l10n_d_fmt_t );
   if isExecutingCommand then
-     result := storage'( d_fmt, noMetaLabel );
+     result := storage'( d_fmt, sparMetaLabel );
   end if;
 end ParseL10NDFmt;
 #else
@@ -251,7 +254,7 @@ begin
   kind := uni_string_t;
   expect( l10n_t_fmt_t );
   if isExecutingCommand then
-     result := storage'( t_fmt, noMetaLabel );
+     result := storage'( t_fmt, sparMetaLabel );
   end if;
 end ParseL10NTFmt;
 #else
@@ -277,22 +280,24 @@ begin
   ParseSingleNumericParameter( l10n_day_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     begin
-        day := positive( to_numeric( dayExpr.value ) );
-        case day is
-        when 1 => result.value := day_1;
-        when 2 => result.value := day_2;
-        when 3 => result.value := day_3;
-        when 4 => result.value := day_4;
-        when 5 => result.value := day_5;
-        when 6 => result.value := day_6;
-        when 7 => result.value := day_7;
-        when others =>
-          err( +"day is 1..7" );
-        end case;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( dayExpr ) then
+        begin
+           day := positive( to_numeric( dayExpr.value ) );
+           case day is
+           when 1 => result := storage'( day_1, dayExpr.metaLabel );
+           when 2 => result := storage'( day_2, dayExpr.metaLabel );
+           when 3 => result := storage'( day_3, dayExpr.metaLabel );
+           when 4 => result := storage'( day_4, dayExpr.metaLabel );
+           when 5 => result := storage'( day_5, dayExpr.metaLabel );
+           when 6 => result := storage'( day_6, dayExpr.metaLabel );
+           when 7 => result := storage'( day_7, dayExpr.metaLabel );
+           when others =>
+              err( +"day is 1..7" );
+           end case;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseL10NDay;
 #else
@@ -318,22 +323,24 @@ begin
   ParseSingleNumericParameter( l10n_abday_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     begin
-        day := positive( to_numeric( dayExpr.value ) );
-        case day is
-        when 1 => result.value := abday_1;
-        when 2 => result.value := abday_2;
-        when 3 => result.value := abday_3;
-        when 4 => result.value := abday_4;
-        when 5 => result.value := abday_5;
-        when 6 => result.value := abday_6;
-        when 7 => result.value := abday_7;
-        when others =>
-          err( +"day is 1..7" );
-        end case;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( dayExpr ) then
+        begin
+           day := positive( to_numeric( dayExpr.value ) );
+           case day is
+           when 1 => result := storage'(abday_1, dayExpr.metaLabel);
+           when 2 => result := storage'(abday_2, dayExpr.metaLabel);
+           when 3 => result := storage'(abday_3, dayExpr.metaLabel);
+           when 4 => result := storage'(abday_4, dayExpr.metaLabel);
+           when 5 => result := storage'(abday_5, dayExpr.metaLabel);
+           when 6 => result := storage'(abday_6, dayExpr.metaLabel);
+           when 7 => result := storage'(abday_7, dayExpr.metaLabel);
+           when others =>
+             err( +"day is 1..7" );
+           end case;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseL10NAbDay;
 #else
@@ -359,27 +366,29 @@ begin
   ParseSingleNumericParameter( l10n_mon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     begin
-        mon := positive( to_numeric( monExpr.value ) );
-        case mon is
-        when 1 => result.value := mon_1;
-        when 2 => result.value := mon_2;
-        when 3 => result.value := mon_3;
-        when 4 => result.value := mon_4;
-        when 5 => result.value := mon_5;
-        when 6 => result.value := mon_6;
-        when 7 => result.value := mon_7;
-        when 8 => result.value := mon_8;
-        when 9 => result.value := mon_9;
-        when 10 => result.value := mon_10;
-        when 11 => result.value := mon_11;
-        when 12 => result.value := mon_12;
-        when others =>
-          err( +"month is 1..12" );
-        end case;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( monExpr ) then
+        begin
+           mon := positive( to_numeric( monExpr.value ) );
+           case mon is
+           when  1 => result := storage'(mon_1, monExpr.metaLabel);
+           when  2 => result := storage'(mon_2, monExpr.metaLabel);
+           when  3 => result := storage'(mon_3, monExpr.metaLabel);
+           when  4 => result := storage'(mon_4, monExpr.metaLabel);
+           when  5 => result := storage'(mon_5, monExpr.metaLabel);
+           when  6 => result := storage'(mon_6, monExpr.metaLabel);
+           when  7 => result := storage'(mon_7, monExpr.metaLabel);
+           when  8 => result := storage'(mon_8, monExpr.metaLabel);
+           when  9 => result := storage'(mon_9, monExpr.metaLabel);
+           when 10 => result := storage'(mon_10, monExpr.metaLabel);
+           when 11 => result := storage'(mon_11, monExpr.metaLabel);
+           when 12 => result := storage'(mon_12, monExpr.metaLabel);
+           when others =>
+              err( +"month is 1..12" );
+           end case;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseL10NMon;
 #else
@@ -405,27 +414,29 @@ begin
   ParseSingleNumericParameter( l10n_abmon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     begin
-        mon := positive( to_numeric( monExpr.value ) );
-        case mon is
-        when 1 => result.value := abmon_1;
-        when 2 => result.value := abmon_2;
-        when 3 => result.value := abmon_3;
-        when 4 => result.value := abmon_4;
-        when 5 => result.value := abmon_5;
-        when 6 => result.value := abmon_6;
-        when 7 => result.value := abmon_7;
-        when 8 => result.value := abmon_8;
-        when 9 => result.value := abmon_9;
-        when 10 => result.value := abmon_10;
-        when 11 => result.value := abmon_11;
-        when 12 => result.value := abmon_12;
-        when others =>
-          err( +"month is 1..12" );
-        end case;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( monExpr ) then
+        begin
+           mon := positive( to_numeric( monExpr.value ) );
+           case mon is
+           when  1 => result := storage'( abmon_1, monExpr.metaLabel );
+           when  2 => result := storage'( abmon_2, monExpr.metaLabel );
+           when  3 => result := storage'( abmon_3, monExpr.metaLabel );
+           when  4 => result := storage'( abmon_4, monExpr.metaLabel );
+           when  5 => result := storage'( abmon_5, monExpr.metaLabel );
+           when  6 => result := storage'( abmon_6, monExpr.metaLabel );
+           when  7 => result := storage'( abmon_7, monExpr.metaLabel );
+           when  8 => result := storage'( abmon_8, monExpr.metaLabel );
+           when  9 => result := storage'( abmon_9, monExpr.metaLabel );
+           when 10 => result := storage'( abmon_10, monExpr.metaLabel );
+           when 11 => result := storage'( abmon_11, monExpr.metaLabel );
+           when 12 => result := storage'( abmon_12, monExpr.metaLabel );
+           when others =>
+             err( +"month is 1..12" );
+          end case;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseL10NAbMon;
 #else
@@ -445,7 +456,7 @@ procedure ParseL10NDecimalPoint( result : out storage; kind : out identifier ) i
 begin
   kind := uni_string_t;
   expect( l10n_decimal_point_t );
-  result := storage'( decimal_point, noMetaLabel );
+  result := storage'( decimal_point, sparMetaLabel );
 end ParseL10NDecimalPoint;
 #else
 procedure ParseL10NDecimalPoint( result : out storage; kind : out identifier ) renames not_configured;
@@ -464,7 +475,7 @@ procedure ParseL10NThousandsSep( result : out storage; kind : out identifier ) i
 begin
   kind := uni_string_t;
   expect( l10n_thousands_sep_t );
-  result := storage'( thousands_sep, noMetaLabel );
+  result := storage'( thousands_sep, sparMetaLabel );
 end ParseL10NThousandsSep;
 #else
 procedure ParseL10NThousandsSep( result : out storage; kind : out identifier ) renames not_configured;
@@ -483,7 +494,7 @@ procedure ParseL10NYesExpr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_yesexpr_t );
-  result := storage'( yesexpr, noMetaLabel );
+  result := storage'( yesexpr, sparMetaLabel );
 end ParseL10NYesExpr;
 #else
 procedure ParseL10NYesExpr( result : out storage; kind : out identifier ) renames not_configured;
@@ -502,7 +513,7 @@ procedure ParseL10NNoExpr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_noexpr_t );
-  result := storage'( noexpr, noMetaLabel );
+  result := storage'( noexpr, sparMetaLabel );
 end ParseL10NNoExpr;
 #else
 procedure ParseL10NNoExpr( result : out storage; kind : out identifier ) renames not_configured;
@@ -521,7 +532,7 @@ procedure ParseL10NCurrencySymbol( result : out storage; kind : out identifier )
 begin
   kind := uni_string_t;
   expect( l10n_currency_symbol_t );
-  result := storage'( currency_symbol, noMetaLabel );
+  result := storage'( currency_symbol, sparMetaLabel );
 end ParseL10NCurrencySymbol;
 #else
 procedure ParseL10NcurrencySymbol( result : out storage; kind : out identifier ) renames not_configured;
@@ -540,7 +551,7 @@ procedure ParseL10NAmStr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_amstr_t );
-  result := storage'( amstr, noMetaLabel );
+  result := storage'( amstr, sparMetaLabel );
 end ParseL10NAmStr;
 #else
 procedure ParseL10NAmStr( result : out storage; kind : out identifier ) renames not_configured;
@@ -559,7 +570,7 @@ procedure ParseL10NPmStr( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_pmstr_t );
-  result := storage'( pmstr, noMetaLabel );
+  result := storage'( pmstr, sparMetaLabel );
 end ParseL10NPmStr;
 #else
 procedure ParseL10NPmStr( result : out storage; kind : out identifier ) renames not_configured;
@@ -569,7 +580,7 @@ procedure ParseL10NPmStr( result : out storage; kind : out identifier ) renames 
 -----------------------------------------------------------------------------
 --  PARSE L10N T FMT AM PM
 --
--- Syntax: l10n.fmt_ampm
+-- Syntax: l10n.t_fmt_ampm
 -- Source: N/A
 -----------------------------------------------------------------------------
 
@@ -578,7 +589,7 @@ procedure ParseL10NTFmtAmPm( result : out storage; kind : out identifier ) is
 begin
   kind := uni_string_t;
   expect( l10n_t_fmt_ampm_t );
-  result := storage'( pmstr, noMetaLabel );
+  result := storage'( pmstr, sparMetaLabel );
 end ParseL10NTFmtAmPm;
 #else
 procedure ParseL10NTFmtAmPm( result : out storage; kind : out identifier ) renames not_configured;
@@ -597,7 +608,7 @@ procedure ParseL10NPositiveSign( result : out storage; kind : out identifier ) i
 begin
   kind := uni_string_t;
   expect( l10n_positive_sign_t );
-  result := storage'( positive_sign, noMetaLabel );
+  result := storage'( positive_sign, sparMetaLabel );
 end ParseL10NPositiveSign;
 #else
 procedure ParseL10NPositiveSign( result : out storage; kind : out identifier ) renames not_configured;
@@ -616,7 +627,7 @@ procedure ParseL10NNegativeSign( result : out storage; kind : out identifier ) i
 begin
   kind := uni_string_t;
   expect( l10n_negative_sign_t );
-  result := storage'( negative_sign, noMetaLabel );
+  result := storage'( negative_sign, sparMetaLabel );
 end ParseL10NNegativeSign;
 #else
 procedure ParseL10NNegativeSign( result : out storage; kind : out identifier ) renames not_configured;
@@ -635,7 +646,7 @@ procedure ParseL10NIntCurrSymbol( result : out storage; kind : out identifier ) 
 begin
   kind := uni_string_t;
   expect( l10n_int_curr_symbol_t );
-  result := storage'( int_curr_symbol, noMetaLabel );
+  result := storage'( int_curr_symbol, sparMetaLabel );
 end ParseL10NIntCurrSymbol;
 #else
 procedure ParseL10NIntCurrSymbol( result : out storage; kind : out identifier ) renames not_configured;
@@ -654,7 +665,7 @@ procedure ParseL10NGrouping( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_grouping_t );
-  result := storage'( charIntToResult( grouping ), noMetaLabel );
+  result := storage'( charToResult( grouping ), sparMetaLabel );
 end ParseL10NGrouping;
 #else
 procedure ParseL10NGrouping( result : out storage; kind : out identifier ) renames not_configured;
@@ -673,7 +684,7 @@ procedure ParseL10NFracDigits( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_frac_digits_t );
-  result := storage'( charIntToResult( frac_digits ), noMetaLabel );
+  result := storage'( charToResult( frac_digits ), sparMetaLabel );
 end ParseL10NFracDigits;
 #else
 procedure ParseL10NFracDigits( result : out storage; kind : out identifier ) renames not_configured;
@@ -692,7 +703,7 @@ procedure ParseL10NIntFracDigits( result : out storage; kind : out identifier ) 
 begin
   kind := natural_t;
   expect( l10n_int_frac_digits_t );
-  result := storage'( charIntToResult( int_frac_digits ), noMetaLabel );
+  result := storage'( charToResult( int_frac_digits ), sparMetaLabel );
 end ParseL10NIntFracDigits;
 #else
 procedure ParseL10NIntFracDigits( result : out storage; kind : out identifier ) renames not_configured;
@@ -711,7 +722,7 @@ procedure ParseL10NPCSPrecedes( result : out storage; kind : out identifier ) is
 begin
   kind := integer_t;
   expect( l10n_p_cs_precedes_t );
-  result := storage'( charIntToResult( p_cs_precedes ), noMetaLabel );
+  result := storage'( charIntToResult( p_cs_precedes ), sparMetaLabel );
 end ParseL10NPCSPrecedes;
 #else
 procedure ParseL10NPCSPrecedes( result : out storage; kind : out identifier ) renames not_configured;
@@ -730,7 +741,7 @@ procedure ParseL10NPSepBySpace( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_p_sep_by_space_t );
-  result := storage'( charIntToResult( p_sep_by_space ), noMetaLabel );
+  result := storage'( charToResult( p_sep_by_space ), sparMetaLabel );
 end ParseL10NPSepBySpace;
 #else
 procedure ParseL10NPSepBySpace( result : out storage; kind : out identifier ) renames not_configured;
@@ -749,7 +760,7 @@ procedure ParseL10NPSignPosn( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_p_sign_posn_t );
-  result := storage'( charIntToResult( p_sign_posn ), noMetaLabel );
+  result := storage'( charToResult( p_sign_posn ), sparMetaLabel );
 end ParseL10NPSignPosn;
 #else
 procedure ParseL10NPSignPosn( result : out storage; kind : out identifier ) renames not_configured;
@@ -768,7 +779,7 @@ procedure ParseL10NNCSPrecedes( result : out storage; kind : out identifier ) is
 begin
   kind := integer_t;
   expect( l10n_n_cs_precedes_t );
-  result := storage'( charIntToResult( n_cs_precedes ), noMetaLabel );
+  result := storage'( charIntToResult( n_cs_precedes ), sparMetaLabel );
 end ParseL10NNCSPrecedes;
 #else
 procedure ParseL10NNCSPrecedes( result : out storage; kind : out identifier ) renames not_configured;
@@ -787,7 +798,7 @@ procedure ParseL10NNSepBySpace( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_n_sep_by_space_t );
-  result := storage'( charIntToResult( n_sep_by_space ), noMetaLabel );
+  result := storage'( charToResult( n_sep_by_space ), sparMetaLabel );
 end ParseL10NNSepBySpace;
 #else
 procedure ParseL10NNSepBySpace( result : out storage; kind : out identifier ) renames not_configured;
@@ -806,7 +817,7 @@ procedure ParseL10NNSignPosn( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_n_sign_posn_t );
-  result := storage'( charIntToResult( n_sign_posn ), noMetaLabel );
+  result := storage'( charToResult(  n_sign_posn ), sparMetaLabel );
 end ParseL10NNSignPosn;
 #else
 procedure ParseL10NNSignPosn( result : out storage; kind : out identifier ) renames not_configured;
@@ -825,7 +836,7 @@ procedure ParseL10NMonDecimalPoint( result : out storage; kind : out identifier 
 begin
   kind := uni_string_t;
   expect( l10n_mon_decimal_point_t );
-  result := storage'( mon_decimal_point, noMetaLabel );
+  result := storage'( mon_decimal_point, sparMetaLabel );
 end ParseL10NMonDecimalPoint;
 #else
 procedure ParseL10NMonDecimalPoint( result : out storage; kind : out identifier ) renames not_configured;
@@ -844,7 +855,7 @@ procedure ParseL10NMonThousandsSep( result : out storage; kind : out identifier 
 begin
   kind := uni_string_t;
   expect( l10n_mon_thousands_sep_t );
-  result := storage'( mon_thousands_sep, noMetaLabel );
+  result := storage'( mon_thousands_sep, sparMetaLabel );
 end ParseL10NMonThousandsSep;
 #else
 procedure ParseL10NMonThousandsSep( result : out storage; kind : out identifier ) renames not_configured;
@@ -863,7 +874,7 @@ procedure ParseL10NMonGrouping( result : out storage; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( l10n_mon_grouping_t );
-  result := storage'( charIntToResult( mon_grouping ), noMetaLabel );
+  result := storage'( charToResult( mon_grouping ), sparMetaLabel );
 end ParseL10NMonGrouping;
 #else
 procedure ParseL10NMonGrouping( result : out storage; kind : out identifier ) renames not_configured;
@@ -882,7 +893,7 @@ procedure ParseL10NEra( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_t );
-  result := storage'( era, noMetaLabel );
+  result := storage'( era, sparMetaLabel );
 end ParseL10NEra;
 #else
 procedure ParseL10NEra( result : out storage; kind : out identifier ) renames not_configured;
@@ -892,7 +903,7 @@ procedure ParseL10NEra( result : out storage; kind : out identifier ) renames no
 -----------------------------------------------------------------------------
 --  PARSE L10N (Alternate) ERA YEAR
 --
--- Syntax: l10n.era
+-- Syntax: l10n.era_year
 -- Source: N/A
 -----------------------------------------------------------------------------
 
@@ -901,7 +912,7 @@ procedure ParseL10NEraYear( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_year_t );
-  result := storage'( era_year, noMetaLabel );
+  result := storage'( era_year, sparMetaLabel );
 end ParseL10NEraYear;
 #else
 procedure ParseL10NEraYear( result : out storage; kind : out identifier ) renames not_configured;
@@ -911,7 +922,7 @@ procedure ParseL10NEraYear( result : out storage; kind : out identifier ) rename
 -----------------------------------------------------------------------------
 --  PARSE L10N (Alternate) D(ate) T(ime) FMT (format)
 --
--- Syntax: l10n.era
+-- Syntax: l10n.era_d_t_fmt
 -- Source: N/A
 -----------------------------------------------------------------------------
 
@@ -920,7 +931,7 @@ procedure ParseL10NEraDTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_d_t_fmt_t );
-  result := storage'( era_d_t_fmt, noMetaLabel );
+  result := storage'( era_d_t_fmt, sparMetaLabel );
 end ParseL10NEraDTFmt;
 #else
 procedure ParseL10NEraDTFmt( result : out storage; kind : out identifier ) renames not_configured;
@@ -930,7 +941,7 @@ procedure ParseL10NEraDTFmt( result : out storage; kind : out identifier ) renam
 -----------------------------------------------------------------------------
 --  PARSE L10N (Alternate) D(ate) FMT (format)
 --
--- Syntax: l10n.era
+-- Syntax: l10n._era_d_fmt
 -- Source: N/A
 -----------------------------------------------------------------------------
 
@@ -939,7 +950,7 @@ procedure ParseL10NEraDFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_d_fmt_t );
-  result := storage'( era_d_fmt, noMetaLabel );
+  result := storage'( era_d_fmt, sparMetaLabel );
 end ParseL10NEraDFmt;
 #else
 procedure ParseL10NEraDFmt( result : out storage; kind : out identifier ) renames not_configured;
@@ -949,7 +960,7 @@ procedure ParseL10NEraDFmt( result : out storage; kind : out identifier ) rename
 -----------------------------------------------------------------------------
 --  PARSE L10N (Alternate) T(ime) FMT (format)
 --
--- Syntax: l10n.era
+-- Syntax: l10n.era_t_fmt
 -- Source: N/A
 -----------------------------------------------------------------------------
 
@@ -958,7 +969,7 @@ procedure ParseL10NEraTFmt( result : out storage; kind : out identifier ) is
 begin
   kind := string_t;
   expect( l10n_era_t_fmt_t );
-  result := storage'( era_d_fmt, noMetaLabel );
+  result := storage'( era_d_fmt, sparMetaLabel );
 end ParseL10NEraTFmt;
 #else
 procedure ParseL10NEraTFmt( result : out storage; kind : out identifier ) renames not_configured;

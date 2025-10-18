@@ -898,7 +898,7 @@ end ToCSV;
 ------------------------------------------------------------------------------
 --  CHAR INT TO RESULT
 --
--- Convert the first character of result to an signed byte image
+-- Convert the first character of result to a signed byte image
 ------------------------------------------------------------------------------
 
 function charIntToResult( result : unbounded_string ) return unbounded_string is
@@ -919,6 +919,24 @@ begin
      end if;
   end if;
 end charIntToResult;
+
+
+------------------------------------------------------------------------------
+--  CHAR TO RESULT
+--
+-- Convert the first character of result to an unsigned byte image
+------------------------------------------------------------------------------
+
+function charToResult( us : unbounded_string ) return unbounded_string is
+   chpos : natural := 0;
+begin
+   if length( us ) > 0 then
+      chpos := character'pos( Element( us, 1 ) );
+   end if;
+   return to_unbounded_string( chpos'img );
+exception when others =>
+   return to_unbounded_string( "0" );
+end charToResult;
 
 
 ------------------------------------------------------------------------------

@@ -143,7 +143,10 @@ function ToCSV( s : unbounded_string ) return unbounded_string;
 -- convert s to CSV
 
 function charIntToResult( result : unbounded_string ) return unbounded_string;
--- convert the first character of result to an signed byte image
+-- convert the first character of result to a signed byte image
+
+function charToResult( us : unbounded_string ) return unbounded_string;
+-- Convert the first character of result to an unsigned byte image
 
 ------------------------------------------------------------------------------
 -- String Field Handling

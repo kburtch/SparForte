@@ -67,3 +67,5 @@ CHANGES SINCE 2.6.3
 
 31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable. [tests needed]
 
+32. Fix. l10n functions returning a natural 255 no longer raise an exception.  Returns 255 for a -1 signed byte.
+

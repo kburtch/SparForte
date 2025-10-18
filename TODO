@@ -13,16 +13,7 @@ Long term Ongoing Work
 
 - value meta labels project
 
-  - check vectorIndexOrCursorOk for references
-
-  - should in-out parameters be references?
-    - gnat.crc32 should use references for update and get value
-    - all out and in out parameters should probably be checked and have
-      reg. tests
-   - instantiated out parameters and auto-declaration?
-     - cmp. doubly ParseNextOutMapCursor
-   - in parser-decl, renaming reference may not work with index 0. Logic
-     of renamingRef may need checking.  'not hasIndex' didn't work>
+  - error message on declare...begin meta...
 
     - text_io.parseOpenFile requires special type checking
     - tinyserve needs to be fixed for storage
@@ -33,13 +24,16 @@ Long term Ongoing Work
     have a tag but perhaps they should.  For example, CGI.Argument_Count
     takes no parameter so can only be secured if the CGI package has
     a meta label assigned somehow.
+    - how are subsystems assigned such a tag?  begin/end procedures?
+      pragmas controlled by architect policy blocks?
 
   - Does change_dir affect current_working_directory?
+
   - setting the meta label for files such as btree_io
   - setting the meta label for files such as database packages
 
-  - the global meta mode for the language
-    - ? policy tagged, uom tagged, class tagged
+  - the global meta mode syntax for the language for different types
+    of tags - ? policy tagged, uom tagged, class tagged
 
   - array built-in help vs. summary vs. docs - should functions have x :=
    in front or not?  Thought this was already consistent.
@@ -111,6 +105,16 @@ Long term Ongoing Work
     Processing Summary - Purpose, Legal Basis, Data Source, Data Retention,
       Data Subjects
     Availability -
+
+  - cleanup of in-out parameters
+    - all out and in out parameters should probably be checked and have
+      reg. tests
+   - instantiated out parameters and auto-declaration?
+     - cmp. doubly ParseNextOutMapCursor
+   - in parser-decl, renaming reference may not work with index 0. Logic
+     of renamingRef may need checking.  'not hasIndex' didn't work>
+  - check vectorIndexOrCursorOk for references
+
 
 - error messages and additional context
   - parer-decl-as still has many errors not in the new format

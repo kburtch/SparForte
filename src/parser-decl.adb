@@ -1928,12 +1928,19 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
              DoContracts( identifiers( new_const_id ).kind, expr );
           end if;
        end if;
-       identifiers( new_const_id ).store.value := expr.value;
+       identifiers( new_const_id ).store.all := expr;
        if trace then
-           put_trace(
-              to_string( identifiers( new_const_id ).name ) & " := """ &
-              toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
-       end if;
+          put_trace(
+             to_string( identifiers( new_const_id ).name ) & " := """ &
+             toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
+        end if;
+        if expr.metaLabel /= noMetaLabel then
+          if trace then
+              put_trace( to_string( identifiers( new_const_id ).name ) &
+                  " value has meta labels '" &
+                  to_string( identifiers( identifiers( new_const_id ).store.metaLabel ).name ) & "'" );
+           end if;
+        end if;
     end if;
   end VerifyConstantSpec;
 
@@ -2528,11 +2535,19 @@ begin
         if type_token /= right_type then
            DoContracts( identifiers( id ).kind, expr );
         end if;
-        identifiers( id ).store.value := expr.value;
+        identifiers( id ).store.all := expr;
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
                toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
+
+        end if;
+        if expr.metaLabel /= noMetaLabel then
+          if trace then
+              put_trace( to_string( identifiers( id ).name ) &
+                  " value has meta labels '" &
+                  to_string( identifiers( identifiers( id ).store.metaLabel ).name ) & "'" );
+           end if;
         end if;
      else
         -- At compile time, constants may have assigned values.

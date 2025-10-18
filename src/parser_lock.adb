@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
+with text_io;use text_io;
 
 with gnat.lock_files,
     ada.strings.unbounded,
@@ -102,19 +102,24 @@ begin
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
      begin
        if length( dirExpr.value ) > 0 then
-          Lock_File( to_string( dirExpr.value ),
-            to_string( fileExpr.value ),
-            duration( to_numeric( waitExpr.value ) ),
-            natural( to_numeric( retryExpr.value ) )
+          if metaLabelOk( dirExpr, fileExpr ) then
+             Lock_File( to_string( dirExpr.value ),
+               to_string( fileExpr.value ),
+               duration( to_numeric( waitExpr.value ) ),
+               natural( to_numeric( retryExpr.value ) )
           );
+          end if;
        else
-          Lock_File( to_string( fileExpr.value ),
-            duration( to_numeric( waitExpr.value ) ),
-            natural( to_numeric( retryExpr.value ) )
-          );
+          if metaLabelOk( fileExpr ) then
+            Lock_File( to_string( fileExpr.value ),
+               duration( to_numeric( waitExpr.value ) ),
+               natural( to_numeric( retryExpr.value ) )
+            );
+          end if;
        end if;
      exception when lock_error =>
        err( +"File cannot be locked" );
