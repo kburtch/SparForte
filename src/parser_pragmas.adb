@@ -42,7 +42,8 @@ with  ada.text_io,
     signal_flags,
     jobs, -- for clearCommandHash
     parser.decl.as,
-    parser_teams;
+    parser_teams,
+    parser_tio;
 use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
@@ -66,7 +67,8 @@ use ada.text_io,
     jobs,
     parser,
     parser.decl.as,
-    parser_teams;
+    parser_teams,
+    parser_tio;
 
 package body parser_pragmas is
 
@@ -104,6 +106,7 @@ type aPragmaKind is (
      license,
      manual_test,
      manual_test_result,
+     meta_label,
      noCommandHash,
      peek,
      promptChange,
@@ -228,6 +231,8 @@ begin
      pragmaKind :=  manual_test;
   elsif name = "manual_test_result" then
      pragmaKind :=  manual_test_result;
+  elsif name = "meta_label" then  -- DATA META LABEL
+     pragmaKind := meta_label;
   elsif name = "no_command_hash" then
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
@@ -1386,7 +1391,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   expr_type   : identifier;
   --results     : unbounded_string;
   var_id      : identifier;
-  --var_id2     : identifier;
+  metalabel   : metaLabelID;
   exportType  : unbounded_string;
   importType  : unbounded_string;
   newValue    : unbounded_string;
@@ -1639,6 +1644,21 @@ begin
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
          err( +"inspection_peek cannot be used with testing or maintenance phase mode unless at the breakout prompt" );
+     end if;
+  when meta_label => -- DATA META LABEL
+     if token /= standard_input_t and
+        token /= standard_output_t and
+        token /= standard_error_t then
+        err( +"standard input, output or error expected" );
+     end if;
+     ParseIdentifier( var_id );                      -- the subsystem
+     expectPragmaComma;
+     ParseIdentifier( metaLabel );                    -- the meta label
+     if getUniType( identifiers( metaLabel ).kind ) /= meta_t then
+        err( +"meta tag expected" );
+     end if;
+     if identifiers( var_id ).sstorage.metaLabel /= noMetaLabel then
+        err( +"meta tag already assigned" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
      null;
@@ -2463,6 +2483,14 @@ begin
            elsif not syntax_check then
               record_test_result( test_result_status, test_message );
            end if;
+        end if;
+     when meta_label =>  -- DATA META LABEL
+        -- These are restricted to non-arrays
+        identifiers( var_id ).sstorage.metaLabel := metaLabel;
+        if trace then
+           put_trace( to_string( identifiers( var_id ).name ) &
+              " value has meta labels '" &
+              to_string( identifiers( identifiers( var_id ).sstorage.metaLabel ).name ) & "'" );
         end if;
      when noCommandHash =>
         clearCommandHash;

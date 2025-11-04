@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with
+    gnat.source_info,
     gnat.os_lib,
     interfaces.c,
     ada.exceptions,
@@ -79,7 +80,7 @@ defaultWidth : constant positive := 1;
 
 type log_modes is ( stderr_log, file_log, echo_log );
 
-log_path        : unbounded_string;                        -- path to log file
+log_path        : storage;                          -- path to log file + meta
 lock_file_path  : unbounded_string;                       -- path to lock file
 level           : natural;                                -- indentation level
 width           : positive;                        -- line column to start msg
@@ -262,7 +263,7 @@ begin
   level := 0;
   width := defaultWidth;
   log_mode := stderr_log;
-  log_path := null_unbounded_string;
+  log_path := nullStorage;
   lock_file_path := null_unbounded_string;
   log_is_open := false;
   log_is_rotating := false;
@@ -383,7 +384,7 @@ begin
      if log_mode /= stderr_log then
         lock_file( to_string( lock_file_path ) );
         begin
-           open( log_file, append_file, to_string( log_path ) );
+           open( log_file, append_file, to_string( log_path.value ) );
         exception when others =>
            if rshOpt then
               err( +"creating new logs is not allowed in a " & em( "restricted shell" ) );
@@ -391,7 +392,7 @@ begin
               return; -- must abort
            else
               begin
-                 create( log_file, append_file, to_string( log_path ) );
+                 create( log_file, append_file, to_string( log_path.value ) );
               exception when others =>
                  err_exception_raised;
                  unlock_file( to_string( lock_file_path ) );
@@ -491,7 +492,88 @@ begin
   log_last_part( "End " & entity & " logging" );
   log_mode := stderr_log;
   log_is_open := false;
+  log_path := nullStorage;
 end closeLog;
+
+
+-- LOG META LABEL OK
+--
+-- Different files or combinations of files are written depending on
+-- the logging mode.  The meta label checks depend on which logging mode is
+-- used for the data in expr (if there is one).
+-----------------------------------------------------------------------------
+
+function logMetaLabelOk( subprogramId : identifier; msgExpr : storage ) return boolean is
+   metaLabelCheckOk : boolean;
+begin
+   case log_mode is
+   when stderr_log =>
+      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, msgExpr );
+   when file_log =>
+      metaLabelCheckOk := metaLabelOk( log_path, msgExpr );
+   when echo_log =>
+      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, log_path, msgExpr );
+   when others =>
+      metaLabelCheckOk := false;
+      err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while checking meta labels " ),
+         subject => subprogramId,
+         reason => +"had an internal error because",
+         obstructorNotes => +"an unknown log mode"
+      );
+   end case;
+  return metaLabelCheckOk;
+end logMetaLabelOk;
+
+function logMetaLabelOk( subprogramId : identifier ) return boolean is
+   metaLabelCheckOk : boolean;
+begin
+   case log_mode is
+   when stderr_log =>
+      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage );
+   when file_log =>
+      metaLabelCheckOk := metaLabelOk( log_path );
+   when echo_log =>
+      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, log_path );
+   when others =>
+      metaLabelCheckOk := false;
+      err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while checking meta labels " ),
+         subject => subprogramId,
+         reason => +"had an internal error because",
+         obstructorNotes => +"an unknown log mode"
+      );
+   end case;
+  return metaLabelCheckOk;
+end logMetaLabelOk;
+
+-- RESOLVE LOG META LABEL
+--
+-- Since log messages can be sent to stderr, a file or both, when a meta
+-- label needs to be returned, it depends on the logging destination meta
+-- labels.
+-----------------------------------------------------------------------------
+
+function resolveLogMetaLabel return metaLabelID is
+   newMetaLabel : metaLabelID;
+begin
+   case log_mode is
+   when stderr_log =>
+      newMetaLabel := identifiers( standard_error_t ).sstorage.metaLabel;
+   when file_log =>
+      newMetaLabel := log_path.metaLabel;
+   when echo_log =>
+      newMetaLabel := resolveEffectiveMetaLabel( uni_string_t,
+        identifiers( standard_error_t ).sstorage,
+        log_path );
+   when others =>
+       -- this should not happen
+       newMetaLabel := sparMetaLabel;
+   end case;
+   return newMetaLabel;
+end resolveLogMetaLabel;
 
 
 ------------------------------------------------------------------------------
@@ -502,21 +584,24 @@ end closeLog;
 
 
 procedure ParseLevelBegin is
-  -- Syntax: level_being( lvl );
+  -- Syntax: level_begin( lvl );
   ref : reference;
 begin
   --kind := log_level_t;
   expect( logs_level_begin_t );
   ParseSingleOutParameter( logs_level_begin_t, ref, log_level_t );
   if isExecutingCommand then
-     begin
-        AssignParameter(ref, storage'( to_unbounded_string( numericValue( level ) ), noMetaLabel ) );
-        level := level + 1;
-     exception when constraint_error =>
-        err( +"constraint_error raised" );
-     when others =>
-        err_exception_raised;
-     end;
+     if logMetaLabelOk( logs_level_begin_t ) then
+        begin
+           AssignParameter(ref, storage'( to_unbounded_string( numericValue( level ) ),
+              resolveLogMetaLabel ) );
+           level := level + 1;
+        exception when constraint_error =>
+           err( +"constraint_error raised" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseLevelBegin;
 
@@ -529,13 +614,15 @@ begin
   ParseSingleInOutParameter( logs_level_end_t, logLvlRef, log_level_t );
   if isExecutingCommand then
      getParameterValue( loglvlRef, loglvl );
-     begin
-        level := natural'value( ' ' & to_string( loglvl.value ) );
-     exception when constraint_error =>
-        err( +"constraint_error raised" );
-     when others =>
-        err_exception_raised;
-     end;
+     if logMetaLabelOk( logs_level_end_t, loglvl ) then
+        begin
+           level := natural'value( ' ' & to_string( loglvl.value ) );
+        exception when constraint_error =>
+           err( +"constraint_error raised" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseLevelEnd;
 
@@ -566,26 +653,34 @@ begin
         get_entity( entity );
         log_clean_message( msgExpr.value );
         if cc = none then
-           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
-           log_first_part( "OK" );
-           log_last_part( msgExpr.value );
-           begin
-              currentMetrics.ok_count := currentMetrics.ok_count + 1;
-           exception when others => null;
-           end;
-        else
-           case cc is
-           when first =>
+           if logMetaLabelOk( logs_ok_t, msgExpr ) then
               log_first_part( "OK" );
-              log_middle_part( msgExpr.value );
-           when middle =>
-              log_middle_part( msgExpr.value );
-           when last =>
               log_last_part( msgExpr.value );
               begin
                  currentMetrics.ok_count := currentMetrics.ok_count + 1;
               exception when others => null;
               end;
+           end if;
+        else
+           case cc is
+           when first =>
+              -- only the first item in the chain needs to check the log_path meta tags
+              if logMetaLabelOk( logs_ok_t, msgExpr ) then
+                 log_first_part( "OK" );
+                 log_middle_part( msgExpr.value );
+              end if;
+           when middle =>
+              if logMetaLabelOk( logs_ok_t, msgExpr ) then
+                 log_middle_part( msgExpr.value );
+              end if;
+           when last =>
+              if logMetaLabelOk( logs_ok_t, msgExpr ) then
+                 log_last_part( msgExpr.value );
+                 begin
+                    currentMetrics.ok_count := currentMetrics.ok_count + 1;
+                 exception when others => null;
+                 end;
+              end if;
            when others =>
               err( +"internal error: unexpected chain context" );
            end case;
@@ -627,27 +722,34 @@ begin
         get_entity( entity );
         log_clean_message( msgExpr.value );
         if cc = none then
-           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
-           log_first_part( "INFO" );
-           log_last_part( msgExpr.value );
-           begin
-              currentMetrics.info_count := currentMetrics.info_count + 1;
-           exception when others => null;
-           end;
-        else
-           case cc is
-           when first =>
-              -- log_first_part( msgExpr, "INFO" );
+           if logMetaLabelOk( logs_info_t, msgExpr ) then
               log_first_part( "INFO" );
-              log_middle_part( msgExpr.value );
-           when middle =>
-              log_middle_part( msgExpr.value );
-           when last =>
               log_last_part( msgExpr.value );
               begin
                  currentMetrics.info_count := currentMetrics.info_count + 1;
               exception when others => null;
               end;
+           end if;
+        else
+           case cc is
+           when first =>
+              -- only the first item in the chain needs to check the log_path meta tags
+              if logMetaLabelOk( logs_info_t, msgExpr ) then
+                 log_first_part( "INFO" );
+                 log_middle_part( msgExpr.value );
+              end if;
+           when middle =>
+              if logMetaLabelOk( logs_info_t, msgExpr ) then
+                 log_middle_part( msgExpr.value );
+              end if;
+           when last =>
+              if logMetaLabelOk( logs_info_t, msgExpr ) then
+                 log_last_part( msgExpr.value );
+                 begin
+                    currentMetrics.info_count := currentMetrics.info_count + 1;
+                 exception when others => null;
+                 end;
+              end if;
            when others =>
               err( +"internal error: unexpected chain context" );
            end case;
@@ -689,27 +791,34 @@ begin
         get_entity( entity );
         log_clean_message( msgExpr.value );
         if cc = none then
-           -- log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
-           log_first_part( "WARNING" );
-           log_last_part( msgExpr.value );
-           begin
-              currentMetrics.warning_count := currentMetrics.warning_count + 1;
-           exception when others => null;
-           end;
-        else
-           case cc is
-           when first =>
-              -- log_first_part( msgExpr, "WARNING" );
+           if logMetaLabelOk( logs_warning_t, msgExpr ) then
               log_first_part( "WARNING" );
-              log_middle_part( msgExpr.value );
-           when middle =>
-              log_middle_part( msgExpr.value );
-           when last =>
               log_last_part( msgExpr.value );
               begin
                  currentMetrics.warning_count := currentMetrics.warning_count + 1;
               exception when others => null;
               end;
+           end if;
+        else
+           case cc is
+           when first =>
+              -- only the first item in the chain needs to check the log_path meta tags
+              if logMetaLabelOk( logs_warning_t, msgExpr ) then
+                 log_first_part( "WARNING" );
+                 log_middle_part( msgExpr.value );
+              end if;
+           when middle =>
+              if logMetaLabelOk( logs_warning_t, msgExpr ) then
+                 log_middle_part( msgExpr.value );
+              end if;
+           when last =>
+              if logMetaLabelOk( logs_warning_t, msgExpr ) then
+                 log_last_part( msgExpr.value );
+                 begin
+                    currentMetrics.warning_count := currentMetrics.warning_count + 1;
+                 exception when others => null;
+                 end;
+              end if;
            when others =>
               err( +"internal error: unexpected chain context" );
            end case;
@@ -751,27 +860,34 @@ begin
         get_entity( entity );
         log_clean_message( msgExpr.value );
         if cc = none then
-           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
-           log_first_part( "ERROR" );
-           log_last_part( msgExpr.value );
-           begin
-              currentMetrics.error_count := currentMetrics.error_count + 1;
-           exception when others => null;
-           end;
-        else
-           case cc is
-           when first =>
-              --log_first_part( msgExpr, "ERROR" );
+           if logMetaLabelOk( logs_error_t, msgExpr ) then
               log_first_part( "ERROR" );
-              log_middle_part( msgExpr.value );
-           when middle =>
-              log_middle_part( msgExpr.value );
-           when last =>
               log_last_part( msgExpr.value );
               begin
                  currentMetrics.error_count := currentMetrics.error_count + 1;
               exception when others => null;
               end;
+           end if;
+        else
+           case cc is
+           when first =>
+              -- only the first item in the chain needs to check the log_path meta tags
+              if logMetaLabelOk( logs_error_t, msgExpr ) then
+                 log_first_part( "ERROR" );
+                 log_middle_part( msgExpr.value );
+              end if;
+           when middle =>
+              if logMetaLabelOk( logs_error_t, msgExpr ) then
+                 log_middle_part( msgExpr.value );
+              end if;
+           when last =>
+              if logMetaLabelOk( logs_error_t, msgExpr ) then
+                 log_last_part( msgExpr.value );
+                 begin
+                    currentMetrics.error_count := currentMetrics.error_count + 1;
+                 exception when others => null;
+                 end;
+              end if;
            when others =>
               err( +"internal error: unexpected chain context" );
            end case;
@@ -820,19 +936,21 @@ begin
      elsif Is_Directory( to_string( pathExpr.value ) & ASCII.NUL ) then
         err( +"log path is a directory" );
      else
-        get_entity( entity );
-        sourceFile := basename( getSourceFileName );
-        log_clean_message( sourceFile );
-        level := 0;
-        width := positive( to_numeric( widthExpr.value ) );
-        log_path := pathExpr.value;
-        lock_file_path := log_path & ".lck";
-        log_mode := log_modes'val( integer( to_numeric( modeExpr.value ) ) );
-        log_is_open := true;
-        log_open_time := clock;
-        --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
-        log_first_part( "INFO" );
-        log_last_part( "Start " & entity & " logging" );
+        if metaLabelOk( pathExpr ) then
+           get_entity( entity );
+           sourceFile := basename( getSourceFileName );
+           log_clean_message( sourceFile );
+           level := 0;
+           width := positive( to_numeric( widthExpr.value ) );
+           log_path := pathExpr;
+           lock_file_path := log_path.value & ".lck";
+           log_mode := log_modes'val( integer( to_numeric( modeExpr.value ) ) );
+           log_is_open := true;
+           log_open_time := clock;
+           --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+           log_first_part( "INFO" );
+           log_last_part( "Start " & entity & " logging" );
+        end if;
      end if;
   end if;
 end ParseOpen;
@@ -844,7 +962,7 @@ begin
   if isExecutingCommand then
      if not log_is_open then
         err( +"log is already closed" );
-     else
+     elsif metaLabelOk( log_path ) then
         closeLog;
      end if;
   end if;
@@ -858,17 +976,24 @@ begin
   kind := boolean_t;
   expect( logs_is_open_t );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( log_is_open ), noMetaLabel );
+     if metaLabelOk( log_path ) then
+        result := storage'( to_spar_boolean( log_is_open ), log_path.metaLabel );
+     end if;
   end if;
 end ParseIsOpen;
 
 procedure ParseMode( result : out storage; kind : out identifier ) is
   -- Syntax: m := logs.mode
 begin
-  result := storage'(
-     trim( to_unbounded_string( natural'image( log_modes'pos( log_mode ) ) ), left ),
-     noMetaLabel
-);
+  result := nullStorage;
+  if isExecutingCommand then
+     if logMetaLabelOk( logs_mode_t ) then
+        result := storage'(
+           trim( to_unbounded_string( natural'image( log_modes'pos( log_mode ) ) ), left ),
+           log_path.metaLabel
+        );
+     end if;
+  end if;
   kind := log_modes_t;
   expect( logs_mode_t );
 end ParseMode;
@@ -886,7 +1011,12 @@ end ParseMode;
 procedure ParseWidth( result : out storage; kind : out identifier ) is
   -- Syntax: w := logs.width
 begin
-  result := storage'( to_unbounded_string( positive'image( width ) ), noMetaLabel );
+  if isExecutingCommand then
+     if logMetaLabelOk( logs_width_t ) then
+        result := storage'( to_unbounded_string( positive'image( width ) ),
+           resolveLogMetaLabel );
+     end if;
+  end if;
   kind := positive_t;
   expect( logs_width_t );
 end ParseWidth;
@@ -896,13 +1026,15 @@ procedure ParseRotateBegin is
 begin
   expect( logs_rotate_begin_t );
   if isExecutingCommand then
-     if log_is_rotating then
-        err( +"logs are already rotating" );
-     elsif lock_file_path /= "" and log_mode /= stderr_log then
-        -- We don't need a lock file when logging to standard error only
-        lock_file( to_string( lock_file_path ) );
+     if logMetaLabelOk( logs_rotate_begin_t ) then
+        if log_is_rotating then
+           err( +"logs are already rotating" );
+        elsif lock_file_path /= "" and log_mode /= stderr_log then
+           -- We don't need a lock file when logging to standard error only
+           lock_file( to_string( lock_file_path ) );
+        end if;
+        log_is_rotating := true;
      end if;
-     log_is_rotating := true;
   end if;
 end ParseRotateBegin;
 
@@ -911,13 +1043,15 @@ procedure ParseRotateEnd is
 begin
   expect( logs_rotate_end_t );
   if isExecutingCommand then
-     if not log_is_rotating then
-        err( +"logs are not rotating" );
-     elsif lock_file_path /= "" and log_mode /= stderr_log then
-        -- We don't need a lock file when logging to standard error only
-        unlock_file( to_string( lock_file_path ) );
+     if logMetaLabelOk( logs_rotate_end_t ) then
+        if not log_is_rotating then
+           err( +"logs are not rotating" );
+        elsif lock_file_path /= "" and log_mode /= stderr_log then
+           -- We don't need a lock file when logging to standard error only
+           unlock_file( to_string( lock_file_path ) );
+        end if;
+        log_is_rotating := false;
      end if;
-     log_is_rotating := false;
   end if;
 end ParseRotateEnd;
 
@@ -928,7 +1062,10 @@ begin
   kind := boolean_t;
   expect( logs_is_rotating_t );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( log_is_rotating ), noMetaLabel );
+     if logMetaLabelOk( logs_is_rotating_t ) then
+        result := storage'( to_spar_boolean( log_is_rotating ),
+           resolveLogMetaLabel );
+     end if;
   end if;
 end ParseIsRotating;
 
@@ -945,14 +1082,16 @@ begin
   ParseNextOutParameter(  logs_metrics_t, warning_ref, natural_t );
   ParseLastOutParameter(  logs_metrics_t, error_ref, natural_t );
   if isExecutingCommand then
-     assignParameter( ok_ref,
-        storage'( to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ), noMetaLabel ) );
-     assignParameter( info_ref,
-        storage'( to_unbounded_string( numericValue( checkpointMetrics.info_count ) ), noMetaLabel ) );
-     assignParameter( warning_ref,
-        storage'( to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ), noMetaLabel ) );
-     assignParameter( error_ref,
-        storage'( to_unbounded_string( numericValue( checkpointMetrics.error_count ) ), noMetaLabel ) );
+     if logMetaLabelOk( logs_metrics_t ) then
+        assignParameter( ok_ref,
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ), resolveLogMetaLabel ) );
+        assignParameter( info_ref,
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.info_count ) ), resolveLogMetaLabel ) );
+        assignParameter( warning_ref,
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ), resolveLogMetaLabel ) );
+        assignParameter( error_ref,
+            storage'( to_unbounded_string( numericValue( checkpointMetrics.error_count ) ), resolveLogMetaLabel ) );
+     end if;
   end if;
 end ParseMetrics;
 
@@ -961,7 +1100,10 @@ procedure ParseCheckpoint is
 begin
   expect( logs_checkpoint_t );
   if isExecutingCommand then
-     resetMetrics;
+     -- Check to see that the file is open
+     if logMetaLabelOk( logs_checkpoint_t ) then
+        resetMetrics;
+     end if;
   end if;
 end ParseCheckpoint;
 

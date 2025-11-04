@@ -33,7 +33,8 @@ with ada.strings.unbounded,
     scanner,
     scanner.communications,
     parser_params,
-    parser;
+    parser,
+    parser_tio;
 use ada.strings.unbounded,
     world,
     symbol_table,
@@ -43,7 +44,8 @@ use ada.strings.unbounded,
     scanner,
     scanner.communications,
     parser_params,
-    parser;
+    parser,
+    parser_tio;
 
 package body parser_cgi is
 
@@ -449,11 +451,13 @@ begin
   end if;
 
   if isExecutingCommand then
-     begin
-       cgi.put_cgi_header( to_string( headerExpr.value ) );
-     exception when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+        begin
+          cgi.put_cgi_header( to_string( headerExpr.value ) );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_CGI_Header;
 
@@ -493,12 +497,13 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( webPageTitleExpr ) and metaLabelOk( mailToExpr ) then
-        begin
-          cgi.put_HTML_head( to_string( webPageTitleExpr.value ), to_string( mailToExpr.value ) );
-        exception when others =>
-          err_exception_raised;
-        end;
+     if metaLabelOk( webPageTitleExpr ) and metaLabelOk( mailToExpr ) and
+        metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+           begin
+             cgi.put_HTML_head( to_string( webPageTitleExpr.value ), to_string( mailToExpr.value ) );
+           exception when others =>
+             err_exception_raised;
+           end;
      end if;
   end if;
 end ParsePut_HTML_Head;
@@ -533,13 +538,14 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( titleExpr ) and metaLabelOk( levelExpr ) then
-        begin
-           cgi.put_HTML_heading( to_string( titleExpr.value ),
-              positive( to_numeric( levelExpr.value ) ) );
-        exception when others =>
-           err_exception_raised;
-        end;
+     if metaLabelOk( titleExpr ) and metaLabelOk( levelExpr ) and
+        metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+           begin
+              cgi.put_HTML_heading( to_string( titleExpr.value ),
+                 positive( to_numeric( levelExpr.value ) ) );
+           exception when others =>
+              err_exception_raised;
+           end;
      end if;
   end if;
 end ParsePut_HTML_Heading;
@@ -560,11 +566,13 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     begin
-        cgi.put_HTML_tail;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+        begin
+           cgi.put_HTML_tail;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_HTML_Tail;
 
@@ -592,7 +600,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( messageExpr ) then
+     if metaLabelOk( messageExpr ) and metaLabelOk( identifiers( standard_output_t ).sstorage ) then
         begin
            cgi.put_error_message( to_string( messageExpr.value ) );
         exception when others =>
@@ -618,11 +626,13 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     begin
-        cgi.put_variables;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+        begin
+           cgi.put_variables;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParsePut_Variables;
 

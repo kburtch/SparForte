@@ -410,7 +410,9 @@ type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constantUsage 
 -- with null storage.
 ------------------------------------------------------------------------------
 
-noMetaLabel     : constant identifier := identifier'first;
+subtype  metaLabelID is identifier;
+
+noMetaLabel     : constant metaLabelID := identifier'first;
 
 ------------------------------------------------------------------------------
 --
@@ -428,7 +430,7 @@ function value_equal( left, right : storage ) return boolean;
 
 type storage is record
     value      : aliased unbounded_string;
-    metaLabel  : identifier;  -- TODO: just one for now
+    metaLabel  : metaLabelID;  -- TODO: just one for now
 end record;
 nullStorage : constant storage := ( null_unbounded_string, noMetaLabel );
 undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel );
@@ -474,7 +476,11 @@ noDeclaredAt : constant natural := 0;
 -- The run-time security level.
 ------------------------------------------------------------------------------
 
-sparMetaLabel    : identifier := noMetaLabel;             -- the security level
+sparMetaLabel    : metaLabelID := noMetaLabel;             -- the security level
+
+stdinMetaLabel   : metaLabelID := noMetaLabel;
+stdoutMetaLabel  : metaLabelID := noMetaLabel;
+stderrMetaLabel  : metaLabelID := noMetaLabel;
 
 ------------------------------------------------------------------------------
 -- Block Table

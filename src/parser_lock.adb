@@ -152,10 +152,14 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if length( dirExpr.value ) > 0 then
-        Unlock_File( to_string( dirExpr.value ),
-          to_string( fileExpr.value ) );
+          if metaLabelOk( dirExpr, fileExpr ) then
+             Unlock_File( to_string( dirExpr.value ),
+               to_string( fileExpr.value ) );
+          end if;
      else
-        Unlock_File( to_string( fileExpr.value ) );
+        if metaLabelOk( fileExpr ) then
+           Unlock_File( to_string( fileExpr.value ) );
+        end if;
      end if;
   end if;
 end ParseLockUnlockFile;

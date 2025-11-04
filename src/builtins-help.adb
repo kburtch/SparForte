@@ -2097,6 +2097,7 @@ begin
      content( e, "logs.rotate_begin" );
      content( e, "logs.rotate_end" );
      content( e, "logs.warning( m )" );
+     content( e, "w := logs.width" );
      seeAlso( e, "doc/pkg_logs.html" );
      endHelp( e );
   elsif helpTopic = "loop" then

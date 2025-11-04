@@ -69,3 +69,9 @@ CHANGES SINCE 2.6.3
 
 32. Fix. l10n functions returning a natural 255 no longer raise an exception.  Returns 255 for a -1 signed byte.
 
+33. Fix: logs.mode, logs.width no longer run during a syntax check.
+
+34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Docs needed] [Tests needed]
+
+35. Fix: added missing logs.with function to logs documentation.
+

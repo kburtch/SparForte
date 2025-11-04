@@ -13,6 +13,8 @@ Long term Ongoing Work
 
 - value meta labels project
 
+  - pragma meta_tag and logs, text_io
+
   - error message on declare...begin meta...
 
     - text_io.parseOpenFile requires special type checking
@@ -26,6 +28,8 @@ Long term Ongoing Work
     a meta label assigned somehow.
     - how are subsystems assigned such a tag?  begin/end procedures?
       pragmas controlled by architect policy blocks?
+  - policy blocks
+    - meta tags should be able to be defined in policy blocks
 
   - Does change_dir affect current_working_directory?
 
@@ -33,7 +37,7 @@ Long term Ongoing Work
   - setting the meta label for files such as database packages
 
   - the global meta mode syntax for the language for different types
-    of tags - ? policy tagged, uom tagged, class tagged
+    of tags - instead of tagged, policy tagged, uom tagged, class tagged?
 
   - array built-in help vs. summary vs. docs - should functions have x :=
    in front or not?  Thought this was already consistent.
@@ -54,30 +58,29 @@ Long term Ongoing Work
     arrays, etc.
   - factors can be labelled but continue with expressions and labels
     - related unit tests
-  - function result tags (e.g. calendar.clock, or user functions)
     calendar.clock [tagged tag] may not be the best syntax
     - removing tagged tag
   - designing how meta labels apply to database columns
   - designing how meta labels apply to fields in a file of records
-  - a structure to escallate and descallate the global meta mode
-  - deploying strings + meta tags
-  - assignments using strings + meta tags
+  - ? deploying strings + meta tags
   - consider other issues like decision making on the meta tags and
     global meta tag
-  - identifing identifying individual trees
+  - identifying individual trees
   - adaptation to other uses such as units of measure
-  - what happens when unsetting meta labels - what is the policy?
-  - System package values should be labelled secure
-  - should counts have there meta value checked?
+  - what happens when unsetting meta labels with unset
+    - what is the policy?
+  - System package values should be labeled secure
+  - should count parameters have their meta value checked?
   - tags on user proc/func parameters or at least out parameters
   - arrays.to_json
     - json routines need to test meta data labels
     - arrays.to_array may not need meta data label test if implemented
       in json
-  - resolveEffectiveMetaLabel should be applied to data structure
-    packages?  In essence, what is stored is being retreived as-is
-    so labels should be as-is.
-    a meta tag.
+  - resolving combinations of meta labels
+    - resolveEffectiveMetaLabel should be applied to data structure
+      packages?  In essence, what is stored is being retreived as-is
+      so labels should be as-is.
+      a meta tag.
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -87,13 +90,19 @@ Long term Ongoing Work
     parser-decl
   - pragmas need to be tested for meta labels
   - rename meta and related temporary keywords to ones more appropriate
-    (e.g. labelled not tagged?)
-  - metaLabelOk should provide addition context (such as the values
-    associated to the labels when not secured)
+    (e.g. labeled not tagged?)
+  - metaLabelOk error message should provide addition context (such as
+    the values associated to the labels when not secured)
     - metaLabelOk 4-way should be redesigned for better errors
-  - resolving combinations of meta labels
   - package sound updates (gstreamer)
     - sound shouldn't really print message strings but throw exceptions
+  - integrity (vs. confidentiality):
+    -  should values have counters?  we count how many times a
+       value moves through functions or security blocks in order to give it
+       a trust level that can be queried.
+    - when we switch policy tags, does that change if a value can be read
+      or written?
+    - pragmas to define trust thresholds?
 
   - data fields
     General - Asset Name, Asset Type, Purpose, Oragnization
@@ -114,7 +123,6 @@ Long term Ongoing Work
    - in parser-decl, renaming reference may not work with index 0. Logic
      of renamingRef may need checking.  'not hasIndex' didn't work>
   - check vectorIndexOrCursorOk for references
-
 
 - error messages and additional context
   - parer-decl-as still has many errors not in the new format
@@ -163,6 +171,8 @@ Long term Ongoing Work
 Priority Issues (Fix These First)
 ---------------------------------
 
+- documenting that AdaScript parameters to commands may avoid injection
+  attacks (vs. bourne shell) provided concat, etc. are not used.
 - constants can be assigned abstract types...was that intentional or
   a bug?
 - can a workaround be found for mysql/mariadb not compiling on recent
@@ -993,6 +1003,9 @@ ISSUES (AdaScript)
     - \ at end of line will cause an error on SQL statements
     - a database connection pool
     - use ligda (GNU data access) for portable data needs?
+    - providing a workaround for shell SQL injection attacks in db
+      for providing data in a parameterized way without the readability
+      problems of such systems.
 
   * numerics
    - complete complex numbers - depends on complex types in expressions but expressions do not currently return aggregate values. A resource type cannot be used in expressions either because it is a limited type.
