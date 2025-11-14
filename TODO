@@ -81,6 +81,9 @@ Long term Ongoing Work
       packages?  In essence, what is stored is being retreived as-is
       so labels should be as-is.
       a meta tag.
+  - for real-world policies, they are often overlays on each other,
+    where one is based on an older one (from SecTor).  Can I support
+    this?
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
@@ -166,6 +169,8 @@ Long term Ongoing Work
   -- A uniting of two worlds by a thread tightly drawn between SparForte and
   -- AdaCGI, run on-demand.
 - hash_io error messages are not designed to handle an array of hashes
+- memcache.new_cluster should be treated in a similar way to generics
+  system, so new_cluster is not needed
 
 
 Priority Issues (Fix These First)

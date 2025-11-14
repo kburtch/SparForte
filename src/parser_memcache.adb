@@ -236,11 +236,14 @@ begin
   ParseSingleStringParameter( memcache_is_valid_memcache_key_t, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
-     begin
-       result := storage'( to_spar_boolean( isValidMemcacheKey( expr.value ) ), noMetaLabel );
-     exception when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( expr ) then
+        begin
+          result := storage'( to_spar_boolean( isValidMemcacheKey( expr.value ) ),
+             expr.metaLabel );
+        exception when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheIsValidMemcacheKey;
 
@@ -260,7 +263,8 @@ begin
         memcacheClusterIdTop := memcacheClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
-        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaLabel );
+        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ),
+           sparMetaLabel );
      exception when others =>
         err_exception_raised;
      end;
@@ -286,19 +290,21 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        port : constant natural := natural( to_numeric( expr2.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           RegisterServer( cluster_entry.cluster, expr.value, port );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+        if metaLabelOk( cluster, expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           port : constant natural := natural( to_numeric( expr2.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              RegisterServer( cluster_entry.cluster, expr.value, port );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheRegisterServer;
 
@@ -315,18 +321,20 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           ClearServers( cluster_entry.cluster );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              ClearServers( cluster_entry.cluster );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheClearServers;
 
@@ -346,18 +354,20 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           SetClusterName( cluster_entry.cluster, expr.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster, expr ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              SetClusterName( cluster_entry.cluster, expr.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheSetClusterName;
 
@@ -379,25 +389,27 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     begin
-        mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
-     exception when constraint_error =>
-        err( +"constraint error" );
-     when others =>
-        err_exception_raised;
-     end;
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           SetClusterType( cluster_entry.cluster, mct );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster, expr ) then
+        begin
+           mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
+        exception when constraint_error =>
+           err( +"constraint error" );
+        when others =>
+           err_exception_raised;
+        end;
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              SetClusterType( cluster_entry.cluster, mct );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheSetClusterType;
 
@@ -420,20 +432,22 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Set( cluster_entry.cluster, expr.value, expr2.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when constraint_error =>
-        err( +"no memcache servers registered" );
-     when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Set( cluster_entry.cluster, expr.value, expr2.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when constraint_error =>
+           err( +"no memcache servers registered" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheSet;
 
@@ -456,20 +470,22 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Add( cluster_entry.cluster, expr.value, expr2.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when constraint_error =>
-        err( +"no memcache servers registered" );
-     when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Add( cluster_entry.cluster, expr.value, expr2.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when constraint_error =>
+           err( +"no memcache servers registered" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheAdd;
 
@@ -492,18 +508,22 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Replace( cluster_entry.cluster, expr.value, expr2.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     -- The data in memcache has no data meta label so we cannot check the existing
+     -- data against new data's meta label
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Replace( cluster_entry.cluster, expr.value, expr2.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheReplace;
 
@@ -526,18 +546,20 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Append( cluster_entry.cluster, expr.value, expr2.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Append( cluster_entry.cluster, expr.value, expr2.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheAppend;
 
@@ -560,18 +582,20 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Prepend( cluster_entry.cluster, expr.value, expr2.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) and metaLabelOk( cluster, expr2 ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Prepend( cluster_entry.cluster, expr.value, expr2.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcachePrepend;
 
@@ -592,21 +616,24 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           result := nullStorage;
-           Get( cluster_entry.cluster, expr.value, result.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when constraint_error =>
-        err( +"no memcache servers registered" );
-     when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              result := nullStorage;
+              Get( cluster_entry.cluster, expr.value, result.value );
+              result.metaLabel := sparMetaLabel;
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when constraint_error =>
+           err( +"no memcache servers registered" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheGet;
 
@@ -626,20 +653,22 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Delete( cluster_entry.cluster, expr.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when constraint_error =>
-        err( +"no memcache servers registered" );
-     when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster ) and metaLabelOk( expr ) then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Delete( cluster_entry.cluster, expr.value );
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when constraint_error =>
+           err( +"no memcache servers registered" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheDelete;
 
@@ -657,18 +686,21 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Stats( cluster_entry.cluster, result.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster )then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Stats( cluster_entry.cluster, result.value );
+              result.metaLabel := cluster.metaLabel;
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheStats;
 
@@ -686,21 +718,24 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           result := nullStorage;
-           pegasock.memcache.Version( cluster_entry.cluster, result.value );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when constraint_error =>
-        err( +"no memcache servers registered" );
-     when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster )then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              result := nullStorage;
+              pegasock.memcache.Version( cluster_entry.cluster, result.value );
+              result.metaLabel := cluster.metaLabel;
+              memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when constraint_error =>
+           err( +"no memcache servers registered" );
+        when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheVersion;
 
@@ -717,18 +752,20 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     declare
-        theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
-        clusterIndex : memcacheClusterList.aListIndex;
-     begin
-        GetCluster( theCluster, cluster_entry, clusterIndex );
-        if clusterIndex /= 0 then
-           Flush( cluster_entry.cluster );
-           memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
-        end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( cluster )then
+        declare
+           theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
+           clusterIndex : memcacheClusterList.aListIndex;
+        begin
+           GetCluster( theCluster, cluster_entry, clusterIndex );
+           if clusterIndex /= 0 then
+              Flush( cluster_entry.cluster );
+             memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseMemcacheFlush;
 
