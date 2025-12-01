@@ -338,10 +338,14 @@ procedure discardUnusedIdentifier( id : identifier );
 --
 ------------------------------------------------------------------------------
 
-function metaLabelOk( theStorage : storage ) return boolean;
-function metaLabelOk( leftStorage, rightStorage : storage ) return boolean;
-function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean;
-function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
+function metaLabelOk( contextNotes : string; theStorage : storage ) return boolean;
+function metaLabelOk( context : identifier; theStorage : storage ) return boolean;
+function metaLabelOk( contextNotes : string; leftStorage, rightStorage : storage ) return boolean;
+function metaLabelOk( context : identifier; leftStorage, rightStorage : storage ) return boolean;
+function metaLabelOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean;
+function metaLabelOk( context : identifier; leftStorage, middleStorage, rightStorage: storage ) return boolean;
+function metaLabelOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
+function metaLabelOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
 
 ------------------------------------------------------------------------------
 -- Data Meta Label Resolution
@@ -371,10 +375,10 @@ procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_strin
 
 -- Convert a JSON string and store in an array.
 
-procedure DoRecordToJson( result : out unbounded_string; source_var_id : identifier );
+procedure DoRecordToJson( result : out storage; source_var_id : identifier );
 -- Convert a record to a JSON string.
 
-procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string );
+procedure DoJsonToRecord( target_var_id : identifier; sourceStore : storage );
 -- Convert a JSON string and store in a record.
 
 procedure DoJsonToNumber( jsonString : unbounded_string; expr_val : out unbounded_string );

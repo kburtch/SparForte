@@ -360,7 +360,7 @@ begin
        -- ( m, k, e )
        when 1 =>
           -- assuming the key and value can fall under different policies
-          if metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
           end if;
        -- (m, k, p, b )
@@ -368,7 +368,7 @@ begin
        -- null storage is used.
        when 2 =>
           findResource( to_resource_id( identifiers( cursorRef.id ).store.value ), theCursor );
-          if metaLabelOK( keyExpr ) then
+          if metaLabelOK( subprogramId, keyExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, nullStorage, theCursor.shmCursor,
                 result );
              AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
@@ -377,7 +377,7 @@ begin
        when 3 =>
           findResource( to_resource_id( identifiers( cursorRef.Id ).store.value ), theCursor );
           -- assuming the key and value can fall under different policies
-          if metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
                 theCursor.shmCursor, result );
           end if;
@@ -430,11 +430,11 @@ begin
        -- may also be empty but existence is optional.
        if Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) then
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( oldElem ) and
-             metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+          if metaLabelOK( subprogramId, oldElem ) and
+             metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
           end if;
-       elsif metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+       elsif metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
        end if;
      exception when storage_error =>
@@ -476,8 +476,8 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( oldElem ) and
-          metaLabelOK( keyExpr ) and metaLabelOK( elemExpr ) then
+       if metaLabelOK( subprogramId, oldElem ) and
+          metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
           Storage_Hashed_Maps.Replace( theMap.shmMap, keyExpr, elemExpr );
        end if;
      exception when constraint_error =>
@@ -518,7 +518,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+       if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
           Storage_Hashed_Maps.Exclude( theMap.shmMap, keyExpr );
        end if;
      exception when storage_error =>
@@ -573,7 +573,7 @@ begin
           -- the key and existing value must be checked. The map
           -- may also be empty or the key may not exist.
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+          if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
              Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
           end if;
        else
@@ -581,7 +581,7 @@ begin
           findResource( to_resource_id( cursResId.value ), theCursor );
           -- the existing value must be checked
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
-          if metaLabelOK( oldElem ) then
+          if metaLabelOK( subprogramId, oldElem ) then
              Storage_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
           end if;
        end if;
@@ -716,14 +716,14 @@ begin
           getParameterValue( cursorRef, cursResId );
           findResource( to_resource_id( cursResId.value ), theCursor );
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
-          if metaLabelOK( oldElem ) then
+          if metaLabelOK( subprogramId, oldElem ) then
              result := oldElem;
           end if;
        else
           getParameterValue( mapRef, mapResId );
           findResource( to_resource_id( mapResId.value ), theMap );
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( keyExpr ) and metaLabelOK( oldElem ) then
+          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, oldElem ) then
              result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
           end if;
        end if;
@@ -798,7 +798,7 @@ begin
        -- Append( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        -- labels must be the same for the original value and the appending value
-       if metaLabelOk( elemExpr, original ) then
+       if metaLabelOk( subprogramId, elemExpr, original ) then
           original.value := original.value & elemExpr.value;
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
        end if;
@@ -847,7 +847,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- Prepend( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOk( elemExpr, original ) then
+       if metaLabelOk( subprogramId, elemExpr, original ) then
           original.value := elemExpr.value & original.value;
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
        end if;
@@ -914,12 +914,12 @@ begin
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
        if hasAmt then
-          if metaLabelOk( keyExpr ) and metaLabelOk( incExpr, original ) then
+          if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, incExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
        else
-          if metaLabelOk( keyExpr ) and metaLabelOk( original ) then
+          if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
@@ -987,12 +987,12 @@ begin
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
        if hasAmt then
-          if metaLabelOk( decExpr, original ) then
+          if metaLabelOk( subprogramId, decExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
        else
-          if metaLabelOk( original ) then
+          if metaLabelOk( subprogramId, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
@@ -1039,7 +1039,7 @@ begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( oldElem ) and metaLabelOK( keyExpr ) then
+       if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
           result := oldElem;
           Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
        end if;
@@ -1218,7 +1218,7 @@ begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
        oldElem := Storage_Hashed_Maps.Key( theCursor.shmCursor );
-       if metaLabelOk( oldElem ) then
+       if metaLabelOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1306,7 +1306,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       if metaLabelOK( Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
+       if metaLabelOK( subprogramId, Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
           Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
        end if;
      exception when constraint_error =>

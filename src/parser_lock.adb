@@ -106,7 +106,7 @@ begin
   if isExecutingCommand then
      begin
        if length( dirExpr.value ) > 0 then
-          if metaLabelOk( dirExpr, fileExpr ) then
+          if metaLabelOk( locks_lock_t, dirExpr, fileExpr ) then
              Lock_File( to_string( dirExpr.value ),
                to_string( fileExpr.value ),
                duration( to_numeric( waitExpr.value ) ),
@@ -114,7 +114,7 @@ begin
           );
           end if;
        else
-          if metaLabelOk( fileExpr ) then
+          if metaLabelOk( locks_lock_t, fileExpr ) then
             Lock_File( to_string( fileExpr.value ),
                duration( to_numeric( waitExpr.value ) ),
                natural( to_numeric( retryExpr.value ) )
@@ -152,12 +152,12 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if length( dirExpr.value ) > 0 then
-          if metaLabelOk( dirExpr, fileExpr ) then
+          if metaLabelOk( locks_unlock_t, dirExpr, fileExpr ) then
              Unlock_File( to_string( dirExpr.value ),
                to_string( fileExpr.value ) );
           end if;
      else
-        if metaLabelOk( fileExpr ) then
+        if metaLabelOk( locks_unlock_t, fileExpr ) then
            Unlock_File( to_string( fileExpr.value ) );
         end if;
      end if;

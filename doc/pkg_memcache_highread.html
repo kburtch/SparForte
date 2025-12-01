@@ -96,7 +96,7 @@ on localhost port 11211.</p>
         <center>
         <div class="code">
                 <p class="code">=&gt; c := memcache.highread.new_cluster<br>
-=&gt; (Assuming c is a new memcache.memcache_dual_cluster variable)<br>
+=&gt; (Assuming c is a new memcache.highread.memcache_dual_cluster variable)<br>
 =&gt; memcache.highread.register_alpha_server( c, "localhost", 11211 )<br>
 =&gt; memcache.highread.register_beta_server( c, "localhost", 11212 )<br>
 =&gt; key : string := "candy"<br>

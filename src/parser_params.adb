@@ -562,6 +562,7 @@ begin
   -- eof in which case the caller is expected to check.
   if expected_type /= eof_t then
      discard_result := type_checks_done or else uniTypesOK( identifiers( ref.id ).kind, expected_type );
+     ref.kind := identifiers( ref.id ).kind;
   end if;
 
   -- Mark the variable as having been written for future tests.
@@ -1302,6 +1303,9 @@ begin
          end loop;
      end loop;
   else
+     if expected_type /= eof_t then
+        discard := type_checks_done or else baseTypesOk(identifiers( ref.id ).kind, expected_type );
+     end if;
      ref.kind := identifiers( ref.id ).kind;
   end if;
   -- Mark the variable as having been written for future tests.

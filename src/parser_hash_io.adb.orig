@@ -819,6 +819,7 @@ procedure ParseHashSet is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  recStore   : storage; -- kludge for recs with meta labels
 begin
   if rshOpt then
      err( +"set not allowed in a " & em( "restricted shell" ) );
@@ -852,7 +853,8 @@ begin
            declare
               jsonString : unbounded_string;
            begin
-              DoRecordToJson( jsonString, valId );
+              DoRecordToJson( recStore, valId );
+              jsonString := recStore.value;
               put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( pl( exception_message( msg ) ) );
@@ -968,10 +970,11 @@ begin
         findResource( to_resource_id( fileResId.value ), theFile );
         if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
-              jsonString : unbounded_string;
+              jsonStore : storage;
            begin
-              get( theFile.hash.session, to_string( keyExpr.value ), jsonString );
-              DoJsonToRecord( itemRef.id, jsonString );
+              get( theFile.hash.session, to_string( keyExpr.value ), jsonStore.value );
+              jsonStore.metaLabel := sparMetaLabel;
+              DoJsonToRecord( itemRef.id, jsonStore );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1281,6 +1284,7 @@ procedure ParseHashAdd is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  recStore   : storage; -- kludge for recs with meta labels
 begin
   if rshOpt then
      err( +"add not allowed in a " & em( "restricted shell" ) );
@@ -1321,7 +1325,8 @@ begin
               err( +"constraint_error: value too big" );
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
-                DoRecordToJson( jsonString, itemId );
+                DoRecordToJson( recStore, itemId );
+                jsonString := recStore.value;
                 put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
              else
                 err( pl( exception_message( msg ) ) );
@@ -1397,6 +1402,7 @@ procedure ParseHashReplace is
   cursRef    : reference;
   theCurs    : resPtr;
   cursResId  : storage;
+  recStore   : storage; -- kludge for recs with meta labels
 begin
   if rshOpt then
      err( +"replace not allowed in a " & em( "restricted shell" ) );
@@ -1450,7 +1456,8 @@ begin
                    temp_string,
                    DB_C_GET_CURRENT );
                 if last_error( theFile.hash.session ) = DB_OK then
-                   DoRecordToJson( jsonString, itemId );
+                   DoRecordToJson( recStore, itemId );
+                   jsonString := recStore.value;
                    put( theFile.hash.session,
                         theCurs.hash_cur.cursor,
                         keyExpr.value, -- this is ignored
@@ -1532,7 +1539,8 @@ begin
                  jsonString : unbounded_string;
               begin
                 exists( theFile.hash.session, to_string( keyExpr.value ) );
-                DoRecordToJson( jsonString, itemId );
+                DoRecordToJson( recStore, itemId );
+                jsonString := recStore.value;
                 put( theFile.hash.session, to_string( keyExpr.value ), to_string( jsonString ) );
               exception when storage_error =>
                 err( +"storage error raised" );
@@ -1909,7 +1917,7 @@ begin
         if isVerifiedOpenFile( fileRef.Id, theFile ) then
            declare
               key : unbounded_string;
-              jsonString : unbounded_string;
+              jsonStore : storage;
            begin
               getParameterValue( cursRef, cursResId );
               findResource( to_resource_id( cursResId.value ), theCurs );
@@ -1921,11 +1929,12 @@ begin
                  get( theFile.hash.session,
                       theCurs.hash_cur.cursor,
                       key,
-                      jsonString,
+                      jsonStore.value,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
                     AssignParameter( keyRef, storage'( key, noMetaLabel ) );
-                    DoJsonToRecord( valRef.id, jsonString );
+                    jsonStore.metaLabel := sparMetaLabel;
+                    DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -2065,7 +2074,7 @@ begin
      if isRecord then
         declare
            key : unbounded_string;
-           jsonString : unbounded_string;
+           jsonStore : storage;
         begin
            getParameterValue( fileRef, fileResId );
            findResource( to_resource_id( fileResId.value ), theFile );
@@ -2080,11 +2089,12 @@ begin
                  get( theFile.hash.session,
                       theCurs.hash_cur.cursor,
                       key,
-                      jsonString,
+                      jsonStore.value,
                       DB_C_GET_NEXT );
                  if last_error( theFile.hash.session ) = DB_OK then
                     AssignParameter( keyRef, storage'( key, noMetaLabel ) );
-                    DoJsonToRecord( valRef.id, jsonString );
+                    jsonStore.metaLabel := sparMetaLabel;
+                    DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
            end if;
@@ -2232,7 +2242,7 @@ begin
      if isRecord then
         declare
            key : unbounded_string;
-           jsonString : unbounded_string;
+           jsonStore : storage;
         begin
            getParameterValue( fileRef, fileResId );
            findResource( to_resource_id( fileResId.value ), theFile );
@@ -2247,11 +2257,12 @@ begin
                  get( theFile.hash.session,
                       theCurs.hash_cur.cursor,
                       key,
-                      jsonString,
+                      jsonStore.value,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
                     AssignParameter( keyRef, storage'( key, noMetaLabel ) );
-                    DoJsonToRecord( valRef.id, jsonString );
+                    jsonStore.metaLabel := sparMetaLabel;
+                    DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
            end if;
@@ -2391,7 +2402,7 @@ begin
      if isRecord then
         declare
            key : unbounded_string;
-           jsonString : unbounded_string;
+           jsonStore : storage;
         begin
            getParameterValue( fileRef, fileResId );
            findResource( to_resource_id( fileResId.value ), theFile );
@@ -2406,11 +2417,12 @@ begin
                  get( theFile.hash.session,
                       theCurs.hash_cur.cursor,
                       key,
-                      jsonString,
+                      jsonStore.value,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
                     AssignParameter( keyRef, storage'( key, noMetaLabel ) );
-                    DoJsonToRecord( valRef.id, jsonString );
+                    jsonStore.metaLabel := sparMetaLabel;
+                    DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
            end if;

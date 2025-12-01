@@ -2343,6 +2343,7 @@ begin
               identifiers( var_id ).method := http_cgi;
               declare
                  found : boolean := false;
+                 jsonStore : storage; -- kludge for records with data meta labels
               begin
                  for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                      newValue := newValue & to_unbounded_string( cgi.value(
@@ -2357,7 +2358,9 @@ begin
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
-                           DoJsonToRecord( var_id, newValue );
+                           jsonStore.value := newValue;
+                           jsonStore.metaLabel := sparMetaLabel;
+                           DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
@@ -2383,6 +2386,7 @@ begin
                    temp1_t    : identifier;
                    temp2_t    : identifier;
                    importValue: unbounded_string;
+                   jsonStore  : storage; -- kludge for records with data meta labels
                    --b          : boolean;
                  begin
                    -- TODO: full prefix is a good idea but should be done with
@@ -2410,7 +2414,9 @@ begin
                          elsif identifiers( var_id ).list then                           -- array
                             DoJsonToArray( var_id, importValue, noMetaLabel );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
-                            DoJsonToRecord( var_id, importValue );
+                            jsonStore.value := importValue;
+                            jsonStore.metaLabel := sparMetaLabel;
+                            DoJsonToRecord( var_id, jsonStore );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                             DoJsonToNumber( importValue, identifiers( var_id ).store.value );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
@@ -2741,6 +2747,7 @@ begin
               identifiers( var_id ).method := http_cgi;
               declare
                  found : boolean := false;
+                 jsonStore : storage;
               begin
                  for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                      newValue := newValue & to_unbounded_string( cgi.value(
@@ -2755,7 +2762,9 @@ begin
                         elsif identifiers( var_id ).list then                           -- array
                            DoJsonToArray( var_id, newValue, noMetaLabel );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
-                           DoJsonToRecord( var_id, newValue );
+                           jsonStore.value := newValue;
+                           jsonStore.metaLabel := sparMetaLabel;
+                           DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum

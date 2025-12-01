@@ -101,7 +101,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( crc_ref, crc );
-     if metaLabelOk( crc ) then
+     if metaLabelOk( gnat_crc32_update_t, crc ) then
         declare
           c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
               crc.value ) );
@@ -131,7 +131,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( crc_ref, crc );
-     if metaLabelOk( crc ) then
+     if metaLabelOk( gnat_crc32_get_value_t, crc ) then
         begin
           result := crc;
         exception when others =>

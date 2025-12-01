@@ -73,5 +73,9 @@ CHANGES SINCE 2.6.3
 
 34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Docs needed] [Tests needed]
 
-35. Fix: added missing logs.with function to logs documentation.
+35. Fix: added missing logs.width function to logs documentation.
+
+36. Change: numerics.expr and trig functions now report detailed errors instead of an unexpected exceptions.
+
+37. Change: restriction( no_external_commands ) also disallows os.system().
 

@@ -213,7 +213,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) and metaLabelOk( idxExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, idxExpr ) then
         begin
           result := storage'( cgi.Value( keyExpr.value,
             positive'value( to_string( idxExpr.value ) ),
@@ -250,7 +250,7 @@ begin
   ParseLastNumericParameter( subprogramId, idxExpr, idxtype, positive_t );
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) and metaLabelOK( idxExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) and metaLabelOK( subprogramId, idxExpr ) then
         result := storage'( to_spar_boolean(
              cgi.key_exists( keyExpr.value, positive'value( to_string( idxExpr.value ) ) )
            ), sparMetaLabel );
@@ -279,7 +279,7 @@ begin
   ParseSingleStringParameter( subprogramId, keyExpr, keyType );
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) then
         result := storage'( to_unbounded_string( cgi.key_count( keyExpr.value )'img ),
            sparMetaLabel );
      end if;
@@ -365,7 +365,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( posExpr ) then
+     if metaLabelOk( subprogramId, posExpr ) then
         begin
           result := storage'( cgi.value( positive( to_numeric( posExpr.value ) ) ), sparMetaLabel );
         exception when constraint_error =>
@@ -412,7 +412,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) and metaLabelOk( keyValueExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, keyValueExpr ) then
         result := storage'( to_spar_boolean( cgi.key_value_exists( keyExpr.value, keyValueExpr.value ) ),
           sparMetaLabel );
      end if;
@@ -451,7 +451,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
         begin
           cgi.put_cgi_header( to_string( headerExpr.value ) );
         exception when others =>
@@ -497,8 +497,8 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( webPageTitleExpr ) and metaLabelOk( mailToExpr ) and
-        metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, webPageTitleExpr ) and metaLabelOk( subprogramId, mailToExpr ) and
+        metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
            begin
              cgi.put_HTML_head( to_string( webPageTitleExpr.value ), to_string( mailToExpr.value ) );
            exception when others =>
@@ -538,8 +538,8 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( titleExpr ) and metaLabelOk( levelExpr ) and
-        metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, titleExpr ) and metaLabelOk( subprogramId, levelExpr ) and
+        metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
            begin
               cgi.put_HTML_heading( to_string( titleExpr.value ),
                  positive( to_numeric( levelExpr.value ) ) );
@@ -566,7 +566,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
         begin
            cgi.put_HTML_tail;
         exception when others =>
@@ -600,7 +600,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( messageExpr ) and metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, messageExpr ) and metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
         begin
            cgi.put_error_message( to_string( messageExpr.value ) );
         exception when others =>
@@ -626,7 +626,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     if metaLabelOk( identifiers( standard_output_t ).sstorage ) then
+     if metaLabelOk( subprogramId, identifiers( standard_output_t ).sstorage ) then
         begin
            cgi.put_variables;
         exception when others =>
@@ -696,7 +696,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.line_count( to_string(keyExpr.value))'img),
               keyExpr.MetaLabel );
@@ -731,7 +731,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.line_count_of_value(
              to_string(keyExpr.value))'img), keyExpr.metaLabel );
@@ -773,7 +773,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOk( keyExpr ) and metaLabelOk( posExpr ) then
+     if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, posExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.line( to_string( keyExpr.value ),
               positive( to_numeric( posExpr.value ) ) ) ),
@@ -816,7 +816,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOK( keyExpr ) and metaLabelOK( posExpr ) then
+     if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, posExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.value_of_line( to_string( keyExpr.value ),
               positive( to_numeric( posExpr.value ) ) ) ),
@@ -867,7 +867,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOK( dataExpr ) and metaLabelOK( boolExpr ) then
+     if metaLabelOK( subprogramId, dataExpr ) and metaLabelOK( subprogramId, boolExpr ) then
         begin
            result := storage'( cgi.URL_Decode( dataExpr.value, boolExpr.value = identifiers( true_t ).store.value ),
               resolveEffectiveMetaLabel( kind, dataExpr, boolExpr ) );
@@ -947,7 +947,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOK( dataExpr ) then
+     if metaLabelOK( subprogramId, dataExpr ) then
         begin
           result := storage'( cgi.HTML_encode( dataExpr.value ),
              dataExpr.metaLabel );
@@ -1086,7 +1086,7 @@ begin
   expect( symbol_t, ")" );
 
   if isExecutingCommand then
-     if metaLabelOK( keyExpr ) and metaLabelOk( posExpr ) then
+     if metaLabelOK( subprogramId, keyExpr ) and metaLabelOk( subprogramId, posExpr ) then
         begin
            result := storage'( cgi.cookie_value( keyExpr.value,
               positive( to_numeric( posExpr.value ) ),

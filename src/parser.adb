@@ -2087,7 +2087,7 @@ begin
         if operation = uni_numeric_t then
            if operator = "**" then
               begin
-                 if metaLabelOk( term, factor2 ) then
+                 if metaLabelOk( "**", term, factor2 ) then
                     if isExecutingCommand then
                        term.value := to_unbounded_string(
                             to_numeric( term.value ) **
@@ -2195,7 +2195,7 @@ begin
                       identifiers( term_type ).wasCastTo := true;
                    end if;
                   if isExecutingCommand then
-                     if metaLabelOk( term, pterm2 ) then
+                     if metaLabelOk( "*", term, pterm2 ) then
                         term.value := castToType(
                            to_numeric( term.value ) *
                            to_numeric( pterm2.value ),
@@ -2229,7 +2229,7 @@ begin
                      -- As a kludge, we'll break up this function call into
                      -- its parts and explicitly test for division by zero.
                      -- this could likely be improved.
-                     if metaLabelOk( term, pterm2 ) then
+                     if metaLabelOk( "/", term, pterm2 ) then
                         t := to_numeric( term.value );
                         p := to_numeric( pterm2.value );
                         if p = 0.0 then
@@ -2254,7 +2254,7 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( term, pterm2 ) then
+                     if metaLabelOk( "mod", term, pterm2 ) then
                         term.value := castToType(
                            --long_long_integer'image(
                            numericValue(
@@ -2277,7 +2277,7 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( term, pterm2 ) then
+                     if metaLabelOk( "rem", term, pterm2 ) then
                         term.value := castToType(
                            --long_long_integer'image(
                            numericValue(
@@ -2318,7 +2318,7 @@ begin
                  end if;
                  if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingCommand then
-                       if metaLabelOk( term, pterm2 ) then
+                       if metaLabelOk( "&", term, pterm2 ) then
                           term.value := term.value & pterm2.value;
                        end if;
                     end if;
@@ -2327,7 +2327,7 @@ begin
                  if type_checks_done or else baseTypesOK( kind1, natural_t ) then
                     if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
-                          if metaLabelOk( term, pterm2 ) then
+                          if metaLabelOk( "*", term, pterm2 ) then
                              term.value := natural( to_numeric( term.value ) ) * pterm2.value;
                           end if;
                        end if;
@@ -2457,7 +2457,7 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( se, term2 ) then
+                     if metaLabelOk( "+", se, term2 ) then
                         se.value := castToType(
                            to_numeric( se.value ) +
                            to_numeric( term2.value ),
@@ -2478,7 +2478,7 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( se, term2 ) then
+                     if metaLabelOk( "-", se, term2 ) then
                         se.value := castToType(
                            to_numeric( se.value ) -
                            to_numeric( term2.value ),
@@ -2496,7 +2496,7 @@ begin
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
               if isExecutingCommand then
-                 if metaLabelOk( se, term2 ) then
+                 if metaLabelOk( "+", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2508,7 +2508,7 @@ begin
               end if;
            elsif operator = "-" then
               if isExecutingCommand then
-                 if metaLabelOk( se, term2 ) then
+                 if metaLabelOk( "-", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2522,7 +2522,7 @@ begin
         elsif operation = variable_t then -- duration + time
            if operator = "+" then
               if isExecutingCommand then
-                 if metaLabelOk( se, term2 ) then
+                 if metaLabelOk( "+", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( term2.value ) );
@@ -2540,7 +2540,7 @@ begin
               err( +"operation + not defined for these types" );
            else
               if isExecutingCommand then
-                 if metaLabelOk( se, term2 ) then
+                 if metaLabelOk( "+", se, term2 ) then
                     declare
                        c : constant scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2689,49 +2689,49 @@ begin
              begin
                if operator = ">=" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( ">=", se1, se2 ) then
                         b := to_numeric( se1.value ) >= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = ">" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( ">", se1, se2 ) then
                         b := to_numeric( se1.value ) > to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "<" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "<", se1, se2 ) then
                         b := to_numeric( se1.value ) < to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "<=" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "<=", se1, se2 ) then
                         b := to_numeric( se1.value ) <= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "=" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "=", se1, se2 ) then
                         b := to_numeric( se1.value ) = to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "/=" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "/=", se1, se2 ) then
                         b := to_numeric( se1.value ) /= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "in" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "in", se1, se2 ) then
                         b := to_numeric( se1.value ) in to_numeric( se2.value )..to_numeric( se3.value );
                      end if;
                   end if;
                elsif operator = "not in" then
                   if isExecutingCommand then
-                     if metaLabelOk( se1, se2 ) then
+                     if metaLabelOk( "not in", se1, se2 ) then
                         b := to_numeric( se1.value ) not in to_numeric( se2.value )..to_numeric( se3.value );
                      end if;
                   end if;
@@ -2750,37 +2750,37 @@ begin
         elsif operation = uni_string_t then
              if operator = ">=" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( ">=", se1, se2 ) then
                       b := se1.value >= se2.value;
                    end if;
                 end if;
              elsif operator = ">" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( ">", se1, se2 ) then
                       b := se1.value > se2.value;
                    end if;
                 end if;
              elsif operator = "<" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( "<", se1, se2 ) then
                       b := se1.value < se2.value;
                    end if;
                 end if;
              elsif operator = "<=" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( "<=", se1, se2 ) then
                       b := se1.value <= se2.value;
                    end if;
                 end if;
              elsif operator = "=" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( "=", se1, se2 ) then
                       b := se1.value = se2.value;
                    end if;
                 end if;
              elsif operator = "/=" then
                 if isExecutingCommand then
-                   if metaLabelOk( se1, se2 ) then
+                   if metaLabelOk( "/=", se1, se2 ) then
                       b := se1.value /= se2.value;
                    end if;
                 end if;
@@ -2790,7 +2790,7 @@ begin
                       length( se2.value ) /= 1 or
                       length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
-                   elsif metaLabelOk( se1, se2, se3 ) then
+                   elsif metaLabelOk( "in", se1, se2, se3 ) then
                       declare
                         c1 : constant character := element( se1.value, 1 );
                         c2 : constant character := element( se2.value, 1 );
@@ -2808,7 +2808,7 @@ begin
                       length( se2.value ) /= 1 or
                       length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
-                   elsif metaLabelOk( se1, se2, se3 ) then
+                   elsif metaLabelOk( "not in", se1, se2, se3 ) then
                       declare
                         c1 : constant character := element( se1.value, 1 );
                         c2 : constant character := element( se2.value, 1 );

@@ -151,13 +151,15 @@ shannon_entropy_of_t : identifier;
 procedure ParseNumericsRandom( result : out storage; kind : out identifier ) is
   -- Syntax: random
   -- Source: Ada.Numerics.Float_Random.Random
+  subprogramId : constant identifier := random_t;
 begin
   kind := float_t;
   result := nullStorage;
-  expect( random_t );
+  expect( subprogramId );
   if isExecutingCommand then
      result.value := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
        random_generator ) ) );
+     result.metaLabel := sparMetaLabel;
   end if;
 end ParseNumericsRandom;
 
@@ -168,17 +170,20 @@ procedure ParseNumericsShiftLeft( result : out storage; kind : out identifier ) 
   expr_type : identifier;
   amt_st    : storage;
   amt_type  : identifier := eof_t;
+  subprogramId : constant identifier := shift_left_t;
 begin
   kind := uni_numeric_t;
-  expect( shift_left_t );
-  ParseFirstNumericParameter( shift_left_t, expr_st, expr_type );
-  ParseLastNumericParameter( shift_left_t, amt_st, amt_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := storage'( to_unbounded_string( numericValue( shift_left(
-           unsigned_64( to_numeric( expr_st.value ) ),
-           natural( to_numeric( amt_st.value ) )
-        ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( numericValue( shift_left(
+              unsigned_64( to_numeric( expr_st.value ) ),
+              natural( to_numeric( amt_st.value ) )
+           ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -192,17 +197,20 @@ procedure ParseNumericsShiftRight( result : out storage; kind : out identifier )
   expr_type : identifier;
   amt_st    : storage;
   amt_type  : identifier := eof_t;
+  subprogramId : constant identifier := shift_right_t;
 begin
   kind := uni_numeric_t;
-  expect( shift_right_t );
-  ParseFirstNumericParameter( shift_right_t, expr_st, expr_type );
-  ParseLastNumericParameter( shift_right_t, amt_st, amt_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := storage'( to_unbounded_string( numericValue( shift_right(
-           unsigned_64( to_numeric( expr_st.value ) ),
-           natural( to_numeric( amt_st.value ) )
-        ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( numericValue( shift_right(
+              unsigned_64( to_numeric( expr_st.value ) ),
+              natural( to_numeric( amt_st.value ) )
+           ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -216,17 +224,20 @@ procedure ParseNumericsRotateLeft( result : out storage; kind : out identifier )
   expr_type : identifier;
   amt_st    : storage;
   amt_type  : identifier := eof_t;
+  subprogramId : constant identifier := rotate_left_t;
 begin
   kind := uni_numeric_t;
-  expect( rotate_left_t );
-  ParseFirstNumericParameter( rotate_left_t, expr_st, expr_type );
-  ParseLastNumericParameter( rotate_left_t, amt_st, amt_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := storage'( to_unbounded_string( numericValue( rotate_left(
-           unsigned_64( to_numeric( expr_st.value ) ),
-           natural( to_numeric( amt_st.value) )
-        ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( numericValue( rotate_left(
+              unsigned_64( to_numeric( expr_st.value ) ),
+              natural( to_numeric( amt_st.value) )
+           ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -240,17 +251,20 @@ procedure ParseNumericsRotateRight( result : out storage; kind : out identifier 
   expr_type : identifier;
   amt_st    : storage;
   amt_type  : identifier := eof_t;
+  subprogramId : constant identifier := rotate_right_t;
 begin
   kind := uni_numeric_t;
-  expect( rotate_right_t );
-  ParseFirstNumericParameter( rotate_right_t, expr_st, expr_type );
-  ParseLastNumericParameter( rotate_right_t, amt_st, amt_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := storage'( to_unbounded_string( numericValue( rotate_right(
-           unsigned_64( to_numeric( expr_st.value ) ),
-           natural( to_numeric( amt_st.value) )
-        ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( numericValue( rotate_right(
+              unsigned_64( to_numeric( expr_st.value ) ),
+              natural( to_numeric( amt_st.value) )
+           ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -264,17 +278,20 @@ procedure ParseNumericsASR( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   amt_st    : storage;
   amt_type  : identifier := eof_t;
+  subprogramId : constant identifier := shift_right_arith_t;
 begin
   kind := uni_numeric_t;
-  expect( shift_right_arith_t );
-  ParseFirstNumericParameter( shift_right_arith_t, expr_st, expr_type );
-  ParseLastNumericParameter( shift_right_arith_t, amt_st, amt_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := storage'(to_unbounded_string( numericValue( shift_right_arithmetic(
-           unsigned_64( to_numeric( expr_st.value ) ),
-           natural( to_numeric( amt_st.value ) )
-        ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'(to_unbounded_string( numericValue( shift_right_arithmetic(
+              unsigned_64( to_numeric( expr_st.value ) ),
+              natural( to_numeric( amt_st.value ) )
+           ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -286,13 +303,17 @@ procedure ParseNumericsSqrt( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sqrt
   expr_st   : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := sqrt_t;
 begin
   kind := uni_numeric_t;
-  expect( sqrt_t );
-  ParseSingleNumericParameter( sqrt_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( sqrt( to_numeric( expr_st.value ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( sqrt( to_numeric( expr_st.value ) ) ),
+              expr_st.metaLabel );
+        end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -306,22 +327,26 @@ procedure ParseNumericsLog( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   base_st   : storage;
   base_type : identifier := eof_t;
+  subprogramId : constant identifier := log_t;
 begin
   kind := uni_numeric_t;
-  expect( log_t );
-  ParseFirstNumericParameter( log_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( log_t, base_st, base_type );
+     ParseLastNumericParameter( subprogramId, base_st, base_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
      if isExecutingCommand then
-        if base_type = eof_t then
-           result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ) ) ), noMetaLabel );
-        else
-           result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ),
-             to_numeric( base_st.value ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           if base_type = eof_t then
+              result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+           else
+              result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ),
+                to_numeric( base_st.value ) ) ), expr_st.metaLabel );
+           end if;
         end if;
      end if;
   exception when others =>
@@ -334,15 +359,26 @@ procedure ParseNumericsExp( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Exp
   expr_st   : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := exp_t;
 begin
   kind := uni_numeric_t;
-  expect( exp_t );
-  ParseSingleNumericParameter( exp_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-        result := storage'( to_unbounded_string( exp( to_numeric( expr_st.value) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( exp( to_numeric( expr_st.value) ) ),
+              expr_st.metaLabel );
+        end if;
      end if;
-  exception when others =>
+  exception when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value" ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"is out-of-range",
+          obstructorNotes => nullMessageStrings
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsExp;
@@ -354,25 +390,36 @@ procedure ParseNumericsSin( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := sin_t;
 begin
   kind := uni_numeric_t;
-  expect( sin_t );
-  ParseFirstNumericParameter( sin_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( sin_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
      if isExecutingCommand then
-        if cycle_type = eof_t then
-           result := storage'(to_unbounded_string( sin( to_numeric( expr_st.value ) ) ), noMetaLabel );
-        else
-           result := storage'( to_unbounded_string( sin( to_numeric( expr_st.value ),
-             to_numeric( cycle_st.value ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           if cycle_type = eof_t then
+              result := storage'(to_unbounded_string( sin( to_numeric( expr_st.value ) ) ),
+                 expr_st.metaLabel );
+           else
+              result := storage'( to_unbounded_string( sin( to_numeric( expr_st.value ),
+                to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+           end if;
         end if;
      end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsSin;
@@ -384,25 +431,36 @@ procedure ParseNumericsCos( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := cos_t;
 begin
   kind := uni_numeric_t;
-  expect( cos_t );
-  ParseFirstNumericParameter( cos_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( cos_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ),
-             to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+          else
+             result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ),
+                to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsCos;
@@ -414,25 +472,43 @@ procedure ParseNumericsTan( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := tan_t;
 begin
   kind := uni_numeric_t;
-  expect( tan_t );
-  ParseFirstNumericParameter( tan_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( tan_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ),
-            to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+          else
+             result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ),
+               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+     );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value" ) & em_value( expr_st.value ),
+          subjectType => cycle_type,
+          reason  => +"is an odd multiple of the quarter cycle or an overflow occurred because",
+          obstructorNotes => pl( "constraint error was raised" )
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsTan;
@@ -444,25 +520,43 @@ procedure ParseNumericsCot( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := cot_t;
 begin
   kind := uni_numeric_t;
-  expect( cot_t );
-  ParseFirstNumericParameter( cot_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( cot_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ),
-            to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+          else
+             result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ),
+               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+     );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value" ) & em_value( expr_st.value ),
+          subjectType => cycle_type,
+          reason  => +"is zero or an multiple of the half cycle or an overflow occurred because",
+          obstructorNotes => pl( "constraint error was raised" )
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsCot;
@@ -474,55 +568,95 @@ procedure ParseNumericsArcSin( result : out storage; kind : out identifier ) is
   expr_type   : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := arcsin_t;
 begin
   kind := uni_numeric_t;
-  expect( arcsin_t );
-  ParseFirstNumericParameter( arcsin_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( arcsin_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value),
-            to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+          else
+             result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value),
+               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     if to_numeric( cycle_st.value ) <= 0.0 then
+        err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+        );
+     else
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value" ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"should be in the range -1..1 or an overflow occurred because",
+          obstructorNotes => pl( "argument error was raised" )
+        );
+     end if;
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsArcSin;
 
 procedure ParseNumericsArcCos( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.ArcCos( expr, [,cycle] );
+  -- Syntax: numerics.ArcCos( expr [,cycle] );
   -- Source: Ada.Numerics.Long_Elementary_Functions.ArcCos
   expr_st    : storage;
   expr_type  : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := arccos_t;
 begin
   kind := uni_numeric_t;
-  expect( arccos_t );
-  ParseFirstNumericParameter( arccos_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( arccos_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ),
-            to_numeric( cycle_st.value ) ) ),  noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ) ) ),
+                expr_st.metaLabel );
+          else
+             result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ),
+               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+     if to_numeric( cycle_st.value ) <= 0.0 then
+        err( context => subprogramId,
+          subjectNotes => pl( "the cycle value" ) & em_value( cycle_st.value ),
+          subjectType => cycle_type,
+          reason  => +"should be greater than zero because",
+          obstructorNotes => pl( "argument error was raised" )
+        );
+     else
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value" ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"should be in the range -1..1 or an overflow occurred because",
+          obstructorNotes => pl( "argument error was raised" )
+        );
+     end if;
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsArcCos;
@@ -537,27 +671,47 @@ procedure ParseNumericsArcTan( result : out storage; kind : out identifier ) is
   expr2_type : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := arctan_t;
 begin
   kind := uni_numeric_t;
-  expect( arctan_t );
-  ParseFirstNumericParameter( arctan_t, expr_st, expr_type );
-  ParseNextNumericParameter( arctan_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseNextNumericParameter( subprogramId, expr2_st, expr2_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( arctan_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
+               to_numeric( expr2_st.value ) ) ),
+               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+          else
+             result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
+               to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
+               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+          end if;
        end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ) &
+            pl( " and " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"both cannot be zero because",
+          obstructorNotes => pl( "argument_error was raised" )
+        );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"cannot be 1 or -1 or an overflow occurred because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
+  when others =>
      err_exception_raised;
   end;
 end ParseNumericsArcTan;
@@ -572,24 +726,28 @@ procedure ParseNumericsArcCot( result : out storage; kind : out identifier ) is
   expr2_type : identifier;
   cycle_st   : storage;
   cycle_type : identifier := eof_t;
+  subprogramId : constant identifier := arccot_t;
 begin
   kind := uni_numeric_t;
-  expect( arccot_t );
-  ParseFirstNumericParameter( arccot_t, expr_st, expr_type );
-  ParseNextNumericParameter( arccot_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseNextNumericParameter( subprogramId, expr2_st, expr2_type );
   if token = symbol_t and identifiers( token ).store.value = "," then
-     ParseLastNumericParameter( arccot_t, cycle_st, cycle_type );
+     ParseLastNumericParameter( subprogramId, cycle_st, cycle_type );
   else
      expect( symbol_t, ")" );
   end if;
   begin
     if isExecutingCommand then
-       if cycle_type = eof_t then
-          result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          if cycle_type = eof_t then
+             result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
+               to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+          else
+             result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
+               to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
+               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+          end if;
        end if;
     end if;
   exception when others =>
@@ -598,17 +756,21 @@ begin
 end ParseNumericsArcCot;
 
 procedure ParseNumericsSinH( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.Sinh( expr );
+  -- Syntax: numerics.sinh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sinh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := sinh_t;
 begin
   kind := uni_numeric_t;
-  expect( sinh_t );
-  ParseSingleNumericParameter( sinh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( sinh( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( sinh( to_numeric( expr_st.value ) ) ),
+              expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -616,17 +778,21 @@ begin
 end ParseNumericsSinH;
 
 procedure ParseNumericsCosH( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.Cosh( expr );
+  -- Syntax: numerics.cosh( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Cosh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := cosh_t;
 begin
   kind := uni_numeric_t;
-  expect( cosh_t );
-  ParseSingleNumericParameter( cosh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( cosh( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( cosh( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -638,13 +804,17 @@ procedure ParseNumericsTanH( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Tanh
   expr_st   : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := tanh_t;
 begin
   kind := uni_numeric_t;
-  expect( tanh_t );
-  ParseSingleNumericParameter( tanh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( tanh( to_numeric( expr_st.value) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( tanh( to_numeric( expr_st.value) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -652,19 +822,30 @@ begin
 end ParseNumericsTanH;
 
 procedure ParseNumericsCoth( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.Coth( expr );
+  -- Syntax: numerics.coth( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Coth
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := coth_t;
 begin
   kind := uni_numeric_t;
-  expect( coth_t );
-  ParseSingleNumericParameter( coth_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( coth(  to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( coth(  to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
-  exception when others =>
+  exception when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"cannot be zero or an overflow occurred because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
+  when others =>
     err_exception_raised;
   end;
 end ParseNumericsCotH;
@@ -674,13 +855,17 @@ procedure ParseNumericsArcSinH( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arcsinh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := arcsinh_t;
 begin
   kind := uni_numeric_t;
-  expect( arcsinh_t );
-  ParseSingleNumericParameter( arcsinh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( arcsinh( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( arcsinh( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -692,15 +877,33 @@ procedure ParseNumericsArcCosH( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := arccosh_t;
 begin
   kind := uni_numeric_t;
-  expect( arccosh_t );
-  ParseSingleNumericParameter( arccosh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( arccosh( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( arccosh( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"is less than one because",
+          obstructorNotes => pl( "argument_error was raised" )
+        );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"cannot be one or an overflow occurred because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
+  when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcCosH;
@@ -710,15 +913,33 @@ procedure ParseNumericsArcTanH( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arctanh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := arctanh_t;
 begin
   kind := uni_numeric_t;
-  expect( arctanh_t );
-  ParseSingleNumericParameter( arctanh_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( arctanh( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( arctanh( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"should be in the range -1..1 because",
+          obstructorNotes => pl( "argument_error was raised" )
+        );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"cannot be one or an overflow occurred because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
+  when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcTanH;
@@ -728,15 +949,33 @@ procedure ParseNumericsArcCotH( result : out storage; kind : out identifier ) is
   -- Source: Ada.Numerics.Long_Elementary_Functions.Arccosh
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := arccoth_t;
 begin
   kind := uni_numeric_t;
-  expect( arccoth_t );
-  ParseSingleNumericParameter( arccoth_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( arccoth( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( arccoth( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
-  exception when others =>
+  exception when ada.numerics.argument_error =>
+        err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"is less than one because",
+          obstructorNotes => pl( "argument_error was raised" )
+        );
+  when constraint_error =>
+     err( context => subprogramId,
+          subjectNotes => pl( "the expression value " ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"cannot be one or an overflow occurred because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
+  when others =>
     err_exception_raised;
   end;
 end ParseNumericsArcCotH;
@@ -746,13 +985,17 @@ procedure ParseNumericsFloor( result : out storage; kind : out identifier ) is
   -- Source: Ada 'floor attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := floor_t;
 begin
   kind := uni_numeric_t;
-  expect( floor_t );
-  ParseSingleNumericParameter( floor_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'floor( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'floor( to_numeric( expr_st.value ) ) ),
+            expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
      err_exception_raised;
@@ -764,13 +1007,17 @@ procedure ParseNumericsCeiling( result : out storage; kind : out identifier ) is
   -- Source: Ada 'ceiling attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := ceiling_t;
 begin
   kind := uni_numeric_t;
-  expect( ceiling_t );
-  ParseSingleNumericParameter( ceiling_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'ceiling( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'ceiling( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -782,13 +1029,17 @@ procedure ParseNumericsRounding( result : out storage; kind : out identifier ) i
   -- Source: Ada 'rounding attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := rounding_t;
 begin
   kind := uni_numeric_t;
-  expect( rounding_t );
-  ParseSingleNumericParameter( rounding_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue'rounding( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'rounding( to_numeric( expr_st.value ) ) ),
+          expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -800,13 +1051,17 @@ procedure ParseNumericsUnbiasedRounding( result : out storage; kind : out identi
   -- Source: Ada 'unbiased_rounding attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := unbiased_rounding_t;
 begin
   kind := uni_numeric_t;
-  expect( unbiased_rounding_t );
-  ParseSingleNumericParameter( unbiased_rounding_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -818,13 +1073,17 @@ procedure ParseNumericsTruncation( result : out storage; kind : out identifier )
   -- Source: Ada 'truncation attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := truncation_t;
 begin
   kind := uni_numeric_t;
-  expect( truncation_t );
-  ParseSingleNumericParameter( truncation_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue'truncation( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+         result := storage'( to_unbounded_string( numericValue'truncation( to_numeric( expr_st.value ) ) ),
+            expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -838,15 +1097,18 @@ procedure ParseNumericsRemainder( result : out storage; kind : out identifier ) 
   expr_type : identifier;
   expr2_st : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := remainder_t;
 begin
   kind := uni_numeric_t;
-  expect( remainder_t );
-  ParseFirstNumericParameter( remainder_t, expr_st, expr_type );
-  ParseLastNumericParameter( remainder_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'remainder( to_numeric( expr_st.value ),
-         to_numeric( expr2_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( remainder_t, expr2_st )  then
+          result := storage'( to_unbounded_string( numericValue'remainder( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ) ) ), expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -858,13 +1120,17 @@ procedure ParseNumericsExponent( result : out storage; kind : out identifier ) i
   -- Source: Ada 'exponent attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := exponent_t;
 begin
   kind := uni_numeric_t;
-  expect( exponent_t );
-  ParseSingleNumericParameter( exponent_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_st.value ) ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_st.value ) ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -876,13 +1142,17 @@ procedure ParseNumericsFraction( result : out storage; kind : out identifier ) i
   -- Source: Ada 'fraction attribute
   expr_st : storage;
   expr_type : identifier;
+  subprogramId : constant identifier := fraction_t;
 begin
   kind := uni_numeric_t;
-  expect( fraction_t );
-  ParseSingleNumericParameter( fraction_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue'fraction( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'fraction( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -896,15 +1166,18 @@ procedure ParseNumericsLeadingPart( result : out storage; kind : out identifier 
   expr_type : identifier;
   expr2_st : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := leading_part_t;
 begin
   kind := uni_numeric_t;
-  expect( leading_part_t );
-  ParseFirstNumericParameter( leading_part_t, expr_st, expr_type );
-  ParseLastNumericParameter( leading_part_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'leading_part( to_numeric( expr_st.value ),
-         integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( leading_part_t, expr2_st ) then
+          result := storage'( to_unbounded_string( numericValue'leading_part( to_numeric( expr_st.value ),
+             integer( to_numeric( expr2_st.value ) ) ) ), expr_st.metaLabel );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -918,15 +1191,18 @@ procedure ParseNumericsCopySign( result : out storage; kind : out identifier ) i
   expr_type : identifier;
   expr2_st : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := copy_sign_t;
 begin
   kind := uni_numeric_t;
-  expect( copy_sign_t );
-  ParseFirstNumericParameter( copy_sign_t, expr_st, expr_type );
-  ParseLastNumericParameter( copy_sign_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'copy_sign( to_numeric( expr_st.value ),
-         to_numeric( expr2_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          result := storage'( to_unbounded_string( numericValue'copy_sign( to_numeric( expr_st.value ),
+            to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel( kind, expr_st, expr2_st ) );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -943,22 +1219,25 @@ procedure ParseNumericsSturges( result : out storage; kind : out identifier ) is
   total_st : storage;
   total_type : identifier;
   lo, hi, total : numericValue;
+  subprogramId : constant identifier := sturges_t;
 begin
   kind := uni_numeric_t;
-  expect( sturges_t );
-  ParseFirstNumericParameter( sturges_t, lo_st, lo_type );
-  ParseNextNumericParameter( sturges_t, hi_st, hi_type );
-  ParseLastNumericParameter( sturges_t, total_st, total_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, lo_st, lo_type );
+  ParseNextNumericParameter( subprogramId, hi_st, hi_type );
+  ParseLastNumericParameter( subprogramId, total_st, total_type );
   begin
      if isExecutingCommand then
-        lo := to_numeric( lo_st.value );
-        hi := to_numeric( hi_st.value );
-        total := to_numeric( total_st.value );
-        result := storage'( to_unbounded_string(
-           numericValue'rounding(
-              (hi-lo) / 1.0+log( total )
-           )
-        ), noMetaLabel ); -- TODO: this is wrong
+       if metaLabelOk( subprogramId, lo_st, hi_st, total_st ) then
+          lo := to_numeric( lo_st.value );
+          hi := to_numeric( hi_st.value );
+          total := to_numeric( total_st.value );
+          result := storage'( to_unbounded_string(
+             numericValue'rounding(
+                (hi-lo) / 1.0+log( total )
+             )
+          ), resolveEffectiveMetaLabel( kind, lo_st, hi_st, total_st ) );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -972,15 +1251,18 @@ procedure ParseNumericsMax( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   expr2_st : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := max_t;
 begin
   kind := uni_numeric_t;
-  expect( max_t );
-  ParseFirstNumericParameter( max_t, expr_st, expr_type );
-  ParseLastNumericParameter( max_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'max( to_numeric( expr_st.value ),
-         to_numeric( expr2_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          result := storage'( to_unbounded_string( numericValue'max( to_numeric( expr_st.value ),
+             to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -994,15 +1276,18 @@ procedure ParseNumericsMin( result : out storage; kind : out identifier ) is
   expr_type : identifier;
   expr2_st : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := min_t;
 begin
   kind := uni_numeric_t;
-  expect( min_t );
-  ParseFirstNumericParameter( min_t, expr_st, expr_type );
-  ParseLastNumericParameter( min_t, expr2_st, expr2_type );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'min( to_numeric( expr_st.value ),
-         to_numeric( expr2_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          result := storage'( to_unbounded_string( numericValue'min( to_numeric( expr_st.value ),
+             to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1010,17 +1295,21 @@ begin
 end ParseNumericsMin;
 
 procedure ParseNumericsMachine( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.machine( expr, expr2 );
+  -- Syntax: numerics.machine( expr );
   -- Source: Ada 'machine attribute
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := machine_t;
 begin
   kind := uni_numeric_t;
-  expect( machine_t );
-  ParseSingleNumericParameter( machine_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-      result := storage'( to_unbounded_string( numericValue'machine( to_numeric( expr_st.value ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st ) then
+          result := storage'( to_unbounded_string( numericValue'machine( to_numeric( expr_st.value ) ) ),
+             expr_st.metaLabel );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1034,15 +1323,19 @@ procedure ParseNumericsScaling( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   expr2_st   : storage;
   expr2_type : identifier;
+  subprogramId : constant identifier := scaling_t;
 begin
   kind := uni_numeric_t;
-  expect( scaling_t );
-  ParseFirstNumericParameter(scaling_t,  expr_st, expr_type );
-  ParseLastNumericParameter( scaling_t, expr2_st, expr2_type, integer_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId,  expr_st, expr_type );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, integer_t );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( numericValue'scaling( to_numeric( expr_st.value ),
-         integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+          result := storage'( to_unbounded_string( numericValue'scaling( to_numeric( expr_st.value ),
+            integer( to_numeric( expr2_st.value ) ) ) ),
+            resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1050,35 +1343,44 @@ begin
 end ParseNumericsScaling;
 
 procedure ParseNumericsValue( result : out storage; kind : out identifier ) is
-  -- Syntax: numerics.value( expr, expr2 );
+  -- Syntax: numerics.value( expr );
   -- Source: Ada 'value attribute
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := value_t;
 begin
   kind := uni_numeric_t;
-  expect( value_t );
-  ParseSingleStringParameter( value_t, expr_st, expr_type, string_t );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
-       --result := trim( storage'( to_unbounded_string( to_numeric( expr_st.value ) ), left );
-       result := storage'( to_unbounded_string( to_numeric( expr_st.value ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           --result := trim( storage'( to_unbounded_string( to_numeric( expr_st.value ) ), left );
+           result := storage'( to_unbounded_string( to_numeric( expr_st.value ) ),
+              expr_st.metaLabel );
+        end if;
      end if;
   exception
   when constraint_error =>
-     err( +"constraint_error exception raised" );
+     err( context => subprogramId,
+          subjectNotes => pl( qp( "the string value " ) ) & em_value( expr_st.value ),
+          subjectType => expr_type,
+          reason  => +"is not a valid number because",
+          obstructorNotes => pl( "constraint_error was raised" )
+     );
   when storage_error =>
      err( +"storage_error exception raised" );
   when ada.strings.index_error =>
      if expr_st.value = null_unbounded_string then
         err(
-          context => value_t,
+          context => subprogramId,
           subjectNotes => pl( qp( "the numeric value" ) ),
           reason => +"cannot be calculated on",
           obstructorNotes => +"an empty string"
         );
      else
         err(
-          context => value_t,
+          context => subprogramId,
           subjectNotes => pl( qp( "the numeric value" ) ),
           reason => +"raised a index_error on the string value",
           obstructorNotes => em_value( expr_st.value ),
@@ -1095,13 +1397,17 @@ procedure ParseNumericsPos( result : out storage; kind : out identifier ) is
   -- Source: Ada 'pos attribute
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := pos_t;
 begin
   kind := positive_t;
-  expect( pos_t );
-  ParseSingleStringParameter( pos_t, expr_st, expr_type, character_t );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr_st, expr_type, character_t );
   begin
      if isExecutingCommand then
-       result := storage'( to_unbounded_string( character'pos( Element( expr_st.value, 1 ) )'img ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_unbounded_string( character'pos( Element( expr_st.value, 1 ) )'img ),
+              expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1109,19 +1415,22 @@ begin
 end ParseNumericsPos;
 
 procedure ParseNumericsAbs( result : out storage ) is
-  -- Syntax: numerics.abs( n );
+  -- Syntax: abs( n );
   -- Source: Ada abs function
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := abs_t;
 begin
-  expect( abs_t );
-  ParseSingleNumericParameter( abs_t, expr_st, expr_type );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
      if isExecutingCommand then
-       result := storage'(
-          to_unbounded_string( abs( to_numeric( expr_st.value ) ) ),
-          noMetaLabel
-       );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'(
+              to_unbounded_string( abs( to_numeric( expr_st.value ) ) ),
+              expr_st.metaLabel
+           );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1135,16 +1444,20 @@ procedure ParseNumericsMd5( result : out storage; kind : out identifier ) is
   expr_type  : identifier;
   C          : Context;
   FP         : Fingerprint;
+  subprogramId : constant identifier := numerics_md5_t;
 begin
   kind := string_t;
-  expect( numerics_md5_t );
-  ParseSingleStringParameter( numerics_md5_t, expr_st, expr_type, string_t );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
-       Init( C );
-       Update( C, to_string( expr_st.value ) );
-       Final( C, FP );
-       result := storage'( to_unbounded_string( Digest_To_Text( FP ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           Init( C );
+          Update( C, to_string( expr_st.value ) );
+          Final( C, FP );
+          result := storage'( to_unbounded_string( Digest_To_Text( FP ) ),
+             expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1154,10 +1467,11 @@ end ParseNumericsMd5;
 procedure ParseNumericsSerial( result : out storage; kind : out identifier ) is
   -- Syntax: serial
   -- Source: N/A
+  subprogramId : constant identifier := serial_t;
 begin
   kind := natural_t;
   result := nullStorage;
-  expect( serial_t );
+  expect( subprogramId );
   if isExecutingCommand then
      result.value := to_unbounded_string( serialNumber );
      if serialNumber = maxInteger then
@@ -1173,14 +1487,18 @@ procedure ParseNumericsRnd( result : out storage; kind : out identifier ) is
   -- Source: N/A
   expr_st     : storage;
   expr_type   : identifier;
+  subprogramId : constant identifier := rnd_t;
 begin
   kind := positive_t;
-  expect( rnd_t );
-  ParseSingleNumericParameter( rnd_t, expr_st, expr_type, positive_t );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type, positive_t );
   begin
      if isExecutingCommand then
-        -- from pegasoft.numerics
-        result := storage'( to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_st.value ) ) ) ) ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           -- from pegasoft.numerics
+           result := storage'( to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_st.value ) ) ) ) ),
+              expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1192,13 +1510,17 @@ procedure ParseNumericsOdd( result : out storage; kind : out identifier ) is
   -- Source: N/A
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := odd_t;
 begin
   kind := boolean_t;
-  expect( odd_t );
-  ParseSingleNumericParameter( odd_t, expr_st, expr_type, integer_t );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 1 ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 1 ),
+              expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1210,13 +1532,17 @@ procedure ParseNumericsEven( result : out storage; kind : out identifier ) is
   -- Source: N/A
   expr_st    : storage;
   expr_type  : identifier;
+  subprogramId : constant identifier := even_t;
 begin
   kind := boolean_t;
-  expect( even_t );
-  ParseSingleNumericParameter( even_t, expr_st, expr_type, integer_t );
+  expect( subprogramId );
+  ParseSingleNumericParameter( subprogramId, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 0 ), noMetaLabel );
+        if metaLabelOk( subprogramId, expr_st ) then
+           result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 0 ),
+              expr_st.metaLabel );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1230,9 +1556,10 @@ procedure ParseNumericsRe( result : out storage; kind : out identifier ) is
   c : complex;
   real_t      : identifier;
   img_t       : identifier;
+  subprogramId : constant identifier := numerics_re_t;
 begin
   kind := long_float_t;
-  expect( numerics_re_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1242,9 +1569,12 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).store.value );
-       c.im := to_numeric( identifiers( img_t ).store.value );
-       result := storage'( to_unbounded_string( numericValue( Re( c ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, identifiers( real_t ).store.all ) then
+          c.re := to_numeric( identifiers( real_t ).store.value );
+          c.im := to_numeric( identifiers( img_t ).store.value );
+          result := storage'( to_unbounded_string( numericValue( Re( c ) ) ),
+            identifiers( real_t ).store.metaLabel );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1258,9 +1588,10 @@ procedure ParseNumericsIm( result : out storage; kind : out identifier ) is
   c : complex;
   real_t      : identifier;
   img_t       : identifier;
+  subprogramId : constant identifier := numerics_im_t;
 begin
   kind := long_float_t;
-  expect( numerics_im_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1270,9 +1601,12 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).store.value );
-       c.im := to_numeric( identifiers( img_t ).store.value );
-       result := storage'( to_unbounded_string( numericValue( Im( c ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, identifiers( img_t ).store.all ) then
+          c.re := to_numeric( identifiers( real_t ).store.value );
+          c.im := to_numeric( identifiers( img_t ).store.value );
+          result := storage'( to_unbounded_string( numericValue( Im( c ) ) ),
+             identifiers( img_t ).store.metaLabel );
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1288,8 +1622,9 @@ procedure ParseNumericsSetRe is
   c : complex;
   real_t      : identifier;
   img_t       : identifier;
+  subprogramId : constant identifier := numerics_set_re_t;
 begin
-  expect( numerics_set_re_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1303,10 +1638,14 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).store.value );
-       c.im := to_numeric( identifiers( img_t ).store.value );
-       Set_Re( c, to_numeric( expr_st.value ) );
-       identifiers( real_t ).store.value := to_unbounded_string( numericValue( c.re ) );
+       if metaLabelOk( subprogramId, identifiers( real_t ).store.all ) and
+          metaLabelOk( subprogramId, expr_st ) then
+          c.re := to_numeric( identifiers( real_t ).store.value );
+          c.im := to_numeric( identifiers( img_t ).store.value );
+          Set_Re( c, to_numeric( expr_st.value ) );
+          identifiers( real_t ).store.value := to_unbounded_string( numericValue( c.re ) );
+          identifiers( real_t ).store.metaLabel := expr_st.metaLabel;
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1322,8 +1661,9 @@ procedure ParseNumericsSetIm is
   real_t      : identifier;
   img_t       : identifier;
   c : complex;
+  subprogramId : constant identifier := numerics_set_im_t;
 begin
-  expect( numerics_set_im_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1337,10 +1677,14 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).store.value );
-       c.im := to_numeric( identifiers( img_t ).store.value );
-       Set_Im( c, to_numeric( expr_st.value ) );
-       identifiers( img_t ).store.value := to_unbounded_string( numericValue( c.Im ) );
+       if metaLabelOk( subprogramId, identifiers( img_t ).store.all ) and
+          metaLabelOk( subprogramId, expr_st ) then
+          c.re := to_numeric( identifiers( real_t ).store.value );
+          c.im := to_numeric( identifiers( img_t ).store.value );
+          Set_Im( c, to_numeric( expr_st.value ) );
+          identifiers( img_t ).store.value := to_unbounded_string( numericValue( c.Im ) );
+          identifiers( img_t ).store.metaLabel := expr_st.metaLabel;
+       end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1377,9 +1721,10 @@ procedure ParseNumericsModulus( result : out storage; kind : out identifier ) is
   c : complex;
   real_t      : identifier;
   img_t       : identifier;
+  subprogramId : constant identifier := numerics_modulus_t;
 begin
   kind := long_float_t;
-  expect( numerics_modulus_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1389,9 +1734,17 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       c.re := to_numeric( identifiers( real_t ).store.value );
-       c.im := to_numeric( identifiers( img_t ).store.value );
-       result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
+          c.re := to_numeric( identifiers( real_t ).store.value );
+          c.im := to_numeric( identifiers( img_t ).store.value );
+          result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ),
+             resolveEffectiveMetaLabel(
+                long_float_t,
+                identifiers( real_t ).store.all,
+                identifiers( img_t ).store.all
+             )
+         );
+        end if;
      end if;
   exception when others =>
      err_exception_raised;
@@ -1410,9 +1763,10 @@ procedure ParseNumericsArgument( result : out storage; kind : out identifier ) i
   c : complex;
   real_t      : identifier;
   img_t       : identifier;
+  subprogramId : constant identifier := numerics_argument_t;
 begin
   kind := long_float_t;
-  expect( numerics_argument_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( record_id );
   if baseTypesOk( identifiers( record_id ).kind, complex_t ) then
@@ -1429,10 +1783,24 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).store.value );
        c.im := to_numeric( identifiers( img_t ).store.value );
-       if has_cycle then
-          result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ), noMetaLabel );
-       else
-          result := storage'( to_unbounded_string( numericValue( Argument( c ) ) ), noMetaLabel );
+       if metaLabelOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
+          if has_cycle then
+             result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ),
+                resolveEffectiveMetaLabel(
+                   long_float_t,
+                   identifiers( real_t ).store.all,
+                   identifiers( img_t ).store.all
+                )
+             );
+          else
+             result := storage'( to_unbounded_string( numericValue( Argument( c ) ) ),
+                resolveEffectiveMetaLabel(
+                   long_float_t,
+                   identifiers( real_t ).store.all,
+                   identifiers( img_t ).store.all
+                )
+             );
+          end if;
        end if;
      end if;
   exception when others =>
@@ -1490,17 +1858,21 @@ procedure ParseNumericsHashOf( result : out storage; kind : out identifier) is
   expr1_type  : identifier;
   expr2_st    : storage;
   expr2_type  : identifier;
+  subprogramId : constant identifier := hash_of_t;
 begin
   kind := natural_t;
-  expect( hash_of_t );
-  ParseFirstNumericParameter( hash_of_t, expr1_st, expr1_type, string_t );
-  ParseLastNumericParameter( hash_of_t, expr2_st, expr2_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, natural_t );
   declare
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_st.value ) );
-       result := storage'( to_unbounded_string( numericValue( hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
+       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+          limit := hash_integer( to_numeric( expr2_st.value ) );
+          result := storage'( to_unbounded_string( numericValue( hash_of( expr1_st.value, limit ) ) ),
+                resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1513,17 +1885,21 @@ procedure ParseNumericsSdbmHashOf( result : out storage; kind : out identifier )
   expr1_type  : identifier;
   expr2_st    : storage;
   expr2_type  : identifier;
+  subprogramId : constant identifier := sdbm_hash_of_t;
 begin
   kind := natural_t;
-  expect( sdbm_hash_of_t );
-  ParseFirstNumericParameter( sdbm_hash_of_t, expr1_st, expr1_type, string_t );
-  ParseLastNumericParameter( sdbm_hash_of_t, expr2_st, expr2_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, natural_t );
   declare
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_st.value ) );
-       result := storage'( to_unbounded_string( numericValue( sdbm_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
+       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+          limit := hash_integer( to_numeric( expr2_st.value ) );
+          result := storage'( to_unbounded_string( numericValue( sdbm_hash_of( expr1_st.value, limit ) ) ),
+                resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1536,17 +1912,21 @@ procedure ParseNumericsFnvHashOf( result : out storage; kind : out identifier ) 
   expr1_type  : identifier;
   expr2_st    : storage;
   expr2_type  : identifier;
+  subprogramId : constant identifier := fnv_hash_of_t;
 begin
   kind := natural_t;
-  expect( fnv_hash_of_t );
-  ParseFirstNumericParameter( fnv_hash_of_t, expr1_st, expr1_type, string_t );
-  ParseLastNumericParameter( fnv_hash_of_t, expr2_st, expr2_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, natural_t );
   declare
     limit  : hash_integer;
   begin
     if isExecutingCommand then
-       limit := hash_integer( to_numeric( expr2_st.value ) );
-       result := storage'( to_unbounded_string( numericValue( fnv_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
+       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+          limit := hash_integer( to_numeric( expr2_st.value ) );
+          result := storage'( to_unbounded_string( numericValue( fnv_hash_of( expr1_st.value, limit ) ) ),
+             resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+       end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1559,17 +1939,21 @@ procedure ParseNumericsMurmurHashOf( result : out storage; kind : out identifier
   expr1_type  : identifier;
   expr2_st    : storage;
   expr2_type  : identifier;
+  subprogramId : constant identifier := murmur_hash_of_t;
 begin
   kind := natural_t;
-  expect( murmur_hash_of_t );
-  ParseFirstNumericParameter( murmur_hash_of_t, expr1_st, expr1_type, string_t );
-  ParseLastNumericParameter( murmur_hash_of_t, expr2_st, expr2_type, natural_t );
+  expect( subprogramId );
+  ParseFirstNumericParameter( subprogramId, expr1_st, expr1_type, string_t );
+  ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, natural_t );
   declare
     limit  : hash_integer;
   begin
     if isExecutingCommand then
+       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
        limit := hash_integer( to_numeric( expr2_st.value ) );
-       result := storage'( to_unbounded_string( numericValue( murmur_hash_of( expr1_st.value, limit ) ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( numericValue( murmur_hash_of( expr1_st.value, limit ) ) ),
+          resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+    end if;
     end if;
   exception when others =>
     err_exception_raised;
@@ -1581,12 +1965,16 @@ procedure ParseNumericsSHA1DigestOf( result : out storage; kind : out identifier
   -- Source: GNAT.SHA1.Digest
   src_st   : storage;
   src_type : identifier;
+  subprogramId : constant identifier := sha1_digest_of_t;
 begin
-  expect( sha1_digest_of_t );
-  ParseSingleStringParameter( sha1_digest_of_t, src_st, src_type );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Gnat.SHA1.Digest( to_string( src_st.value ) ) ), noMetaLabel );
+     if metaLabelOK( subprogramId, src_st ) then
+        result := storage'( to_unbounded_string( Gnat.SHA1.Digest( to_string( src_st.value ) ) ),
+           src_st.metaLabel );
+     end if;
   end if;
 end ParseNumericsSHA1DigestOf;
 
@@ -1595,12 +1983,16 @@ procedure ParseNumericsSHA224DigestOf( result : out storage; kind : out identifi
   -- Source: GNAT.SHA224.Digest
   src_st   : storage;
   src_type : identifier;
+  subprogramId : constant identifier := sha224_digest_of_t;
 begin
-  expect( sha224_digest_of_t );
-  ParseSingleStringParameter( sha224_digest_of_t, src_st, src_type );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Gnat.SHA224.Digest( to_string( src_st.value ) ) ), noMetaLabel );
+     if metaLabelOK( subprogramId, src_st ) then
+        result := storage'( to_unbounded_string( Gnat.SHA224.Digest( to_string( src_st.value ) ) ),
+           src_st.metaLabel );
+     end if;
   end if;
 end ParseNumericsSHA224DigestOf;
 
@@ -1609,12 +2001,16 @@ procedure ParseNumericsSHA256DigestOf( result : out storage; kind : out identifi
   -- Source: GNAT.SHA256.Digest
   src_st   : storage;
   src_type : identifier;
+  subprogramId : constant identifier := sha256_digest_of_t;
 begin
-  expect( sha256_digest_of_t );
-  ParseSingleStringParameter( sha256_digest_of_t, src_st, src_type );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Gnat.SHA256.Digest( to_string( src_st.value ) ) ), noMetaLabel );
+     if metaLabelOK( subprogramId, src_st ) then
+        result := storage'( to_unbounded_string( Gnat.SHA256.Digest( to_string( src_st.value ) ) ),
+           src_st.metaLabel );
+     end if;
   end if;
 end ParseNumericsSHA256DigestOf;
 
@@ -1623,12 +2019,16 @@ procedure ParseNumericsSHA512DigestOf( result : out storage; kind : out identifi
   -- Source: GNAT.SHA512.Digest
   src_st   : storage;
   src_type : identifier;
+  subprogramId : constant identifier := sha512_digest_of_t;
 begin
-  expect( sha512_digest_of_t );
+  expect( subprogramId );
   ParseSingleStringParameter( sha512_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Gnat.SHA512.Digest( to_string( src_st.value ) ) ), noMetaLabel );
+     if metaLabelOK( sha512_digest_of_t, src_st ) then
+        result := storage'( to_unbounded_string( Gnat.SHA512.Digest( to_string( src_st.value ) ) ),
+           src_st.metaLabel );
+     end if;
   end if;
 end ParseNumericsSHA512DigestOf;
 
@@ -1637,12 +2037,16 @@ procedure ParseNumericsShannonEntropyOf( result : out storage; kind : out identi
   -- Source: N/A
   src_st   : storage;
   src_type : identifier;
+  subprogramId : constant identifier := shannon_entropy_of_t;
 begin
-  expect( shannon_entropy_of_t );
-  ParseSingleStringParameter( shannon_entropy_of_t, src_st, src_type );
+  expect( subprogramId );
+  ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := long_float_t;
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( shannon_entropy_of( src_st.value ) ), noMetaLabel );
+     if metaLabelOK( subprogramId, src_st ) then
+        result := storage'( to_unbounded_string( shannon_entropy_of( src_st.value ) ),
+           src_st.metaLabel );
+     end if;
   end if;
 end ParseNumericsShannonEntropyOf;
 

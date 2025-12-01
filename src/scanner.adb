@@ -2884,6 +2884,7 @@ procedure refreshVolatile( id : identifier ) is
   ev  : unbounded_string;                                     -- an env var
   refreshed : boolean := false;
   importedStringValue : unbounded_string;
+  recStore : storage; -- kludge for records with meta data labels
 begin
   -- If the volatile has a time-to-live, then if it has not expired, just
   -- return and do nothing.  Otherwise update the end-of-life and continue.
@@ -2985,7 +2986,14 @@ begin
         elsif identifiers( id ).list then                           -- array
            DoJsonToArray( id, importedStringValue, noMetaLabel );   -- VALUE META LABEL: TODO: assign the correct level
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
-           DoJsonToRecord( id, importedStringValue );
+           recStore.value := importedStringValue;
+           -- DATA META LABEL
+           -- on a refresh, each reacord field may have a different meta
+           -- label.  This overrides with the current system meta label
+           -- but probably should maintain the existing meta labels...if
+           -- the labels already exist.
+           recStore.metaLabel := sparMetaLabel;
+           DoJsonToRecord( id, recStore );
         elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
            DoJsonToNumber( importedStringValue, identifiers( id ).store.value );
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
@@ -3850,6 +3858,7 @@ function deleteIdent( id : identifier ) return boolean is
   ---------------------------------------------------------------------------
 
   function ConvertValueToJson( id : identifier ) return unbounded_string is
+    recStore : storage; -- kludge for data meta labels
   begin
     tempStr := identifiers( id ).store.value;
     if getUniType( identifiers( id ).kind ) = uni_string_t then
@@ -3857,7 +3866,8 @@ function deleteIdent( id : identifier ) return boolean is
     elsif identifiers( id ).list then
        DoArrayToJSON( tempStr, id );
     elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
-       DoRecordToJSON( tempStr, id );
+       DoRecordToJSON( recStore, id );
+       tempStr := recStore.value;
     elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
         null; -- for numbers, JSON is as-is
     else
@@ -4120,7 +4130,7 @@ end discardUnusedIdentifier;
 -- TEST ONLY: meta label must be identical
 -----------------------------------------------------------------------------
 
-function metaLabelOk( theStorage : storage ) return boolean is
+function metaLabelOk( contextNotes : string; theStorage : storage ) return boolean is
   theMetaLabelString : unbounded_string;
   sparMetaLabelString : unbounded_string;
   leftMetaLabel : identifier;
@@ -4162,13 +4172,15 @@ begin
   begin
     leftMetaLabel := theStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "left meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( ", left meta label is not initialized" ) );
     leftMetaLabel := noMetaLabel;
   end;
 
   if leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
-     err_previous( pl( "data meta label " ) &
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+         pl( ", data meta label " ) &
          unb_em( theMetaLabelString ) &
          pl( " is not compatible with system meta label " ) &
          unb_em( sparMetaLabelString )
@@ -4178,7 +4190,12 @@ begin
   return true;
 end metaLabelOk;
 
-function metaLabelOk( leftStorage, rightStorage: storage ) return boolean is
+function metaLabelOk( context : identifier; theStorage : storage ) return boolean is
+begin
+   return metaLabelOk( to_string( identifiers( context ).name ), theStorage );
+end metaLabelOk;
+
+function metaLabelOk( contextNotes : string; leftStorage, rightStorage: storage ) return boolean is
   leftMetaLabelString : unbounded_string;
   rightMetaLabelString : unbounded_string;
   sparMetaLabelString : unbounded_string;
@@ -4232,19 +4249,22 @@ begin
   begin
     leftMetaLabel := leftStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "left meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "left meta label is not initialized" ) );
     leftMetaLabel := noMetaLabel;
   end;
   begin
     rightMetaLabel := rightStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "right meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "right meta label is not initialized" ) );
     rightMetaLabel := noMetaLabel;
   end;
 
   if leftMetaLabel /= rightMetaLabel then
      getLabelStrings;
-     err_previous( pl( "left data meta label " ) &
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+          pl( ", left data meta label " ) &
           unb_em( leftMetaLabelString ) &
           pl( " is not compatible with right data meta label " ) &
           unb_em( rightMetaLabelString )
@@ -4252,7 +4272,8 @@ begin
      return false;
   elsif leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
-     err_previous( pl( "data meta label " ) &
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+         pl( ", data meta label " ) &
          unb_em( leftMetaLabelString ) &
          pl( " is not compatible with system meta label " ) &
          unb_em( sparMetaLabelString )
@@ -4261,7 +4282,12 @@ begin
   return true;
 end metaLabelOk;
 
-function metaLabelOk( leftStorage, middleStorage, rightStorage: storage ) return boolean is
+function metaLabelOk( context : identifier; leftStorage, rightStorage : storage ) return boolean is
+begin
+   return metaLabelOk( to_string( identifiers( context ).name ), leftStorage, rightStorage );
+end metaLabelOk;
+
+function metaLabelOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean is
   leftMetaLabelString : unbounded_string;
   middleMetaLabelString : unbounded_string;
   rightMetaLabelString : unbounded_string;
@@ -4326,26 +4352,30 @@ begin
   begin
     leftMetaLabel := leftStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "left meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "left meta label is not initialized" ) );
     leftMetaLabel := noMetaLabel;
   end;
   begin
     middleMetaLabel := middleStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "middle meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "middle meta label is not initialized" ) );
     middleMetaLabel := noMetaLabel;
   end;
   begin
     rightMetaLabel := rightStorage.metaLabel;
   exception when constraint_error =>
-    err_previous( pl( "right meta label is not initialized" ) );
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "right meta label is not initialized" ) );
     rightMetaLabel := noMetaLabel;
   end;
 
   if leftMetaLabel /= middleMetaLabel or
      middleMetaLabel /= rightMetaLabel then
      getLabelStrings;
-     err_previous( pl( "left data meta label " ) &
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+          pl( ", left data meta label " ) &
           unb_em( leftMetaLabelString) &
           pl( " is not compatible with middle data meta label " ) &
              unb_em( middleMetaLabelString ) &
@@ -4355,7 +4385,8 @@ begin
      return false;
   elsif leftMetaLabel /= sparMetaLabel then
      getLabelStrings;
-     err_previous( pl( "data meta label " ) &
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+         pl( ", data meta label " ) &
          unb_em( leftMetaLabelString ) &
          pl( " is not compatible with system meta label " ) &
          unb_em( sparMetaLabelString )
@@ -4364,14 +4395,25 @@ begin
   return true;
 end metaLabelOk;
 
--- META DATA LABELS - this doesn't produce meaningful error messages
-function metaLabelOk( firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+function metaLabelOk( context : identifier; leftStorage, middleStorage, rightStorage : storage ) return boolean is
 begin
-  return metaLabelOk( firstStorage,  secondStorage, thirdStorage ) and
-         metaLabelOk( secondStorage, thirdStorage,  fourthStorage ) and
-         metaLabelOk( firstStorage,  thirdStorage,  fourthStorage ) and
-         metalabelOk( firstStorage,  secondStorage, fourthStorage );
+   return metaLabelOk( to_string( identifiers( context ).name ), leftStorage, middleStorage, rightStorage );
 end metaLabelOk;
+
+-- META DATA LABELS - this doesn't produce meaningful error messages
+function metaLabelOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+begin
+  return metaLabelOk( contextNotes, firstStorage,  secondStorage, thirdStorage ) and
+         metaLabelOk( contextNotes, secondStorage, thirdStorage,  fourthStorage ) and
+         metaLabelOk( contextNotes, firstStorage,  thirdStorage,  fourthStorage ) and
+         metalabelOk( contextNotes, firstStorage,  secondStorage, fourthStorage );
+end metaLabelOk;
+
+function metaLabelOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+begin
+   return metaLabelOk( to_string( identifiers( context ).name ), firstStorage, secondStorage, fourthStorage );
+end metaLabelOk;
+
 
 -----------------------------------------------------------------------------
 -- Data Meta Label Resolution
@@ -5307,16 +5349,17 @@ end DoJsonToArray;
 -- checked.
 -----------------------------------------------------------------------------
 
-procedure DoRecordToJson( result : out unbounded_string; source_var_id : identifier ) is
-   firstField    : boolean := true;
-   fieldName   : unbounded_string;
+procedure DoRecordToJson( result : out storage; source_var_id : identifier ) is
+   firstField      : boolean := true;
+   fieldName       : unbounded_string;
    jsonFieldName   : unbounded_string;
-   dotPos      : natural;
-   field_t     : identifier;
-   uniFieldType : identifier;
-   item        : unbounded_string;
+   dotPos          : natural;
+   field_t         : identifier;
+   uniFieldType    : identifier;
+   item            : unbounded_string;
 begin
-     result := to_unbounded_string( "{" );
+     result.value := to_unbounded_string( "{" );
+     result.metaLabel := noMetaLabel;
      for i in 1..integer'value( to_string( identifiers( identifiers( source_var_id ).kind ).store.value ) ) loop
          for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = identifiers( source_var_id ).kind then
@@ -5329,6 +5372,7 @@ begin
                       end loop;
                       jsonFieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( source_var_id ).name & "." & jsonFieldName;
+
                       findIdent( fieldName, field_t );
                       if field_t = eof_t then
                          err(
@@ -5341,10 +5385,30 @@ begin
                       else
                          if firstField then
                             firstField := false;
+                            if metaLabelOk( "While encoding the record", identifiers( field_t ).store.all ) then
+                               result.metaLabel := identifiers( field_t ).store.metaLabel;
+                               if trace then
+                                  put_trace( "After " & to_string( identifiers( field_t ).name ) &
+                                  " json value has meta labels '" &
+                                  to_string( identifiers( result.metaLabel ).name ) & "'" );
+                               end if;
+                            end if;
                          else
-                            result := result & ',';
+                            result.value := result.value & ',';
+                            if metaLabelOk( "While encoding the record", identifiers( field_t ).store.all ) then
+                               result.metaLabel  := resolveEffectiveMetaLabel(
+                                  identifiers( field_t ).kind,
+                                  result,
+                                  identifiers( field_t ).store.all
+                               );
+                               if trace then
+                                  put_trace( "After " & to_string( identifiers( field_t ).name ) &
+                                  " json value has meta labels '" &
+                                  to_string( identifiers( result.metaLabel ).name ) & "'" );
+                               end if;
+                            end if;
                          end if;
-                         result := result & '"' & jsonFieldName & '"' & ":";
+                         result.value := result.value & '"' & jsonFieldName & '"' & ":";
                          -- json encode primitive types
                          uniFieldType := getUniType( identifiers( field_t ).kind );
                          if getBaseType( identifiers( field_t ).kind ) = boolean_t then
@@ -5357,9 +5421,9 @@ begin
                                         obstructorNotes => nullMessageStrings
                                    );
                                elsif integer( to_numeric( identifiers( field_t ).store.value ) ) = 0 then
-                                  result := result & "false";
+                                  result.value := result.value & "false";
                                else
-                                  result := result & "true";
+                                  result.value := result.value & "true";
                                end if;
                             exception when others =>
                                err(
@@ -5381,7 +5445,7 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).store.value;
+                               result.value := result.value & identifiers( field_t ).store.value;
                             end if;
                          elsif uniFieldType = root_enumerated_t then
                             -- The originally existed but " 0" is the first
@@ -5395,7 +5459,7 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).store.value;
+                               result.value := result.value & identifiers( field_t ).store.value;
                             end if;
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
                             -- if it's a JSON string, just copy the JSON data
@@ -5407,14 +5471,14 @@ begin
                                     obstructorNotes => nullMessageStrings
                                );
                             else
-                               result := result & identifiers( field_t ).store.value;
+                               result.value := result.value & identifiers( field_t ).store.value;
                             end if;
                          elsif uniFieldType = uni_string_t or uniFieldType = universal_t then
                             -- universal and universal string are strings
                             item := to_unbounded_string( """" );
                             item := item & ToJSONEscaped( identifiers( field_t ).store.value );
                             item := item & '"';
-                            result := result & item;
+                            result.value := result.value & item;
                          else
                             -- private types are unique types extending variable_t
                             err( contextNotes => +"encoding a record to a JSON string value",
@@ -5428,7 +5492,7 @@ begin
              end if;
          end loop;
      end loop;
-     result := result & "}";
+     result.value := result.value & "}";
 end DoRecordToJson;
 
 
@@ -5440,7 +5504,7 @@ end DoRecordToJson;
 -- checked.
 -----------------------------------------------------------------------------
 
-procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string ) is
+procedure DoJsonToRecord( target_var_id : identifier; sourceStore : storage ) is
   k             : natural;
   item          : unbounded_string;
   decodedItemName  : unbounded_string;
@@ -5454,7 +5518,7 @@ procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_stri
 begin
 
      k := 2; -- skip leading { in JSON
-     item := sourceVal;
+     item := sourceStore.value;
 
      -- basic JSON validation.  Important to verify it isn't an array.
      declare
@@ -5490,40 +5554,40 @@ begin
      declare
        i : integer := 1;
        discard : unbounded_string;
-       stringEnd : constant natural := length( sourceVal );
+       stringEnd : constant natural := length( sourceStore.value );
        openBracePos : natural := 1;
        fieldName : unbounded_string;
      begin
-       JSONexpect( sourceVal, i, '{' );
+       JSONexpect( sourceStore.value , i, '{' );
        openBracePos := i;
-       if i <= length( sourceVal ) then
+       if i <= length( sourceStore.value  ) then
           loop
-            ParseJSONItem( sourceVal, fieldName, i );
+            ParseJSONItem( sourceStore.value , fieldName, i );
             if fieldName = ":" then
-               err( contextNotes => contextAltText( sourceVal,
+               err( contextNotes => contextAltText( sourceStore.value ,
                        "decoding JSON string value to a record" ),
                     subjectNotes => em( "a name is missing" ),
                     reason => pl( "before" ),
                     obstructorNotes => +"the " & em( ":" ) & pl( " at position" ) & pl( integer'image(i-1) )
                );
             end if;
-            JSONexpect( sourceVal, i, ':' );
-            ParseJSONItem( sourceVal, discard, i );
+            JSONexpect( sourceStore.value , i, ':' );
+            ParseJSONItem( sourceStore.value , discard, i );
             if discard = "}" then
-               err( contextNotes => contextAltText( sourceVal,
+               err( contextNotes => contextAltText( sourceStore.value ,
                        "decoding JSON string value to a record" ),
                     subjectNotes => unb_em( fieldName ),
                     reason => pl( "has a missing value before" ),
                     obstructorNotes => +"the " & em( "}" ) & pl( " at position" ) & pl( integer'image(i-1) )
                );
             elsif i <= stringEnd then
-               ch := element( sourceVal, i );
+               ch := element( sourceStore.value , i );
                sourceLen := sourceLen + 1;
-               SkipJSONWhitespace( sourceVal, i );
-               if i > length( sourceVal ) then
+               SkipJSONWhitespace( sourceStore.value , i );
+               if i > length( sourceStore.value  ) then
                   exit;
                else
-                  ch := element( sourceVal, i );
+                  ch := element( sourceStore.value , i );
                   if ch = ',' then
                      i := i + 1;
                   elsif ch = '}' then
@@ -5531,7 +5595,7 @@ begin
                   end if;
                end if;
             else
-               err( contextNotes => contextAltText( sourceVal,
+               err( contextNotes => contextAltText( sourceStore.value ,
                        "decoding JSON string value to a record" ),
                     subjectNotes => em( "}" ),
                     reason => pl( "was not found for" ),
@@ -5541,7 +5605,7 @@ begin
             end if;
           end loop;
         else
-          err( contextNotes =>contextAltText( sourceVal,
+          err( contextNotes =>contextAltText( sourceStore.value ,
                   "decoding JSON string value to a record" ),
                subjectNotes => subjectInterpreter,
                reason => pl( "reached the end of the string value but did not find" ),
@@ -5560,14 +5624,14 @@ begin
        declare
           i : integer := 1;
        begin
-          JSONexpect( sourceVal, i, '{' );
-          while i <= length( sourceVal ) loop
+          JSONexpect( sourceStore.value , i, '{' );
+          while i <= length( sourceStore.value ) loop
 
           -- there should be a label and a string
 
-          ParseJSONItem( sourceVal, decodedItemName, i );
-          JSONexpect( sourceVal, i, ':' );
-          ParseJSONItem( sourceVal, decodedItemValue, i );
+          ParseJSONItem( sourceStore.value, decodedItemName, i );
+          JSONexpect( sourceStore.value, i, ':' );
+          ParseJSONItem( sourceStore.value, decodedItemValue, i );
 
           -- removed the quotes from around the label
 
@@ -5601,6 +5665,8 @@ begin
                  if not error_found then
                     -- for Booleans, it's true or false, not value
                     elementKind := getBaseType( identifiers( j ).kind );
+                    -- set the meta label, the same as the JSON string
+                    identifiers( j ).store.metaLabel := sourceStore.metaLabel;
                     if elementKind = boolean_t then
                        if decodedItemValue = "true" then
                           identifiers( j ).store.value := to_unbounded_string( "1" );
@@ -5615,7 +5681,7 @@ begin
                        --         obstructorNotes => nullMessageStrings
                        --    );
                        else
-                          err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                          err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                                subjectNotes => pl( qp( "a JSON boolean value" ) ),
                                reason => +"is expected but instead found",
                                obstructorNotes => em_value( decodedItemValue )
@@ -5644,14 +5710,14 @@ begin
                         begin
                            enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
                            if enumVal < 0 or enumVal > maxEnum then
-                          err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                          err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                                   subjectNotes => pl( qp( "a JSON enumerated position " ) ),
                                   reason => +"was out of range for " & name_em( elementKind ) & pl( " with" ),
                                   obstructorNotes => +"position " & em_value( decodedItemValue )
                              );
                            end if;
                         exception when constraint_error =>
-                           err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                           err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                                 subjectNotes => pl( qp( "a JSON enumerated position" ) ),
                                 reason => +"was expected to be a numeric value not",
                                 obstructorNotes => em_value( decodedItemValue )
@@ -5669,7 +5735,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                            err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                                  subject => j,
                                  subjectType => elementKind,
                                  reason => +"expected",
@@ -5693,7 +5759,7 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                         err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                               subject => j,
                               subjectType => elementKind,
                               reason => +"expected",
@@ -5704,7 +5770,7 @@ begin
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
-                       err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                       err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                             subject => j,
                             subjectType => elementKind,
                             reason => pl( "cannot be receive a value because" ),
@@ -5717,7 +5783,7 @@ begin
               end if;
           end loop; -- j
           if not found then
-             err( contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+             err( contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
                   subjectNotes => em_esc( searchName ),
                   reason => +"is not declared",
                   obstructorNotes => nullMessageStrings
@@ -5726,9 +5792,9 @@ begin
 
           -- Look for a comma or end of record
 
-          SkipJSONWhitespace( sourceVal, i );
-          if i <= length( sourceVal ) then
-             ch := element( sourceVal, i );
+          SkipJSONWhitespace( sourceStore.value, i );
+          if i <= length( sourceStore.value ) then
+             ch := element( sourceStore.value, i );
              if ch = ',' then
                 i := i + 1;
              elsif ch = '}' then
@@ -5738,7 +5804,7 @@ begin
        end loop; -- i
        end;
     else
-       err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+       err( contextNotes => contextAltText( sourceStore.value, "decoding the JSON string value to a record" ),
             subject => target_var_id,
             subjectType => identifiers( target_var_id ).kind,
             reason => +"has " &

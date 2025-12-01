@@ -142,7 +142,7 @@ begin
   ParseFirstNumericParameter( l10n_setlocale_t, catExpr, cat_kind, l10n_locale_category_t );
   ParseLastStringParameter( l10n_setlocale_t, locExpr,loc_kind );
   if isExecutingCommand then
-     if metaLabelOk( locExpr ) then
+     if metaLabelOk( l10n_setlocale_t, locExpr ) then
         -- checking errno is not reliable.  On first attempt to use an invalid
         -- locale, errono will be 2 (file not found), probably because of another
         -- function called by setlocale.  However, setlocale itself does not
@@ -280,7 +280,7 @@ begin
   ParseSingleNumericParameter( l10n_day_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     if metaLabelOk( dayExpr ) then
+     if metaLabelOk( l10n_day_t, dayExpr ) then
         begin
            day := positive( to_numeric( dayExpr.value ) );
            case day is
@@ -323,7 +323,7 @@ begin
   ParseSingleNumericParameter( l10n_abday_t, dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     if metaLabelOk( dayExpr ) then
+     if metaLabelOk( l10n_abday_t, dayExpr ) then
         begin
            day := positive( to_numeric( dayExpr.value ) );
            case day is
@@ -366,7 +366,7 @@ begin
   ParseSingleNumericParameter( l10n_mon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     if metaLabelOk( monExpr ) then
+     if metaLabelOk( l10n_mon_t, monExpr ) then
         begin
            mon := positive( to_numeric( monExpr.value ) );
            case mon is
@@ -414,7 +414,7 @@ begin
   ParseSingleNumericParameter( l10n_abmon_t, monExpr, monKind, positive_t );
   if isExecutingCommand then
      result := nullStorage;
-     if metaLabelOk( monExpr ) then
+     if metaLabelOk( l10n_abmon_t, monExpr ) then
         begin
            mon := positive( to_numeric( monExpr.value ) );
            case mon is

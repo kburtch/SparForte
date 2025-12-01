@@ -105,7 +105,7 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( year( time( to_numeric( expr.value ) ) )'img ),
@@ -135,7 +135,7 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( month( time( to_numeric( expr.value ) ) )'img ),
@@ -165,7 +165,7 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( day( time( to_numeric( expr.value ) ) )'img ),
@@ -196,7 +196,7 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( numericValue( seconds( time( to_numeric( expr.value ) ) ) )'img ),
@@ -237,7 +237,7 @@ begin
   ParseNextOutParameter( subprogramId, id3_ref, cal_day_number_t );
   ParseLastOutParameter( subprogramId, id4_ref, cal_day_duration_t );
   if isExecutingCommand then
-     if metaLabelOk( dateExpr ) then
+     if metaLabelOk( subprogramId, dateExpr ) then
         begin
           Split( time( to_numeric( dateExpr.value ) ), year, month, day, seconds );
           AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), dateExpr.metaLabel ));
@@ -278,7 +278,7 @@ begin
   ParseLastNumericParameter( subprogramId, secsExpr, secs_type, cal_day_duration_t );
   if isExecutingCommand then
      -- this is a bit ugly because I do not have a 4-way version of metaLabelOk
-     if metaLabelOk( yearExpr, monthExpr, dayExpr, secsExpr ) then
+     if metaLabelOk( subprogramId, yearExpr, monthExpr, dayExpr, secsExpr ) then
         begin
           result := storage'( to_unbounded_string(
               Time_Of( year_number( to_numeric( yearExpr.value ) ),
@@ -315,7 +315,7 @@ begin
   expect( cal_to_julian_t );
   ParseSingleNumericParameter( cal_to_julian_t, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( cal_to_julian_t, expr ) then
        declare
          -- Communications of the ACM, October 1968
          Year   : year_number;
@@ -370,7 +370,7 @@ begin
   expect( cal_to_time_t );
   ParseSingleNumericParameter( cal_to_time_t, expr, expr_type, cal_julian_date_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( cal_to_time_t, expr ) then
        declare
          -- Communications of the ACM, October 1968
          Julian : long_float;
@@ -424,7 +424,7 @@ begin
   expect( cal_day_of_week_t );
   ParseSingleNumericParameter( cal_day_of_week_t, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( cal_day_of_week_t, expr ) then
         declare
           Year   : year_number;
           Month  : month_number;

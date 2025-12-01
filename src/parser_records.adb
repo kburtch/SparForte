@@ -80,7 +80,7 @@ procedure ParseRecordsToJson is
   -- Source: N/A
   target_ref    : reference;
   source_var_id : identifier;
-  jsonString    : unbounded_string;
+  jsonStore     : storage;
   subprogramId  : constant identifier := records_to_json_t;
 begin
   expect( records_to_json_t );
@@ -93,8 +93,9 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     DoRecordToJson( jsonString, source_var_id );
-     assignParameter( target_ref, storage'( jsonString, noMetaLabel ) );
+     -- meta labels are checked by DoRecordToJson
+     DoRecordToJson( jsonStore, source_var_id );
+     assignParameter( target_ref, jsonStore );
   end if;
 end ParseRecordsToJson;
 
@@ -103,7 +104,7 @@ procedure ParseRecordsToRecord is
   -- Source: N/A
   --target_var_id : identifier;
   target_ref    : reference;
-  sourceExpr     : storage;
+  sourceStore   : storage;
   sourceType    : identifier;
   baseType      : identifier;
   subprogramId  : constant identifier := records_to_record_t;
@@ -134,24 +135,27 @@ begin
      expectRecord( subprogramId, target_ref.id  );
   end if;
   expectParameterComma;
-  ParseExpression( sourceExpr, sourceType );
+  ParseExpression( sourceStore, sourceType );
   if baseTypesOK( sourceType, json_string_t ) then
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     begin
-       DoJsonToRecord( target_ref.id, sourceExpr.value );
-     exception when constraint_error =>
-       err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
-               contextAltText( sourceExpr.value,"decoding the JSON string" ),
-            subject => target_ref.id,
-            subjectType => identifiers( target_ref.id ).kind,
-            reason =>  +"the decoding failed because",
-            obstructorNotes => +"a constraint error was raised"
-       );
-     when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( subprogramId, sourceStore ) then
+        begin
+          -- meta labels are checked by DoJsonToRecord
+          DoJsonToRecord( target_ref.id, sourceStore );
+        exception when constraint_error =>
+          err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
+                  contextAltText( sourceStore.value,"decoding the JSON string" ),
+               subject => target_ref.id,
+               subjectType => identifiers( target_ref.id ).kind,
+               reason =>  +"the decoding failed because",
+               obstructorNotes => +"a constraint error was raised"
+          );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseRecordsToRecord;
 

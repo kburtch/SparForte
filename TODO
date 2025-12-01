@@ -14,6 +14,12 @@ Long term Ongoing Work
 - value meta labels project
 
   - pragma meta_tag and logs, text_io
+  - the output length of an assignment trace should probably
+    be limited with perhaps a length
+  - pragma import/export and meta labels
+    - refresh volatile should call DoJsonToRecord but not
+      overwrite the existing meta labels as a special case.
+      But this means the field meta labels should exist first.
 
   - error message on declare...begin meta...
 
@@ -30,6 +36,8 @@ Long term Ongoing Work
       pragmas controlled by architect policy blocks?
   - policy blocks
     - meta tags should be able to be defined in policy blocks
+  - tagged on a literal can be applied even if the system meta label
+    doesn't allow it...but shouldn't.  Is there a reason it should?
 
   - Does change_dir affect current_working_directory?
 
@@ -176,6 +184,9 @@ Long term Ongoing Work
 Priority Issues (Fix These First)
 ---------------------------------
 
+- verify that the output from --help and other command line options
+  such as unit tests and agile reports and secure the output; if it is
+  not, determine how to escape characters
 - documenting that AdaScript parameters to commands may avoid injection
   attacks (vs. bourne shell) provided concat, etc. are not used.
 - constants can be assigned abstract types...was that intentional or

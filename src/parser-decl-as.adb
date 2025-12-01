@@ -4829,6 +4829,7 @@ procedure ParseShellCommand is
   procedure exportVariables is
     exportPos  : positive := 1;        -- position in exportList
     tempStr    : unbounded_string;
+    recStore   : storage; -- kludge for record data meta label
   begin
     -- count the number of exportable variables
     for id in 1..identifiers_top-1 loop
@@ -4852,7 +4853,8 @@ procedure ParseShellCommand is
                  elsif identifiers( id ).list then
                     DoArrayToJSON( tempStr, id );
                  elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then
-                    DoRecordToJSON( tempStr, id );
+                    DoRecordToJSON( recStore, id );
+                    tempStr := recStore.value;
                  elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
                     null; -- for numbers, JSON is as-is
                  else

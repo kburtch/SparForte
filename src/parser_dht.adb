@@ -137,14 +137,14 @@ begin
        -- the key, value and existing value must all be checked.
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldElem /= nullStorage then
-          if metaLabelOK( oldElem ) and
-             metaLabelOK( keyExpr ) and metaLabelOK( itemExpr ) then
+          if metaLabelOK( dht_set_t, oldElem ) and
+             metaLabelOK( dht_set_t, keyExpr ) and metaLabelOK( dht_set_t, itemExpr ) then
              Dynamic_Storage_Hash_Tables.Set(
                 theTable.dsht,
                 keyExpr,
                 itemExpr );
           end if;
-       elsif metaLabelOK( keyExpr ) and metaLabelOK( itemExpr ) then
+       elsif metaLabelOK( dht_set_t, keyExpr ) and metaLabelOK( dht_set_t, itemExpr ) then
           Dynamic_Storage_Hash_Tables.Set(
              theTable.dsht,
              keyExpr,
@@ -181,7 +181,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
-       if metaLabelOk( oldElem ) then
+       if metaLabelOk( dht_get_t, oldElem ) then
           result := oldElem;
        end if;
      end;
@@ -240,7 +240,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
-       if metaLabelOk( oldElem ) and metaLabelOk( keyExpr ) then
+       if metaLabelOk( dht_remove_t, oldElem ) and metaLabelOk( dht_remove_t, keyExpr ) then
           Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
        end if;
      exception when storage_error =>
@@ -278,7 +278,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
-       if metaLabelOk( s ) then
+       if metaLabelOk( dht_get_first_t, s ) then
           AssignParameter( itemRef, s );
        end if;
        AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
@@ -316,7 +316,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
-       if metaLabelOk( s ) then
+       if metaLabelOk( dht_get_next_t, s ) then
           AssignParameter( itemRef, s );
        end if;
        AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
@@ -353,7 +353,7 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = nullStorage then
-          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) then
+          if metaLabelOk( dht_add_t, keyExpr ) and metaLabelOk( dht_add_t, itemExpr ) then
              Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
           end if;
        end if;
@@ -392,8 +392,8 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr ) and
-             metaLabelOk( oldItem ) then
+          if metaLabelOk( dht_replace_t, keyExpr ) and metaLabelOk( dht_replace_t, itemExpr ) and
+             metaLabelOk( dht_replace_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
           end if;
        end if;
@@ -435,7 +435,7 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOk( keyExpr ) and metaLabelOk( itemExpr, oldItem ) then
+          if metaLabelOk( dht_append_t, keyExpr ) and metaLabelOk( dht_append_t, itemExpr, oldItem ) then
              -- labels must be the same for the original value and the appending value
              oldItem.value := oldItem.value & itemExpr.value;
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
@@ -480,7 +480,7 @@ begin
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           -- labels must be the same for the original value and the appending value
-          if metaLabelOk( keyExpr ) and metaLabelOK( olditem, itemExpr ) then
+          if metaLabelOk( dht_prepend_t, keyExpr ) and metaLabelOK( dht_prepend_t, olditem, itemExpr ) then
              oldItem.value := itemExpr.value & oldItem.value;
              Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
           end if;
@@ -537,12 +537,12 @@ begin
              oldItem.value := to_unbounded_string(
                  oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) )
              );
-             if metaLabelOk( keyExpr ) and metaLabelOk( amtExpr, oldItem ) then
+             if metaLabelOk( dht_increment_t, keyExpr ) and metaLabelOk( dht_increment_t, amtExpr, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
              end if;
           else
              oldItem.value := to_unbounded_string( oldItemValue + 1.0 );
-             if metaLabelOk( keyExpr ) and metaLabelOk( oldItem ) then
+             if metaLabelOk( dht_increment_t, keyExpr ) and metaLabelOk( dht_increment_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
              end if;
           end if;
@@ -599,12 +599,12 @@ begin
           oldItemValue := to_numeric( oldItem.value );
           if hasAmt then
              oldItem.value := to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) );
-             if metaLabelOk( keyExpr ) and metaLabelOk( amtExpr, oldItem ) then
+             if metaLabelOk( dht_decrement_t, keyExpr ) and metaLabelOk( dht_decrement_t, amtExpr, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
              end if;
           else
              oldItem.value := to_unbounded_string( oldItemValue - 1.0 );
-             if metaLabelOk( keyExpr ) and metaLabelOk( oldItem ) then
+             if metaLabelOk( dht_decrement_t, keyExpr ) and metaLabelOk( dht_decrement_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
              end if;
           end if;

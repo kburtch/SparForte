@@ -670,7 +670,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       if metaLabelOk( itemExpr ) then
+       if metaLabelOk( subprogramId, itemExpr ) then
           theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
              ada.containers.count_type'value( to_string( cntExpr.value ) ) );
        end if;
@@ -895,11 +895,11 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          if metaLabelOk( itemExpr ) then
+          if metaLabelOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Append( theVector.vslVector, itemExpr, cnt );
           end if;
        else
-          if metaLabelOk( itemExpr ) then
+          if metaLabelOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Append( theVector.vslVector, itemExpr );
           end if;
        end if;
@@ -951,11 +951,11 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          if metaLabelOk( itemExpr ) then
+          if metaLabelOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr, cnt );
           end if;
        else
-          if metaLabelOk( itemExpr ) then
+          if metaLabelOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr );
           end if;
        end if;
@@ -1007,7 +1007,7 @@ begin
          the_string : storage;
        begin
          the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOK( the_string, strExpr ) then
+         if metaLabelOK( subprogramId, the_string, strExpr ) then
             the_string.value := the_string.value & strExpr.value;
             Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
          end if;
@@ -1058,7 +1058,7 @@ begin
          the_string : storage;
        begin
          the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOK( the_string, strExpr ) then
+         if metaLabelOK( subprogramId, the_string, strExpr ) then
             the_string.value := strExpr.value & the_string.value;
             Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
          end if;
@@ -1211,7 +1211,7 @@ begin
          getParameterValue( cursorRef, cursResId );
          findResource( to_resource_id( cursResId.value ), theCursor );
          oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
-         if metaLabelOk( oldElem ) then
+         if metaLabelOk( subprogramId, oldElem ) then
             result := oldElem;
          end if;
        else
@@ -1220,7 +1220,7 @@ begin
          --idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
          oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOk( oldElem ) then
+         if metaLabelOk( subprogramId, oldElem ) then
             result := oldElem;
          end if;
        end if;
@@ -1258,7 +1258,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.First_Element( theVector.vslVector );
-       if metaLabelOk( oldElem ) then
+       if metaLabelOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1292,7 +1292,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.Last_Element( theVector.vslVector );
-       if metaLabelOk( oldElem ) then
+       if metaLabelOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1344,12 +1344,12 @@ begin
           for i in 1..cnt loop
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
-             if metaLabelOK( Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
+             if metaLabelOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
                 Vector_Storage_Lists.Delete_First( theVector.vslVector );
              end if;
           end loop;
        else
-          if metaLabelOK( Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
+          if metaLabelOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
              Vector_Storage_Lists.Delete_First( theVector.vslVector );
           end if;
        end if;
@@ -1404,12 +1404,12 @@ begin
           for i in 1..cnt loop
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
-             if metaLabelOK( Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
+             if metaLabelOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
                 Vector_Storage_Lists.Delete_Last( theVector.vslVector );
              end if;
           end loop;
        else
-          if metaLabelOK( Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
+          if metaLabelOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
              Vector_Storage_Lists.Delete_Last( theVector.vslVector );
           end if;
        end if;
@@ -1734,7 +1734,7 @@ begin
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-                  if metaLabelOk( oldElem ) then
+                  if metaLabelOk( subprogramId, oldElem ) then
                      vector_Storage_Lists.Delete( theVector.vslVector, idx );
                   end if;
               end loop;
@@ -1742,7 +1742,7 @@ begin
            else
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-              if metaLabelOk( oldElem ) then
+              if metaLabelOk( subprogramId, oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
               end if;
            end if;
@@ -1783,7 +1783,7 @@ begin
               -- Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
            else
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-              if metaLabelOk( oldElem ) then
+              if metaLabelOk( subprogramId, oldElem ) then
                  Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
               end if;
            end if;
@@ -1944,11 +1944,11 @@ begin
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
-          if metaLabelOk( elemExpr ) then
+          if metaLabelOk( subprogramId, elemExpr ) then
              Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr, cnt );
           end if;
        else
-          if metaLabelOk( elemExpr ) then
+          if metaLabelOk( subprogramId, elemExpr ) then
              Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr );
           end if;
        end if;
@@ -2085,7 +2085,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       if metaLabelOk( elemExpr ) then
+       if metaLabelOk( subprogramId, elemExpr ) then
           Vector_Storage_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr, cnt );
        end if;
      exception when storage_error =>
@@ -2256,7 +2256,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       if metaLabelOK( elemExpr ) then
+       if metaLabelOK( subprogramId, elemExpr ) then
           Vector_Storage_Lists.Insert(
              Container => theVector.vslVector,
              Before    => theCursor.vslCursor,
@@ -2520,7 +2520,7 @@ begin
            idx2 := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idx2Expr.value ) ) );
            getParameterValue( vectorRef, vecResId );
            findResource( to_resource_id( vecResId.value ), theVector );
-           if metaLabelOK( Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
+           if metaLabelOK( subprogramId, Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
                            Vector_Storage_Lists.Element( theVector.vslVector, idx2 ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, idx1, idx2 );
            end if;
@@ -2537,7 +2537,7 @@ begin
            findResource( to_resource_id( cursResId.value ), theCursor );
            getParameterValue( cursorRef2, cursResId2 );
            findResource( to_resource_id( cursResId2.value ), theCursor2 );
-           if metaLabelOK( Vector_Storage_Lists.Element( theCursor.vslCursor),
+           if metaLabelOK( subprogramId, Vector_Storage_Lists.Element( theCursor.vslCursor),
                            Vector_Storage_Lists.Element( theCursor2.vslCursor ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
            end if;
@@ -2621,7 +2621,7 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        if metaLabelOk( itemExpr ) then
+        if metaLabelOk( subprogramId, itemExpr ) then
         thePositionCursor.vslCursor := Vector_Storage_Lists.Find( theVector.vslVector,
            itemExpr, theCursor.vslCursor );
         else
@@ -2706,7 +2706,7 @@ begin
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        if metaLabelOk( itemExpr ) then
+        if metaLabelOk( subprogramId, itemExpr ) then
            thePositionCursor.vslCursor := Vector_Storage_Lists.Reverse_Find(
               theVector.vslVector, itemExpr, theCursor.vslCursor );
         else
@@ -2760,7 +2760,7 @@ begin
         findResource( to_resource_id( vecResId.value ), theVector );
         startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer(
            to_numeric( startIdxExpr.value ) ) );
-        if metaLabelOk( itemExpr ) then
+        if metaLabelOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector,
              itemExpr, startIdx );
         end if;
@@ -2818,7 +2818,7 @@ begin
 
         startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( startIdxExpr.value ) ) );
 
-        if metaLabelOk( itemExpr ) then
+        if metaLabelOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector,
               itemExpr, startIdx );
         end if;
@@ -2913,12 +2913,12 @@ begin
          begin
            the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
            if hasAmt then
-              if metaLabelOk( the_string, numExpr ) then
+              if metaLabelOk( subprogramId, the_string, numExpr ) then
                  the_string.value := to_unbounded_string( to_numeric( the_string.value ) + floatVal );
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            else
-              if metaLabelOk( the_string ) then
+              if metaLabelOk( subprogramId, the_string ) then
                  the_string.value := to_unbounded_string( to_numeric( the_string.value ) + floatVal );
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
@@ -3011,11 +3011,11 @@ begin
            the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
            the_string.value := to_unbounded_string( to_numeric( the_string.value ) - floatVal );
            if hasAmt then
-              if metaLabelOk( the_string, numExpr ) then
+              if metaLabelOk( subprogramId, the_string, numExpr ) then
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            else
-              if metaLabelOk( the_string ) then
+              if metaLabelOk( subprogramId, the_string ) then
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            end if;

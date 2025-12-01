@@ -128,7 +128,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           Change_Dir( dir_name_str( to_string( expr.value ) ) );
         exception when directory_error =>
@@ -173,7 +173,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           Make_Dir( dir_name_str( to_string( expr.value ) ) );
         exception when directory_error =>
@@ -215,7 +215,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         declare
           recursive : constant boolean := expr2.value = to_unbounded_string( "1" );
         begin
@@ -274,7 +274,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( Containing_Directory (
              Full_Name( path_name( to_string( expr.value ))))), expr.metaLabel );
@@ -304,7 +304,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ),
             expr.metaLabel );
@@ -341,7 +341,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ),
              expr.metaLabel );
@@ -370,7 +370,7 @@ begin
   expect( subprogramId );
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ),
             expr.metaLabel );
@@ -400,7 +400,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ),
              expr.metaLabel );
@@ -437,7 +437,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         declare
           style : path_style := system_default;
         begin
@@ -486,7 +486,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         declare
           style : environment_style := System_Default;
         begin
@@ -535,7 +535,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( expr ) then
+     if metaLabelOk( subprogramId, expr ) then
         begin
           if not identifiers( ref.id ).resource then
              identifiers( ref.id ).resource := true;
@@ -580,7 +580,7 @@ begin
   ParseSingleInOutParameter( subprogramId, dirRef, dirops_dir_type_t );
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( dir ) then
+     if metaLabelOk( subprogramId, dir ) then
         -- TODO: how do we tell if the directory is open?
         -- if identifiers( dirRef.id ).resource then
            begin
@@ -619,7 +619,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( dir ) then
+     if metaLabelOk( subprogramId, dir ) then
         -- TODO: probably cannot tell if it's open in an array
         if dir.value /= null_unbounded_string then
            begin
@@ -660,7 +660,7 @@ begin
   --ParseLastOutParameter( lastRef, natural_t );
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( dir ) then
+     if metaLabelOk( subprogramId, dir ) then
         declare
           s : string(1..1024);
           last : natural;

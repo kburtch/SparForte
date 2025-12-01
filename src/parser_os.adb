@@ -27,20 +27,24 @@ with ada.strings.unbounded,
     pegasoft,
     world,
     symbol_table,
+    message_strings,
     scanner,
     scanner.communications,
     parser_params,
     --parser_aux,
-    spar_os;
+    spar_os,
+    parser_tio;
 use ada.strings.unbounded,
     pegasoft,
     world,
     symbol_table,
+    message_strings,
     scanner,
     scanner.communications,
     parser_params,
     --parser_aux,
-    spar_os;
+    spar_os,
+    parser_tio;
 
 package body parser_os is
 
@@ -51,12 +55,25 @@ procedure ParseOSSystem is
 begin
   expect( os_system_t );
   ParseSingleStringParameter( os_system_t, expr, expr_type, string_t );
+  if restriction_no_external_commands then
+      err( context => os_system_t,
+           subjectNotes => pl( "external commands" ),
+           reason => pl( "not allowed with " ),
+           obstructorNotes =>  em( "restriction( no_external_commands )" ),
+           seeAlso => seePragmas
+      );
+  end if;
   if isExecutingCommand then
-     begin
-        last_status:= aStatusCode( linux_system( to_string( expr.value ) & ascii.nul ) );
-     exception when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( os_system_t, expr ) and
+        metaLabelOk( os_system_t, identifiers( standard_input_t ).sstorage ) and
+        metaLabelOk( os_system_t, identifiers( standard_output_t ).sstorage ) and
+        metaLabelOk( os_system_t, identifiers( standard_error_t ).sstorage ) then
+        begin
+           last_status:= aStatusCode( linux_system( to_string( expr.value ) & ascii.nul ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseOSSystem;
 
@@ -89,11 +106,14 @@ begin
   expect( os_error_string_t );
   ParseSingleNumericParameter( os_error_string_t, expr, expr_type, integer_t );
   if isExecutingCommand then
-     begin
-        result := storage'( to_unbounded_string( OSerror( integer( to_numeric( expr.value ) ) ) ), noMetaLabel );
-     exception when others =>
-        err_exception_raised;
-     end;
+     if metaLabelOk( os_error_string_t, expr ) then
+        begin
+          result := storage'( to_unbounded_string( OSerror( integer( to_numeric( expr.value ) ) ) ),
+             expr.metaLabel );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseOSErrorString;
 

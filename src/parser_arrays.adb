@@ -1084,7 +1084,7 @@ begin
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
-     if metaLabelOk( source_st ) then
+     if metaLabelOk( subprogramId, source_st ) then
        begin
          DoJsonToArray( target_var_id, source_st.value, noMetaLabel );
        exception when constraint_error =>

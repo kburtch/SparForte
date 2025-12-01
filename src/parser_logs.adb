@@ -508,11 +508,11 @@ function logMetaLabelOk( subprogramId : identifier; msgExpr : storage ) return b
 begin
    case log_mode is
    when stderr_log =>
-      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, msgExpr );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, msgExpr );
    when file_log =>
-      metaLabelCheckOk := metaLabelOk( log_path, msgExpr );
+      metaLabelCheckOk := metaLabelOk( subprogramId, log_path, msgExpr );
    when echo_log =>
-      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, log_path, msgExpr );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, log_path, msgExpr );
    when others =>
       metaLabelCheckOk := false;
       err(
@@ -531,11 +531,11 @@ function logMetaLabelOk( subprogramId : identifier ) return boolean is
 begin
    case log_mode is
    when stderr_log =>
-      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage );
    when file_log =>
-      metaLabelCheckOk := metaLabelOk( log_path );
+      metaLabelCheckOk := metaLabelOk( subprogramId, log_path );
    when echo_log =>
-      metaLabelCheckOk := metaLabelOk( identifiers( standard_error_t ).sstorage, log_path );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, log_path );
    when others =>
       metaLabelCheckOk := false;
       err(
@@ -936,7 +936,7 @@ begin
      elsif Is_Directory( to_string( pathExpr.value ) & ASCII.NUL ) then
         err( +"log path is a directory" );
      else
-        if metaLabelOk( pathExpr ) then
+        if metaLabelOk( logs_open_t, pathExpr ) then
            get_entity( entity );
            sourceFile := basename( getSourceFileName );
            log_clean_message( sourceFile );
@@ -962,7 +962,7 @@ begin
   if isExecutingCommand then
      if not log_is_open then
         err( +"log is already closed" );
-     elsif metaLabelOk( log_path ) then
+     elsif metaLabelOk( logs_close_t, log_path ) then
         closeLog;
      end if;
   end if;
@@ -976,7 +976,7 @@ begin
   kind := boolean_t;
   expect( logs_is_open_t );
   if isExecutingCommand then
-     if metaLabelOk( log_path ) then
+     if metaLabelOk( logs_is_open_t, log_path ) then
         result := storage'( to_spar_boolean( log_is_open ), log_path.metaLabel );
      end if;
   end if;
