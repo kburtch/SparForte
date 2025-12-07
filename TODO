@@ -11,6 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
+- supply chain
+  - checksums on binaries built
+  - help command shows help of dependencies
+  - versioned packages
+
 - value meta labels project
 
   - pragma meta_tag and logs, text_io

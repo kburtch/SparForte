@@ -79,3 +79,5 @@ CHANGES SINCE 2.6.3
 
 37. Change: restriction( no_external_commands ) also disallows os.system().
 
+38. Fix: where possible stats package subprograms no longer have an array empty error with arrays of one element.
+

@@ -65,43 +65,45 @@ begin
   ParseFirstStringParameter( perl_match_t, patExpr, pat_type );
   ParseLastStringParameter( perl_match_t, expr, expr_type );
   if isExecutingCommand then
-     #if PCRE
-     declare
-       regex_errmsg : regex_errmsgs;
-       res_int   : interfaces.C.int := 0;
-       errmsg : unbounded_string;
-     begin
-       -- combines the compile and execute steps for regular expressions
-       C_pcre( to_string(patExpr.value) & ASCII.NUL, to_string(expr.value) & ASCII.NUL, regex_errmsg, regex_errmsg'length, res_int );
-       if Interfaces.C.To_Ada(regex_errmsg(0)) /= ASCII.NUL then
-          for i in 0..regex_errmsg'last loop
-              exit when interfaces.C.To_Ada( regex_errmsg(i) ) = ASCII.NUL;
-              errmsg := errmsg & interfaces.C.To_Ada( regex_errmsg(i) );
-          end loop;
-          err( unb_pl( toescaped( errmsg ) ) );
-       elsif integer(res_int) = 1 then
-          result := storage'( to_unbounded_string( "1" ), noMetaLabel );
-          if trace then
-             put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
-                        "' pattern matches string '" &
-                        toSecureData( to_string( toEscaped( expr.value ) ) ) &
-                        "'" );
+     if metaLabelOk( perl_match_t, expr ) and metaLabelOk( perl_match_t, patExpr ) then
+        #if PCRE
+        declare
+          regex_errmsg : regex_errmsgs;
+          res_int   : interfaces.C.int := 0;
+          errmsg : unbounded_string;
+        begin
+          -- combines the compile and execute steps for regular expressions
+          C_pcre( to_string(patExpr.value) & ASCII.NUL, to_string(expr.value) & ASCII.NUL, regex_errmsg, regex_errmsg'length, res_int );
+          if Interfaces.C.To_Ada(regex_errmsg(0)) /= ASCII.NUL then
+             for i in 0..regex_errmsg'last loop
+                 exit when interfaces.C.To_Ada( regex_errmsg(i) ) = ASCII.NUL;
+                 errmsg := errmsg & interfaces.C.To_Ada( regex_errmsg(i) );
+             end loop;
+             err( unb_pl( toescaped( errmsg ) ) );
+          elsif integer(res_int) = 1 then
+             result := storage'( to_unbounded_string( "1" ), noMetaLabel );
+             if trace then
+                put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
+                           "' pattern matches string '" &
+                           toSecureData( to_string( toEscaped( expr.value ) ) ) &
+                           "'" );
+             end if;
+          else
+             result := storage'( to_unbounded_string( "0" ), expr.metaLabel );
+             if trace then
+                put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
+                           "' pattern does not match string '" &
+                           toSecureData( to_string( toEscaped( expr.value ) ) ) &
+                           "'" );
+             end if;
           end if;
-       else
-          result := storage'( to_unbounded_string( "0" ), noMetaLabel );
-          if trace then
-             put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
-                        "' pattern does not match string '" &
-                        toSecureData( to_string( toEscaped( expr.value ) ) ) &
-                        "'" );
-          end if;
-       end if;
-     exception when others =>
-       err_exception_raised;
-     end;
-     #else
-     err( +"pcre support not configured" );
-     #end if;
+        exception when others =>
+          err_exception_raised;
+        end;
+        #else
+        err( +"pcre support not configured" );
+        #end if;
+     end if;
   end if;
 end ParseStringsPerlMatch;
 

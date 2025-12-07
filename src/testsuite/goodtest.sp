@@ -1716,6 +1716,18 @@ pragma assert( i = 1 );
 i := stats.max( la1 );
 pragma assert( i = 3 );
 
+type statsarr is array(1..1) of integer;
+stat1 : statsarr;
+stat1( 1 ) := 2;
+i := stats.average( stat1 );
+pragma assert( i = 2 );
+i := stats.sum( stat1 );
+pragma assert( i = 2 );
+i := stats.min( stat1 );
+pragma assert( i = 2 );
+i := stats.max( stat1 );
+pragma assert( i = 2 );
+
 -- record
 
 type arec0 is abstract record

@@ -20,7 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
---with ada.text_io; use ada.text_io;
+with ada.text_io; use ada.text_io;
 
 with gnat.source_info,
      ada.strings.unbounded,
@@ -77,21 +77,32 @@ begin
   end if;
   if isExecutingCommand then
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
+     kind   := identifiers( identifiers( var_id ).kind ).kind;
      begin
         first := identifiers( var_id ).aStorage'first;
         last  := identifiers( var_id ).aStorage'last;
-        if last > first then
+        if last >= first then
            max_string := identifiers( var_id ).aStorage( first ).value;
            max := to_numeric( max_string );
+           if metaLabelOk( stats_max_t, identifiers( var_id ).aStorage( first ) ) then
+              result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           end if;
            for i in first+1..last loop
-               if to_numeric( identifiers( var_id ).aStorage( i ).value ) > max then
-                  max_string := identifiers( var_id ).aStorage( i ).value;
-                  max := to_numeric( max_string );
+               if metaLabelOk( stats_max_t, identifiers( var_id ).aStorage( i ) ) then
+                  if to_numeric( identifiers( var_id ).aStorage( i ).value ) > max then
+                     max_string := identifiers( var_id ).aStorage( i ).value;
+                     max := to_numeric( max_string );
+                     result.metaLabel := resolveEffectiveMetaLabel(
+                        kind,
+                        result,
+                        identifiers( var_id ).aStorage( i )
+                     );
+                  end if;
                end if;
            end loop;
-           result := storage'( max_string, noMetaLabel );
+           result.value := max_string;
         else
-           result := storage'( to_unbounded_string( 0 ), noMetaLabel );
+           result := storage'( to_unbounded_string( 0 ), noMetaLabel  );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -99,7 +110,6 @@ begin
      when STORAGE_ERROR =>
         err( pl( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" ) );
      end;
-     kind   := identifiers( identifiers( var_id ).kind ).kind;
   end if;
 end ParseStatsMax;
 
@@ -125,16 +135,26 @@ begin
      begin
         first := identifiers( var_id ).aStorage'first;
         last  := identifiers( var_id ).aStorage'last;
-        if last > first then
+        if last >= first then
            min_string := identifiers( var_id ).aStorage( first ).value;
            min := to_numeric( min_string );
+           if metaLabelOk( stats_min_t, identifiers( var_id ).aStorage( first ) ) then
+              result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           end if;
            for i in first+1..last loop
-               if to_numeric( identifiers( var_id ).aStorage( i ).value ) < min then
-                  min_string := identifiers( var_id ).aStorage( i ).value;
-                  min := to_numeric( min_string );
+               if metaLabelOk( stats_min_t, identifiers( var_id ).aStorage( i ) ) then
+                  if to_numeric( identifiers( var_id ).aStorage( i ).value ) < min then
+                     min_string := identifiers( var_id ).aStorage( i ).value;
+                     min := to_numeric( min_string );
+                     result.metaLabel := resolveEffectiveMetaLabel(
+                        kind,
+                        result,
+                        identifiers( var_id ).aStorage( i )
+                     );
+                  end if;
                end if;
            end loop;
-           result := storage'( min_string, noMetaLabel );
+           result.value := min_string;
         else
            result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
@@ -170,11 +190,21 @@ begin
         first := identifiers( var_id ).aStorage'first;
         last  := identifiers( var_id ).aStorage'last;
         sum := 0.0;
-        if last > first then
+        if last >= first then
+           if metaLabelOk( stats_sum_t, identifiers( var_id ).aStorage( first ) ) then
+              result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           end if;
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+               if metaLabelOk( stats_sum_t, identifiers( var_id ).aStorage( i ) ) then
+                  sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+                  result.metaLabel := resolveEffectiveMetaLabel(
+                     kind,
+                     result,
+                     identifiers( var_id ).aStorage( i )
+                  );
+               end if;
            end loop;
-           result := storage'( to_unbounded_string( sum ), noMetaLabel );
+           result.value := to_unbounded_string( sum );
         else
            result := storage'( to_unbounded_string( 0 ), noMetaLabel );
            err( +"array is empty" );
@@ -212,11 +242,21 @@ begin
         last  := identifiers( var_id ).aStorage'last;
         len   := last-first+1;
         sum := 0.0;
-        if last > first then
+        if last >= first then
+           if metaLabelOk( stats_average_t, identifiers( var_id ).aStorage( first ) ) then
+              result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           end if;
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+               if metaLabelOk( stats_average_t, identifiers( var_id ).aStorage( i ) ) then
+                  sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+                  result.metaLabel := resolveEffectiveMetaLabel(
+                     kind,
+                     result,
+                     identifiers( var_id ).aStorage( i )
+                  );
+               end if;
            end loop;
-           result := storage'( to_unbounded_string( sum / numericValue( len ) ), noMetaLabel );
+           result.value := to_unbounded_string( sum / numericValue( len ) );
         else
            result := storage'( to_unbounded_string(0), noMetaLabel );
            err( +"array is empty" );
@@ -257,20 +297,32 @@ begin
         last  := identifiers( var_id ).aStorage'last;
         len   := last-first+1;
         sum := 0.0;
+        -- a variance on one item will result in divide by zero
         if last > first then
+           if metaLabelOk( stats_variance_t, identifiers( var_id ).aStorage( first ) ) then
+              result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           end if;
            for i in first..last loop
-               sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+               if metaLabelOk( stats_variance_t, identifiers( var_id ).aStorage( i ) ) then
+                  sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+                  result.metaLabel := resolveEffectiveMetaLabel(
+                     kind,
+                     result,
+                     identifiers( var_id ).aStorage( i )
+                  );
+               end if;
            end loop;
            mean := sum / numericValue( len );
            sum_diff_sq := 0.0;
            for i in first..last loop
+               -- meta labels assumed to be ok because of previous loop
                diff := to_numeric( identifiers( var_id ).aStorage( i ).value ) - mean;
                sum_diff_sq := sum_diff_sq + diff * diff;
            end loop;
-           result := storage'( to_unbounded_string( sum_diff_sq / numericValue( len-1 ) ), noMetaLabel );
+           result.value := to_unbounded_string( sum_diff_sq / numericValue( len-1 ) );
         else
            result := storage'( to_unbounded_string( 0 ), noMetaLabel );
-           err( +"array is empty" );
+           err( +"array is empty or one element" );
         end if;
      exception when CONSTRAINT_ERROR =>
         err( pl( "constraint_error : index out of range " & identifiers( var_id ).aStorage'first'img & " .. " & identifiers( var_id ).aStorage'last'img ) );
@@ -307,23 +359,36 @@ begin
      last  := identifiers( var_id ).aStorage'last;
      len   := last-first+1;
      sum := 0.0;
+     kind   := identifiers( identifiers( var_id ).kind ).kind;
+     -- a deviation on one item will result in divide by zero
      if last > first then
-        for i in first..last loop
-            sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
-        end loop;
-        mean := sum / numericValue( len );
-        sum_diff_sq := 0.0;
-        for i in first..last loop
-            diff := to_numeric( identifiers( var_id ).aStorage( i ).value) - mean;
-            sum_diff_sq := sum_diff_sq + diff * diff;
-        end loop;
-        result := storage'( to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) ), noMetaLabel );
+        if metaLabelOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( first ) ) then
+           -- if the initial meta label is not set, the resolve will throw an
+           -- exception.  So skip the main loops if we cannot access the first
+           -- element of the array.
+           result.metaLabel := identifiers( var_id ).aStorage( first ).metaLabel;
+           for i in first..last loop
+               if metaLabelOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( i ) ) then
+                  sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
+                  result.metaLabel := resolveEffectiveMetaLabel(
+                     kind,
+                     result,
+                     identifiers( var_id ).aStorage( i )
+                  );
+               end if;
+           end loop;
+           mean := sum / numericValue( len );
+           sum_diff_sq := 0.0;
+           for i in first..last loop
+               diff := to_numeric( identifiers( var_id ).aStorage( i ).value) - mean;
+               sum_diff_sq := sum_diff_sq + diff * diff;
+           end loop;
+        end if;
+        result.value := to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) );
      else
         result := storage'( to_unbounded_string( 0 ), noMetaLabel );
-        err( +"array is empty" );
+        err( +"array is empty or one element" );
      end if;
-     -- kind   := identifiers( var_id ).kind;
-     kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
      kind := universal_t; -- type is not known during syntax check
   end if;

@@ -74,40 +74,42 @@ begin
            expr.value := current_working_directory & "/" & expr.value;
         end if;
      end if;
-     declare
-       path : constant string := to_string( expr.value );
-       msg : unbounded_string;
-       f : file_type;
-       res : integer;
-     begin
-       -- the error checking isn't very good on gstreamer.  It's best to
-       -- check for things like file existence ourselves.
-       open( f, in_file, path );
-       close( f );
-       begin
-         -- gstreamer uses a URI to play
-         res := play_uri( "file://" & path & ASCII.NUL );
-         if res /= 1 then
-            msg := to_unbounded_string( "Sound error: " );
-            for i in gst_error'range loop
-                exit when gst_error(i) = ASCII.NUL;
-                msg := msg & gst_error(i);
-            end loop;
-            err( unb_pl( msg ) );
-         end if;
-       exception when others =>
-         err_exception_raised;
-       end;
-     exception
-       when NAME_ERROR =>
-         err( +"file " & em( path ) & pl( " does not exist or is not readable" ) );
-       when STATUS_ERROR =>
-         err( +"file " & em( path ) & pl( " may be locked" ) );
-       when MODE_ERROR =>
-         err( pl( gnat.source_info.source_location & ": internal error: mode error on file open" ) );
-       when others =>
-         err( +"exception when opening sound file " & em( path ) );
-     end;
+     if metaLabelOk( sound_play_t, expr ) then
+        declare
+          path : constant string := to_string( expr.value );
+          msg : unbounded_string;
+          f : file_type;
+          res : integer;
+        begin
+          -- the error checking isn't very good on gstreamer.  It's best to
+          -- check for things like file existence ourselves.
+          open( f, in_file, path );
+          close( f );
+          begin
+            -- gstreamer uses a URI to play
+            res := play_uri( "file://" & path & ASCII.NUL );
+            if res /= 1 then
+               msg := to_unbounded_string( "Sound error: " );
+               for i in gst_error'range loop
+                   exit when gst_error(i) = ASCII.NUL;
+                   msg := msg & gst_error(i);
+               end loop;
+               err( unb_pl( msg ) );
+            end if;
+          exception when others =>
+            err_exception_raised;
+          end;
+        exception
+          when NAME_ERROR =>
+            err( +"file " & em( path ) & pl( " does not exist or is not readable" ) );
+          when STATUS_ERROR =>
+            err( +"file " & em( path ) & pl( " may be locked" ) );
+          when MODE_ERROR =>
+            err( pl( gnat.source_info.source_location & ": internal error: mode error on file open" ) );
+          when others =>
+            err( +"exception when opening sound file " & em( path ) );
+        end;
+     end if;
 #else
       err( +"sound support not installed" );
 #end if;
@@ -127,11 +129,13 @@ begin
      end if;
   end if;
   if isExecutingCommand then
+     if metaLabelOk( sound_playcd_t, devNameExpr ) then
 #if SOUND
-     PlayCD( devNameExpr.value );
+        PlayCD(devNameExpr.value );
 #else
-      err( +"sound support not installed" );
+        err( +"sound support not installed" );
 #end if;
+     end if;
   end if;
 end ParsePlayCD;
 

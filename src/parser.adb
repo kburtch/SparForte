@@ -1898,7 +1898,7 @@ begin
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with " &
               em( "pragma ada_95" ) );
-           f.metaLabel := noMetaLabel;
+           f.metaLabel := sparMetaLabel;
            f.value := null_unbounded_string;
            kind := eof_t;
         else
@@ -1907,23 +1907,23 @@ begin
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f.metaLabel := noMetaLabel;
+        f.metaLabel := sparMetaLabel;
         f.value := basename( getSourceFileName );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f.metaLabel := noMetaLabel;
+        f.metaLabel := sparMetaLabel;
         f.value := to_unbounded_string( getLineNo'img );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
-        f.metaLabel := noMetaLabel;
+        f.metaLabel := sparMetaLabel;
         f.value := to_unbounded_string( getLineNo'img );
         f.value := basename( getSourceFileName ) & ":" & f.value;
         kind := string_t;
         getNextToken;
      elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
-        f.metaLabel := noMetaLabel;
+        f.metaLabel := sparMetaLabel;
         if blocks_top > block'First then
            f.value := getBlockName( block'First );
         else
