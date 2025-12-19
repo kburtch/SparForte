@@ -1,0 +1,9 @@
+-- testing that text_io.open and text_io.close work with file_type arrays
+
+file_path : constant string := "file_test.tmp";
+fa : array(1..1) of file_type;
+
+touch( file_path );
+open( fa(1), out_file, file_path );
+reset( fa(1), in_file );
+delete( fa(1) );

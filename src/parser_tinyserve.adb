@@ -155,18 +155,20 @@ begin
         getParameterValue( serverRef, serverExpr );
         findServer( serverExpr.value, server );
         if server /= null then
-           -- TODO: number conversion could throw exception
-           pegasock.tinyserve.startupTinyServe(
-             socket_data => server.tinyserve_server,
-             host => to_string( hostExpr.value ),
-             port => integer( to_numeric( portExpr.value ) ),
-             min_recv_buffer_size => integer( to_numeric( recvExpr.value ) ),
-             min_send_buffer_size => integer( to_numeric( sendExpr.value ) ),
-             socket_queue_length => integer( to_numeric( queueExpr.value ) ),
-             socket_linger_seconds => integer( to_numeric( lingerExpr.value ) ),
-             timeout_secs => integer( to_numeric( secsExpr.value ) ),
-             timeout_usecs => integer( to_numeric( usecsExpr.value ) )
-        );
+           if metaLabelOk( tinyserve_startup_t, identifiers( serverRef.id ).store.all ) then
+              -- TODO: number conversion could throw exception
+              pegasock.tinyserve.startupTinyServe(
+                 socket_data => server.tinyserve_server,
+                 host => to_string( hostExpr.value ),
+                 port => integer( to_numeric( portExpr.value ) ),
+                 min_recv_buffer_size => integer( to_numeric( recvExpr.value ) ),
+                 min_send_buffer_size => integer( to_numeric( sendExpr.value ) ),
+                 socket_queue_length => integer( to_numeric( queueExpr.value ) ),
+                 socket_linger_seconds => integer( to_numeric( lingerExpr.value ) ),
+                 timeout_secs => integer( to_numeric( secsExpr.value ) ),
+                 timeout_usecs => integer( to_numeric( usecsExpr.value ) )
+              );
+           end if;
         end if;
      end if;
    end if;
@@ -182,9 +184,11 @@ begin
   ParseSingleServerParameter( tinyserve_shutdown_t, serverRef );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     findServer( serverExpr.value, server );
-     if server /= null then
-        pegasock.tinyserve.shutdownTinyServe( server.tinyserve_server );
+     if metaLabelOk( tinyserve_shutdown_t, identifiers( serverRef.id ).store.all ) then
+        findServer( serverExpr.value, server );
+        if server /= null then
+           pegasock.tinyserve.shutdownTinyServe( server.tinyserve_server );
+        end if;
      end if;
   end if;
 end ParseTSShutdown;
@@ -202,9 +206,11 @@ begin
   ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     findServer( serverExpr.value, server );
-     manageConnections( server.tinyserve_server, client );
-     assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+     if metaLabelOk( tinyserve_manage_connections_t, identifiers( serverRef.id ).store.all ) then
+        findServer( serverExpr.value, server );
+        manageConnections( server.tinyserve_server, client );
+        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+     end if;
   end if;
 end ParseTSManageConnections;
 
@@ -221,10 +227,12 @@ begin
   ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     findServer( serverExpr.value, server );
-     if server /= null then
-        getNextClient( server.tinyserve_server, client );
-        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+     if metaLabelOk( tinyserve_get_next_client_t, identifiers( serverRef.id ).store.all ) then
+        findServer( serverExpr.value, server );
+        if server /= null then
+           getNextClient( server.tinyserve_server, client );
+           assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+        end if;
      end if;
   end if;
 end ParseTSGetNextClient;
@@ -242,10 +250,13 @@ begin
   ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     findServer( serverExpr.value, server );
-     if server /= null then
-        getListenerSocket( server.tinyserve_server, client );
-        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+     if metaLabelOk( tinyserve_get_listener_socket_t, identifiers( serverRef.id ).store.all ) then
+        findServer( serverExpr.value, server );
+        if server /= null then
+           getListenerSocket( server.tinyserve_server, client );
+           assignParameter( clientRef, storage'( to_unbounded_string( client'img ),
+              identifiers( serverRef.id ).store.metaLabel ) );
+        end if;
      end if;
   end if;
 end ParseTSGetListenerSocket;
@@ -262,10 +273,13 @@ begin
   ParseFirstServerParameter( tinyserve_count_clients_t, serverRef );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     findServer( serverExpr.value, server );
-     if server /= null then
-        clients := countClients( server.tinyserve_server );
-        result := storage'( to_unbounded_string( clients'img ), noMetaLabel );
+     if metaLabelOk( tinyserve_count_clients_t, identifiers( serverRef.id ).store.all ) then
+        findServer( serverExpr.value, server );
+        if server /= null then
+           clients := countClients( server.tinyserve_server );
+           result := storage'( to_unbounded_string( clients'img ),
+              identifiers( serverRef.id ).store.metaLabel );
+        end if;
      end if;
   end if;
 end ParseTSCountClients;
@@ -277,7 +291,7 @@ begin
   expect( tinyserve_get_fdset_size_t );
   if isExecutingCommand then
      fdsize := getFDSetSize;
-     result := storage'( to_unbounded_string( fdsize'img ), nometaLabel );
+     result := storage'( to_unbounded_string( fdsize'img ), sparMetaLabel );
   end if;
 end ParseTSGetFDSetSize;
 

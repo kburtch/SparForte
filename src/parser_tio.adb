@@ -58,232 +58,131 @@ use interfaces.c,
 
 package body parser_tio is
 
-procedure ParseIsOpen( b : out identifier ) is
-  -- is_open( file )
-  -- Ada.Text_IO.Is_Open
-  file : identifier;
-begin
-  b := false_t;
-  getNextToken;
-  expect( symbol_t, "(" );
-  ParseIdentifier( file );
-  expect( symbol_t, ")" );
-  if file = standard_output_t then
-     b := true_t;
-  elsif file = standard_error_t then
-     b := true_t;
-  elsif uniTypesOk( identifiers( file ).kind, file_type_t ) then
-     if length( identifiers( file ).store.value ) > 0 then
-        b := true_t;
-     end if;
-  end if;
-end ParseIsOpen;
 
-procedure ParseEndOfFile( result : out storage; kind : out identifier ) is
-  -- Syntax: End_of_file( f )
-  -- Source: Ada.Text_IO.End_Of_File
-  file_ref : reference;
-  file_kind : identifier;
+-- ASSIGN RENAMED FILE
+--
+-- Reassign a renaming in the symbol table, based on the given reference.
+-- This is used by Text_IO's set_input, set_output and set_error to select
+-- the current file for input, output and error respectively.  new_id
+-- should be current_input_t, current_output_t or current_error_t.
+-- This does not setup aggregate renamings, which must be done by the
+-- caller.
+-- The canonical identifier will have its renaming count incremented.
+-----------------------------------------------------------------------------
+
+procedure assignRenamedFile( subprogramId : identifier; current_file_id : identifier; canonicalRef :
+  reference ) is
 begin
-  kind := boolean_t;
-  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel );
-  getNextToken;
-  expect( symbol_t, "(" );
-  ParseOpenFileOrSocket( end_of_file_t, file_ref, file_kind );
-  if isExecutingCommand then
-     if file_kind = file_type_t then
-        if identifier'value( to_string( stringField( file_ref, mode_field ) ) ) /= in_file_t then
-           err( +"end_of_file only applies to " & em( "in_mode" ) & pl( " files" ) );
+
+  -- Check for a valid file.  This is redundant since these are checked in the
+  -- relevant parsers.
+
+  if current_file_id /= current_input_t and current_file_id /= current_output_t and
+     current_file_id /= current_error_t then
+     err( contextNotes => pl( "At " & gnat.source_info.source_location &
+            " while checking for the end of file" ),
+          subject => subprogramId,
+          reason => +"had an internal error because",
+          obstructorNotes => em( "the file was not current_input, current_output or current_error" )
+      );
+      return;
+  end if;
+
+  -- First, unassign the current renaming.  When this is first run by the
+  -- interpreter, there won't be an existing naming so this step can be
+  -- skpped.  Reduce the renaming counter on the old canonical variable.
+  -- This is based on deleteIdent().
+
+  if identifiers( current_file_id ).renaming_of /= identifiers'first then
+     declare
+        oldCanonicalId : constant identifier := identifiers( current_file_id ).renaming_of;
+     begin
+        if identifiers( oldCanonicalId ).renamed_count > 0 then
+           identifiers( oldCanonicalId ).renamed_count :=
+           identifiers( oldCanonicalId ).renamed_count - 1;
+        else
+           err(
+                contextNotes => pl( "At " & gnat.source_info.source_location &
+                    " while unassigning the current file" ),
+                subject => current_file_id,
+                reason => pl( "had an internal error because the dereferenced identifier's renamed_count "  &
+                     "is unexpectedly zero for" ),
+                obstructor => oldCanonicalId
+           );
         end if;
-     end if;
-  end if;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result.value := stringField( file_ref, eof_field );
-  end if;
-end ParseEndOfFile;
+      end;
+    end if;
 
-procedure ParseEndOfLine( result : out storage; kind : out identifier ) is
-  -- Syntax: end_of_line( open-file )
-  -- Source: Ada.Text_IO.End_Of_Line
-  file_ref : reference;
-begin
-  kind := boolean_t;
-  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
-  getNextToken;
-  expect( symbol_t, "(" );
-  ParseOpenFile( end_of_line_t, file_ref );
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result.value := stringField( file_ref, eol_field );
-  end if;
-end ParseEndOfLine;
+    -- Second, create a new renaming to the new file_type variable.
+    -- This is based on declareRenaming().
 
-procedure ParseLine( result : out storage; kind : out identifier ) is
-  -- Syntax: line( open-file )
-  -- Source: Ada.Text_IO.Line
-  file_ref : reference;
-begin
-  kind := integer_t;   -- TODO: probably should be something more specific
-  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
-  getNextToken;
-  expect( symbol_t, "(" );
-  ParseOpenFile( line_t, file_ref );
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result.value := stringField( file_ref, line_field );
-  end if;
-end ParseLine;
+    -- These are the relevant declaration fields that need to be redirected
+    -- in a renaming of an existing variable.  The store field is handled
+    -- in the next step.
 
-procedure ParseName( result : out storage; kind : out identifier ) is
-  -- Syntax: name( open-file )
-  -- Source: Ada.Text_IO.Name
-  file_ref : reference;
-begin
-  kind := uni_string_t;
-  result := nullStorage;
-  getNextToken;
-  expect( symbol_t, "(" );
-  ParseOpenFile( name_t, file_ref );
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result.value := stringField( file_ref, name_field );
-  end if;
-end ParseName;
+    identifiers( current_file_id ).kind := identifiers( canonicalRef.id ).kind;
+    identifiers( current_file_id ).class := identifiers( canonicalRef.id ).class;
+    identifiers( current_file_id ).static   := identifiers( canonicalRef.id ).static;
+    identifiers( current_file_id ).list     := identifiers( canonicalRef.id ).list;
+    identifiers( current_file_id ).field_of := identifiers( canonicalRef.id ).field_of;
+    identifiers( current_file_id ).inspect  := identifiers( canonicalRef.id ).inspect;
 
-procedure ParseMode( result : out storage; kind : out identifier ) is
-  -- Syntax: mode( open-file )
-  -- Source: Ada.Text_IO.Mode
-  file_ref : reference;
-begin
-  kind := file_mode_t;
-  result := nullStorage;
-  expect( mode_t ); -- getNextToken;
-  expect( symbol_t, "(" );
-  ParseOpenFile( mode_t, file_ref );
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     result.value := stringField( file_ref, mode_field );
-     if identifier'value( to_string( result.value ) ) = in_file_t then
-        result.value := identifiers( in_file_t ).store.value;
-     elsif identifier'value( to_string( result.value ) ) = out_file_t then
-        result.value := identifiers( out_file_t ).store.value;
-     elsif identifier'value( to_string( result.value ) ) = append_file_t then
-        result.value := identifiers( append_file_t ).store.value;
-     else
-        err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" ) );
-     end if;
-  end if;
-end ParseMode;
+    identifiers( current_file_id ).genKind := identifiers( canonicalRef.id ).genKind;
+    identifiers( current_file_id ).genKind2 := identifiers( canonicalRef.id ).genKind2;
+    identifiers( current_file_id ).firstBound := identifiers( canonicalRef.id ).firstBound;
+    identifiers( current_file_id ).lastBound := identifiers( canonicalRef.id ).lastBound;
+    identifiers( current_file_id ).sstorage := identifiers( canonicalRef.id ).sstorage;
+    identifiers( current_file_id ).astorage := identifiers( canonicalRef.id ).astorage;
+    identifiers( current_file_id ).renaming_of := canonicalRef.id;
 
-procedure ParseInkey( result : out storage; kind : out identifier ) is
-  -- Syntax: inkey
-  -- Source: Ada.Text_IO.Inkey
-  ch : character;
-begin
-  kind := character_t;
-  expect( inkey_t );
-  if isExecutingCommand then
-     getKey( ch );
-     --if wasSIGINT then
-     --   null;
-     --end if;
-     result := storage'( to_unbounded_string( ch & "" ), noMetaLabel );
-  end if;
-end ParseInkey;
+    -- Third, assign the store pointer to the file_type value.
+    -- The canonical reference itself may be another renaming.  We must follow
+    -- the chain to the root canonical variable and point the store field to
+    -- its value.  There is a timeout to prevent infinite loops.
 
-procedure ParseGetLine( result : out storage; kind : out identifier ) is
-  -- Syntax: get_line [ (open-file) ]
-  -- Source: Ada.Text_IO.Get_Line
-  -- Note: Gnat get_line can't be used here because it does something
-  -- odd with file descriptor 0
-  file_ref : reference;
-  file_kind : identifier;
-  --fd   : aFileDescriptor;
-  ch   : character;
-  --result : long_integer;
-  fileInfo : storage;
-begin
-  kind := universal_t;
-  file_ref.id := eof_t;
-  result := nullstorage;
-  getNextToken;
-  if token = symbol_t and then identifiers( Token ).store.value = "(" then
-      expect( symbol_t, "(" );
-      ParseOpenFileOrSocket( get_line_t, file_ref, file_kind );
-      expect( symbol_t, ")" );
-  end if;
-  if isExecutingCommand then
-     if file_ref.id /= eof_t then
-        if trace then
-           put_trace( "Input from file descriptor" & to_string(
-              stringField( file_ref, fd_field ) ) );
-        end if;
-        if stringField(file_ref, eof_field ) = "1" then
-           err( +"end of file" );
-           return;
-        end if;
-        if file_kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
-           DoGet( file_ref );
-           replaceField( file_ref, doget_field, boolean'image( false ) );
-        end if;
-        loop
-          GetParameterValue( file_ref, fileInfo );
-          ch := Element( fileInfo.value, 1 );
-          if stringField(file_ref, eof_field ) = "1" then
-             exit;
-          end if;
-          DoGet( file_ref );
-          exit when ch = ASCII.LF or error_found or wasSIGINT or wasSIGTERM;
-          result.value := result.value & ch;
+     declare
+        deref_id : identifier := canonicalRef.id;
+        cnt : natural := 1;
+     begin
+        while identifiers( deref_id ).renaming_of /= identifiers'first loop
+           deref_id := identifiers( deref_id ).renaming_of;
+           cnt := cnt + 1;
+           if cnt > 1000 then
+              raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+                 ": internal error: infinite renaming loop";
+           end if;
         end loop;
-     else
-        pegasoft.user_io.getline.getLine( result.value );
-        if wasSIGINT or wasSIGTERM then
-           new_line;  -- user didn't press enter
-           -- wasSIGINT will be cleared later
-        end if;
+        identifiers( current_file_id ).store := identifiers( deref_id ).store;
+     end;
+
+     -- if the renaming is an array element, the type is the type of the
+     -- array element, not the array type itself.  The element type should
+     -- just be the "kind".
+
+     if identifiers( canonicalRef.id ).list and canonicalRef.hasIndex then
+        identifiers( current_file_id ).list := false;
      end if;
-  end if;
-end ParseGetLine;
+
+     -- Fourth, adjust the renaming counter on the canonical reference to
+     -- indicate another renaming has been created.
+
+     identifiers( canonicalRef.id ).renamed_count :=
+        identifiers( canonicalRef.id ).renamed_count + 1;
+end assignRenamedFile;
 
 procedure ParseOpenFile( subprogram_id : identifier; return_ref : out reference ) is
+  -- Reads a file record for a file that should be open
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
+  theFileRec : storage;
   ref : reference;
 begin
   ref.id := eof_t;
   return_ref.id := eof_t; -- assume failure
 
-  -- Special Files: Current_Input, Current_Output and Current_Error
-  -- are aliases for a different file variable.  For example, by default,
-  -- Current_Output refers to Standard_Output.  These variables must be
-  -- "dereferenced" to the actual file they represent so that the file
-  -- info (such as eof) are accurately updated in the original file
-  -- variable.
-  --  Since Standard_Input, Standard_Output and Standard_Error are (now)
-  -- represented as true file variables, they need no special treatment.
-
-  if token = current_input_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_output_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_error_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).store.value ) );
-     end if;
-     getNextToken;
-  else
-     ParseInOutParameter( subprogram_id, ref, eof_t );
-     if getUniType( ref.kind ) /= file_type_t then
-        err( +"file_type expected" );
-     end if;
+  ParseInOutParameter( subprogram_id, ref, eof_t );
+  if getUniType( ref.kind ) /= file_type_t then
+     err( +"file_type expected" );
   end if;
 
   -- Verify that the identifier is a file.  Unless during a syntax check,
@@ -291,8 +190,15 @@ begin
   -- syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).store.value ) = 0 then
-        err( +"file not open" );
+     --theFileRec := identifiers( ref.id ).store.all;
+     getParameterValue( ref, theFileRec );
+     if length( theFileRec.value ) = 0 then
+          err( context => subprogram_id,
+             subject => ref.id,
+             subjectType => ref.kind,
+             reason => +"is not open",
+             obstructorNotes => nullMessageStrings
+          );
      elsif not error_found then
         return_ref := ref;
      end if;
@@ -300,42 +206,18 @@ begin
 end ParseOpenFile;
 
 procedure ParseOpenSocket( subprogram_id : identifier; return_ref : out reference ) is
+  -- Reads a file record for a socket that should be open
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
+  theFileRec : storage;
   ref : reference;
 begin
   ref.id := eof_t;
   return_ref.id := eof_t; -- assume failure
 
-  -- Special Files: Current_Input, Current_Output and Current_Error
-  -- are aliases for a different file variable.  For example, by default,
-  -- Current_Output refers to Standard_Output.  These variables must be
-  -- "dereferenced" to the actual file they represent so that the file
-  -- info (such as eof) are accurately updated in the original file
-  -- variable.
-  --  Since Standard_Input, Standard_Output and Standard_Error are (now)
-  -- represented as true file variables, they need no special treatment.
-
-  if token = current_input_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_output_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_error_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).store.value ) );
-     end if;
-     getNextToken;
-  else
-     ParseInOutParameter( subprogram_id, ref, eof_t );
-     if getUniType( ref.kind ) /= socket_type_t then
-        err( +"file_type or socket_type variable expected" );
-     end if;
+  ParseInOutParameter( subprogram_id, ref, eof_t );
+  if getUniType( ref.kind ) /= socket_type_t then
+     err( +"file_type or socket_type variable expected" );
   end if;
 
   -- Verify that the identifier is a socket.  Unless during a syntax check,
@@ -343,7 +225,8 @@ begin
   -- syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).store.value ) = 0 then
+     getParameterValue( ref, theFileRec );
+     if length( theFileRec.value ) = 0 then
         err( +"file not open" );
      elsif not error_found then
         return_ref := ref;
@@ -352,8 +235,10 @@ begin
 end ParseOpenSocket;
 
 procedure ParseOpenFileOrSocket( subprogram_id : identifier; return_ref : out reference; kind : out identifier ) is
+  -- Reads a file record for a file or socket that should be open
   -- standard output, standard error or a user file
   -- the file must be closed (ie value of variable is null)
+  theFileRec : storage;
   ref : reference;
 begin
   ref.id := eof_t;
@@ -361,35 +246,9 @@ begin
   return_ref.id := eof_t; -- assume failure
   return_ref.kind := eof_t;
 
-  -- Special Files: Current_Input, Current_Output and Current_Error
-  -- are aliases for a different file variable.  For example, by default,
-  -- Current_Output refers to Standard_Output.  These variables must be
-  -- "dereferenced" to the actual file they represent so that the file
-  -- info (such as eof) are accurately updated in the original file
-  -- variable.
-  --  Since Standard_Input, Standard_Output and Standard_Error are (now)
-  -- represented as true file variables, they need no special treatment.
-
-  if token = current_input_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_input_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_output_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_output_t).store.value ) );
-     end if;
-     getNextToken;
-  elsif token = current_error_t then
-     if isExecutingCommand then
-        ref.id := identifier( to_numeric( identifiers(current_error_t).store.value ) );
-     end if;
-     getNextToken;
-  else
-     ParseInOutParameter( subprogram_id, ref, eof_t );
-     if ref.kind /= file_type_t and ref.kind /= socket_type_t then
-        err( +"file_type or socket_type variable expected" );
-     end if;
+  ParseInOutParameter( subprogram_id, ref, eof_t );
+  if ref.kind /= file_type_t and ref.kind /= socket_type_t then
+     err( +"file_type or socket_type variable expected" );
   end if;
   kind := ref.kind;
 
@@ -398,7 +257,8 @@ begin
   -- not opened during a syntax check).
 
   if not syntax_check then
-     if length( identifiers( ref.id ).store.value ) = 0 then
+     getParameterValue( ref, theFileRec );
+     if length( theFileRec.value ) = 0 then
         err( +"file not open" );
      elsif not error_found then
         return_ref := ref;
@@ -408,6 +268,7 @@ end ParseOpenFileOrSocket;
 
 procedure ParseClosedFile( r : out reference ) is
   -- user file, must be closed (ie. value of variable not null)
+  theFileRec : storage;
   ref : reference;
 begin
   ref.id := eof_t; -- assume failure
@@ -436,7 +297,8 @@ begin
      if getUniType( ref.kind ) /= file_type_t then
         err( +"expected file_type variable" );
      elsif not syntax_check then
-        if length( identifiers( ref.id ).store.value ) > 0 then
+        getParameterValue( ref, theFileRec );
+        if length( theFileRec.value ) > 0 then
            err( +"file already open" );
         elsif not error_found then
            r := ref;
@@ -445,11 +307,13 @@ begin
   end if;
 end ParseClosedFile;
 
-procedure ParseClosedSocket( f : out identifier ) is
+procedure ParseClosedSocket( r : out reference ) is
   -- user file, must be closed (ie. value of variable not null)
-  id : identifier;
+  --id : identifier;
+  theSocketRec : storage;
+  ref : reference;
 begin
-  f := eof_t; -- assume failure
+  ref.id := eof_t; -- assume failure
 
   -- do not allow "current" or "standard" files to be closed.
 
@@ -464,19 +328,20 @@ begin
   elsif token = current_error_t then
      err( +"file already open" );
   else
-     ParseIdentifier( id );
+     ParseOutParameter( ref, socket_type_t );
 
   -- Verify that the identifier is a socket.  Unless during a syntax check,
   -- verify that the socket is also open (sockets are not opened during a
   -- syntax check).
 
-     if getUniType( identifiers( id ).kind ) /= socket_type_t then
+     if getUniType( identifiers( ref.id ).kind ) /= socket_type_t then
         err( +"expected socket_type variable" );
      elsif not syntax_check then
-        if length( identifiers( id ).store.value ) > 0 then
+        getParameterValue( ref, theSocketRec );
+        if length( theSocketRec.value ) > 0 then
            err( +"file already open" );
         elsif not error_found then
-           f := id;
+           r := ref;
         end if;
      end if;
   end if;
@@ -484,6 +349,7 @@ end ParseClosedSocket;
 
 procedure ParseClosedFileOrSocket( return_ref : out reference; kind : out identifier ) is
   -- user file, must be closed (ie. value of variable not null)
+  theFileRec : storage;
   ref : reference;
 begin
   return_ref.id := eof_t; -- assume failure
@@ -511,7 +377,8 @@ begin
      if kind /= file_type_t and kind /= socket_type_t then
         err( +"file_type or socket_type variable expected" );
      elsif not syntax_check then
-        if length( identifiers( ref.id ).store.value ) > 0 then
+        getParameterValue( ref, theFileRec );
+        if length( theFileRec.value ) > 0 then
            err( +"file already open" );
         elsif not error_found then
            return_ref := ref;
@@ -520,213 +387,289 @@ begin
   end if;
 end ParseClosedFileOrSocket;
 
--- "DO" procedures should be moved to parser_aux.
 
-procedure DoGet( ref : reference ) is
--- Get the next character from a file or socket.  Save the character
--- in the ch_field field of the file record.  If there is no next
--- character, set the eof_field to true.  The caller is assumed to
--- check that the file is open.  There is no eof_field check.
---
--- Reasoning: UNIX/Linux has a terrible way to handle end-of-file:
--- you have to read one character too many and check to see if no
--- character was read.  As a result, Text_IO routines must always
--- be "double-buffered": they must read the character into a buffer,
--- and then the application must read the character from the buffer
--- to its final destination.  The end-of-file cannot be checked
--- without a read, and reading will cause characters to be lost if
--- they are not double-buffered.  But I didn't design it, did I?
-  fd     : aFileDescriptor;    -- file's file descriptor
-  ch     : character := ASCII.NUL; -- a buffer to read the character into
-  -- ASCII.NUL to suppress compiler warning
-  eof    : boolean := false;   -- true if a character was read
-  result : size_t;       -- bytes read by read
+procedure ParseIsOpen( result : out storage ) is
+  -- is_open( file )
+  -- Ada.Text_IO.Is_Open
+  openFileRef : reference;
+  openFileKind : identifier;
+  theOpenFileRec : storage;
+  subprogramId : constant identifier := is_open_t;
+begin
+  result := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     GetParameterValue( openFileRef, theOpenFileRec );
+     if metaLabelOk( subprogramId, theOpenFileRec ) then
+        -- The value of current_input, current_output, current_error are aliases
+        -- to the actual file.
+        if openFileRef.id = current_input_t then
+           openFileRef.id := identifier( to_numeric( identifiers( current_input_t ).store.value ) );
+        elsif openFileRef.id = current_output_t then
+           openFileRef.id := identifier( to_numeric( identifiers( current_output_t ).store.value ) );
+        elsif openFileRef.id = current_output_t then
+           openFileRef.id := identifier( to_numeric( identifiers( current_error_t ).store.value ) );
+        end if;
+        -- No declare block with exception handler because we're not actually
+        -- executing anything external to SparForte
+        if uniTypesOk( openFileRef.kind, file_type_t ) then
+           if length( theOpenFileRec.value ) > 0 then
+              result := storage'( identifiers( true_t ).store.value, theOpenFileRec.metaLabel );
+           end if;
+        end if;
+     end if;
+  end if;
+end ParseIsOpen;
+
+procedure ParseEndOfFile( result : out storage; kind : out identifier ) is
+  -- Syntax: End_of_file( f )
+  -- Source: Ada.Text_IO.End_Of_File
+  openFileRef : reference;
+  openFileKind : identifier;
+  theOpenFileRec : storage;
+  subprogramId : constant identifier := end_of_file_t;
+begin
+  kind := boolean_t;
+  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel );
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
+  if isExecutingCommand then
+     GetParameterValue( openFileRef, theOpenFileRec );
+     if metaLabelOk( subprogramId, theOpenFileRec ) then
+        begin
+           if openFileKind = file_type_t then
+              if identifier'value( to_string( stringField( openFileRef, mode_field ) ) ) /= in_file_t then
+                 err( +"end_of_file only applies to " & em( "in_mode" ) & pl( " files" ) );
+              end if;
+           end if;
+        exception when msg : others =>
+           -- 'value can raise a constraint_error if there SparForte corrupts
+           -- if the value at an earlier step.  This is unlikely so the catch-all
+           -- handler sufficient to handle it and there is no constraint_error
+           -- handler.
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while checking for the end of file" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+          );
+        end;
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     result := storage'( stringField( openFileRef, eof_field ), theOpenFileRec.metaLabel );
+  end if;
+end ParseEndOfFile;
+
+procedure ParseEndOfLine( result : out storage; kind : out identifier ) is
+  -- Syntax: end_of_line( open-file )
+  -- Source: Ada.Text_IO.End_Of_Line
+  fileRef    : reference;
+  theFileRec : storage;
+  subprogramId : constant identifier := end_of_line_t;
+begin
+  kind := boolean_t;
+  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFile( subprogramId, fileRef );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     GetParameterValue( fileRef, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        result := storage'( stringField( fileRef, eol_field ), theFileRec.metaLabel );
+     end if;
+  end if;
+end ParseEndOfLine;
+
+procedure ParseLine( result : out storage; kind : out identifier ) is
+  -- Syntax: line( open-file )
+  -- Source: Ada.Text_IO.Line
+  file_ref : reference;
+  theFileRec : storage;
+  subprogramId : constant identifier := line_t;
+begin
+  kind := integer_t;   -- TODO: probably should be something more specific
+  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFile( line_t, file_ref );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     GetParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        result := storage'( stringField( file_ref, line_field ),
+           theFileRec.metaLabel );
+     end if;
+  end if;
+end ParseLine;
+
+procedure ParseName( result : out storage; kind : out identifier ) is
+  -- Syntax: name( open-file )
+  -- Source: Ada.Text_IO.Name
+  file_ref : reference;
+  theFileRec : storage;
+  subprogramId : constant identifier := name_t;
+begin
+  kind := uni_string_t;
+  result := nullStorage;
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFile( subprogramId, file_ref );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     GetParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        result := storage'( stringField( file_ref, name_field ),
+           theFileRec.metaLabel );
+     end if;
+  end if;
+end ParseName;
+
+procedure ParseMode( result : out storage; kind : out identifier ) is
+  -- Syntax: mode( open-file )
+  -- Source: Ada.Text_IO.Mode
+  file_ref : reference;
+  theFileRec : storage;
+  subprogramId : constant identifier := mode_t;
+begin
+  kind := file_mode_t;
+  result := nullStorage;
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseOpenFile( subprogramId, file_ref );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     GetParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec) then
+        begin
+          result.value := stringField( file_ref, mode_field );
+          result.metaLabel := theFileRec.metaLabel;
+          if identifier'value( to_string( result.value ) ) = in_file_t then
+             result.value := identifiers( in_file_t ).store.value;
+          elsif identifier'value( to_string( result.value ) ) = out_file_t then
+             result.value := identifiers( out_file_t ).store.value;
+          elsif identifier'value( to_string( result.value ) ) = append_file_t then
+             result.value := identifiers( append_file_t ).store.value;
+          else
+             err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" ) );
+          end if;
+        exception when msg : others =>
+           -- 'value can raise a constraint_error if there SparForte corrupts
+           -- if the value at an earlier step.  This is unlikely so the catch-all
+           -- handler sufficient to handle it and there is no constraint_error
+           -- handler.
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while looking up the file mode" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+          );
+       end;
+     end if;
+  end if;
+end ParseMode;
+
+procedure ParseInkey( result : out storage; kind : out identifier ) is
+  -- Syntax: inkey
+  -- Source: Ada.Text_IO.Inkey
+  ch : character;
+  subprogramId : constant identifier := inkey_t;
+begin
+  kind := character_t;
+  expect( subprogramId );
+  if isExecutingCommand then
+     if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
+        getKey( ch );
+        result := storage'( to_unbounded_string( ch & "" ), sparMetaLabel );
+     end if;
+  end if;
+end ParseInkey;
+
+procedure ParseGetLine( result : out storage; kind : out identifier ) is
+  -- Syntax: get_line [ (open-file) ]
+  -- Source: Ada.Text_IO.Get_Line
+  -- Note: Gnat get_line can't be used here because it does something
+  -- odd with file descriptor 0
+  file_ref : reference;
+  file_kind : identifier;
+  ch   : character;
   fileInfo : storage;
+  subprogramId : constant identifier := get_line_t;
 begin
-   GetParameterValue( ref, fileInfo );
-   fd := aFileDescriptor'value( to_string( stringField( fileInfo.value, recSep, fd_field ) ) );
-<<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
-     if result < 0 or result = size_t'last then
-      if C_errno = EAGAIN  or C_errno = EINTR then
-         goto reread;                   -- interrupted? try again
-      end if;                           -- error? report it
-      err( pl( "unable to read file:" & OSerror( C_errno ) ) );
-      return;                           -- and bail out
-   elsif result = 0 then                -- nothing read?
-      eof := true;                      -- then it's the end of file
-   end if;
-   if ref.id = current_output_t or      -- SHOULD NEVER BE TRUE BUT...
-      ref.id = current_input_t or
-      ref.id = current_error_t then
-      err( pl( Gnat.Source_Info.Source_Location & ": Internal Error: DoGet was given a file alias not a real file" ) );
-   else
-      if eof then                       -- eof? set eof_field
-         replaceField( fileInfo.value, recSep, eof_field, "1" );
-         replaceField( fileInfo.value, recSep, line_field, -- Ada counts EOF as a line!
-            long_integer'image( long_integer'value(
-            to_string( stringField( fileInfo.value, recSep, line_field ) ) ) + 1 ) );
-      else                              -- else replace the character
-         replace_Element( fileInfo.value, 1, ch ); -- save character in ch_field
-         if ch = ASCII.LF then          -- a line? increment line_field
-            replaceField( fileInfo.value, recSep, line_field,
-               long_integer'image( long_integer'value(
-               to_string( stringField( fileInfo.value, recSep, line_field ) ) ) + 1 ) );
-            replaceField( fileInfo.value, recSep, eol_field, "1" ); -- and set eol_field
-         else
-            replaceField( fileInfo.value, recSep, eol_field, "0" ); -- else not
-         end if;                        -- the end of the line
-      end if;
-   end if;
-   AssignParameter( ref, fileInfo );
-end DoGet;
-
-procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
-  name : string; mode : identifier  ) is
-  -- Create the fields in a new file variable
-begin
-  -- construct the file variable's value, a series of nul delimited fields
-  identifiers( file ).store.value := to_unbounded_string( "." & ASCII.NUL );
-  -- 1. character buffer
-  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      fd'img ) & ASCII.NUL;
-  -- 2. file descriptor
-  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      " 0" ) & ASCII.NUL;
-  -- 3. lines
-  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      "0" ) & ASCII.NUL;
-  -- 4. eol flag
-  identifiers( file ).store.value := identifiers( file ).store.value & name & ASCII.NUL;
-  -- 5. name
-  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(
-     mode'img ) & ASCII.NUL;
-  -- 6. mode
-  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string( "0" ) & ASCII.NUL;
-  -- 7. eof
-end DoInitFileVariableFields;
-
-procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
-  name : string ) is
-  result : aFileDescriptor;
-  flags  : anOpenFlag;
-  fileOpenRec : storage;
-begin
-  if create then
-     flags := O_CREAT;
-  else
-     flags := 0;
+  kind := universal_t;
+  file_ref.id := eof_t;
+  result := nullstorage;
+  expect( subprogramId );
+  if token = symbol_t and then identifiers( Token ).store.value = "(" then
+      expect( symbol_t, "(" );
+      ParseOpenFileOrSocket( subprogramId, file_ref, file_kind );
+      expect( symbol_t, ")" );
   end if;
-  if mode = in_file_t then
-     result := open( name & ASCII.NUL, flags+O_RDONLY, 8#644# );
-  elsif mode = out_file_t then
-     result := open( name & ASCII.NUL, flags+O_WRONLY+O_TRUNC, 8#644# );
-  elsif mode = append_file_t then
-     result := open( name & ASCII.NUL, flags+O_WRONLY+O_APPEND, 8#644# );
-  else
-     err( pl( Gnat.Source_Info.Source_Location & ": internal error: unexpected file mode" ) );
-  end if;
-  if result < 0 then
-     err( pl( "Unable to open file: " & OSerror( C_errno ) ) );
-  elsif not error_found then
-     -- construct the file variable's value, a series of nul delimited fields
-     fileOpenRec.value := to_unbounded_string( "." & ASCII.NUL );
-     -- 1. character buffer
-     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( result'img ) & ASCII.NUL;
-     -- 2. file descriptor
-     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( " 0" ) & ASCII.NUL;
-     -- 3. lines
-     --if mode = in_file_t then
-     --   identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(
-     --      isEOF( result )'img ) & ASCII.NUL;
-     --else
-        fileOpenRec.value := fileOpenRec.value & to_unbounded_string( "0" ) & ASCII.NUL;
-     --end if;
-     -- 4. eol flag
-     fileOpenRec.value := fileOpenRec.value & name & ASCII.NUL;
-     -- 5. name
-     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( mode'img ) & ASCII.NUL;
-     -- 6. mode
-        fileOpenRec.value := fileOpenRec.value & to_unbounded_string( "0" ) & ASCII.NUL;
-     -- 7. eof
-     --end if;
-     AssignParameter( ref, fileOpenRec );
-     if mode = in_file_t then
-        DoGet( ref ); -- buffer first character, set eof if none
-     end if;
-     if trace then
-        put_trace( to_string( identifiers( ref.id ).name ) &
-          " is file descriptor" & result'img );
+  if isExecutingCommand then
+     if file_ref.id /= eof_t then
+        begin
+           GetParameterValue( file_ref, fileInfo );
+           if metaLabelOk( subprogramId, fileInfo ) then
+              if trace then
+                 put_trace( "Input from file descriptor" & to_string(
+                    stringField( file_ref, fd_field ) ) );
+              end if;
+              if stringField(file_ref, eof_field ) = "1" then
+                 err( +"end of file" );
+                 return;
+              end if;
+              if file_kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
+                 DoGet( file_ref );
+                 replaceField( file_ref, doget_field, boolean'image( false ) );
+              end if;
+              loop
+                 GetParameterValue( file_ref, fileInfo );
+                 ch := Element( fileInfo.value, 1 );
+                 if stringField(file_ref, eof_field ) = "1" then
+                    exit;
+                 end if;
+                 DoGet( file_ref );
+                 exit when ch = ASCII.LF or error_found or wasSIGINT or wasSIGTERM;
+                 result.value := result.value & ch;
+              end loop;
+              result.metaLabel := identifiers( file_ref.id ).store.metaLabel;
+           end if;
+        exception when msg : others =>
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while looking up the file mode" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+          );
+       end;
+     else
+        if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
+           pegasoft.user_io.getline.getLine( result.value );
+           result.metaLabel := identifiers( current_input_t ).store.metaLabel;
+           if wasSIGINT or wasSIGTERM then
+              new_line;  -- user didn't press enter
+              -- wasSIGINT will be cleared later
+           end if;
+        end if;
      end if;
   end if;
-end DoFileOpen;
+end ParseGetLine;
 
-procedure DoSocketOpen( file_ref : reference; name : unbounded_string ) is
-  result : aSocketFD;
-  --flags  : anOpenFlag;
-  host   : unbounded_string;
-  port   : integer;
-  pos    : natural;
-  fileInfo : storage;
-begin
-  pos := index( name, ":" );
-  if pos = 0 then
-     host := name;
-     port := 80;
-  else
-     begin
-       host := to_unbounded_string( slice( name, 1, pos-1 ) );
-     exception when others =>
-       err( +"unable to interpret TCP/IP host" );
-     end;
-     begin
-       port := integer'value( " " & slice( name, pos+1, length( name ) ) );
-     exception when others =>
-       err( +"unable to interpret TCP/IP port" );
-     end;
-     if port = 19 or port = 25 or port > 32767 then
-        err( +"access to this TCP/IP port is prohibited" );
-     end if;
-  end if;
-  if error_found then
-     return;
-  end if;
-  result := openSocket( host, port );
-  if result < 0 then
-     err( pl( "Unable to socket: " & OSerror( C_errno ) ) );
-  elsif not error_found then
-     -- construct the file variable's value, a series of nul delimited fields
-     fileInfo.value := to_unbounded_string( " " & ASCII.NUL );
-     -- 1. character buffer
-     fileInfo.value := fileInfo.value & to_unbounded_string( result'img ) & ASCII.NUL;
-     -- 2. file descriptor
-     fileInfo.value := fileInfo.value & to_unbounded_string( " 0" ) & ASCII.NUL;
-     -- 3. lines
-     --if mode = in_file_t then
-     --   identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(
-     --      isEOF( result )'img ) & ASCII.NUL;
-     --else
-        fileInfo.value := fileInfo.value & to_unbounded_string( "0" ) & ASCII.NUL;
-     --end if;
-     -- 4. eol flag
-     fileInfo.value := fileInfo.value & name & ASCII.NUL;
-     -- 5. name
-        fileInfo.value := fileInfo.value & to_unbounded_string( "1" ) & ASCII.NUL;
-     --end if;
-     -- 6. doGet flag
-     fileInfo.value := fileInfo.value & to_unbounded_string( "0" ) & ASCII.NUL;
-     --end if;
-     -- 7. eof
-     AssignParameter( file_ref, fileInfo );
 
-     -- a socket cannot do an initial "DoGet" because we don't know if the user
-     -- will be reading or writing first.  DoGet could cause a hang as the server
-     -- is waiting for an instruction and the script is waiting for a response
-     -- from the server.  As a result, we use a "DoGet" flag.  If DoGet is true,
-     -- eof_field and ch_field are not valid until an initial DoGet is done.
-     if trace then
-        put_trace( to_string( identifiers( file_ref.id ).name ) &
-          " is file descriptor" & result'img );
-     end if;
-  end if;
-end DoSocketOpen;
+-- TODO: "DO" procedures should be moved to parser_aux.
+
+
 
 procedure ParseOpen( create : boolean := false ) is
   -- Syntax: open( closed-file, mode, name );
@@ -735,10 +678,13 @@ procedure ParseOpen( create : boolean := false ) is
   -- Source: Ada.Text_IO.Create
   file_ref : reference;
   mode : identifier;
-  name : unbounded_string;
+  fileName : storage;
+  -- name : unbounded_string;
+  -- fileMetaLabel : metaLabelID;
   kind : identifier;
   expr     : storage;
   exprType : identifier;
+  subprogramId :  identifier := open_t;
 begin
   if create then
      if rshOpt then
@@ -762,13 +708,16 @@ begin
      end if;
      -- the name is optional, default to a temp file name
      if token = symbol_t and identifiers( token ).store.value = ")" then
-        makeTempFile( name );
+        makeTempFile( fileName.value );
+        fileName.metaLabel := sparMetaLabel;
      else
         expectParameterComma;
         ParseExpression( expr, exprType );
         if uniTypesOk( exprType, uni_string_t ) then
-           name := expr.value;
-           if length( name ) = 0 and then not syntax_check then
+           fileName := expr;
+           -- name := expr.value;
+           --fileMetaLabel := expr.metaLabel;
+           if length( fileName.value ) = 0 and then not syntax_check then
               err( +"pathname should not be null" );
            end if;
         end if;
@@ -802,8 +751,10 @@ begin
            end if;
            ParseExpression( expr, exprType );
            if uniTypesOk( exprType, uni_string_t ) then
-              name := expr.value;
-              if length( name ) = 0 and then not syntax_check then
+              fileName := expr;
+              --name := expr.value;
+              --fileMetaLabel := expr.metaLabel;
+              if length( fileName.value ) = 0 and then not syntax_check then
                  err( +"hostname should not be null" );
               end if;
               expect( symbol_t, ")" );
@@ -811,8 +762,10 @@ begin
         else
            ParseExpression( expr, exprType );
            if uniTypesOk( exprType, uni_string_t ) then
-              name := expr.value;
-              if length( name ) = 0 and then not syntax_check then
+              fileName := expr;
+              --name := expr.value;
+              --fileMetaLabel := expr.metaLabel;
+              if length( fileName.value ) = 0 and then not syntax_check then
                  err( +"pathname should not be null" );
               end if;
               expect( symbol_t, ")" );
@@ -822,10 +775,23 @@ begin
   end if; -- is open
   -- do it
   if isExecutingCommand then -- should use umask for permissions
-     if kind = file_type_t then
-        DoFileOpen( file_ref, mode, create, to_string( name ) );
-     else
-        DoSocketOpen( file_ref, name );
+     if metaLabelOk( subprogramId, fileName ) then
+        begin
+           if kind = file_type_t then
+              DoFileOpen( file_ref, mode, create, to_string( fileName.value ), fileName.metaLabel );
+           else
+              DoSocketOpen( file_ref, fileName.value, fileName.metaLabel );
+           end if;
+        exception when msg : others =>
+           err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while opening the file" ),
+                subject => subprogramId,
+                reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+           );
+        end;
      end if;
   end if;
 end ParseOpen;
@@ -836,13 +802,16 @@ procedure ParseReset is
   file_ref: reference;
   mode    : identifier := eof_t;
   name    : unbounded_string;
+  fileMetaLabel : metaLabelID;
   modestr : unbounded_string;
   fd      : aFileDescriptor;
   closeResult : int;
+  theFileRec : storage;
+  subprogramId :  identifier := reset_t;
 begin
-  expect( reset_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFile( reset_t, file_ref );
+  ParseOpenFile( subprogramId, file_ref );
   if token = symbol_t and identifiers( token ).store.value = "," then
      getNextToken;
      if baseTypesOk( identifiers( token ).kind, file_mode_t ) then
@@ -855,28 +824,43 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-     name := stringField( file_ref, name_field );
-     if mode = eof_t then
-        modestr := stringField( file_ref, mode_field );
-        if to_string( modestr ) = in_file_t'img then
-           mode := in_file_t;
-        elsif to_string( modestr ) = out_file_t'img then
-           mode := out_file_t;
-        elsif to_string( modestr ) = append_file_t'img then
-           mode := append_file_t;
-        else
-           err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode " &
-             to_string( modestr ) ) );
-        end if;
-     end if;
+     GetParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        begin
+           fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+           name := stringField( file_ref, name_field );
+           fileMetaLabel := theFileRec.metaLabel;
+           if mode = eof_t then
+              modestr := stringField( file_ref, mode_field );
+              if to_string( modestr ) = in_file_t'img then
+                 mode := in_file_t;
+              elsif to_string( modestr ) = out_file_t'img then
+                 mode := out_file_t;
+              elsif to_string( modestr ) = append_file_t'img then
+                 mode := append_file_t;
+              else
+                 err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode " &
+                      to_string( modestr ) ) );
+              end if;
+           end if;
 <<retry>> closeResult := close( fd );
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry;
-        end if;
-     end if;
-     DoFileOpen( file_ref, mode, false, to_string( name ) );
+           if closeResult < 0 then
+              if C_errno = EINTR then
+                 goto retry;
+              end if;
+           end if;
+           DoFileOpen( file_ref, mode, false, to_string( name ), fileMetaLabel );
+
+        exception when msg : others =>
+           err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while resetting the file" ),
+                subject => subprogramId,
+                reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+        );
+     end;
+   end if;
   end if;
 end ParseReset;
 
@@ -886,32 +870,48 @@ procedure ParseClose is
   file_ref : reference;
   fd   : aFileDescriptor;
   kind : identifier;
+  theFileRec : storage;
   closeResult : int;
+  subprogramId :  identifier := close_t;
 begin
-  expect( close_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFileOrSocket( close_t, file_ref, kind );
+  ParseOpenFileOrSocket( subprogramId, file_ref, kind );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-     if fd = currentStandardInput then
-        err( +"this file is the current input file" );
-     elsif fd = currentStandardInput then
-        err( +"this file is the current output file" );
-     elsif fd = currentStandardInput then
-        err( +"this file is the current error file" );
-     else
+     getParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        begin
+           fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+           if fd = currentStandardInput then
+              err( +"this file is the current input file" );
+           elsif fd = currentStandardInput then
+              err( +"this file is the current output file" );
+           elsif fd = currentStandardInput then
+              err( +"this file is the current error file" );
+           else
 <<retry>>
-        closeResult := close( fd );
-        if closeResult < 0 then
-           if C_errno = EINTR then
-              goto retry;
+              closeResult := close( fd );
+              if closeResult < 0 then
+                 if C_errno = EINTR then
+                    goto retry;
+                 end if;
+              end if;
+              if trace then
+                 put_trace( "Closed file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
+              end if;
+              identifiers( file_ref.id ).store.value := null_unbounded_string;
            end if;
-        end if;
-        if trace then
-           put_trace( "Closed file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
-        end if;
-        identifiers( file_ref.id ).store.value := null_unbounded_string;
+        exception when msg : others =>
+           err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while closing the file" ),
+                subject => subprogramId,
+                reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+           );
+        end;
      end if;
   end if;
 end ParseClose;
@@ -924,38 +924,54 @@ procedure ParseDelete is
   fd   : aFileDescriptor;
   result : integer;
   closeResult : int;
+  theFileRec : storage;
+  subprogramId :  identifier := delete_t;
 begin
-  expect( delete_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFile( delete_t, file_ref );
+  ParseOpenFile( subprogramId, file_ref );
   expect( symbol_t, ")" );
   if rshOpt then
      err( +"delete is not allowed in a " & em( "restricted shell" ) );
   end if;
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-     if fd = currentStandardInput then
-        err( +"this file is the current input file" );
-     elsif fd = currentStandardInput then
-        err( +"this file is the current output file" );
-     elsif fd = currentStandardInput then
-        err( +"this file is the current error file" );
-     else
-        name := stringField( file_ref, name_field );
+     GetParameterValue( file_ref, theFileRec );
+     if metaLabelOk( subprogramId, theFileRec ) then
+        begin
+          fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+          if fd = currentStandardInput then
+             err( +"this file is the current input file" );
+          elsif fd = currentStandardInput then
+             err( +"this file is the current output file" );
+          elsif fd = currentStandardInput then
+             err( +"this file is the current error file" );
+          else
+             name := stringField( file_ref, name_field );
 <<retry>> closeResult := close( fd );
-        if closeResult < 0 then
-           if C_errno = EINTR then
-              goto retry;
-           end if;
-        end if;
-        identifiers( file_ref.id ).store.value := null_unbounded_string;
-        result := integer( unlink( to_string( name ) & ASCII.NUL ) );
-        if result /= 0 then
-           err( pl( "unable to delete file: " & OSerror( C_errno ) ) );
-        end if;
-        if trace then
-           put_trace( "delete file " & to_string( name ) );
-        end if;
+             if closeResult < 0 then
+                if C_errno = EINTR then
+                   goto retry;
+                end if;
+             end if;
+             identifiers( file_ref.id ).store.value := null_unbounded_string;
+             result := integer( unlink( to_string( name ) & ASCII.NUL ) );
+             if result /= 0 then
+                err( pl( "unable to delete file: " & OSerror( C_errno ) ) );
+             end if;
+             if trace then
+                put_trace( "delete file " & to_string( name ) );
+             end if;
+          end if;
+        exception when msg : others =>
+           err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while deleting the file" ),
+                subject => subprogramId,
+                reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+           );
+        end;
      end if;
   end if;
 end ParseDelete;
@@ -964,68 +980,79 @@ procedure ParseSkipLine is
   -- Syntax: skip_line [ (open-file) ]
   -- Source: Ada.Text_IO.Skip_Line
   file_ref : reference;
-  --fd     : aFileDescriptor;
   ch     : character;
   result : size_t;
   kind   : identifier;
   str    : unbounded_string;
+  theFileRec : storage;
+  subprogramId :  identifier := skip_line_t;
 begin
   file_ref.id := eof_t;
-  expect( skip_line_t );
-  --fd := stdin;
+  expect( subprogramId );
   if token = symbol_t and then identifiers( Token ).store.value = "(" then
       getNextToken;
-      ParseOpenFileOrSocket( skip_line_t, file_ref, kind );
+      ParseOpenFileOrSocket( subprogramId, file_ref, kind );
       expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     --if file /= eof_t then
-     --   fd := aFileDescriptor'value( to_string( stringField( file, fd_field ) ) );
-     --end if;
-
----
-     if trace then
-        put_trace( "Input from file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
-     end if;
-     if file_ref.id /= eof_t then
-        if kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
-           DoGet( file_ref );
-           replaceField( file_ref, doget_field, "0" );
+     begin
+        if trace then
+           put_trace( "Input from file descriptor" & to_string( stringField( file_ref, fd_field ) ) );
         end if;
-       loop
-         ch := Element( identifiers( file_ref.id ).store.value, 1 );
-         if stringField(file_ref, eof_field ) = "1" then
-             err( +"end of file" );
-             exit;
-         end if;
-         DoGet( file_ref );
-         exit when ch = ASCII.LF or error_found;
-         str := str & ch;
-       end loop;
-    else
-      -- stdin (I don't like this)
-     loop
-        readchar( result, stdin, ch, 1 );
- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
-        if result < 0 or result = size_t'last then
-           if C_errno /= EAGAIN and C_errno /= EINTR then
-              err( pl( "unable to read file:" & OSerror( C_errno ) ) );
-              exit;
+        if file_ref.id /= eof_t then
+           getParameterValue( file_ref, theFileRec );
+           if metaLabelOk( subprogramId, theFileRec ) then
+              if kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
+                 DoGet( file_ref );
+                 replaceField( file_ref, doget_field, "0" );
+              end if;
+              loop
+                 ch := Element( identifiers( file_ref.id ).store.value, 1 );
+                 if stringField(file_ref, eof_field ) = "1" then
+                    err( +"end of file" );
+                    exit;
+                 end if;
+                 DoGet( file_ref );
+                 exit when ch = ASCII.LF or error_found;
+                 str := str & ch;
+              end loop;
            end if;
-        elsif result = 0 then
-           err( +"skipped past the end of the file" );
-           exit;
         else
-           if ch = ASCII.LF then
-              exit;
+           -- stdin (I don't like this)
+           if metaLabelOk( subprogramId, identifiers( standard_input_t ).store.all ) then
+              loop
+                 readchar( result, stdin, ch, 1 );
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
+                 if result < 0 or result = size_t'last then
+                    if C_errno /= EAGAIN and C_errno /= EINTR then
+                       err( pl( "unable to read file:" & OSerror( C_errno ) ) );
+                       exit;
+                    end if;
+                 elsif result = 0 then
+                    err( +"skipped past the end of the file" );
+                    exit;
+                 else
+                    if ch = ASCII.LF then
+                       exit;
+                    end if;
+                 end if;
+                 str := str & ch;
+              end loop;
+           end if;
+           if trace then
+              Put_Trace( "Skipped '" & to_string( str ) & "'" );
            end if;
         end if;
-        str := str & ch;
-      end loop;
-    end if;
-    if trace then
-       Put_Trace( "Skipped '" & to_string( str ) & "'" );
-    end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while skipping lines" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+        );
+     end;
   end if;
 end ParseSkipLine;
 
@@ -1041,13 +1068,15 @@ procedure ParseGet is
   id_ref    : reference;
   result    : size_t;
   fileInfo  : storage;
+  theFileRec: storage;
+  subprogramId :  identifier := get_t;
 begin
   file_ref.id := eof_t;
-  expect( get_t );
+  expect( subprogramId );
   fd := stdin;
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
-     ParseOpenFileOrSocket( get_t, file_ref, kind );
+     ParseOpenFileOrSocket( subprogramId, file_ref, kind );
      expectParameterComma;
   else
      file_ref.id := standard_input_t;
@@ -1057,48 +1086,66 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if trace then
-        put_trace( "Using file descriptor " & to_string( stringField( file_ref, fd_field ) ) );
-     end if;
-     if file_ref.id /= eof_t then
-        GetParameterValue( file_ref, fileInfo );
-        if kind = socket_type_t and then stringField( fileInfo.value, recSep, doget_field ) = "1" then
-           -- First get must update the 1 char look-ahead in the file_info
-           DoGet( file_ref );
-           GetParameterValue( file_ref, fileInfo );
-           replaceField( fileInfo.value, recSep, doget_field, boolean'image(false));
+     begin
+        if trace then
+           put_trace( "Using file descriptor " & to_string( stringField( file_ref, fd_field ) ) );
         end if;
-        if stringField( fileInfo.value, recSep, eof_field ) = "1" then
-           err( +"end of file" );
-        else
-           ch := Element( fileInfo.value, 1 );
-           AssignParameter( id_ref, storage'( to_unbounded_string( "" & ch ), noMetaLabel ) );
-           AssignParameter( file_ref, fileInfo );
-           DoGet( file_ref );
-        end if;
-     else
-        fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-   <<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
-         if result < 0 or result = size_t'last then
-              if C_errno = EAGAIN  or C_errno = EINTR then
-                 goto reread;
+        if file_ref.id /= eof_t then
+           getParameterValue( file_ref, theFileRec );
+           if metaLabelOk( subprogramId, theFileRec ) then
+              GetParameterValue( file_ref, fileInfo );
+              if kind = socket_type_t and then stringField( fileInfo.value, recSep, doget_field ) = "1" then
+                 -- First get must update the 1 char look-ahead in the file_info
+                 DoGet( file_ref );
+                 GetParameterValue( file_ref, fileInfo );
+                 replaceField( fileInfo.value, recSep, doget_field, boolean'image(false));
               end if;
-              err( pl( "unable to read file:" & OSerror( C_errno ) ) );
-         elsif result = 0 then
-            err( +"end of file" );
-         else
-            AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLabel ) );
-         end if;
-      end if;
-      if ch = ASCII.LF then -- not stdin (or error)?
-         replaceField( file_ref, line_field,
-            long_integer'image( long_integer'value(
-            to_string( stringField( file_ref, line_field ) ) ) + 1 ) );
-         replaceField( file_ref, eol_field, "1" );
-      else
-         replaceField( file_ref, eol_field, "0" );
-      end if;
+              if stringField( fileInfo.value, recSep, eof_field ) = "1" then
+                 err( +"end of file" );
+              else
+                 ch := Element( fileInfo.value, 1 );
+                 AssignParameter( id_ref, storage'( to_unbounded_string( "" & ch ),
+                    identifiers( file_ref.id ).store.metaLabel  ) );
+                 AssignParameter( file_ref, fileInfo );
+                 DoGet( file_ref );
+              end if;
+           end if;
+        else
+           if metaLabelOk( subprogramId, identifiers( standard_input_t ).store.all ) then
+              fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+   <<reread>>    readchar( result, fd, ch, 1 );
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
+              if result < 0 or result = size_t'last then
+                 if C_errno = EAGAIN  or C_errno = EINTR then
+                    goto reread;
+                 end if;
+                 err( pl( "unable to read file:" & OSerror( C_errno ) ) );
+              elsif result = 0 then
+                 err( +"end of file" );
+              else
+                 AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ),
+                    identifiers( standard_input_t ).store.metaLabel ) );
+              end if;
+              if ch = ASCII.LF then -- not stdin (or error)?
+                 replaceField( file_ref, line_field,
+                    long_integer'image( long_integer'value(
+                    to_string( stringField( file_ref, line_field ) ) ) + 1 ) );
+                 replaceField( file_ref, eol_field, "1" );
+             else
+                 replaceField( file_ref, eol_field, "0" );
+             end if;
+           end if;
+        end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while reading" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+        );
+     end;
   end if;
 end ParseGet;
 
@@ -1114,14 +1161,16 @@ procedure ParsePutLine is
   ch        : character;
   fd        : aFileDescriptor;
   retry     : boolean;
+  theFileRec: storage;
+  subprogramId :  identifier := put_line_t;
 begin
   target_ref.index := 0;
-  expect( put_line_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
      kind := getUniType( token );
      if kind = file_type_t then
-        ParseOpenFile( put_line_t, target_ref );
+        ParseOpenFile( subprogramId, target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
               err( +"This is a in_mode file" );
@@ -1129,7 +1178,7 @@ begin
         end if;
         expectParameterComma;
      elsif kind = socket_type_t then
-        ParseOpenSocket( put_line_t, target_ref );
+        ParseOpenSocket( subprogramId, target_ref );
         expectParameterComma;
      else
         target_ref.id := standard_output_t;
@@ -1146,67 +1195,85 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if target_ref.id = standard_error_t then
-        -- Ada doesn't handle interrupted system calls properly.
-        -- maybe a more elegant way to do this...
-        loop
-          retry := false;
-          begin
-            Put_Line( standard_error, expr.value );
-          exception when msg: device_error =>
-            if exception_message( msg ) = "interrupted system call" then
-               retry := true;
-            else
-               err( pl( exception_message( msg ) ) );
-            end if;
-          end;
-        exit when not retry;
-        end loop;
-     elsif target_ref.id = standard_output_t then
-        -- Ada doesn't handle interrupted system calls properly.
-        -- maybe a more elegant way to do this...
-        loop
-          retry := false;
-          begin
-            Put_Line( expr.value );
-          exception when msg: device_error =>
-            if exception_message( msg ) = "interrupted system call" then
-               retry := true;
-            else
-               err( pl( exception_message( msg ) ) );
-            end if;
-          end;
-        exit when not retry;
-        end loop;
-        last_output := expr;
-        last_output_type := expr_type;
-     else
-        fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
-        for i in 1..length( expr.value ) loop
-            ch := Element( expr.value, i );
-<<rewrite>> writechar( result, fd, ch, 1 );
-            if result < 0 or result = size_t'last then
-               if C_errno = EAGAIN or C_errno = EINTR then
-                  goto rewrite;
-               end if;
-               err( pl( "unable to write: " & OSerror( C_errno ) ) );
-               exit;
-            end if;
-        end loop;
-        ch := ASCII.LF;
-<<rewrite2>>
-        writechar( result, fd, ch, 1 ); -- add a line feed
-        if result < 0 or result = size_t'last then
-           if C_errno = EAGAIN or C_errno = EINTR then
-              goto rewrite2;
+     begin
+        if target_ref.id = standard_error_t then
+           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+              -- Ada doesn't handle interrupted system calls properly.
+              -- maybe a more elegant way to do this...
+              loop
+                retry := false;
+                begin
+                  Put_Line( standard_error, expr.value );
+                exception when msg: device_error =>
+                  if exception_message( msg ) = "interrupted system call" then
+                     retry := true;
+                  else
+                     err( pl( exception_message( msg ) ) );
+                  end if;
+                end;
+                exit when not retry;
+              end loop;
            end if;
-           err( pl( "unable to write: " & OSerror( C_errno ) ) );
-         else
-           replaceField( target_ref, line_field,
-              long_integer'image( long_integer'value(
-                 to_string( stringField( target_ref, line_field ) ) ) + 1 ) );
+        elsif target_ref.id = standard_output_t then
+           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+              -- Ada doesn't handle interrupted system calls properly.
+              -- maybe a more elegant way to do this...
+              loop
+                retry := false;
+                begin
+                  Put_Line( expr.value );
+                exception when msg: device_error =>
+                  if exception_message( msg ) = "interrupted system call" then
+                     retry := true;
+                  else
+                     err( pl( exception_message( msg ) ) );
+                  end if;
+                end;
+                exit when not retry;
+             end loop;
+              last_output := expr;
+              last_output_type := expr_type;
+           end if;
+        else
+           getParameterValue( target_ref, theFileRec );
+           if metaLabelOk( subprogramId, theFileRec, expr ) then
+              fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
+              for i in 1..length( expr.value ) loop
+                  ch := Element( expr.value, i );
+<<rewrite>>       writechar( result, fd, ch, 1 );
+                  if result < 0 or result = size_t'last then
+                     if C_errno = EAGAIN or C_errno = EINTR then
+                        goto rewrite;
+                    end if;
+                    err( pl( "unable to write: " & OSerror( C_errno ) ) );
+                    exit;
+                  end if;
+              end loop;
+              ch := ASCII.LF;
+<<rewrite2>>
+              writechar( result, fd, ch, 1 ); -- add a line feed
+              if result < 0 or result = size_t'last then
+                 if C_errno = EAGAIN or C_errno = EINTR then
+                    goto rewrite2;
+                 end if;
+                 err( pl( "unable to write: " & OSerror( C_errno ) ) );
+              else
+                replaceField( target_ref, line_field,
+                   long_integer'image( long_integer'value(
+                      to_string( stringField( target_ref, line_field ) ) ) + 1 ) );
+              end if;
+           end if;
         end if;
-     end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while writing" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+        );
+    end;
   end if;
 end ParsePutLine;
 
@@ -1218,6 +1285,7 @@ procedure ParseQuestion is
   temp      : unbounded_string;
   uni_type  : identifier;
   retry     : boolean;
+-- There is no subprogram id because question mark is a symbol token
 begin
   expect( symbol_t );
   if onlyAda95 then
@@ -1304,64 +1372,75 @@ begin
      end;
   end if;
   if isExecutingCommand then -- fix this for no output on error!
-     -- this sould be moved to an image function
-     uni_type := getUniType( expr_type );
-     if uni_type = root_enumerated_t then
-        -- In newer versions of GCC Ada, expr_val cannot be used twice.
-        findEnumImage( expr.value, expr_type, temp );
-        expr.value := temp;
-     elsif uni_type = uni_numeric_t then
-        -- For universal numeric, represent it as an integer string if possible
-        -- to make it human-readable.
-        declare
-           val : numericValue; -- := to_numeric( expr_val );
-        begin
-           val := to_numeric( expr.value );
-           -- Within the range of a SparForte integer and no decimal (e.g.
-           -- casting results in the same value?
-           if val >= numericValue( integerOutputType'first+0.9 ) and
-              val <= maxInteger then
-              if val = numericValue'floor( val ) then
-                 expr.value := to_unbounded_string( val );
-              end if;
-           end if;
-        exception when ada.strings.index_error =>
-           -- since this is an expression, this could be something else but
-           -- it is almost always this
-           err( +"numeric variable has no value" );
-        when constraint_error =>
-           err( pl( "constraint_error in question command - value " &
-             to_string( toEscaped( expr.value ) ) & -- KB: 25/03/30 - should be protected
-             " may not be numeric" ) );
-        when others =>
-           err_exception_raised;
-        end;
-     elsif uni_type = root_record_t then
-        err( pl( "full records cannot be printed with ?.  Try env" ) );
-     end if;
-     -- If an just error occurred, don't print anything further.
-     if not error_found then
-        -- Ada doesn't handle interrupted system calls properly.
-        -- maybe a more elegant way to do this...
-        loop
-           retry := false;
+     begin
+        -- this sould be moved to an image function
+        uni_type := getUniType( expr_type );
+        if uni_type = root_enumerated_t then
+           -- In newer versions of GCC Ada, expr_val cannot be used twice.
+           findEnumImage( expr.value, expr_type, temp );
+           expr.value := temp;
+        elsif uni_type = uni_numeric_t then
+           -- For universal numeric, represent it as an integer string if possible
+           -- to make it human-readable.
+           declare
+              val : numericValue; -- := to_numeric( expr_val );
            begin
-             Put_Line( expr.value );
-           exception when msg: device_error =>
-             if exception_message( msg ) = "interrupted system call" then
-                retry := true;
-             else
-                err( pl( exception_message( msg ) ) );
-             end if;
+              val := to_numeric( expr.value );
+              -- Within the range of a SparForte integer and no decimal (e.g.
+              -- casting results in the same value?
+              if val >= numericValue( integerOutputType'first+0.9 ) and
+                 val <= maxInteger then
+                 if val = numericValue'floor( val ) then
+                    expr.value := to_unbounded_string( val );
+                 end if;
+              end if;
+           exception when ada.strings.index_error =>
+              -- since this is an expression, this could be something else but
+              -- it is almost always this
+              err( +"numeric variable has no value" );
+           when constraint_error =>
+              err( pl( "constraint_error in question command - value " &
+                to_string( toEscaped( expr.value ) ) & -- KB: 25/03/30 - should be protected
+                " may not be numeric" ) );
            end;
-        exit when not retry;
-        end loop;
-     end if;
-     last_output := expr;
-     last_output_type := expr_type;
-     replaceField( standard_output_t, line_field,
-        long_integer'image( long_integer'value(
-        to_string( stringField( standard_output_t, line_field ) ) ) + 1 ) );
+        elsif uni_type = root_record_t then
+           err( pl( "full records cannot be printed with ?.  Try env" ) );
+        end if;
+        -- If an just error occurred, don't print anything further.
+        if metaLabelOk( "?", identifiers( standard_output_t ).store.all, expr ) then
+           if not error_found then
+              -- Ada doesn't handle interrupted system calls properly.
+              -- maybe a more elegant way to do this...
+              loop
+                 retry := false;
+                 begin
+                   Put_Line( expr.value );
+                 exception when msg: device_error =>
+                   if exception_message( msg ) = "interrupted system call" then
+                      retry := true;
+                   else
+                      err( pl( exception_message( msg ) ) );
+                   end if;
+                 end;
+              exit when not retry;
+              end loop;
+           end if;
+           last_output := expr;
+           last_output_type := expr_type;
+           replaceField( standard_output_t, line_field,
+              long_integer'image( long_integer'value(
+               to_string( stringField( standard_output_t, line_field ) ) ) + 1 ) );
+        end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while writing" ),
+             subjectNotes => em( "?" ),
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+
+        );
+    end;
   end if;
 end ParseQuestion;
 
@@ -1380,13 +1459,15 @@ procedure ParsePut is
   pic_type  : identifier;
   retry     : boolean;
   temp      : unbounded_string;
+  theFileRec: storage;
+  subprogramId :  identifier := put_t;
 begin
-  expect( put_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
      kind := getUniType( token );
      if kind = file_type_t then
-        ParseOpenFile( put_t, target_ref );
+        ParseOpenFile( subprogramId, target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
               err( +"This is a in_mode file" );
@@ -1394,7 +1475,7 @@ begin
         end if;
         expectParameterComma;
      elsif kind = socket_type_t then
-        ParseOpenSocket( put_t, target_ref );
+        ParseOpenSocket( subprogramId, target_ref );
         expectParameterComma;
      else
         target_ref.id := standard_output_t;
@@ -1434,53 +1515,70 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     if target_ref.id = standard_error_t then
-        -- Ada doesn't handle interrupted system calls properly.
-        -- maybe a more elegant way to do this...
-        loop
-           retry := false;
-           begin
-             Put( standard_error, expr.value );
-           exception when msg: device_error =>
-             if exception_message( msg ) = "interrupted system call" then
-                retry := true;
-             else
-                err( pl( exception_message( msg ) ) );
-             end if;
-           end;
-        exit when not retry;
-        end loop;
-     elsif target_ref.id = standard_output_t then
-        -- Ada doesn't handle interrupted system calls properly.
-        -- maybe a more elegant way to do this...
-        loop
-           retry := false;
-           begin
-             Put( expr.value );
-           exception when msg: device_error =>
-             if exception_message( msg ) = "interrupted system call" then
-                retry := true;
-             else
-                err( pl( exception_message( msg ) ) );
-             end if;
-           end;
-        exit when not retry;
-        end loop;
-        last_output := expr;
-     else
-        fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
-        for i in 1..length( expr.value ) loop
-            ch := Element( expr.value, i );
-            writechar( result, fd, ch, 1 );
-<<rewrite>> if result < 0 or result = size_t'last then
-               if C_errno = EAGAIN or C_errno = EINTR then
-                  goto rewrite;
-               end if;
-               err( pl( "unable to write: " & OSerror( C_errno ) ) );
-               exit;
-            end if;
-        end loop;
-     end if;
+     begin
+        if target_ref.id = standard_error_t then
+           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+              -- Ada doesn't handle interrupted system calls properly.
+              -- maybe a more elegant way to do this...
+              loop
+                 retry := false;
+                 begin
+                   Put( standard_error, expr.value );
+                 exception when msg: device_error =>
+                   if exception_message( msg ) = "interrupted system call" then
+                      retry := true;
+                   else
+                      err( pl( exception_message( msg ) ) );
+                   end if;
+                 end;
+              exit when not retry;
+              end loop;
+           end if;
+        elsif target_ref.id = standard_output_t then
+           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+              -- Ada doesn't handle interrupted system calls properly.
+              -- maybe a more elegant way to do this...
+              loop
+                 retry := false;
+                 begin
+                   Put( expr.value );
+                 exception when msg: device_error =>
+                   if exception_message( msg ) = "interrupted system call" then
+                      retry := true;
+                   else
+                      err( pl( exception_message( msg ) ) );
+                   end if;
+                 end;
+              exit when not retry;
+              end loop;
+              last_output := expr;
+           end if;
+        else
+           getParameterValue( target_ref, theFileRec );
+           if metaLabelOk( subprogramId, theFileRec, expr ) then
+              fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
+              for i in 1..length( expr.value ) loop
+                  ch := Element( expr.value, i );
+                  writechar( result, fd, ch, 1 );
+<<rewrite>>       if result < 0 or result = size_t'last then
+                     if C_errno = EAGAIN or C_errno = EINTR then
+                        goto rewrite;
+                     end if;
+                     err( pl( "unable to write: " & OSerror( C_errno ) ) );
+                     exit;
+                  end if;
+              end loop;
+           end if;
+        end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while writing" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+        );
+    end;
   end if;
 end ParsePut;
 
@@ -1491,69 +1589,123 @@ procedure ParseNewLine is
   kind   : identifier;
   fd     : aFileDescriptor;         -- Linux file descriptor of output file
   ch     : character;
+  theFileRec : storage;
   result : size_t;
+  subprogramId :  identifier := new_line_t;
 begin
-  expect( new_line_t );
+  expect( subprogramId );
   if token = symbol_t and identifiers( token ).store.value = "(" then
      expect( symbol_t, "(" );
-     ParseOpenFileOrSocket( new_line_t, target_ref, kind );
+     ParseOpenFileOrSocket( subprogramId, target_ref, kind );
      expect( symbol_t, ")" );
   else
      target_ref.id := standard_output_t;
   end if;
   if isExecutingCommand then
-     if target_ref.id = standard_error_t then
-        New_Line( standard_error );
-     elsif target_ref.id = standard_output_t then
-        New_Line;
-     else
-        fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
-        ch := ASCII.LF;
-<<rewrite>> writechar( result, fd, ch, 1 );
-        if result < 0 or result = size_t'last then
-           if C_errno = EAGAIN or C_errno = EINTR then
-              goto rewrite;
+     begin
+        if target_ref.id = standard_error_t then
+           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all ) then
+              New_Line( standard_error );
            end if;
-           err( pl( "unable to write: " & OSerror( C_errno ) ) );
+        elsif target_ref.id = standard_output_t then
+           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all ) then
+              New_Line;
+           end if;
+        else
+           getParameterValue( target_ref, theFileRec );
+           if metaLabelOk( subprogramId, theFileRec ) then
+              fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
+              ch := ASCII.LF;
+<<rewrite>>   writechar( result, fd, ch, 1 );
+              if result < 0 or result = size_t'last then
+                 if C_errno = EAGAIN or C_errno = EINTR then
+                    goto rewrite;
+                 end if;
+                 err( pl( "unable to write: " & OSerror( C_errno ) ) );
+              end if;
+           end if;
         end if;
-     end if;
+     exception when msg : others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while writing" ),
+             subject => subprogramId,
+             reason => +"had an internal error because",
+             obstructorNotes => pl( "an unexpected exception " ) &
+                em_value( to_unbounded_string( Exception_Message( msg ) ) )
+        );
+    end;
   end if;
 end ParseNewLine;
 
 procedure ParseSetInput is
   -- Syntax: set_input( open-file )
   -- Source: Ada.Text_IO.Set_Input
-  file_ref: reference;              -- open file to assign output to
-  fd     : aFileDescriptor;         -- Linux file descriptor of output file
-  result : aFileDescriptor := 0;    -- result of dup2
+  inputFile_ref : reference;            -- open file to read input from
+  fd            : aFileDescriptor;      -- Linux file descriptor of input file
+  result        : aFileDescriptor := 0; -- result of dup2
+  theInputFile  : storage;              -- Input file_type value
+  subprogramId  : constant identifier := set_input_t;
 begin
-  expect( set_input_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFile( set_input_t, file_ref );
-  if file_ref.id = standard_output_t then
+  ParseOpenFile( subprogramId, inputFile_ref );
+
+  -- Check for standard files that cannot have input read from them
+  -- A file provided for input must open in a read mode (in_mode)
+  --
+  -- Standard input, output and error are scalar file_type variables.  They
+  -- are declared in this package but their initial values are assigned by
+  -- the parser.  Their values are in the format as other file_type variables.
+  --
+  -- Current input, output and error are an alias for the appropriate file.
+  -- They only contain the identifier of the file to use.
+
+  if inputFile_ref.id = standard_output_t then
      err( em( "standard_output" ) & pl( " cannot be assigned for " ) &
           em( "input" ) );
-  elsif file_ref.id = standard_error_t then
+  elsif inputFile_ref.id = standard_error_t then
      err( em( "standard_error" ) & pl( " cannot be assigned for " ) &
           em( "input" ) );
+  elsif inputFile_ref.id = current_output_t then
+     err( em( "current_output" ) & pl( " cannot be assigned for " ) &
+          em( "input" ) );
+  elsif inputFile_ref.id = current_error_t then
+     err( em( "current_error" ) & pl( " cannot be assigned for " ) &
+          em( "input" ) );
   elsif not syntax_check then
-    if to_string(stringField(file_ref, mode_field)) /= in_file_t'img then
+    if to_string(stringField(inputFile_ref, mode_field)) /= in_file_t'img then
        err( +"not an in_file file" );
     end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-     result := dup2( fd, stdin );
-     if result < 0 then
-        err( pl( "unable to set input: " & OSerror( C_errno ) ) );
-     elsif not error_found then
-        currentStandardInput := fd;
-        identifiers( current_input_t ).store.value :=
-          to_unbounded_string( file_ref.id'img );
-        if trace then
-           put_trace( "input is currently from file descriptor" &
-             currentStandardInput'img );
+     getParameterValue( inputFile_ref, theInputFile );
+     if metaLabelOk( subprogramId, theInputFile ) then
+        -- setting it to itself is a no-op
+        if inputFile_ref.id /= current_input_t then
+           begin
+              fd := aFileDescriptor'value( to_string( stringField( inputFile_ref, fd_field ) ) );
+              result := dup2( fd, stdin );
+              if result < 0 then
+                 err( pl( "unable to set input: " & OSerror( C_errno ) ) );
+              elsif not error_found then
+                 currentStandardInput := fd;
+                 assignRenamedFile( subprogramId, current_input_t, inputFile_ref );
+                 if trace then
+                    put_trace( "input is currently from file descriptor" &
+                       currentStandardInput'img );
+                 end if;
+               end if;
+           exception when msg : others =>
+              err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                    " while writing" ),
+                   subjectNotes => pl( qp( "current input" ) ),
+                   reason => +"had an internal error because",
+                   obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+              );
+           end;
         end if;
      end if;
   end if;
@@ -1562,34 +1714,66 @@ end ParseSetInput;
 procedure ParseSetOutput is
   -- Syntax: set_output( open-file )
   -- Source: Ada.Text_IO.Set_Output
-  file_ref : reference;             -- open file to assign output to
-  fd       : aFileDescriptor;         -- Linux file descriptor of output file
-  result   : aFileDescriptor := 0;    -- result of dup2
+  outputFile_ref : reference;             -- open file to write output to
+  fd             : aFileDescriptor;       -- Linux file descriptor of output file
+  result         : aFileDescriptor := 0;  -- result of dup2
+  theOutputFile  : storage;               -- Output file_type value
+  subprogramId   : constant identifier := set_output_t;
 begin
-  expect( set_output_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFile( set_output_t, file_ref );
-  if file_ref.id = standard_input_t then
+  ParseOpenFile( subprogramId, outputFile_ref );
+
+  -- Check for standard files that cannot have output written to them
+  -- A file provided for output must be open in a write mode
+  --
+  -- Standard input, output and error are scalar file_type variables.  They
+  -- are declared in this package but their initial values are assigned by
+  -- the parser.  They are the same format as other file_type variables.
+  --
+  -- Current input, output and error are an alias for the appropriate file.
+  -- They only contain the identifier of the file to use.
+
+  if outputFile_ref.id = standard_input_t then
      err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
           em( "output" ) );
+  elsif outputFile_ref.id = current_input_t then
+     err( em( "current_input" ) & pl( " cannot be assigned for " ) &
+          em( "output" ) );
   elsif not syntax_check then
-     if to_string(stringField(file_ref.id, mode_field)) = in_file_t'img then
+     if to_string(stringField(outputFile_ref.id, mode_field)) = in_file_t'img then
         err( +"not an out_file or append_file file" );
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref.id, fd_field ) ) );
-     result := dup2( fd, stdout );
-     if result < 0 then
-        err( pl( "unable to set output: " & OSerror( C_errno ) ) );
-     elsif not error_found then
-        currentStandardOutput := fd;
-        identifiers( current_output_t ).store.value :=
-          to_unbounded_string( file_ref.id'img );
-        if trace then
-           put_trace( "output is currently to file descriptor" &
-             currentStandardOutput'img );
+     getParameterValue( outputFile_ref, theOutputFile );
+     if metaLabelOk( subprogramId, theOutputFile ) then
+        -- setting it to itself is a no-op
+        if outputFile_ref.id /= current_output_t then
+           begin
+              fd := aFileDescriptor'value( to_string( stringField( outputFile_ref, fd_field ) ) );
+              result := dup2( fd, stdout );
+              if result < 0 then
+                 err( pl( "unable to set output: " & OSerror( C_errno ) ) );
+              elsif not error_found then
+                 currentStandardOutput := fd;
+                 assignRenamedFile( subprogramId, current_output_t, outputFile_ref );
+                 if trace then
+                    put_trace( "output is currently to file descriptor" &
+                       currentStandardOutput'img );
+                 end if;
+              end if;
+           exception when msg : others =>
+              err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                    " while redirecting" ),
+                   subjectNotes => pl( qp( "current output" ) ),
+                   reason => +"had an internal error because",
+                   obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+              );
+           end;
         end if;
      end if;
   end if;
@@ -1598,34 +1782,66 @@ end ParseSetOutput;
 procedure ParseSetError is
   -- Syntax: set_error( open-file )
   -- Source: Ada.Text_IO.Set_Error
-  file_ref:reference;
-  result : aFileDescriptor := 0;
-  fd     : aFileDescriptor;
+  errorOutputFile_ref : reference;            -- open file to write error output to
+  result              : aFileDescriptor := 0; -- Linux file descriptor of output file
+  fd                  : aFileDescriptor;      -- result of dup2
+  theErrorOutputFile  : storage;              -- Error output file_type value
+  subprogramId : constant identifier := set_error_t;
 begin
-  expect( set_error_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
-  ParseOpenFile( set_error_t, file_ref );
-  if file_ref.id = standard_input_t then
+  ParseOpenFile( subprogramId, errorOutputFile_ref );
+
+  -- Check for standard files that cannot have error output written to them
+  -- A file provided for error output must be open in a write mode
+  --
+  -- Standard input, output and error are scalar file_type variables.  They
+  -- are declared in this package but their initial values are assigned by
+  -- the parser.  They are the same format as other file_type variables.
+  --
+  -- Current input, output and error are an alias for the appropriate file.
+  -- They only contain the identifier of the file to use.
+
+  if errorOutputFile_ref.id = standard_input_t then
      err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
-          em( " standard error" ) );
+          em( "standard error" ) );
+  elsif errorOutputFile_ref.id = current_input_t then
+     err( em( "current_input" ) & pl( " cannot be assigned for " ) &
+          em( "standard error" ) );
   elsif not syntax_check then
-     if to_string(stringField(file_ref, mode_field)) = in_file_t'img then
+     if to_string(stringField(errorOutputFile_ref, mode_field)) = in_file_t'img then
         err( pl( "not an out_file or append_file file" ) );
      end if;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-     result := dup2( fd, stderr );
-     if result < 0 then
-        err( pl( "unable to set error: " & OSerror( C_errno ) ) );
-     elsif not error_found then
-        currentStandardError := fd;
-        identifiers( current_error_t ).store.value :=
-          to_unbounded_string( file_ref.id'img );
-        if trace then
-           put_trace( "error output is currently to file descriptor" &
-             currentStandardError'img );
+     getParameterValue( errorOutputFile_ref, theErrorOutputFile );
+     if metaLabelOk( subprogramId, theErrorOutputFile ) then
+        -- setting it to itself is a no-op
+        if errorOutputFile_ref.id /= current_error_t then
+           begin
+              fd := aFileDescriptor'value( to_string( stringField( errorOutputFile_ref, fd_field ) ) );
+              result := dup2( fd, stderr );
+              if result < 0 then
+                 err( pl( "unable to set error: " & OSerror( C_errno ) ) );
+              elsif not error_found then
+                 currentStandardError := fd;
+                 assignRenamedFile( subprogramId, current_error_t, errorOutputFile_ref );
+                 if trace then
+                    put_trace( "error output is currently to file descriptor" &
+                      currentStandardError'img );
+                 end if;
+              end if;
+           exception when msg : others =>
+              err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                    " while redirecting" ),
+                    subjectNotes => pl( qp( "current error output" ) ),
+                   reason => +"had an internal error because",
+                   obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+              );
+           end;
         end if;
      end if;
   end if;
@@ -1642,16 +1858,18 @@ procedure ParseGetImmediate is
   avail_ref : reference;
   hasAvail  : boolean := false;
   baseType  : identifier;
+  theInputFile : storage;
+  subprogramId :  identifier := get_immediate_t;
 begin
   file_ref.id := eof_t;
-  expect( get_immediate_t );
+  expect( subprogramId );
   fd := stdin;
   expect( symbol_t, "(" );
   kind := identifiers( token ).kind;
   if kind /= new_t then
      baseType := getBaseType( kind );
      if baseType = file_type_t or baseType = socket_type_t then
-        ParseOpenFileOrSocket( get_immediate_t, file_ref, kind );
+        ParseOpenFileOrSocket( subprogramId, file_ref, kind );
         expectParameterComma;
      else
         -- default is standard input
@@ -1668,36 +1886,44 @@ begin
      hasAvail := true;
   end if;
   expect( symbol_t, ")" );
+
   if isExecutingCommand then
-     -- TODO: integration with text_io functions.  Currently, it's ignoring
-     -- TextIO's double-buffer queue.
-     if file_ref.id /= eof_t then
-        if isatty( fd ) /= 0 then
-           if hasAvail then
-              -- TODO: this can echo the keypress because echoing is only
-              -- turned off when it tries to get a key.  So if a user presses
-              -- a key before getKey runs, it will echo because getKey hasn't
-              -- run yet.
-              getKey( ch, nonblock => true );
-              --if wasSIGINT then
-              --   null;
-              --end if;
-              -- when non-blocking, Control-D indicates nothing read
-              AssignParameter( avail_ref, storage'(to_spar_boolean( ch = ASCII.EOT ), noMetaLabel ) );
+     getParameterValue( file_ref, theInputFile );
+     if metaLabelOk( subprogramId, theInputFile ) then
+        begin
+          -- TODO: integration with text_io functions.  Currently, it's ignoring
+          -- TextIO's double-buffer queue.
+          if file_ref.id /= eof_t then
+             if isatty( fd ) /= 0 then
+                if hasAvail then
+                   -- TODO: this can echo the keypress because echoing is only
+                   -- turned off when it tries to get a key.  So if a user presses
+                   -- a key before getKey runs, it will echo because getKey hasn't
+                   -- run yet.
+                   getKey( ch, nonblock => true );
+                   -- when non-blocking, Control-D indicates nothing read
+                   AssignParameter( avail_ref, storage'(to_spar_boolean( ch = ASCII.EOT ), theInputFile.metaLabel ) );
+                 else
+                   getKey( ch );
+                 end if;
+                 AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), theInputFile.metaLabel ) );
+              else
+                 err( +"only implemented for a tty/terminal" );
+              end if;
            else
-              getKey( ch );
-              --if wasSIGINT then
-              --   null;
-              --end if;
+              -- TODO: this is only doing the terminal/tty, not files/sockets.
+              -- This will probably require a C select() to avoid blocking.
+              err( +"get_immediate for files are not yet implemented" );
            end if;
-           AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), noMetaLabel ) );
-        else
-           err( +"only implemented for a tty/terminal" );
-        end if;
-     else
-        -- TODO: this is only doing the terminal/tty, not files/sockets.
-        -- This will probably require a C select() to avoid blocking.
-        err( +"get_immediate for files are not yet implemented" );
+        exception when msg : others =>
+           err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while redirecting" ),
+                 subjectNotes => pl( qp( "current error output" ) ),
+                reason => +"had an internal error because",
+                obstructorNotes => pl( "an unexpected exception " ) &
+                   em_value( to_unbounded_string( Exception_Message( msg ) ) )
+           );
+        end;
      end if;
   end if;
 end ParseGetImmediate;

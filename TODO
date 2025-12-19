@@ -16,7 +16,19 @@ Long term Ongoing Work
   - help command shows help of dependencies
   - versioned packages
 
+- this is still an issue
+  begin meta pci
+    null; -- kludge
+    touch "$s" ;
+    open( f, in_file, s );
+    b := is_open( f );
+    close( f );
+  end meta pci;
+
 - value meta labels project
+
+- text_io
+  - socket tests
 
   - pragma meta_tag and logs, text_io
   - the output length of an assignment trace should probably
@@ -100,6 +112,7 @@ Long term Ongoing Work
 
   - need a syntax better for tagging or retagging arbitary things
   - consistent name of exprType, expr_type, genKind, etc.
+  - err() that takes a ref as a subject, for array position
   - expr_st should probably be exprExpr (what it represents, not
     how it is stored)
   - array bounds logic reversed in one place but not the other in

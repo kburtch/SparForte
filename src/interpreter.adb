@@ -892,6 +892,7 @@ end SPAR_interpretCommands;
 ------------------------------------------------------------------------------
 
 procedure SetStandardVariables is
+  ref : reference;
 begin
 
   -- Standard_Input, Standard_Output and Standard_Error have the
@@ -906,13 +907,14 @@ begin
 
   -- Current_Input, Current_Output and Current_Error are aliases for
   -- another file (by default, Standard_Input/Output/Error ).
+  -- assignRenamedFile in Text_IO handles this.
 
-  identifiers( current_input_t ).store.value :=
-    to_unbounded_string( standard_input_t'img );
-  identifiers( current_output_t ).store.value :=
-    to_unbounded_string( standard_output_t'img );
-  identifiers( current_error_t ).store.value :=
-    to_unbounded_string( standard_error_t'img );
+  ref.id := standard_input_t;
+  assignRenamedFile( eof_t, current_input_t, ref);
+  ref.id := standard_output_t;
+  assignRenamedFile( eof_t, current_output_t, ref);
+  ref.id := standard_error_t;
+  assignRenamedFile( eof_t, current_error_t, ref);
 
 end SetStandardVariables;
 

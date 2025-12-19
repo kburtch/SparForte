@@ -1195,7 +1195,8 @@ begin
                  ": internal error: infinite renaming loop";
            end if;
         end loop;
-        identifiers( new_id ).store := identifiers( deref_id ).sstorage'access;
+        -- identifiers( new_id ).store := identifiers( deref_id ).sstorage'access;
+        identifiers( new_id ).store := identifiers( deref_id ).store;
      end;
 
      -- if the renaming is an array element, the type is the type of the

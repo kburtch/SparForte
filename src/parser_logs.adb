@@ -172,24 +172,33 @@ end getLineNo;
 ------------------------------------------------------------------------------
 
 procedure writeCurrentError( expr : unbounded_string ) is
-  ref       : reference;
   result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
   retry     : boolean;
+  theCurrentErrorFileRec : storage;
 begin
-  -- This is an alias to the variable with the file
-  ref.id := identifier( to_numeric( identifiers(current_error_t).store.value ) );
+  -- This is an alias a text_io file_type record
+
+  -- theFileRec := identifier( to_numeric( identifiers(current_error_t).store.value ) );
+  theCurrentErrorFileRec := identifiers(current_error_t).store.all;
 
   -- Check to see that the file is open
-  if length( identifiers( ref.id ).store.value ) = 0 then
+  if length( theCurrentErrorFileRec.value ) = 0 then
      err( +"log file is not open" );
      return;
   end if;
 
-  -- If current_error is standard-error, use Ada's Text_IO
+  -- Get the file descriptor
 
-  if ref.id = standard_error_t then
+  fd := aFileDescriptor'value( to_string( stringField( theCurrentErrorFileRec.value, recSep, fd_field ) ) );
+
+  -- If current_error is standard-error, use Ada's Text_IO
+  -- TODO: This is probably redundant and should use the same technique as
+  -- a regular file.
+
+  --if ref.id = standard_error_t then
+  if fd = originalStandardError then
      -- Ada doesn't handle interrupted system calls properly.
      -- maybe a more elegant way to do this...
      loop
@@ -209,7 +218,7 @@ begin
   -- If redirected to a file, handle that here.
 
   else
-     fd := aFileDescriptor'value( to_string( stringField( ref, fd_field ) ) );
+     -- id := aFileDescriptor'value( to_string( stringField( ref, fd_field ) ) );
      for i in 1..length( expr ) loop
          ch := Element( expr, i );
 <<logwrite>> writechar( result, fd, ch, 1 );
@@ -221,20 +230,40 @@ begin
             exit;
          end if;
      end loop;
-     ch := ASCII.LF;
+
+     -- Add a end-of-line and, if successful, adjust the line count
+
+     for i in eol_characters'range loop
+        ch := eol_characters(i);
 <<logwrite2>>
-     writechar( result, fd, ch, 1 ); -- add a line feed
-     if result < 0 then
-        if C_errno = EAGAIN or C_errno = EINTR then
-            goto logwrite2;
+        writechar( result, fd, ch, 1 ); -- add a line feed
+        if result < 0 then
+           if C_errno = EAGAIN or C_errno = EINTR then
+              goto logwrite2;
+           end if;
+           err( pl( "unable to write: " & OSerror( C_errno ) ) );
         end if;
-        err( pl( "unable to write: " & OSerror( C_errno ) ) );
-      else
-        replaceField( ref, line_field,
+     end loop;
+     if not error_found then
+        replaceField( identifiers(current_error_t).store.value,
+           recSep,
+           line_field,
            long_integer'image( long_integer'value(
-              to_string( stringField( ref, line_field ) ) ) + 1 ) );
+              to_string( stringField( identifiers(current_error_t).store.value,
+              recSep, line_field ) ) ) + 1 ) );
      end if;
   end if;
+  exception when others =>
+     -- shouldn't normally happen unless the current input/output/error
+     -- points to the wrong value.
+     err( contextNotes => pl( "At " & gnat.source_info.source_location &
+            " while writing to current error using file_type '" ) &
+            em_value( theCurrentErrorFileRec.value ) &
+            pl( "'" ),
+          subjectNotes => subjectInterpreter,
+          reason => +"had an internal error because",
+          obstructorNotes => em( "an unexpected exception was raised" )
+      );
 end writeCurrentError;
 
 

@@ -58,7 +58,7 @@ when invoking these subroutines.</p>
   <a href="#name">s := name( f )</a>              <a href="#new_line">new_line [(f)]</a>      <a href="#open">open( f, m, p )</a>
   <a href="#put">put( [f,] e [, p] )</a>         <a href="#put_line">put_line( [f,] e )</a>  <a href="#reset">reset( f [, m] )</a>
   <a href="#set_error">set_error( f )</a>              <a href="#set_input">set_input( f )</a>      <a href="#set_output">set_output( f )</a>
-  <a href="#skip_line">skip_line( [f] )</a>            <a href="#get_immediate">get_immediate( c [,b] )</a>
+  <a href="#skip_line">skip_line( [f] )</a>            <a href="#get_immediate">get_immediate( [f,] c [,b] )</a>
   <a href="#delete">delete( f )</a>                 <a href="#is_open">is_open( f )</a>        <a href="#mode">mode( f )</a>
 </pre>
         &nbsp;<br>
@@ -122,6 +122,8 @@ out_file<br>
         </div>
         </div>
         </center>
+
+<p><b>Ada</b>: look_ahead is not yet implemented</p>
 
 <p>&nbsp;
 
@@ -414,11 +416,11 @@ out_file<br>
 </tr>
 </table>
 
-<a name="get_immediate"></a><h3>get_immediate( c, [b] )</h3>
+<a name="get_immediate"></a><h3>get_immediate( [f,] c, [b] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Read the first character from a line on standard input and return it as c.  Don't display the character.  Return immediately if there's no data when b is true.</p></td>
+<td><p>Read the first character from a line on standard input or the optional file and return it as c.  Don't display the character.  Return immediately if there's no data when b is true.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">get_immediate( ch );</span></td>
@@ -431,6 +433,13 @@ out_file<br>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
+<tr>
+<td><span>f</span></td>
+<td><span>in</span></td>
+<td><span>file_type</span></td>
+<td><span>standard_input</span></td>
+<td><span>the file to read from (not yet implemented)</span></td>
+</tr>
 <tr>
 <td><span>c</span></td>
 <td><span>out</span></td>
@@ -482,7 +491,7 @@ out_file<br>
 <td><span>f</span></td>
 <td><span>in</span></td>
 <td><span>file_type</span></td>
-<td><span>standard_input</span></td>
+<td><span>current_input</span></td>
 <td><span>the file to read input from</span></td>
 </tr>
 <tr>
@@ -564,7 +573,7 @@ out_file<br>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
 <td><span>f</span></td>
-<td><span>in</span></td>
+<td><span>in out</span></td>
 <td><span>file_type</span></td>
 <td><span>required</span></td>
 <td><span>file variable representing the file to test</span></td>
@@ -579,6 +588,9 @@ out_file<br>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Text_IO.Is_Open</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>SparForte 2.7/3.0: Parameter is now in_out instead of in_mode</p></td>
 </tr>
 </table>
 

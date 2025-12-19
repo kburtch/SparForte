@@ -250,6 +250,240 @@ end openSocket;
 
 
 ------------------------------------------------------------------------------
+-- DO GET
+--
+-- Get the next character from a file or socket.  Save the character
+-- in the ch_field field of the file record.  If there is no next
+-- character, set the eof_field to true.  The caller is assumed to
+-- check that the file is open.  There is no eof_field check.
+--
+--
+-- Reasoning: UNIX/Linux has a terrible way to handle end-of-file:
+-- you have to read one character too many and check to see if no
+-- character was read.  As a result, Text_IO routines must always
+-- be "double-buffered": they must read the character into a buffer,
+-- and then the application must read the character from the buffer
+-- to its final destination.  The end-of-file cannot be checked
+-- without a read, and reading will cause characters to be lost if
+-- they are not double-buffered.  But I didn't design it, did I?
+------------------------------------------------------------------------------
+
+procedure DoGet( ref : reference ) is
+  fd     : aFileDescriptor;    -- file's file descriptor
+  ch     : character := ASCII.NUL; -- a buffer to read the character into
+  -- ASCII.NUL to suppress compiler warning
+  eof    : boolean := false;   -- true if a character was read
+  result : size_t;       -- bytes read by read
+  fileInfo : storage;
+begin
+   GetParameterValue( ref, fileInfo );
+   fd := aFileDescriptor'value( to_string( stringField( fileInfo.value, recSep, fd_field ) ) );
+<<reread>> readchar( result, fd, ch, 1 );
+ -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
+     if result < 0 or result = size_t'last then
+      if C_errno = EAGAIN  or C_errno = EINTR then
+         goto reread;                   -- interrupted? try again
+      end if;                           -- error? report it
+      err( pl( "unable to read file:" & OSerror( C_errno ) ) );
+      return;                           -- and bail out
+   elsif result = 0 then                -- nothing read?
+      eof := true;                      -- then it's the end of file
+   end if;
+   --if ref.id = current_output_t or      -- SHOULD NEVER BE TRUE BUT...
+   -- ref.id = current_input_t or
+   --   ref.id = current_error_t then
+   --   err( pl( Gnat.Source_Info.Source_Location & ": Internal Error: DoGet was given a file alias not a real file" ) );
+   --else
+      if eof then                       -- eof? set eof_field
+         replaceField( fileInfo.value, recSep, eof_field, "1" );
+         replaceField( fileInfo.value, recSep, line_field, -- Ada counts EOF as a line!
+            long_integer'image( long_integer'value(
+            to_string( stringField( fileInfo.value, recSep, line_field ) ) ) + 1 ) );
+      else                              -- else replace the character
+         replace_Element( fileInfo.value, 1, ch ); -- save character in ch_field
+         if ch = ASCII.LF then          -- a line? increment line_field
+            replaceField( fileInfo.value, recSep, line_field,
+               long_integer'image( long_integer'value(
+               to_string( stringField( fileInfo.value, recSep, line_field ) ) ) + 1 ) );
+            replaceField( fileInfo.value, recSep, eol_field, "1" ); -- and set eol_field
+         else
+            replaceField( fileInfo.value, recSep, eol_field, "0" ); -- else not
+         end if;                        -- the end of the line
+      end if;
+   --end if;
+   AssignParameter( ref, fileInfo );
+end DoGet;
+
+
+------------------------------------------------------------------------------
+-- DO INIT FILE VARIABLE FIELDS
+--
+-- Create the fields in a new file variable
+------------------------------------------------------------------------------
+
+procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
+  name : string; mode : identifier  ) is
+begin
+  -- construct the file variable's value, a series of nul delimited fields
+  identifiers( file ).store.value := to_unbounded_string( "." & ASCII.NUL );
+  -- 1. character buffer
+  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      fd'img ) & ASCII.NUL;
+  -- 2. file descriptor
+  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      " 0" ) & ASCII.NUL;
+  -- 3. lines
+  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(      "0" ) & ASCII.NUL;
+  -- 4. eol flag
+  identifiers( file ).store.value := identifiers( file ).store.value & name & ASCII.NUL;
+  -- 5. name
+  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(
+     mode'img ) & ASCII.NUL;
+  -- 6. mode
+  identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string( "0" ) & ASCII.NUL;
+  -- 7. eof
+end DoInitFileVariableFields;
+
+
+------------------------------------------------------------------------------
+-- DO FILE OPEN
+--
+-- Open a file for a variable of type file_type and set the file record's
+-- data fields.
+------------------------------------------------------------------------------
+
+procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
+  name : string; fileMetaLabel : metaLabelID ) is
+  result : aFileDescriptor;
+  flags  : anOpenFlag;
+  fileOpenRec : storage;
+begin
+  if create then
+     flags := O_CREAT;
+  else
+     flags := 0;
+  end if;
+  if mode = in_file_t then
+     result := open( name & ASCII.NUL, flags+O_RDONLY, 8#644# );
+  elsif mode = out_file_t then
+     result := open( name & ASCII.NUL, flags+O_WRONLY+O_TRUNC, 8#644# );
+  elsif mode = append_file_t then
+     result := open( name & ASCII.NUL, flags+O_WRONLY+O_APPEND, 8#644# );
+  else
+     err( pl( Gnat.Source_Info.Source_Location & ": internal error: unexpected file mode" ) );
+  end if;
+  if result < 0 then
+     err( pl( "Unable to open file: " & OSerror( C_errno ) ) );
+  elsif not error_found then
+     -- construct the file variable's value, a series of nul delimited fields
+     fileOpenRec.value := to_unbounded_string( "." & ASCII.NUL );
+     -- 1. character buffer
+     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( result'img ) & ASCII.NUL;
+     -- 2. file descriptor
+     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( " 0" ) & ASCII.NUL;
+     -- 3. lines
+     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( "0" ) & ASCII.NUL;
+     -- 4. eol flag
+     fileOpenRec.value := fileOpenRec.value & name & ASCII.NUL;
+     -- 5. name
+     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( mode'img ) & ASCII.NUL;
+     -- 6. mode
+     fileOpenRec.value := fileOpenRec.value & to_unbounded_string( "0" ) & ASCII.NUL;
+     -- 7. eof
+     --end if;
+     fileOpenRec.metaLabel := fileMetaLabel;
+     AssignParameter( ref, fileOpenRec );
+     if mode = in_file_t then
+        DoGet( ref ); -- buffer first character, set eof if none
+     end if;
+     if trace then
+        put_trace( to_string( identifiers( ref.id ).name ) &
+          " is file descriptor" & result'img );
+     end if;
+  end if;
+end DoFileOpen;
+
+
+------------------------------------------------------------------------------
+-- DO SOCKET OPEN
+--
+-- Open a file for a variable of type file_type and set the file record's
+-- data fields.
+------------------------------------------------------------------------------
+
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaLabel : metaLabelID ) is
+  result : aSocketFD;
+  --flags  : anOpenFlag;
+  host   : unbounded_string;
+  port   : integer;
+  pos    : natural;
+  fileInfo : storage;
+begin
+  pos := index( name, ":" );
+  if pos = 0 then
+     host := name;
+     port := 80;
+  else
+     begin
+       host := to_unbounded_string( slice( name, 1, pos-1 ) );
+     exception when others =>
+       err( +"unable to interpret TCP/IP host" );
+     end;
+     begin
+       port := integer'value( " " & slice( name, pos+1, length( name ) ) );
+     exception when others =>
+       err( +"unable to interpret TCP/IP port" );
+     end;
+     if port = 19 or port = 25 or port > 32767 then
+        err( +"access to this TCP/IP port is prohibited" );
+     end if;
+  end if;
+  if error_found then
+     return;
+  end if;
+  result := openSocket( host, port );
+  if result < 0 then
+     err( pl( "Unable to socket: " & OSerror( C_errno ) ) );
+  elsif not error_found then
+     -- construct the file variable's value, a series of nul delimited fields
+     fileInfo.value := to_unbounded_string( " " & ASCII.NUL );
+     -- 1. character buffer
+     fileInfo.value := fileInfo.value & to_unbounded_string( result'img ) & ASCII.NUL;
+     -- 2. file descriptor
+     fileInfo.value := fileInfo.value & to_unbounded_string( " 0" ) & ASCII.NUL;
+     -- 3. lines
+     --if mode = in_file_t then
+     --   identifiers( file ).store.value := identifiers( file ).store.value & to_unbounded_string(
+     --      isEOF( result )'img ) & ASCII.NUL;
+     --else
+        fileInfo.value := fileInfo.value & to_unbounded_string( "0" ) & ASCII.NUL;
+     --end if;
+     -- 4. eol flag
+     fileInfo.value := fileInfo.value & name & ASCII.NUL;
+     -- 5. name
+        fileInfo.value := fileInfo.value & to_unbounded_string( "1" ) & ASCII.NUL;
+     --end if;
+     -- 6. doGet flag
+     fileInfo.value := fileInfo.value & to_unbounded_string( "0" ) & ASCII.NUL;
+     --end if;
+     -- 7. eof
+     fileInfo.metaLabel := socketMetaLabel;
+     AssignParameter( file_ref, fileInfo );
+
+     -- a socket cannot do an initial "DoGet" because we don't know if the user
+     -- will be reading or writing first.  DoGet could cause a hang as the server
+     -- is waiting for an instruction and the script is waiting for a response
+     -- from the server.  As a result, we use a "DoGet" flag.  If DoGet is true,
+     -- eof_field and ch_field are not valid until an initial DoGet is done.
+     if trace then
+        put_trace( to_string( identifiers( file_ref.id ).name ) &
+          " is file descriptor" & result'img );
+     end if;
+  end if;
+end DoSocketOpen;
+
+
+
+
+------------------------------------------------------------------------------
 --  PROCESS TEMPLATE
 --
 -- Read a template and process embedded scripts.  This procedure is expected

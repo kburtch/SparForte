@@ -81,3 +81,17 @@ CHANGES SINCE 2.6.3
 
 38. Fix: where possible stats package subprograms no longer have an array empty error with arrays of one element.
 
+39. Fix: missing parameter in get_immediate added to documentation.
+
+40. Fix: Most Text_IO subprograms tested to support arrays of files.  is_open is now an in_out mode parameter for this reason.
+
+41. Fix: current_input, current_output and current_error support renamings and arrays elements.
+
+42. Fix: initialization of renamings no longer point to a scalar value but to a scalar or array element.  (Probably overridden by higher level functions but should be correct here.)
+
+43. Fix: when logging to standard error, the logs package uses the end-of-line for your operating system, rather than a line feed.
+
+44. Fix: get_line reads from current input by default not standard input.
+
+45. Fix: renamings working with out and in out parameters.
+

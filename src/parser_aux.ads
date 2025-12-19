@@ -34,6 +34,17 @@ package parser_aux is
 
 recSep : constant character := ASCII.NUL;  -- record field separator char
 
+-- sockets and files identifier fields
+
+ch_field    : constant natural := 1;
+fd_field    : constant natural := 2;
+line_field  : constant natural := 3;
+eol_field   : constant natural := 4;
+name_field  : constant natural := 5;
+mode_field  : constant natural := 6; -- files only
+doget_field : constant natural := 6; -- sockets only
+eof_field   : constant natural := 7;
+
 procedure makeTempFile( s : out unbounded_string );
 -- create a unique temporary filename
 
@@ -55,24 +66,32 @@ procedure replaceField( r : reference; f : natural; field : string );
 function openSocket( serverName : unbounded_string; port : integer ) return ASocketFD;
 -- open a TCP/IP socket
 
--- Parsing Short-cuts
+procedure DoGet( ref : reference );
+-- read a character from a file or socket
 
---procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier );
--- Parse single universal-numeric actual parameter
+procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
+  name : string; mode : identifier  );
+-- Create the fields in a new file variable
 
---procedure ParseSingleStringExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier );
--- Parse single string actual parameter
+procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
+  name : string; fileMetaLabel : metaLabelID );
+-- Open a file for a variable of type file_type and set the file record's
+-- data fields.
 
---procedure ParseSingleUniStringExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier );
--- Parse single universal string actual parameter
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaLabel : metaLabelID );
+-- Open a network socket with the name and port specified in name (port in :n
+-- format).  The default port is port 80 (usually HTTP).  Update the socket_type
+-- variable referenced by ref to reflect the open file.
+
+
+-- Template Support
 
 procedure processTemplate;
 -- Read a template and process embedded scripts.  This procedure is expected
 -- to be invoked after the main script has run.
 -- Exceptions: STATUS_ERROR, NAME_ERROR, MODE_ERROR, etc.
+
+-- User Exit Support
 
 procedure DoQuit;
 -- quit the shell

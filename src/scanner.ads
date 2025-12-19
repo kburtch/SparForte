@@ -111,6 +111,19 @@ function Length( word : aGlobShellWord) return natural;
 
 
 ------------------------------------------------------------------------------
+-- Hosted identifiers
+--
+-- Identifiers declared here by initialized elsewhere, to make them globally
+-- accessible.  May indicate a need to restructure the project packages.
+------------------------------------------------------------------------------
+
+-- Initialized in parser text_io
+
+in_file_t  : identifier;  -- file_mode value 'in_file'
+out_file_t : identifier;  -- file_mode value 'out_file'
+append_file_t : identifier; -- file_mode value 'append_file'
+
+------------------------------------------------------------------------------
 -- Predefined identifiers
 --
 -- keywords, predefined types, virtual machine instructions and other global

@@ -31,7 +31,8 @@ with
     message_strings,
     value_conversion,
     scanner.communications,
-    parser_params;
+    parser_params,
+    parser_tio;
 use
     ada.strings.unbounded,
     pegasoft,
@@ -41,7 +42,8 @@ use
     value_conversion,
     scanner,
     scanner.communications,
-    parser_params;
+    parser_params,
+    parser_tio;
 
 package body parser_templates is
 
@@ -69,16 +71,18 @@ begin
   ParseSingleNumericParameter( templates_set_http_status_t, expr, exprKind );
   baseTypesOK( exprKind, natural_t );
   if isExecutingCommand then
-     if templateHeader.templateHeaderSent then
-        err( +"HTTP header already sent" );
-     else
-        begin
-           templateHeader.status := httpStatusCodes( to_numeric( expr.value ) );
-        exception when constraint_error =>
-           err( pl( "status code is out-of-range" &
-                httpStatusCodes'first'img & " .." &
-                httpStatusCodes'last'img ) );
-        end;
+     if metaLabelOk( templates_set_http_status_t, expr ) then
+        if templateHeader.templateHeaderSent then
+           err( +"HTTP header already sent" );
+        else
+           begin
+              templateHeader.status := httpStatusCodes( to_numeric( expr.value ) );
+           exception when constraint_error =>
+              err( pl( "status code is out-of-range" &
+                   httpStatusCodes'first'img & " .." &
+                   httpStatusCodes'last'img ) );
+           end;
+        end if;
      end if;
   end if;
 end ParseTemplatesSetHTTPStatus;
@@ -94,18 +98,20 @@ begin
   ParseSingleStringParameter( templates_set_http_location_t, expr, exprKind );
   baseTypesOK( exprKind, string_t );
   if isExecutingCommand then
-     if templateHeader.templateHeaderSent then
-        err( +"HTTP header already sent" );
-     elsif length( expr.value ) = 0 then
-        err( +"HTTP location string is empty" );
-     else
-        begin
-           templateHeader.location := expr.value;
-        exception when storage_error =>
-           err( +"out of memory" );
-        when others =>
-          err_exception_raised;
-        end;
+     if metaLabelOk( templates_set_http_location_t, expr ) then
+        if templateHeader.templateHeaderSent then
+           err( +"HTTP header already sent" );
+        elsif length( expr.value ) = 0 then
+           err( +"HTTP location string is empty" );
+        else
+           begin
+              templateHeader.location := expr.value;
+           exception when storage_error =>
+              err( +"out of memory" );
+           when others =>
+             err_exception_raised;
+           end;
+        end if;
      end if;
   end if;
 end ParseTemplatesSetHTTPLocation;
@@ -116,13 +122,15 @@ procedure ParseTemplatesPutTemplateHeader is
 begin
   expect( templates_put_template_header_t );
   if isExecutingCommand then
-     begin
-       putTemplateHeader( templateHeader );
-     exception when constraint_error =>
-       err( +"constraint error - did you use pragma template?" );
-     when others =>
-       err_exception_raised;
-     end;
+     if metaLabelOk( templates_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
+        begin
+          putTemplateHeader( templateHeader );
+        exception when constraint_error =>
+          err( +"constraint error - did you use pragma template?" );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseTemplatesPutTemplateHeader;
 
@@ -134,7 +142,9 @@ begin
   expect( templates_has_put_template_header_t );
   kind := boolean_t;
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel );
+     if metaLabelOk( templates_has_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
+        result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel );
+     end if;
   end if;
 end ParseTemplatesHasPutTemplateHeader;
 

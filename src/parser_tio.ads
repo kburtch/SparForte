@@ -48,15 +48,7 @@ currentStandardOutput : aFileDescriptor; -- as set by Set_Output
 currentStandardError  : aFileDescriptor; -- as set by Set_Error
 
 -- sockets and files identifier fields
-
-ch_field    : constant natural := 1;
-fd_field    : constant natural := 2;
-line_field  : constant natural := 3;
-eol_field   : constant natural := 4;
-name_field  : constant natural := 5;
-mode_field  : constant natural := 6; -- files only
-doget_field : constant natural := 6; -- sockets only
-eof_field   : constant natural := 7;
+-- defined in parser_aux
 
 type decimal_output_type is delta 0.0001 digits 18;
 package decimal_io is new Ada.Text_IO.Editing.Decimal_Output( decimal_output_type );
@@ -67,47 +59,27 @@ use decimal_io;
 -- UTILITIES
 ------------------------------------------------------------------------------
 
-procedure DoGet( ref : reference );
--- in the ch_field field of the file record.  If there is no next
--- character, set the eof_field to true.  The caller is assumed to
--- check that the file is open.  There is no eof_field check.
---
--- Reasoning: UNIX/Linux has a terrible way to handle end-of-file:
--- you have to read one character too many and check to see if no
--- character was read.  As a result, Text_IO routines must always
--- be "double-buffered": they must read the character into a buffer,
--- and then the application must read the character from the buffer
--- to its final destination.  The end-of-file cannot be checked
--- without a read, and reading will cause characters to be lost if
--- they are not double-buffered.  But I didn't design it, did I?
-
-procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
-  name : string; mode : identifier  );
--- Create the fields in a new file_type limited record variable
-
-procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean; name : string );
--- Open a file with the given name, mode and create flag and update the
--- file_type variable referenced by ref to reflect the open file.
-
-procedure DoSocketOpen( file_ref : reference; name : unbounded_string );
--- Open a network socket with the name and port specified in name (port in :n
--- format).  The default port is port 80 (usually HTTP).  Update the socket_type
--- variable referenced by ref to reflect the open file.
+procedure assignRenamedFile( subprogramId : identifier; current_file_id : identifier; canonicalRef :
+  reference );
+-- make current input, output or error an alias to designated file_type reference
 
 procedure ParseOpenFile( subprogram_id : identifier; return_ref : out reference );
 procedure ParseOpenSocket( subprogram_id : identifier; return_ref : out reference );
 procedure ParseOpenFileOrSocket( subprogram_id : identifier; return_ref : out reference; kind : out identifier );
 procedure ParseClosedFile( r : out reference );
-procedure ParseClosedSocket( f : out identifier );
+procedure ParseClosedSocket( r : out reference );
 procedure ParseClosedFileOrSocket( return_ref : out reference; kind : out identifier );
 
 ------------------------------------------------------------------------------
 -- Text IO package identifiers
 ------------------------------------------------------------------------------
 
-in_file_t  : identifier;  -- file_mode value 'in_file'
-out_file_t : identifier;  -- file_mode value 'out_file'
-append_file_t : identifier; -- file_mode value 'append_file'
+-- the file modes are declared in scanner so they are available in
+-- parser aux.
+
+-- in_file_t  : identifier;  -- file_mode value 'in_file'
+-- out_file_t : identifier;  -- file_mode value 'out_file'
+-- append_file_t : identifier; -- file_mode value 'append_file'
 open_t     : identifier;  -- built-in text_io.open
 create_t   : identifier;  -- built-in text_io.create
 close_t    : identifier;  -- built-in text_io.close
@@ -149,7 +121,7 @@ procedure ShutdownTextIO;
 -- ADA 95 TEXT_IO
 ------------------------------------------------------------------------------
 
-procedure ParseIsOpen( b : out identifier );
+procedure ParseIsOpen( result : out storage );
 procedure ParseEndOfFile( result : out storage; kind : out identifier );
 procedure ParseEndOfLine( result : out storage; kind : out identifier );
 procedure ParseLine( result : out storage; kind : out identifier );

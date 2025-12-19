@@ -63,16 +63,16 @@ discard_result : boolean;
 -- Assign value to an out or in out parameter
 -- Does not apply side-effect checks: this assumes you've gotten the
 -- identifier through one of the parse functions in this package.
+-- For a scalar, use store (not sstorage) because of renamings
 ------------------------------------------------------------------------------
 
 pragma inline( AssignParameter );
 procedure AssignParameter( ref : in reference; value_se : storage ) is
 begin
    if not ref.hasIndex then
-      identifiers( ref.id ).sstorage := value_se;
+      identifiers( ref.id ).store.all := value_se;
    else
-      -- assignElement( ref.a_id, ref.index, value ); -- OLDARRAY
-      identifiers( ref.id ).astorage( ref.index ) := value_se; --NEWARRAY
+      identifiers( ref.id ).astorage( ref.index ) := value_se;
    end if;
 exception when storage_error =>
    err( +"internal error: storage error raised in AssignParameter" );
@@ -82,17 +82,17 @@ end AssignParameter;
 ------------------------------------------------------------------------------
 --  GET PARAMETER VALUE
 --
--- return the value of the variable or array indicated by ref
+-- Return the value of the variable or array indicated by ref
+-- For a scalar, use store (not sstorage) because of renamings
 ------------------------------------------------------------------------------
 
 pragma inline( GetParameterValue );
 procedure GetParameterValue( ref : in reference; value_se : out storage ) is
 begin
    if not ref.hasIndex then
-      value_se := identifiers( ref.id ).sstorage;
+      value_se := identifiers( ref.id ).store.all;
    else
-      --value := arrayElement( ref.a_id, ref.index );
-      value_se := identifiers( ref.id ).astorage( ref.index ); -- NEWARRAY
+      value_se := identifiers( ref.id ).astorage( ref.index );
    end if;
 end GetParameterValue;
 

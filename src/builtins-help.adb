@@ -1805,9 +1805,10 @@ begin
      authorKen( e );
      categoryProcedure( e );
      description( e, "Read a character from a current_input without displaying on current_output." );
+     params( e, "f - the file to read from (currently unused)" );
      params( e, "ch - the character read" );
      params( e, "b - true if non-blocking (default true)" );
-     content( e, "get_immediate (ch [, b])" );
+     content( e, "get_immediate ([f,] ch [, b])" );
      seeAlso( e, "doc/pkg_text_io.html" );
      endHelp( e );
   elsif helpTopic = "get_line" then

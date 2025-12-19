@@ -1873,11 +1873,11 @@ begin
 --put_line("C1 - " & identifiers( token ).name ); -- DEBUG
         identifiers( token ).funcCB.all( f, kind );       -- run it
      elsif token = is_open_t then                         -- is_open function
-        ParseIsOpen( t );
-        if isExecutingCommand then
-           f.metaLabel := noMetaLabel;
-           f.value := identifiers( t ).store.value;
-        end if;
+        ParseIsOpen( f );
+        --if isExecutingCommand then
+        --   f.metaLabel := noMetaLabel;
+        --   f.value := identifiers( t ).store.value;
+        --end if;
         kind := boolean_t;
      elsif token = system_meta_level_image_t then         -- Security Level
         -- VALUE META LABELS: this is mainly for debugging labels
