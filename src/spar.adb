@@ -25,6 +25,7 @@ with ada.text_io,
      ada.strings.unbounded,
      ada.command_line,
      world.splashes,
+     world.deps,
      symbol_table,
      compiler,
      scanner.communications,
@@ -39,6 +40,7 @@ use ada.text_io,
     ada.command_line,
     world,
     world.splashes,
+    world.deps,
     symbol_table,
     compiler,
     scanner,
@@ -80,8 +82,9 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte usage" );
-        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--session s][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-BbcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--builddeps][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--session s][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
+        Put_Line( "  -B                  - list build dependencies (SBOM)" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
         Put_Line( "  --color or --colour - enable coloured messages and UTF-8 icons" );
@@ -246,6 +249,11 @@ begin
                for letter in 2..Args'last loop
                    if Args(letter) = 'b' then
                       breakoutOpt := true;
+                   elsif Args(letter) = 'B' then
+                      for i in sparBuildDependencies'range loop
+                          put_line( to_string( sparBuildDependencies( i ) ) );
+                      end loop;
+                      --put_line( "There are" & sparBuildDependencies'length'img & " build dependencies." );
                    elsif Args(letter) = 'c' then
                       syntaxOpt := true;
                    elsif Args(letter) = 'C' then

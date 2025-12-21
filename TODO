@@ -11,11 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- supply chain
-  - checksums / signatures on binaries built
-  - help command shows help of dependencies
-  - versioned packages
-
 - this is still an issue
   begin meta pci
     null; -- kludge
@@ -134,6 +129,7 @@ Long term Ongoing Work
       or written?
     - pragmas to define trust thresholds?
 
+
   - data fields
     General - Asset Name, Asset Type, Purpose, Oragnization
     Data Hosting/Location - Country (determines laws), Type
@@ -206,6 +202,7 @@ Priority Issues (Fix These First)
 - verify that the output from --help and other command line options
   such as unit tests and agile reports and secure the output; if it is
   not, determine how to escape characters
+  - help command shows help of all include files
 - documenting that AdaScript parameters to commands may avoid injection
   attacks (vs. bourne shell) provided concat, etc. are not used.
 - constants can be assigned abstract types...was that intentional or
@@ -637,6 +634,7 @@ Nice to Haves / Missing Functionality
   - should packages support versioning (e.g. Composer/Cargo/NPM).  Should
     the language deal with expected versions with configuration block
     pragmas?  Should I deal with this at all?
+    - good for supply chain concerns
   - package specifications should be renames, not forwards, since they
     can have their qualities modified on export (abstract, limited, constant)
     .. can that work?

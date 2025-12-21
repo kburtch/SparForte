@@ -70,6 +70,13 @@ all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	@echo "==============================================================="
 	@echo
 	@echo "---------------------------------------------------------------"
+	@echo "  Building SparForte SBOM"
+	@echo "    Only if spar binary already exists"
+	@echo "---------------------------------------------------------------"
+	@echo
+	sh build_world_deps.sh
+	@echo
+	@echo "---------------------------------------------------------------"
 	@echo "  Making AdaCGI"
 	@echo "    http://www.dwheeler.com/adacgi"
 	@echo "---------------------------------------------------------------"
@@ -401,6 +408,7 @@ srctar: distclean
 	@echo "1. Download a fresh version from GitLab for best results"
 	@echo "   (Instead of using spar.tgz)"
 	@echo "2. Repack using tar cfvj under a sparforte-x.y-src directory name"
+	@echo "3. Checksums for tar file: sha256sum -b, sha1sum -b, md5sum -b ."
 
 rpm:	all
 
@@ -418,6 +426,7 @@ bintar: c_os.o all
 	@echo "6. Build with aggressive linting and clean up issues"
 	@echo "7. Ensure a tag has been created for GitHub"
 	@echo "8. Build with the release script"
+	@echo "9. Checksums for tar file: sha256sum -b, sha1sum -b, md5sum -b ."
 
 install:
 ifdef RPM_BUILD_ROOT
