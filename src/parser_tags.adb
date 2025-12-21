@@ -99,7 +99,7 @@ begin
   -- What about arrays?
   if identifiers( token ).usage = limitedUsage then
      Parseidentifier( limitedVarId );
-     expr := identifiers( limitedVarId ).sstorage;
+     expr := identifiers( limitedVarId ).store.all;
   else
      ParseExpression( expr, expr_type );
   end if;

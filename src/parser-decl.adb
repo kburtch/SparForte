@@ -2204,9 +2204,6 @@ begin
          identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
          identifiers( id ).kind := type_token;
       else
-        -- identifiers( id ).sstorage := to_unbounded_string( resId );
-        -- identifiers( id ).value := identifiers( id ).sstorage'access;
-        -- identifiers( id ).resource := true;
          ParseRenamesPart( canonicalRef, id, type_token );
          identifiers( id ).genKind := identifiers( type_token ).genKind;
          identifiers( id ).genKind2 := identifiers( type_token ).genKind2;

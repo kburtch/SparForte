@@ -93,5 +93,3 @@ CHANGES SINCE 2.6.3
 
 44. Fix: get_line reads from current input by default not standard input.
 
-45. Fix: renamings working with out and in out parameters.
-

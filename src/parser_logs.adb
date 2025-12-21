@@ -537,11 +537,11 @@ function logMetaLabelOk( subprogramId : identifier; msgExpr : storage ) return b
 begin
    case log_mode is
    when stderr_log =>
-      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, msgExpr );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, msgExpr );
    when file_log =>
       metaLabelCheckOk := metaLabelOk( subprogramId, log_path, msgExpr );
    when echo_log =>
-      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, log_path, msgExpr );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, log_path, msgExpr );
    when others =>
       metaLabelCheckOk := false;
       err(
@@ -560,11 +560,11 @@ function logMetaLabelOk( subprogramId : identifier ) return boolean is
 begin
    case log_mode is
    when stderr_log =>
-      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all );
    when file_log =>
       metaLabelCheckOk := metaLabelOk( subprogramId, log_path );
    when echo_log =>
-      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).sstorage, log_path );
+      metaLabelCheckOk := metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, log_path );
    when others =>
       metaLabelCheckOk := false;
       err(
@@ -590,12 +590,12 @@ function resolveLogMetaLabel return metaLabelID is
 begin
    case log_mode is
    when stderr_log =>
-      newMetaLabel := identifiers( standard_error_t ).sstorage.metaLabel;
+      newMetaLabel := identifiers( standard_error_t ).store.metaLabel;
    when file_log =>
       newMetaLabel := log_path.metaLabel;
    when echo_log =>
       newMetaLabel := resolveEffectiveMetaLabel( uni_string_t,
-        identifiers( standard_error_t ).sstorage,
+        identifiers( standard_error_t ).store.all,
         log_path );
    when others =>
        -- this should not happen

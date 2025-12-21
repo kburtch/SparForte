@@ -1657,7 +1657,7 @@ begin
      if getUniType( identifiers( metaLabel ).kind ) /= meta_t then
         err( +"meta tag expected" );
      end if;
-     if identifiers( var_id ).sstorage.metaLabel /= noMetaLabel then
+     if identifiers( var_id ).store.metaLabel /= noMetaLabel then
         err( +"meta tag already assigned" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
@@ -2492,11 +2492,11 @@ begin
         end if;
      when meta_label =>  -- DATA META LABEL
         -- These are restricted to non-arrays
-        identifiers( var_id ).sstorage.metaLabel := metaLabel;
+        identifiers( var_id ).store.metaLabel := metaLabel;
         if trace then
            put_trace( to_string( identifiers( var_id ).name ) &
               " value has meta labels '" &
-              to_string( identifiers( identifiers( var_id ).sstorage.metaLabel ).name ) & "'" );
+              to_string( identifiers( identifiers( var_id ).store.metaLabel ).name ) & "'" );
         end if;
      when noCommandHash =>
         clearCommandHash;
