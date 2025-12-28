@@ -251,9 +251,16 @@ begin
                       breakoutOpt := true;
                    elsif Args(letter) = 'B' then
                       for i in sparBuildDependencies'range loop
-                          put_line( to_string( sparBuildDependencies( i ) ) );
+                          put( i'img & ": " );
+                          put( "Name: " & to_string( sparBuildDependencies( i ).names ) & ", " );
+                          put( "Version: " & to_string( sparBuildDependencies( i ).version ) & ", " );
+                          put( "Kind: " & to_string( sparBuildDependencies( i ).kind ) & ", " );
+                          put( "Files: " & to_string( sparBuildDependencies( i ).files ) & ", " );
+                          put( "License: " & to_string( sparBuildDependencies( i ).license ) );
+                          new_line;
                       end loop;
-                      --put_line( "There are" & sparBuildDependencies'length'img & " build dependencies." );
+                      put_line( "There are" & sparBuildDependencies'length'img & " build dependencies." );
+                      return;
                    elsif Args(letter) = 'c' then
                       syntaxOpt := true;
                    elsif Args(letter) = 'C' then

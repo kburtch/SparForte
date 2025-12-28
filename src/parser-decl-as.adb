@@ -2606,26 +2606,42 @@ end ParseDeclareBlock;
 
 procedure ParseBeginBlock is
   old_error_found : constant boolean := error_found;
-  newMetaLabel : identifier := eof_t;
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
-  if token = meta_t then
-     expect( meta_t );
-     ParseIdentifier( newMetaLabel );
-     sparMetaLabel := newMetaLabel;
-  end if;
   ParseBlock;
   if token = exception_t then
      ParseExceptionHandler( old_error_found );
   end if;
   expect( end_t );
-  if newMetaLabel /= eof_t then
-     expect( meta_t );
-     expect( newMetaLabel );
-  end if;
   pullBlock;
 end ParseBeginBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE AUTHORIZE BLOCK
+--
+-- Handle a begin [meta id]..end [meta id] block.
+-----------------------------------------------------------------------------
+
+procedure ParseAuthorizeBlock is
+  old_error_found : constant boolean := error_found;
+  newMetaLabel : identifier := eof_t;
+begin
+  pushBlock( newScope => true, newName => "authorize block" );
+  expect( authorize_t );
+  ParseIdentifier( newMetaLabel );
+  sparMetaLabel := newMetaLabel;
+  expect( begin_t );
+  ParseBlock;
+  if token = exception_t then
+     ParseExceptionHandler( old_error_found );
+  end if;
+  expect( end_t );
+  expect( meta_t );
+  expect( newMetaLabel );
+  pullBlock;
+end ParseAuthorizeBlock;
 
 
 ------------------------------------------------------------------------------
@@ -6663,6 +6679,8 @@ begin
      ParseDeclareBlock;
   elsif Token = begin_t then
      ParseBeginBlock;
+  elsif Token = authorize_t then
+     ParseAuthorizeBlock;
   elsif token = word_t then
      resumeScanning( cmdStart );
      ParseShellCommand;
@@ -7083,6 +7101,8 @@ begin
      ParseDeclareBlock;
   elsif Token = begin_t then
      ParseBeginBlock;
+  elsif Token = authorize_t then
+     ParseAuthorizeBlock;
   elsif token = word_t then
      -- discardUnusedIdentifier( token );
      resumeScanning( cmdStart );

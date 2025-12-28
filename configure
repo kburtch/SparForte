@@ -1697,6 +1697,12 @@ cp parser_l10n.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_l10n.adb
 chmod 444 parser_l10n.adb
 
+echo "Updating...world_deps.adb"
+test -f world-deps.ads && chmod 666 world-deps.ads
+cp world-deps.ads.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb world-deps.ads
+chmod 444 world-deps.ads
+
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
 

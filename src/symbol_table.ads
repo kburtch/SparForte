@@ -299,11 +299,12 @@ xor_t      : identifier;
 --  AdaScript-specific keywords
 ------------------------------------------------------------------------------
 
-affirm_t   : identifier;
-copies_t   : identifier;
+affirm_t    : identifier;
+copies_t    : identifier;
 configuration_t : identifier;
-meta_t     : identifier;
-policy_t   : identifier;
+meta_t      : identifier;
+policy_t    : identifier;
+authorize_t : identifier;
 
 ------------------------------------------------------------------------------
 --  Built-in Bourne shell commands
