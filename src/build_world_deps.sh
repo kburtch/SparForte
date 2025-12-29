@@ -33,7 +33,7 @@ type aDependency is record
      license : unbounded_string;
 end record;
 
-sparBuildDependencies : array(1..3) of aDependency := (
+sparBuildDependencies : array( Positive range <> ) of aDependency := (
   aDependency'(
      names   => to_unbounded_string( "AdaCGI" ),
      version => to_unbounded_string( "1.6" ),
@@ -56,6 +56,70 @@ sparBuildDependencies : array(1..3) of aDependency := (
      license => to_unbounded_string( "RSA" )
   )
 HERE
+
+# C Dependencies
+
+LDD_OUTPUT=`ldd spar | sed 's/\t//g'`
+echo "$LDD_OUTPUT" | ( while read LDD_LINE ; do
+  LDD_FILE=`echo "$LDD_LINE" | cut -d' ' -f 1`
+  LDD_PATH=`echo "$LDD_LINE" | cut -d' ' -f 3`
+  DPKG_OUTPUT=`dpkg -S "$LDD_FILE"`
+  if [ -n "$DPKG_OUTPUT" ] ; then
+     FIRST=1
+     echo "$DPKG_OUTPUT" | (while read DPKG_LINE ; do
+        # The dpkg path does not necessarily match the ldd path
+        DPKG_PKGNAME=`echo "$DPKG_LINE" | cut -d':' -f1`
+        DPKG_PATH=`echo "$DPKG_LINE" | cut -d':' -f3`
+
+        # Case eliminates duplicates
+        case "$DPKG_PKGS" in
+        *"$DPKG_PKGNAME"* )
+          ;;
+        *)
+           if [ -n "$FIRST" ] ; then
+              FIRST=
+              DPKG_PKGS="$DPKG_PKGNAME"
+           else
+              DPKG_PKGS="$DPKG_PKGS"" ""$DPKG_PKGNAME"
+           fi
+           # Older apt will show a warning
+           APT_SHOW_OUTPUT=`apt show "$DPKG_PKGNAME" 2>/dev/null`
+           APT_VERSION=`echo "$APT_SHOW_OUTPUT" | grep -F "Version:" | cut -d' ' -f2`
+           APT_LICENSE=`echo "$APT_SHOW_OUTPUT" | grep -F "License:" | cut -d' ' -f2`
+           if [ -z "$APT_VERSION" ] ; then
+              APT_VERSION="unknown"
+           fi
+           if [ -z "$APT_LICENSE" ] ; then
+              APT_LICENSE="unknown"
+           fi
+           ;;
+        esac
+     done # DPKG_LINE
+ cat >> "$DF" <<HERE
+  , aDependency'(
+     names   => to_unbounded_string( "$DPKG_PKGS" ),
+     version => to_unbounded_string( "$APT_VERSION" ),
+     kind    => to_unbounded_string( "C Library" ),
+     files   => to_unbounded_string( "$LDD_PATH" ),
+     license => to_unbounded_string( "N/A" )
+  )
+HERE
+  )
+  else
+cat >> "$DF"  <<HERE
+  , aDependency'(
+     names   => to_unbounded_string( "$LDD_FILE" ),
+     version => to_unbounded_string( "unknown" ),
+     kind    => to_unbounded_string( "C Library" ),
+     files   => to_unbounded_string( "$LDD_PATH" ),
+     license => to_unbounded_string( "unknown" )
+  )
+HERE
+  fi
+done ) # LDD_LINE
+
+
+# Finish
 
 cat >> "$DF" <<HERE
 );
