@@ -3168,7 +3168,7 @@ begin
   declareKeyword( policy_t, "policy" );
 
   declareKeyword( meta_t, "meta" );
-  declareKeyword( meta_t, "authorize" );
+  declareKeyword( authorize_t, "authorize" );
 
   -- This variable is for limiting searches of the symbol table.  Only
   -- keywords below keyword_top, but there may be more keywords above it.

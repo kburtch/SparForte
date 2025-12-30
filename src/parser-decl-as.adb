@@ -2630,6 +2630,7 @@ procedure ParseAuthorizeBlock is
 begin
   pushBlock( newScope => true, newName => "authorize block" );
   expect( authorize_t );
+  expect( meta_t );
   ParseIdentifier( newMetaLabel );
   sparMetaLabel := newMetaLabel;
   expect( begin_t );

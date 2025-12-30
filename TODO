@@ -11,15 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- this is still an issue
-  begin meta pci
-    null; -- kludge
-    touch "$s" ;
-    open( f, in_file, s );
-    b := is_open( f );
-    close( f );
-  end meta pci;
-
 - value meta labels project
   - split metaLabel into units and policy meta labels
 
