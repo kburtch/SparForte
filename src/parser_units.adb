@@ -111,7 +111,7 @@ procedure ParseSimpleConversion( subprogramId : identifier; result : out storage
 begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) * factor ), expr.metaLabel );
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) * factor ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
 exception when others =>
@@ -914,7 +914,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr.value ) - 32.0 ) ), expr.metaLabel );
+          result := storage'( to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr.value ) - 32.0 ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -944,7 +944,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( 9.0 / 5.0 * to_numeric( expr.value ) + 32.0 ), expr.metaLabel );
+          result := storage'( to_unbounded_string( 9.0 / 5.0 * to_numeric( expr.value ) + 32.0 ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -974,7 +974,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) - 273.15 ), expr.metaLabel );
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) - 273.15 ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1004,7 +1004,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) + 273.15 ), expr.metaLabel );
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) + 273.15 ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1255,7 +1255,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value )/1024.0/1024.0 ), expr.metaLabel );
+          result := storage'( to_unbounded_string( to_numeric( expr.value )/1024.0/1024.0 ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1285,7 +1285,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) *1024.0*1024.0 ), expr.metaLabel );
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) *1024.0*1024.0 ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>

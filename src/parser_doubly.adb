@@ -238,7 +238,7 @@ begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ),
-          noMetaLabel );
+          noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseDoublyIsEmpty;
@@ -265,7 +265,7 @@ begin
      begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseDoublyLength;
@@ -973,7 +973,7 @@ begin
        if hasNewOutCursor then
           identifiers( ref.id ).resource := true;
           declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( ref.id ) );
-          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, noMetaLabels ) );
           findResource( resId, theSecondCursor );
        else
           GetParameterValue( ref, secondCursorResourceIdStorage );
@@ -1129,7 +1129,7 @@ begin
      begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaLabel);
+       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseDoublyContains;
@@ -1641,7 +1641,7 @@ begin
      begin
        getParameterValue( cursRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaLabel );
+       result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseDoublyHasElement;
@@ -1699,7 +1699,7 @@ begin
      begin
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel );
+          delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel, noMetaLabels );
        end if;
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
@@ -1711,7 +1711,8 @@ begin
              -- the data meta labels of the result is the first element's
              -- data meta labels.
              if firstElement then
-                result.metaLabel := elementStore.metaLabel;
+                result.unitMetaLabel := elementStore.unitMetaLabel;
+                result.policyMetaLabels := elementStore.policyMetaLabels;
                 firstElement := false;
              end if;
              if metaLabelOk( subprogramId, result, elementStore ) then
@@ -1792,7 +1793,7 @@ begin
        -- default delimiter if none supplied
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := storage'( null_unbounded_string & ASCII.LF, noMetaLabel );
+          delimExpr := storage'( null_unbounded_string & ASCII.LF, noMetaLabel, noMetaLabels );
        end if;
        -- remove final part, if it exists and is defined
        if hasFinal then
@@ -1808,7 +1809,8 @@ begin
        -- generate the list items
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       tempStore.metaLabel := strExpr.metaLabel;
+       tempStore.unitMetaLabel := strExpr.unitMetaLabel;
+       tempStore.policyMetaLabels := strExpr.policyMetaLabels;
        if metaLabelOk( subprogramId, strExpr ) then
           while l >= i loop
              ch := element( strExpr.value, i );
@@ -1819,7 +1821,7 @@ begin
                    Delete( tempStore.value, length( tempStore.value ) - delimLen + 1, length( tempStore.value ) ); -- remove delimiter
                    Doubly_Linked_Storage_Lists.Append( theList.dlslList, tempStore );   -- put string in list
                    tempStore := nullStorage;                             -- reset the running string
-                   tempStore.metaLabel := strExpr.metaLabel;
+                   tempStore.policyMetaLabels := strExpr.policyMetaLabels;
                    delimPos := 0;                                                    -- and the delim posn
                 end if;
              else                                                                       -- not the delim?
@@ -1886,7 +1888,8 @@ begin
         -- width should be positive by this point
         firstPos := 1;
         strLen := length( strExpr.value );
-        tempStore.metaLabel := strExpr.metaLabel;
+        tempStore.unitMetaLabel := strExpr.unitMetaLabel;
+        tempStore.policyMetaLabels := strExpr.policyMetaLabels;
         if metaLabelOK( subprogramId, strExpr ) then
            while firstPos < strLen loop
               lastPos := firstPos + width - 1;

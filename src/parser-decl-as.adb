@@ -75,6 +75,8 @@ use Interfaces.C,
     parser_pen,
     interpreter; -- circular relationship for breakout prompt
 
+use world.metaLabelHashedSet;
+
 with ada.text_io;
 use  ada.text_io;
 
@@ -2632,7 +2634,7 @@ begin
   expect( authorize_t );
   expect( meta_t );
   ParseIdentifier( newMetaLabel );
-  sparMetaLabel := newMetaLabel;
+  sparMetaLabels := metaLabelHashedSet.To_Set( newMetaLabel );
   expect( begin_t );
   ParseBlock;
   if token = exception_t then
@@ -6359,11 +6361,18 @@ begin
               " := """ &
               toSecureData( to_string( ToEscaped( expr.value ) ) ) &
                  """" );
-           if expr.metaLabel /= noMetaLabel then
+           if expr.unitMetaLabel /= noMetaLabel then
               if trace then
                  put_trace( to_string( identifiers( var_id ).name ) &
-                    " value has meta labels '" &
-                    to_string( identifiers( identifiers( var_id ).astorage( arrayIndex ).metaLabel ).name ) & "'" );
+                    " value has unit of measure data meta labels '" &
+                    to_string( identifiers( identifiers( var_id ).astorage( arrayIndex ).unitMetaLabel ).name ) & "'" );
+              end if;
+           end if;
+           if expr.policyMetaLabels /= noMetaLabels then
+              if trace then
+                 put_trace( to_string( identifiers( var_id ).name ) &
+                    " value has policy data meta labels '" &
+                    to_string( image( identifiers( var_id ).astorage( arrayIndex ).policyMetaLabels ) ) & "'" );
               end if;
            end if;
         end if;
@@ -6377,11 +6386,19 @@ begin
               " := """ &
               toSecureData( to_string( ToEscaped( expr.value ) ) ) &
               """" );
-           if expr.metaLabel /= noMetaLabel then
+           if expr.unitMetaLabel /= noMetaLabel then
               if trace then
                  put_trace( to_string( identifiers( var_id ).name ) &
-                    " value has meta labels '" &
-                    to_string( identifiers( identifiers( var_id ).store.metaLabel ).name ) &
+                    " value has unit of measure data meta labels '" &
+                    to_string( identifiers( identifiers( var_id ).store.unitMetaLabel ).name ) &
+                    "'" );
+              end if;
+           end if;
+           if expr.policyMetaLabels /= noMetaLabels then
+              if trace then
+                 put_trace( to_string( identifiers( var_id ).name ) &
+                    " value has policy data meta labels '" &
+                    to_string( image( identifiers( var_id ).store.policyMetaLabels ) ) &
                     "'" );
               end if;
            end if;

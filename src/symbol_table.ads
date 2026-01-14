@@ -589,4 +589,8 @@ err_exception    : declaration;           -- the exception else eof_t for none
 -- err_exception must be a declaration because it can be propagated out of
 -- the exception declaration scope
 
+-- Meta Label Hashed Set utilities
+
+function image( set : metaLabelhashedSet.Set ) return unbounded_string;
+
 end symbol_table;

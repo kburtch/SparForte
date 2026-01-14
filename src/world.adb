@@ -123,6 +123,12 @@ begin
   return left.value = right.value;
 end value_equal;
 
+function metaLabelSetHash( e : metaLabelID ) return ada.containers.hash_type is
+begin
+  return ada.containers.hash_type( e );
+end metaLabelSetHash;
+
+
 ---> IS EXECUTING COMMAND
 --
 -- True if OK to execute a statement that does work.

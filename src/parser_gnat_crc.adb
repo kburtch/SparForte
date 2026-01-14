@@ -72,7 +72,7 @@ begin
        --identifiers( record_ref.id ).value := to_unbounded_string(
        --  numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
        AssignParameter( record_ref,
-          storage'( to_unbounded_string( numericValue( C ) ), sparMetaLabel )
+          storage'( to_unbounded_string( numericValue( C ) ), noMetalabel, sparMetaLabels )
        );
      exception when others =>
        err_exception_raised;
@@ -109,7 +109,7 @@ begin
           Gnat.CRC32.Update( C, to_string( expr.value ) );
           --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
           AssignParameter( crc_ref,
-             storage'( to_unbounded_string( numericValue( C ) ), sparMetaLabel )
+             storage'( to_unbounded_string( numericValue( C ) ), noMetalabel, sparMetaLabels )
           );
         exception when others =>
           err_exception_raised;

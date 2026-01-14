@@ -191,7 +191,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.metaLabel := noMetaLabel;
+     result.unitMetaLabel := noMetaLabel;
+     result.policyMetaLabels := noMetaLabels;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).firstBound ) );
      else
@@ -248,7 +249,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.metaLabel := noMetaLabel;
+     result.unitMetaLabel := noMetaLabel;
+     result.policyMetaLabels := noMetaLabels;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound ) );
      else
@@ -304,7 +306,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.metaLabel := noMetaLabel;
+     result.unitMetaLabel := noMetaLabel;
+     result.policyMetaLabels := noMetaLabels;
      if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound - identifiers( var_id ).firstBound + 1 ) );
      else
@@ -1086,7 +1089,7 @@ begin
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      if metaLabelOk( subprogramId, source_st ) then
        begin
-         DoJsonToArray( target_var_id, source_st.value, noMetaLabel );
+         DoJsonToArray( target_var_id, source_st.value, noMetaLabels );
        exception when constraint_error =>
           err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
                  contextAltText( source_st.value,"decoding the JSON string" ),
@@ -1129,7 +1132,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      DoArrayToJson( jsonString, source_var_id );
-     assignParameter( target_ref, storage'(jsonString , noMetaLabel ) );
+     assignParameter( target_ref, storage'(jsonString , noMetaLabel, noMetaLabels ) );
   end if;
 end ParseArraysToJSON;
 

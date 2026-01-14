@@ -58,8 +58,8 @@ procedure ParseLockLockFile is
   expr_type  : identifier;
   dirExpr    : storage;
   fileExpr   : storage;
-  waitExpr   : storage := storage'( to_unbounded_string( "1.0" ), noMetaLabel );
-  retryExpr  : storage := storage'( to_unbounded_string( natural'last'img ), noMetaLabel );
+  waitExpr   : storage := storage'( to_unbounded_string( "1.0" ), noMetaLabel, noMetaLabels );
+  retryExpr  : storage := storage'( to_unbounded_string( natural'last'img ), noMetaLabel, noMetaLabels );
 begin
   expect( locks_lock_t );
   expect( symbol_t, "(" );

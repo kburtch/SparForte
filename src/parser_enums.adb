@@ -84,7 +84,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      -- first item in an enumerated type is always value 0
-     result := storage'( to_unbounded_string( "0" ), noMetaLabel );
+     result := storage'( to_unbounded_string( "0" ), noMetaLabel, noMetaLabels );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   end if;
@@ -128,7 +128,7 @@ begin
         s : constant string := best'img;
      begin
         --f := to_unbounded_string( s(2..s'last) );
-        result := storage'( to_unbounded_string( s ), noMetaLabel );
+        result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
@@ -163,7 +163,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel );
+           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
         end;
      exception when others =>
         err_exception_raised;
@@ -219,7 +219,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel );
+           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
         end;
      exception when others =>
         err( +"exception thrown" );
@@ -275,7 +275,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel );
+           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
         end;
      exception when others =>
         err( +"exception thrown" );
@@ -324,7 +324,7 @@ begin
         declare
            s : constant string := item'img;
         begin
-           result := storage'( to_unbounded_string( s ), noMetaLabel );
+           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
         exception when others =>
            err( +"exception thrown" );
         end;

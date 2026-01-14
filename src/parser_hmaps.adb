@@ -232,7 +232,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseHashedMapsIsEmpty;
@@ -259,7 +259,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseHashedMapsCapacity;
@@ -371,7 +371,7 @@ begin
           if metaLabelOK( subprogramId, keyExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, nullStorage, theCursor.shmCursor,
                 result );
-             AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
+             AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel, noMetaLabels ) );
           end if;
        -- (m, k, e, p, b )
        when 3 =>
@@ -381,7 +381,7 @@ begin
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
                 theCursor.shmCursor, result );
           end if;
-          AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel ) );
+          AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel, noMetaLabels ) );
        when others =>
           put_line_retry( gnat.source_info.source_location &
              ": internal error: unknown insert version" );
@@ -626,7 +626,7 @@ begin
           to_spar_boolean(
              Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr )
           ),
-          noMetaLabel );
+          noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseHashedMapsContains;
@@ -757,7 +757,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseHashedMapsLength;
@@ -1345,7 +1345,7 @@ begin
      begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseHashedMapsHasElement;
@@ -1383,7 +1383,7 @@ begin
        findResource( to_resource_id( leftMapResId.value ), leftMap );
        getParameterValue( rightMapRef, rightMapResId );
        findResource( to_resource_id( rightMapResId.value ), rightMap );
-       result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaLabel );
+       result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaLabel, noMetaLabels );
      exception when storage_error =>
        err_storage;
      when others =>

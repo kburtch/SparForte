@@ -111,6 +111,37 @@ defaultVolatileExpire : constant time := clock;
 --    end if;
 --end getTinyHashCache;
 
+-----------------------------------------------------------------------------
+-- Meta Label Hashed Sets
+-- defined in world
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+--  IMAGE
+--
+-- Create a cursor and walk the set, returning names of meta labels as a
+-- string.
+-----------------------------------------------------------------------------
+
+function image( set : metaLabelHashedSet.Set ) return unbounded_string is
+   curs         : metaLabelHashedSet.cursor;
+   firstElement: boolean := true;
+   imageStr    : unbounded_string;
+begin
+   curs := metaLabelHashedSet.first( set );
+   while metaLabelHashedSet.has_element( curs ) loop
+         if not firstElement then
+            imageStr := imageStr & to_unbounded_string( ", " );
+         else
+            firstElement := false;
+         end if;
+         imageStr := imageStr & identifiers( metaLabelHashedSet.element( curs ) ).name;
+         metaLabelHashedSet.next( curs );
+    end loop;
+ return imageStr;
+end image;
+
+
 -- Storage Primitives
 --
 -----------------------------------------------------------------------------
@@ -595,7 +626,7 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       sstorage => storage'(To_Unbounded_String( s(eqpos+1..s'last )), identifiers'first ),
+       sstorage => storage'(To_Unbounded_String( s(eqpos+1..s'last )), noMetaLabel, noMetaLabels ),
        astorage => null,
        renaming_of => identifier'first,
        renamed_count => 0,
@@ -698,7 +729,7 @@ begin
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.sstorage := storage'( to_unbounded_string( value ), identifiers'first);
+       sc.sstorage := storage'( to_unbounded_string( value ), noMetaLabel, noMetaLabels);
        sc.class := varClass;
        sc.genKind := identifiers'first;
        sc.genKind2 := identifiers'first;
@@ -742,7 +773,7 @@ begin
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.sstorage := storage'(to_unbounded_string( value ), identifiers'first);
+       sc.sstorage := storage'(to_unbounded_string( value ), noMetaLabel, noMetaLabels);
        sc.class := enumClass;
        sc.genKind := identifiers'first;
        sc.genKind2 := identifiers'first;
@@ -770,7 +801,7 @@ begin
     --else
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
-    identifiers(id).sstorage   := storage'(to_unbounded_string( parameterNumber'img ), identifiers'first );
+    identifiers(id).sstorage   := storage'(to_unbounded_string( parameterNumber'img ), noMetaLabel, noMetaLabels);
     identifiers(id).class    := formalParamClass;
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
@@ -910,7 +941,8 @@ begin
                  contract => null_unbounded_string,
                  sstorage => storage'(
                     value,
-                    identifiers( i ).sstorage.metaLabel
+                    identifiers( i ).sstorage.unitMetaLabel,
+                    identifiers( i ).sstorage.policymetaLabels
                  ),
                  astorage => null,
                  renaming_of => identifier'first,
@@ -1094,7 +1126,7 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       sstorage    => storage'(character'val( exception_status_code ) & default_message, identifiers'first),
+       sstorage    => storage'(character'val( exception_status_code ) & default_message, noMetaLabel, noMetaLabels),
        astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
@@ -1366,7 +1398,7 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       sstorage    => storage'(currentNamespace, identifiers'first),
+       sstorage    => storage'(currentNamespace, noMetaLabel, noMetaLabels ),
        astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
@@ -1506,7 +1538,7 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       sstorage    => storage'(currentNamespace, identifiers'first),             -- the previous namespace
+       sstorage    => storage'(currentNamespace, noMetaLabel, noMetaLabels),             -- the previous namespace
        astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,

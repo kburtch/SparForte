@@ -42,6 +42,8 @@ use
     scanner.communications,
     parser;
 
+use world.metaLabelHashedSet;
+
 package body parser_tags is
 
 ------------------------------------------------------------------------------
@@ -71,7 +73,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.metaLabel /= noMetaLabel ), noMetaLabel );
+     result := storage'( to_spar_boolean( expr.policyMetaLabels /= noMetaLabels ), noMetaLabel, noMetaLabels );
   end if;
 end ParseTagsHasTags;
 
@@ -111,7 +113,7 @@ begin
      err( +"meta tag expected" );
   end if;
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.metaLabel = tagid ), noMetaLabel );
+     result := storage'( to_spar_boolean( expr.policyMetaLabels.contains( tagid ) ), noMetaLabel, noMetaLabels );
   end if;
 end ParseTagsContains;
 
@@ -134,7 +136,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( identifiers( expr.metaLabel ).name, noMetaLabel );
+     result := storage'( image( expr.policyMetaLabels ), noMetaLabel, noMetaLabels );
   end if;
 end ParseTagsGetTagsImage;
 

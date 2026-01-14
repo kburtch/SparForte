@@ -234,7 +234,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_spar_boolean( isValidMemcacheKey( expr.value ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -260,7 +260,7 @@ begin
         cluster_entry.id := cluster_id_value;
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
         result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ),
-           sparMetaLabel );
+           noMetaLabel, sparMetaLabels );
      exception when others =>
         err_exception_raised;
      end;
@@ -631,7 +631,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Get( cluster_entry.cluster, expr.value, result.value );
-              result.metaLabel := sparMetaLabel;
+              result.policyMetaLabels := sparMetaLabels;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -702,7 +702,8 @@ begin
            GetCluster( theCluster, cluster_entry, clusterIndex );
            if clusterIndex /= 0 then
               Stats( cluster_entry.cluster, result.value );
-              result.metaLabel := cluster.metaLabel;
+              result.unitMetaLabel := noMetaLabel;
+              result.policyMetaLabels := cluster.policyMetaLabels;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when others =>
@@ -736,7 +737,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               pegasock.memcache.Version( cluster_entry.cluster, result.value );
-              result.metaLabel := cluster.metaLabel;
+              result.policyMetaLabels := cluster.policyMetaLabels;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -802,7 +803,7 @@ begin
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheDualClusterList.Queue( memcacheDualCluster, cluster_entry );
-        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), sparMetaLabel );
+        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaLabel, sparMetaLabels );
      exception when others =>
         err_exception_raised;
      end;
@@ -1209,7 +1210,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Get( cluster_entry.cluster, expr.value, result.value );
-              result.metaLabel := sparMetaLabel;
+              result.policyMetaLabels := sparMetaLabels;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -1281,7 +1282,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Stats( cluster_entry.cluster, result.value);
-              result.metaLabel := cluster.metaLabel;
+              result.policyMetaLabels := cluster.policyMetaLabels;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when others =>
@@ -1315,7 +1316,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               pegasock.memcache.highread.Version( cluster_entry.cluster, result.value );
-              result.metaLabel := cluster.metaLabel;
+              result.policyMetaLabels := cluster.policyMetaLabels;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>

@@ -107,7 +107,7 @@ begin
      if not identifiers( ref.id ).resource then
         identifiers( ref.id ).resource := true;
         declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
-        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel ) );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, noMetaLabels ) );
      end if;
   end if;
 end ParseTSNewSocketServer;
@@ -209,7 +209,7 @@ begin
      if metaLabelOk( tinyserve_manage_connections_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         manageConnections( server.tinyserve_server, client );
-        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel, noMetaLabels ) );
      end if;
   end if;
 end ParseTSManageConnections;
@@ -231,7 +231,7 @@ begin
         findServer( serverExpr.value, server );
         if server /= null then
            getNextClient( server.tinyserve_server, client );
-           assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel ) );
+           assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel, noMetaLabels ) );
         end if;
      end if;
   end if;
@@ -255,7 +255,7 @@ begin
         if server /= null then
            getListenerSocket( server.tinyserve_server, client );
            assignParameter( clientRef, storage'( to_unbounded_string( client'img ),
-              identifiers( serverRef.id ).store.metaLabel ) );
+              noMetaLabel, identifiers( serverRef.id ).store.policyMetaLabels ) );
         end if;
      end if;
   end if;
@@ -278,7 +278,7 @@ begin
         if server /= null then
            clients := countClients( server.tinyserve_server );
            result := storage'( to_unbounded_string( clients'img ),
-              identifiers( serverRef.id ).store.metaLabel );
+              noMetaLabel, identifiers( serverRef.id ).store.policyMetaLabels );
         end if;
      end if;
   end if;
@@ -291,7 +291,7 @@ begin
   expect( tinyserve_get_fdset_size_t );
   if isExecutingCommand then
      fdsize := getFDSetSize;
-     result := storage'( to_unbounded_string( fdsize'img ), sparMetaLabel );
+     result := storage'( to_unbounded_string( fdsize'img ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseTSGetFDSetSize;
 

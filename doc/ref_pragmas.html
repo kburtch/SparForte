@@ -941,7 +941,9 @@ If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
   <li><b>pragma unchecked_volatile( var [,ttl] )</b> - like volatile, but
 allows the variable to be used in expressions. Side-effects will
-still raise exceptions.</li>
+still raise exceptions.  When a value is updated, the meta labels
+remain unchanged except for JSON arrays or records which
+may overwrite the individual meta labels.</li>
   <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
 SparForte will act like a template processor (like PHP). This pragma is
 the same as pragma template except that the embedded scripts are executed
@@ -954,7 +956,9 @@ time it is referenced. Volatile variable acts like a limited so they are
 not used in an expression.  Otherwise, expressions may have
 "side-effects" as the volatile values can change unexpectedly in the
 middle of a calculation.  If a TTL duration is given, the volatile variable
-will only be imported every TTL seconds.</li>
+will only be imported every TTL seconds.  When a value is updated,
+the meta labels unchanged except for JSON arrays or records which
+may overwrite the individual meta labels.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>

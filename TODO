@@ -13,6 +13,17 @@ Long term Ongoing Work
 
 - value meta labels project
   - split metaLabel into units and policy meta labels
+  * adding tags to a set is probably not "include" but will need a
+    special function to control position in a tree of possibilities
+  - package tags should be updated for unit tags
+  - vectors policies may not be complete
+  - databases are not complete
+  - gnat.cgi not converted or tested
+  - volatiles and meta labels.  I've documented behaviour of JSON
+    arrays and records but should be checked.
+  - pragma meta_label only takes one meta label but needs to take multiple
+  - tagged does not have a way to not clear either unit or policy tags
+    when assigning the other
 
 - text_io
   - socket tests

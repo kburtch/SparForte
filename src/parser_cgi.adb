@@ -104,7 +104,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.parsing_errors ), sparMetaLabel );
+     result := storage'( to_spar_boolean( cgi.parsing_errors ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseParsing_Errors;
 
@@ -125,7 +125,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.input_received ), sparMetaLabel );
+     result := storage'( to_spar_boolean( cgi.input_received ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseInput_Received;
 
@@ -146,7 +146,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( cgi.is_index ), sparMetaLabel );
+     result := storage'( to_spar_boolean( cgi.is_index ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseIs_Index;
 
@@ -168,7 +168,7 @@ begin
 
   if isExecutingCommand then
      result := storage'( To_Unbounded_String( integer'image( cgi.cgi_method_type'pos( cgi.CGI_Method ) )(2)&"" ),
-        sparMetaLabel );
+        noMetaLabel, sparMetaLabels );
   end if;
 end ParseCGI_Method;
 
@@ -185,9 +185,9 @@ end ParseCGI_Method;
 procedure ParseValue( result : out storage; kind : out identifier ) is
   keyExpr  : storage;
   keyType  : identifier;
-  idxExpr  : storage := storage'( to_unbounded_string( " 1" ), sparMetaLabel ); -- default
+  idxExpr  : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel, sparMetaLabels ); -- default
   idxType  : identifier;
-  reqExpr  : storage := storage'( identifiers( false_t ).store.value, sparMetalabel );
+  reqExpr  : storage := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetalabels );
   reqType  : identifier;
   subprogramId : constant identifier := cgi_value_t;
 begin
@@ -217,7 +217,7 @@ begin
         begin
           result := storage'( cgi.Value( keyExpr.value,
             positive'value( to_string( idxExpr.value ) ),
-            reqExpr.value = identifiers( true_t ).store.value ), keyExpr.metaLabel);
+            reqExpr.value = identifiers( true_t ).store.value ), noMetaLabel, keyExpr.policyMetaLabels);
         exception when constraint_error =>
             err( +"key does not exist" );
         when others =>
@@ -253,7 +253,7 @@ begin
      if metaLabelOk( subprogramId, keyExpr ) and metaLabelOK( subprogramId, idxExpr ) then
         result := storage'( to_spar_boolean(
              cgi.key_exists( keyExpr.value, positive'value( to_string( idxExpr.value ) ) )
-           ), sparMetaLabel );
+           ), noMetaLabel, sparMetaLabels );
 -- RESULT SHOULD BE NUMERIC BOOLEAN, NOT STRING.  UTIL FUNCTION FOR THIS?
      end if;
   end if;
@@ -281,7 +281,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( subprogramId, keyExpr ) then
         result := storage'( to_unbounded_string( cgi.key_count( keyExpr.value )'img ),
-           sparMetaLabel );
+           noMetaLabel, sparMetaLabels );
      end if;
   end if;
 end ParseKey_Count;
@@ -303,7 +303,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( natural'image( cgi.Argument_Count )), sparMetaLabel );
+     result := storage'( to_unbounded_string( natural'image( cgi.Argument_Count )), noMetaLabel, sparMetaLabels );
   end if;
 end ParseCGIArgument_Count;
 
@@ -332,7 +332,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := storage'( cgi.key( positive( to_numeric( posExpr.value ) ) ), sparMetaLabel );
+       result := storage'( cgi.key( positive( to_numeric( posExpr.value ) ) ), noMetaLabel, sparMetaLabels );
      exception when constraint_error =>
        err( +"no key at this position" );
      when others =>
@@ -367,7 +367,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( subprogramId, posExpr ) then
         begin
-          result := storage'( cgi.value( positive( to_numeric( posExpr.value ) ) ), sparMetaLabel );
+          result := storage'( cgi.value( positive( to_numeric( posExpr.value ) ) ), noMetaLabel, sparMetaLabels );
         exception when constraint_error =>
           err( +"no key at this position" );
         when others =>
@@ -395,7 +395,7 @@ end ParseKeyValue;
 procedure ParseKey_Value_Exists( result : out storage; kind : out identifier ) is
   keyExpr       : storage;
   keyType       : identifier;
-  keyValueExpr  : storage := storage'( to_unbounded_string( "1" ), sparMetaLabel );
+  keyValueExpr  : storage := storage'( to_unbounded_string( "1" ), noMetaLabel, sparMetaLabels );
   keyValueType  : identifier;
   subprogramId  : constant identifier := cgi_key_value_exists_t;
 begin
@@ -414,7 +414,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, keyValueExpr ) then
         result := storage'( to_spar_boolean( cgi.key_value_exists( keyExpr.value, keyValueExpr.value ) ),
-          sparMetaLabel );
+          noMetaLabel, sparMetaLabels );
      end if;
   end if;
 end ParseKey_Value_Exists;
@@ -435,7 +435,7 @@ end ParseKey_Value_Exists;
 -----------------------------------------------------------------------------
 
 procedure ParsePut_CGI_Header is
-  headerExpr : storage := storage'( to_unbounded_string( "Content-Type: text/html" ), sparMetaLabel );
+  headerExpr : storage := storage'( to_unbounded_string( "Content-Type: text/html" ), noMetaLabel, sparMetaLabels );
   headerType : identifier;
   subprogramId : constant identifier := cgi_put_cgi_header_t;
 begin
@@ -659,7 +659,7 @@ begin
 
   if isExecutingCommand then
      begin
-        result := storage'( to_unbounded_string( cgi.my_url ), sparMetaLabel );
+        result := storage'( to_unbounded_string( cgi.my_url ), noMetaLabel, sparMetaLabels );
      exception when others =>
         err_exception_raised;
      end;
@@ -699,7 +699,7 @@ begin
      if metaLabelOk( subprogramId, keyExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.line_count( to_string(keyExpr.value))'img),
-              keyExpr.MetaLabel );
+              noMetaLabel, keyExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -734,7 +734,7 @@ begin
      if metaLabelOk( subprogramId, keyExpr ) then
         begin
            result := storage'( to_unbounded_string( cgi.line_count_of_value(
-             to_string(keyExpr.value))'img), keyExpr.metaLabel );
+             to_string(keyExpr.value))'img), noMetaLabel, keyExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -777,7 +777,8 @@ begin
         begin
            result := storage'( to_unbounded_string( cgi.line( to_string( keyExpr.value ),
               positive( to_numeric( posExpr.value ) ) ) ),
-              resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+              noMetaLabel,
+              resolveEffectiveMetaLabels( kind, keyExpr, posExpr ) );
         exception when others =>
            err_exception_raised;
         end;
@@ -820,7 +821,8 @@ begin
         begin
            result := storage'( to_unbounded_string( cgi.value_of_line( to_string( keyExpr.value ),
               positive( to_numeric( posExpr.value ) ) ) ),
-              resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+              noMetaLabel,
+              resolveEffectiveMetaLabels( kind, keyExpr, posExpr ) );
         exception when others =>
            err_exception_raised;
         end;
@@ -847,7 +849,7 @@ end ParseValue_of_Line;
 procedure ParseURL_Decode( result : out storage; kind : out identifier ) is
   dataExpr : storage;
   dataType : identifier;
-  boolExpr : storage := storage'( identifiers( true_t ).store.value, sparMetaLabel );
+  boolExpr : storage := storage'( identifiers( true_t ).store.value, noMetaLabel, sparMetaLabels );
   boolType : identifier;
   subprogramId : constant identifier := cgi_url_decode_t;
 begin
@@ -870,7 +872,8 @@ begin
      if metaLabelOK( subprogramId, dataExpr ) and metaLabelOK( subprogramId, boolExpr ) then
         begin
            result := storage'( cgi.URL_Decode( dataExpr.value, boolExpr.value = identifiers( true_t ).store.value ),
-              resolveEffectiveMetaLabel( kind, dataExpr, boolExpr ) );
+              noMetaLabel,
+              resolveEffectiveMetaLabels( kind, dataExpr, boolExpr ) );
         exception when others =>
            err_exception_raised;
         end;
@@ -892,7 +895,7 @@ end ParseURL_Decode;
 procedure ParseURL_Encode( result : out storage; kind : out identifier ) is
   dataExpr : storage;
   dataType : identifier;
-  boolExpr : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  boolExpr : storage := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetaLabels );
   boolType : identifier;
   subprogramId : constant identifier := cgi_url_encode_t;
 begin
@@ -915,7 +918,8 @@ begin
      begin
         result := storage'( cgi.URL_Encode( dataExpr.value, boolExpr.value = identifiers( true_t
 ).store.value ),
-           resolveEffectiveMetaLabel( kind, dataExpr, boolExpr ) );
+           noMetaLabel,
+           resolveEffectiveMetaLabels( kind, dataExpr, boolExpr ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -950,7 +954,7 @@ begin
      if metaLabelOK( subprogramId, dataExpr ) then
         begin
           result := storage'( cgi.HTML_encode( dataExpr.value ),
-             dataExpr.metaLabel );
+             noMetaLabel, dataExpr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -985,7 +989,7 @@ procedure ParseSet_Cookie is
   domainType   : identifier;
   expiresExpr  : storage := nullStorage;
   expiresType  : identifier;
-  secureExpr   : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  secureExpr   : storage := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetaLabels );
   secureType   : identifier;
   subprogramId : constant identifier := cgi_set_cookie_t;
 begin
@@ -1058,9 +1062,9 @@ end ParseSet_Cookie;
 procedure ParseCookie_Value( result : out storage; kind : out identifier ) is
   keyExpr  : storage;
   keyType  : identifier;
-  posExpr  : storage := storage'( to_unbounded_string( " 1" ), sparMetaLabel );
+  posExpr  : storage := storage'( to_unbounded_string( " 1" ), noMetaLabel, sparMetaLabels );
   posType  : identifier;
-  boolExpr : storage := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  boolExpr : storage := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetaLabels );
   boolType : identifier;
   subprogramId : constant identifier := cgi_cookie_value_t;
 begin
@@ -1091,7 +1095,8 @@ begin
            result := storage'( cgi.cookie_value( keyExpr.value,
               positive( to_numeric( posExpr.value ) ),
               boolExpr.value = identifiers( true_t ).store.value ),
-                 resolveEffectiveMetaLabel( kind, keyExpr, posExpr ) );
+                 noMetaLabel,
+                 resolveEffectiveMetaLabels( kind, keyExpr, posExpr ) );
         exception when others =>
            err_exception_raised;
         end;
@@ -1115,7 +1120,7 @@ begin
   kind := natural_t;
   expect( subprogramId );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( cgi.cookie_count'img ), sparMetaLabel );
+     result := storage'( to_unbounded_string( cgi.cookie_count'img ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseCookie_Count;
 

@@ -585,24 +585,24 @@ end logMetaLabelOk;
 -- labels.
 -----------------------------------------------------------------------------
 
-function resolveLogMetaLabel return metaLabelID is
-   newMetaLabel : metaLabelID;
+function resolveLogMetaLabels return metaLabelHashedSet.Set is
+   newMetaLabels : metaLabelhashedSet.Set;
 begin
    case log_mode is
    when stderr_log =>
-      newMetaLabel := identifiers( standard_error_t ).store.metaLabel;
+      newMetaLabels := identifiers( standard_error_t ).store.policyMetaLabels;
    when file_log =>
-      newMetaLabel := log_path.metaLabel;
+      newMetaLabels := log_path.policyMetaLabels;
    when echo_log =>
-      newMetaLabel := resolveEffectiveMetaLabel( uni_string_t,
+      newMetaLabels := resolveEffectiveMetaLabels( uni_string_t,
         identifiers( standard_error_t ).store.all,
         log_path );
    when others =>
        -- this should not happen
-       newMetaLabel := sparMetaLabel;
+       newMetaLabels := sparMetaLabels;
    end case;
-   return newMetaLabel;
-end resolveLogMetaLabel;
+   return newMetaLabels;
+end resolveLogMetaLabels;
 
 
 ------------------------------------------------------------------------------
@@ -623,7 +623,7 @@ begin
      if logMetaLabelOk( logs_level_begin_t ) then
         begin
            AssignParameter(ref, storage'( to_unbounded_string( numericValue( level ) ),
-              resolveLogMetaLabel ) );
+              noMetaLabel, resolveLogMetaLabels ) );
            level := level + 1;
         exception when constraint_error =>
            err( +"constraint_error raised" );
@@ -948,7 +948,7 @@ begin
   ParseFirstStringParameter( logs_open_t, pathExpr, pathType, string_t );
   ParseNextEnumParameter( logs_open_t, modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).store.value = ")" then
-     widthExpr := storage'( to_unbounded_string( defaultWidth'img ), noMetaLabel );
+     widthExpr := storage'( to_unbounded_string( defaultWidth'img ), noMetaLabel, noMetaLabels );
      expect( symbol_t, ")" );
   else
      ParseLastNumericParameter( logs_open_t, widthExpr, widthType, positive_t );
@@ -1006,7 +1006,7 @@ begin
   expect( logs_is_open_t );
   if isExecutingCommand then
      if metaLabelOk( logs_is_open_t, log_path ) then
-        result := storage'( to_spar_boolean( log_is_open ), log_path.metaLabel );
+        result := storage'( to_spar_boolean( log_is_open ), noMetaLabel, log_path.policyMetaLabels );
      end if;
   end if;
 end ParseIsOpen;
@@ -1019,7 +1019,8 @@ begin
      if logMetaLabelOk( logs_mode_t ) then
         result := storage'(
            trim( to_unbounded_string( natural'image( log_modes'pos( log_mode ) ) ), left ),
-           log_path.metaLabel
+           noMetaLabel,
+           log_path.policyMetaLabels
         );
      end if;
   end if;
@@ -1043,7 +1044,7 @@ begin
   if isExecutingCommand then
      if logMetaLabelOk( logs_width_t ) then
         result := storage'( to_unbounded_string( positive'image( width ) ),
-           resolveLogMetaLabel );
+           noMetaLabel, resolveLogMetaLabels );
      end if;
   end if;
   kind := positive_t;
@@ -1093,7 +1094,7 @@ begin
   if isExecutingCommand then
      if logMetaLabelOk( logs_is_rotating_t ) then
         result := storage'( to_spar_boolean( log_is_rotating ),
-           resolveLogMetaLabel );
+           noMetaLabel, resolveLogMetaLabels );
      end if;
   end if;
 end ParseIsRotating;
@@ -1113,13 +1114,13 @@ begin
   if isExecutingCommand then
      if logMetaLabelOk( logs_metrics_t ) then
         assignParameter( ok_ref,
-           storage'( to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ), resolveLogMetaLabel ) );
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ), noMetaLabel, resolveLogMetaLabels ) );
         assignParameter( info_ref,
-           storage'( to_unbounded_string( numericValue( checkpointMetrics.info_count ) ), resolveLogMetaLabel ) );
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.info_count ) ), noMetaLabel, resolveLogMetaLabels ) );
         assignParameter( warning_ref,
-           storage'( to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ), resolveLogMetaLabel ) );
+           storage'( to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ), noMetaLabel, resolveLogMetaLabels ) );
         assignParameter( error_ref,
-            storage'( to_unbounded_string( numericValue( checkpointMetrics.error_count ) ), resolveLogMetaLabel ) );
+            storage'( to_unbounded_string( numericValue( checkpointMetrics.error_count ) ), noMetaLabel, resolveLogMetaLabels ) );
      end if;
   end if;
 end ParseMetrics;

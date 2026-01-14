@@ -197,9 +197,9 @@ begin
      end if;
      if not error_found then
         if b then
-           result := storage'( to_unbounded_string( "1" ), expr.metaLabel );
+           result := storage'( to_unbounded_string( "1" ), noMetaLabel, expr.policyMetaLabels );
         else
-           result := storage'( to_unbounded_string( "0" ), expr.metaLabel );
+           result := storage'( to_unbounded_string( "0" ), noMetaLabel, expr.policyMetaLabels );
         end if;
      end if;
   end if;
@@ -244,9 +244,9 @@ begin
         end;
         if not error_found then
            if b then
-              result := storage'( to_unbounded_string( "1" ), expr.metaLabel );
+              result := storage'( to_unbounded_string( "1" ), noMetaLabel, expr.policyMetaLabels );
            else
-              result := storage'( to_unbounded_string( "0" ), expr.metaLabel );
+              result := storage'( to_unbounded_string( "0" ), noMetaLabel, expr.policyMetaLabels );
            end if;
            if trace then
               if b then
@@ -289,7 +289,7 @@ begin
         if metaLabelOk( element_t, strExpr ) then
            result := storage'( to_unbounded_string( "" &
               Element( strExpr.value, positive( to_numeric( indexExpr.value ) ) ) ),
-              strExpr.metaLabel );
+              noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -325,7 +325,7 @@ begin
               Slice( strExpr.value,
                 positive( to_numeric( lowExpr.value ) ),
                 natural( to_numeric( hiExpr.value ) )
-              ) ), strExpr.metaLabel );
+              ) ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -379,7 +379,7 @@ begin
         if metaLabelOk( index_t, strExpr ) and metaLabelOk( index_t, patExpr ) then
            result := storage'( to_unbounded_string( Index( strExpr.value, to_string( patExpr.value ),
            Going => dir )'img ),
-           strExpr.metaLabel );
+           noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -422,7 +422,7 @@ begin
   begin
      if isExecutingCommand then
         if metaLabelOk( index_non_blank_t, strExpr ) then
-           result := storage'( to_unbounded_string( Index_Non_Blank( strExpr.value, dir )'img ), noMetaLabel );
+           result := storage'( to_unbounded_string( Index_Non_Blank( strExpr.value, dir )'img ), noMetaLabel, noMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -493,7 +493,7 @@ begin
         if metaLabelOk( index_set_t, strExpr ) then
            result := storage'( to_unbounded_string( Index( strExpr.value, map, first, test,
            Going => dir )'img ),
-           setExpr.metaLabel );
+           noMetaLabel, setExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -524,7 +524,7 @@ begin
         if metaLabelOk( count_t, strExpr ) and metaLabelOk( count_t, patExpr ) then
            result := storage'( to_unbounded_string( Ada.Strings.Unbounded.Count( strExpr.value,
               to_string( patExpr.value ) )'img ),
-              strExpr.metaLabel );
+              noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -563,7 +563,7 @@ begin
               positive( to_numeric( lowExpr.value ) ),
               natural( to_numeric( hiExpr.value ) ),
               to_string( byExpr.value )
-           ), resolveEffectiveMetaLabel( kind, strExpr, byExpr )
+           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, byExpr )
            );
         end if;
      end if;
@@ -608,7 +608,7 @@ begin
               err( +"search substring is an empty string" );
            else
               result := storage'( replaceAll( strExpr.value, needleExpr.value, newstrExpr.value, sensitivityExpr.value = "1" ),
-                 resolveEffectiveMetaLabel( kind, strExpr, needleExpr, newstrExpr ) );
+                 noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, needleExpr, newstrExpr ) );
            end if;
         end if;
      end if;
@@ -644,7 +644,7 @@ begin
            result := storage'( Insert( strExpr.value,
               positive( to_numeric( beforeExpr.value ) ),
               to_string( newExpr.value )
-           ), resolveEffectiveMetaLabel( kind, strExpr, newExpr ) );
+           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, newExpr ) );
         end if;
      end if;
   exception when others =>
@@ -679,7 +679,7 @@ begin
            result := storage'( Overwrite( strExpr.value,
               positive( to_numeric( posExpr.value ) ),
               to_string( newExpr.value )
-           ), resolveEffectiveMetaLabel( kind, strExpr, newExpr ) );
+           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, newExpr ) );
         end if;
      end if;
   exception when others =>
@@ -714,7 +714,7 @@ begin
            result := storage'( Delete( strExpr.value,
               positive( to_numeric( lowExpr.value ) ),
               natural( to_numeric( hiExpr.value ) )
-           ), strExpr.metaLabel );
+           ), noMetaLabel, strExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -762,7 +762,7 @@ begin
   begin
      if isExecutingCommand then
         if metaLabelOk( trim_t, strExpr ) then
-           result := storage'( trim( strExpr.value, the_trim_end ), strExpr.metaLabel );
+           result := storage'( trim( strExpr.value, the_trim_end ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -788,7 +788,7 @@ begin
   begin
      if isExecutingCommand then
         if metaLabelOk( length_t, strExpr ) then
-           result := storage'( to_unbounded_string( length( strExpr.value )'img ), strExpr.metaLabel );
+           result := storage'( to_unbounded_string( length( strExpr.value )'img ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -831,7 +831,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( head_t, strExpr ) then
            result := storage'( head( strExpr.value, natural( to_numeric( cntExpr.value ) ),
-              pad_char ), strExpr.metaLabel );
+              pad_char ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -874,7 +874,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( tail_t, strExpr ) then
            result := storage'( tail( strExpr.value, natural( to_numeric( cntExpr.value ) ),
-             pad_char ), strExpr.metaLabel );
+             pad_char ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -919,14 +919,14 @@ begin
                     to_spar_boolean(
                        head( strExpr.value, length( headExpr.value ) ) = headExpr.value
                     ),
-                       noMetaLabel
+                       noMetaLabel, noMetaLabels
                     );
               else
                  result := storage'(
                     to_spar_boolean(
                        head( ToUpper( strExpr.value ), length( headExpr.value ) ) = ToUpper( headExpr.value )
                     ),
-                       noMetaLabel
+                       noMetaLabel, noMetaLabels
                     );
               end if;
            end if;
@@ -970,13 +970,13 @@ begin
               err( +"tail substring is an empty string" );
            else
               if sensitivityExpr.value = "1"  then
-                 result := storage'( to_spar_boolean( tail( strExpr.value, length( tailExpr.value ) ) = tailExpr.value ), noMetaLabel );
+                 result := storage'( to_spar_boolean( tail( strExpr.value, length( tailExpr.value ) ) = tailExpr.value ), noMetaLabel, noMetaLabels );
               else
                  result := storage'(
                     to_spar_boolean(
                        tail( ToUpper( strExpr.value ), length( tailExpr.value ) ) = ToUpper( tailExpr.value )
                     ),
-                 noMetaLabel );
+                 noMetaLabel, noMetaLabels );
               end if;
            end if;
         end if;
@@ -1023,7 +1023,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( field_t, strExpr ) then
            result := storage'( stringField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ) ),
-              strExpr.metaLabel );
+              noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1085,7 +1085,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( csv_field_t, strExpr ) then
            result := storage'( stringCSVField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ), squotes ),
-              strExpr.metaLabel );
+              noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1116,7 +1116,7 @@ begin
           LinuxPath : string := to_string( strExpr.value ) & "XXXXXX" & ASCII.NUL;
         begin
           result := nullStorage;
-          result.metaLabel := strExpr.metaLabel;
+          result.policyMetaLabels := strExpr.policyMetaLabels;
           mkstemp( mkstemp_result, LinuxPath );
           if mkstemp_result < 0 then
              err( pl( "mkstemp failed " & OSError( C_errno ) ) );
@@ -1129,7 +1129,7 @@ begin
                    goto retry;
                 end if;
              end if;
-             result.metaLabel := noMetaLabel;
+             result.policyMetaLabels := noMetaLabels;
              for i in aLinuxPath'range loop
                  exit when LinuxPath( i ) = ASCII.NUL;
                  result.value := result.value & LinuxPath( i );
@@ -1159,7 +1159,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( val_t, expr ) then
           result := storage'( to_unbounded_string( "" & character'val( natural( to_numeric( expr.value ) ) ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1210,7 +1210,8 @@ begin
           -- parameters.
           findEnumImage( expr.value, expr_type, temp );
           result.value:= temp;
-          result.metaLabel := sparMetaLabel;
+          result.unitMetaLabel := noMetaLabel;
+          result.policyMetaLabels := sparMetaLabels;
        elsif metaLabelOk( image_t, expr ) then
           result := expr;
        end if;
@@ -1288,10 +1289,12 @@ begin
              result := expr;
           elsif baseType = json_string_t then
              DoJsonToString( result.value, expr.value );
-             result.metaLabel := expr.metaLabel;
+             result.unitMetaLabel := noMetaLabel;
+             result.policyMetaLabels := expr.policyMetaLabels;
           else
              DoBase64ToString( result.value, expr.value );
-             result.metaLabel := expr.metaLabel;
+             result.unitMetaLabel := expr.unitMetaLabel;
+             result.policyMetaLabels := expr.policyMetaLabels;
           end if;
        end if;
     end if;
@@ -1363,7 +1366,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( lookup_t, srcExpr ) and metaLabelOk( lookup_t, tarExpr ) then
            result := storage'( stringLookup( srcExpr.value, tarExpr.value, delim ),
-              srcExpr.metaLabel );
+              noMetaLabel, srcExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1417,7 +1420,8 @@ begin
               delim,
               natural( to_numeric( cntExpr.value ) ),
               to_string( tarExpr.value ) );
-           tempStr.metaLabel := resolveEffectiveMetaLabel( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
+           tempStr.unitMetaLabel := noMetaLabel;
+           tempStr.policyMetaLabels := resolveEffectiveMetalabels( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
            AssignParameter( src_ref, tempStr );
         end if;
      end if;
@@ -1489,7 +1493,8 @@ begin
               natural( to_numeric( cntExpr.value ) ),
               to_string( tarExpr.value ),
               squotes );
-           tempStr.metaLabel := resolveEffectiveMetaLabel( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
+           tempStr.unitMetaLabel := noMetaLabel;
+           tempStr.policyMetaLabels := resolveEffectiveMetalabels( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
            assignParameter( src_ref, tempStr );
         end if;
      end if;
@@ -1515,7 +1520,7 @@ begin
   kind := src_type;
   if isExecutingCommand then
      if metaLabelOk( to_upper_t, srcExpr ) then
-        result := storage'( ToUpper( srcExpr.value ), srcExpr.metaLabel );
+        result := storage'( ToUpper( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
      end if;
   end if;
 end ParseStringsToUpper;
@@ -1537,7 +1542,7 @@ begin
   kind := src_type;
   if isExecutingCommand then
      if metaLabelOk( to_lower_t, srcExpr ) then
-        result := storage'( ToLower( srcExpr.value ), srcExpr.metaLabel );
+        result := storage'( ToLower( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
      end if;
   end if;
 end ParseStringsToLower;
@@ -1559,7 +1564,7 @@ begin
   kind := src_type;
   if isExecutingCommand then
      if metaLabelOk( to_proper_t, srcExpr ) then
-        result := storage'( ToProper( srcExpr.value ), srcExpr.metaLabel );
+        result := storage'( ToProper( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
      end if;
   end if;
 end ParseStringsToProper;
@@ -1581,7 +1586,7 @@ begin
   kind := src_type;
   if isExecutingCommand then
      if metaLabelOk( to_basic_t, srcExpr ) then
-        result := storage'( ToBasic( srcExpr.value ), srcExpr.metaLabel );
+        result := storage'( ToBasic( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
      end if;
   end if;
 end ParseStringsToBasic;
@@ -1604,7 +1609,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( to_escaped_t, srcExpr ) then
         begin
-           result := storage'( ToEscaped( srcExpr.value ), srcExpr.metaLabel );
+           result := storage'( ToEscaped( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -1638,8 +1643,10 @@ begin
   begin
      if isExecutingCommand then
         if metaLabelOk( split_t, srcExpr ) then
-           leftStr.metaLabel := srcExpr.metaLabel;
-           rightStr.metaLabel := srcExpr.metaLabel;
+           leftStr.unitMetaLabel := noMetaLabel;
+           leftStr.policyMetaLabels := srcExpr.policyMetaLabels;
+           rightStr.unitMetaLabel := noMetaLabel;
+           rightStr.policyMetaLabels := srcExpr.policyMetaLabels;
            split( srcExpr.value, leftStr.value, rightStr.value,
                   natural( to_numeric( fieldExpr.value ) ) );
            assignParameter( left_ref, leftStr );
@@ -1669,7 +1676,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_control_t, expr ) then
-          result := storage'( to_spar_boolean( is_control( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_control( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1695,7 +1702,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_graphic_t, expr ) then
-          result := storage'( to_spar_boolean( is_graphic( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_graphic( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1721,7 +1728,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_letter_t, expr ) then
-          result := storage'( to_spar_boolean( is_letter( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_letter( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1747,7 +1754,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_lower_t, expr ) then
-          result := storage'( to_spar_boolean( is_lower( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_lower( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1773,7 +1780,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_upper_t, expr ) then
-          result := storage'( to_spar_boolean( is_upper( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_upper( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1799,7 +1806,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_basic_t, expr ) then
-          result := storage'( to_spar_boolean( is_basic( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_basic( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1825,7 +1832,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_digit_t, expr ) then
-          result := storage'( to_spar_boolean( is_digit( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_digit( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1851,7 +1858,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_hex_digit_t, expr ) then
-          result := storage'( to_spar_boolean( is_hexadecimal_digit( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_hexadecimal_digit( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1877,7 +1884,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_alphanumeric_t, expr ) then
-          result := storage'( to_spar_boolean( is_alphanumeric( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_alphanumeric( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1903,7 +1910,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_special_t, expr ) then
-          result := storage'( to_spar_boolean( is_special( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_special( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1929,7 +1936,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_slashed_date_t, expr ) then
-          result := storage'( to_spar_boolean( is_date( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_date( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1955,7 +1962,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_fixed_t, expr ) then
-          result := storage'( to_spar_boolean( is_fixed( expr.value ) ), expr.metaLabel );
+          result := storage'( to_spar_boolean( is_fixed( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -2001,13 +2008,15 @@ begin
           Encode_Stream( From => rawFile, To => base64File  );
           ada.text_io.reset( base64File, ada.text_io.in_file );
           -- TODO: loop
-          result.metaLabel := noMetaLabel;
+          result.unitMetaLabel := noMetaLabel;
+          result.policyMetaLabels := noMetaLabels;
           while not ada.text_io.end_of_file( base64File ) loop
              result.value := result.value & get_line( base64File );
           end loop;
           ada.streams.stream_io.delete( rawFile );
           ada.text_io.delete( base64file );
-          result.metaLabel := expr.metaLabel;
+          result.unitMetaLabel := expr.unitMetaLabel;
+          result.policyMetaLabels := expr.policyMetaLabels;
        end if;
     end if;
   exception when MODE_ERROR =>
@@ -2044,7 +2053,7 @@ begin
   begin
     if isExecutingCommand then
        if metaLabelOk( is_typo_of_t, expr1Expr, expr2Expr ) then
-          result := storage'( to_spar_boolean( typoOf( expr1Expr.value, expr2Expr.value ) ), noMetaLabel );
+          result := storage'( to_spar_boolean( typoOf( expr1Expr.value, expr2Expr.value ) ), noMetaLabel, noMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -2080,7 +2089,7 @@ begin
               Slice( strExpr.value,
                 positive( to_numeric( lowExpr.value ) ),
                 natural( to_numeric( hiExpr.value ) )
-              ) ), strExpr.metaLabel );
+              ) ), noMetaLabel, strExpr.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -2137,7 +2146,7 @@ begin
   begin
     if isExecutingCommand then
         if metaLabelOk( strings_to_json_t, expr ) then
-           result := storage'( DoStringToJSON( expr.value ), expr.metaLabel );
+           result := storage'( DoStringToJSON( expr.value ), noMetaLabel, expr.policyMetaLabels );
         end if;
     end if;
   exception when others =>
@@ -2182,14 +2191,14 @@ begin
           if metaLabelOk( to_hex_digits_t, expr ) then
              exprAsNum  := natural'value( to_string( expr.value ) );
              if exprAsNum = 0 then
-                result := storage'( to_unbounded_string( "0" ), noMetaLabel );
+                result := storage'( to_unbounded_string( "0" ), noMetaLabel, noMetaLabels );
              else
                 while exprAsNum > 0 loop
                    digit := exprAsNum mod 16;
                    if digit < 10 then
-                      result := storage'( character'val( 48 + digit ) & result.value, expr.metaLabel );
+                      result := storage'( character'val( 48 + digit ) & result.value, noMetaLabel, expr.policyMetaLabels );
                    else
-                      result := storage'( character'val( 65 + digit - 10 ) & result.value, expr.metaLabel );
+                      result := storage'( character'val( 65 + digit - 10 ) & result.value, noMetaLabel, expr.policyMetaLabels );
                    end if;
                    exprAsNum  := exprAsNum / 16;
                 end loop;
@@ -2225,7 +2234,7 @@ begin
         if metaLabelOk( levenshtein_t, str1Expr ) and metaLabelOk( levenshtein_t, str2Expr ) then
            begin
               result := storage'( to_unbounded_string( natural'image( Levenshtein_Distance( to_string( str1Expr.value ), to_string( str2Expr.value ) ) ) ),
-                 str1Expr.metaLabel );
+                 noMetaLabel, str1Expr.policyMetaLabels );
            exception when others =>
               err_exception_raised;
            end;
@@ -2252,7 +2261,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( soundex_t, strExpr ) then
         begin
-           result := storage'( to_unbounded_string( Soundex( to_string( strExpr.value ) ) ), strExpr.metaLabel );
+           result := storage'( to_unbounded_string( Soundex( to_string( strExpr.value ) ) ), noMetaLabel, strExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -2278,7 +2287,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( word_count_t, strExpr ) then
         begin
-           result := storage'( to_unbounded_string( WordCount( strExpr.value )'img ), strExpr.metaLabel );
+           result := storage'( to_unbounded_string( WordCount( strExpr.value )'img ), noMetaLabel, strExpr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -2344,13 +2353,13 @@ begin
         -- The compare is less than, greater than or equals test
         if firstExpr.value < lastExpr.value then
            result := storage'( to_unbounded_string( "-1" ),
-              resolveEffectiveMetaLabel( kind, firstExpr, lastExpr ) );
+              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
         elsif firstExpr.value > lastExpr.value then
            result := storage'( to_unbounded_string( " 1" ),
-              resolveEffectiveMetaLabel( kind, firstExpr, lastExpr ) );
+              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
         else
            result := storage'( to_unbounded_string( " 0" ),
-              resolveEffectiveMetaLabel( kind, firstExpr, lastExpr ) );
+              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
         end if;
      end if;
   end if;

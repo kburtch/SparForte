@@ -1430,16 +1430,27 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   begin
      if token = tagged_t then
         expect( tagged_t );
-        if class_ok(token, metaClass ) then
-           f.metaLabel := token;
-           getNextToken;
+        if token = policy_t then
+           expect( policy_t );
+           if class_ok(token, metaClass ) then
+              f.unitMetaLabel := noMetaLabel;
+              f.policyMetaLabels := metaLabelHashedSet.To_Set( token );
+              getNextToken;
+           end if;
+        else
+           if class_ok(token, metaClass ) then
+              f.unitMetaLabel := token;
+              f.policyMetaLabels := noMetaLabels;
+              getNextToken;
+           end if;
         end if;
      else
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
      end if;
   end ParseFactorMetaLabel;
 
-  -- PARSE FACTOR IDENTIFIER
+  --  PARSE FACTOR IDENTIFIER
   --
   -- Get simple identifier t and return factor result f.
   ---------------------------------------------------------------------------
@@ -1642,7 +1653,8 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
              end if;
           end if;
        end if;
-       f.metaLabel := identifiers( t ).store.metaLabel;
+       f.policyMetaLabels := identifiers( t ).store.policyMetaLabels;
+       f.unitMetaLabel := noMetaLabel;
        f.value := identifiers( t ).store.value;
        kind := identifiers( t ).kind;
        -- Mark as used as a factor.  if it is a record field, mark the whole
@@ -1656,12 +1668,6 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
           end if;
        end if;
     end if;
---begin
--- put( "ParseFactorIdentifier: expr result " ); put( f.metaLabel'img );
---    put_line( "/" & to_string( identifiers( f.metaLabel ).name ) ); -- DEBUG
--- exception when constraint_error =>
--- put_line( "ParseFactorIdentifier: metaLabel is illegal value" ); 
--- end;
   end parseFactorIdentifier;
   -- Note: not inline because contains an exception handler
   -- pragma inline( parseFactorIdentifier );
@@ -1693,17 +1699,20 @@ begin
   elsif token < reserved_top then
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
         f.value := to_unbounded_string( last_status'img );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
         f.value := to_unbounded_string( aPID'image( getpid ) );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
         f.value := to_unbounded_string( aPID'image( lastChild ) );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -1713,7 +1722,8 @@ begin
         end if;
         if isExecutingCommand then
            f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-           f.metaLabel:= noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -1726,7 +1736,8 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingCommand then
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            begin
               f.value := to_unbounded_string(
                  Argument(
@@ -1747,7 +1758,8 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            f.value := to_unbounded_string( Ada.Command_Line.Command_Name );
         end if;
         kind := uni_string_t;
@@ -1755,19 +1767,22 @@ begin
      elsif Token = symbol_t and then identifiers( Token ).store.value = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            f.value := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            f.value := null_unbounded_string;
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( +"@ is not a variable" );
            kind := eof_t;
         else
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            f.value := itself;
            kind := itself_type;
         end if;
@@ -1784,7 +1799,8 @@ begin
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              f.metaLabel := noMetaLabel;
+              f.unitMetaLabel := noMetaLabel;
+              f.policyMetaLabels := noMetaLabels;
               f := last_output;
            end if;
            kind := last_output_type;
@@ -1885,12 +1901,14 @@ begin
         if onlyAda95 then
            err( +"system_metal_level_image is not allowed with " &
               em( "pragma ada_95" ) );
-          f.metaLabel := noMetaLabel;
+          f.unitMetaLabel := noMetaLabel;
+          f.policyMetaLabels := noMetaLabels;
           f.value := null_unbounded_string;
            kind := eof_t;
         else
-          f.metaLabel := noMetaLabel;
-          f.value := identifiers( sparMetaLabel ).name;
+          f.unitMetaLabel := noMetaLabel;
+          f.policyMetaLabels := noMetaLabels;
+          f.value := image( sparMetaLabels );
           kind := string_t;
         end if;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
@@ -1898,32 +1916,38 @@ begin
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with " &
               em( "pragma ada_95" ) );
-           f.metaLabel := sparMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := sparMetaLabels;
            f.value := null_unbounded_string;
            kind := eof_t;
         else
-          f.metaLabel := noMetaLabel;
+          f.unitMetaLabel := noMetaLabel;
+          f.policyMetaLabels := noMetaLabels;
           f.value := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f.metaLabel := sparMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := sparMetaLabels;
         f.value := basename( getSourceFileName );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f.metaLabel := sparMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := sparMetaLabels;
         f.value := to_unbounded_string( getLineNo'img );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
-        f.metaLabel := sparMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := sparMetaLabels;
         f.value := to_unbounded_string( getLineNo'img );
         f.value := basename( getSourceFileName ) & ":" & f.value;
         kind := string_t;
         getNextToken;
      elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
-        f.metaLabel := sparMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := sparMetaLabels;
         if blocks_top > block'First then
            f.value := getBlockName( block'First );
         else
@@ -3057,17 +3081,20 @@ begin
   else
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
         f.value := to_unbounded_string( last_status'img );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
         f.value := to_unbounded_string( aPID'image( getpid ) );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
         f.value := to_unbounded_string( aPID'image( lastChild ) );
-        f.metaLabel := noMetaLabel;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -3077,7 +3104,8 @@ begin
         end if;
         if isExecutingStaticCommand then
            f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -3090,7 +3118,8 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingStaticCommand then
-           f.metaLabel := noMetaLabel;
+           f.unitMetaLabel := noMetaLabel;
+           f.policyMetaLabels := noMetaLabels;
            begin
               f.value := to_unbounded_string(
                  Argument(

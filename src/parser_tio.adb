@@ -396,7 +396,7 @@ procedure ParseIsOpen( result : out storage ) is
   theOpenFileRec : storage;
   subprogramId : constant identifier := is_open_t;
 begin
-  result := storage'( identifiers( false_t ).store.value, sparMetaLabel );
+  result := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetaLabels );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
@@ -417,7 +417,7 @@ begin
         -- executing anything external to SparForte
         if uniTypesOk( openFileRef.kind, file_type_t ) then
            if length( theOpenFileRec.value ) > 0 then
-              result := storage'( identifiers( true_t ).store.value, theOpenFileRec.metaLabel );
+              result := storage'( identifiers( true_t ).store.value, noMetaLabel, theOpenFileRec.policyMetaLabels );
            end if;
         end if;
      end if;
@@ -433,7 +433,7 @@ procedure ParseEndOfFile( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := end_of_file_t;
 begin
   kind := boolean_t;
-  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel );
+  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel, noMetaLabels );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
@@ -463,7 +463,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( stringField( openFileRef, eof_field ), theOpenFileRec.metaLabel );
+     result := storage'( stringField( openFileRef, eof_field ), noMetaLabel, theOpenFileRec.policyMetaLabels );
   end if;
 end ParseEndOfFile;
 
@@ -475,7 +475,7 @@ procedure ParseEndOfLine( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := end_of_line_t;
 begin
   kind := boolean_t;
-  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
+  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel, noMetaLabels );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFile( subprogramId, fileRef );
@@ -483,7 +483,7 @@ begin
   if isExecutingCommand then
      GetParameterValue( fileRef, theFileRec );
      if metaLabelOk( subprogramId, theFileRec ) then
-        result := storage'( stringField( fileRef, eol_field ), theFileRec.metaLabel );
+        result := storage'( stringField( fileRef, eol_field ), noMetaLabel, theFileRec.policyMetaLabels );
      end if;
   end if;
 end ParseEndOfLine;
@@ -496,7 +496,7 @@ procedure ParseLine( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := line_t;
 begin
   kind := integer_t;   -- TODO: probably should be something more specific
-  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel );
+  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel, noMetaLabels );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFile( line_t, file_ref );
@@ -505,7 +505,7 @@ begin
      GetParameterValue( file_ref, theFileRec );
      if metaLabelOk( subprogramId, theFileRec ) then
         result := storage'( stringField( file_ref, line_field ),
-           theFileRec.metaLabel );
+           noMetaLabel, theFileRec.policyMetaLabels );
      end if;
   end if;
 end ParseLine;
@@ -527,7 +527,7 @@ begin
      GetParameterValue( file_ref, theFileRec );
      if metaLabelOk( subprogramId, theFileRec ) then
         result := storage'( stringField( file_ref, name_field ),
-           theFileRec.metaLabel );
+           noMetaLabel, theFileRec.policyMetaLabels );
      end if;
   end if;
 end ParseName;
@@ -550,7 +550,8 @@ begin
      if metaLabelOk( subprogramId, theFileRec) then
         begin
           result.value := stringField( file_ref, mode_field );
-          result.metaLabel := theFileRec.metaLabel;
+          result.unitMetaLabel := noMetaLabel;
+          result.policyMetaLabels := theFileRec.policyMetaLabels;
           if identifier'value( to_string( result.value ) ) = in_file_t then
              result.value := identifiers( in_file_t ).store.value;
           elsif identifier'value( to_string( result.value ) ) = out_file_t then
@@ -589,7 +590,7 @@ begin
   if isExecutingCommand then
      if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
         getKey( ch );
-        result := storage'( to_unbounded_string( ch & "" ), sparMetaLabel );
+        result := storage'( to_unbounded_string( ch & "" ), noMetaLabel, sparMetaLabels );
      end if;
   end if;
 end ParseInkey;
@@ -641,7 +642,8 @@ begin
                  exit when ch = ASCII.LF or error_found or wasSIGINT or wasSIGTERM;
                  result.value := result.value & ch;
               end loop;
-              result.metaLabel := identifiers( file_ref.id ).store.metaLabel;
+              result.unitMetaLabel := noMetaLabel;
+              result.policyMetaLabels := identifiers( file_ref.id ).store.policyMetaLabels;
            end if;
         exception when msg : others =>
           err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -656,7 +658,8 @@ begin
      else
         if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
            pegasoft.user_io.getline.getLine( result.value );
-           result.metaLabel := identifiers( current_input_t ).store.metaLabel;
+           result.unitMetaLabel := noMetaLabel;
+           result.policyMetaLabels := identifiers( current_input_t ).store.policyMetaLabels;
            if wasSIGINT or wasSIGTERM then
               new_line;  -- user didn't press enter
               -- wasSIGINT will be cleared later
@@ -709,7 +712,7 @@ begin
      -- the name is optional, default to a temp file name
      if token = symbol_t and identifiers( token ).store.value = ")" then
         makeTempFile( fileName.value );
-        fileName.metaLabel := sparMetaLabel;
+        fileName.policyMetaLabels := sparMetaLabels;
      else
         expectParameterComma;
         ParseExpression( expr, exprType );
@@ -778,9 +781,9 @@ begin
      if metaLabelOk( subprogramId, fileName ) then
         begin
            if kind = file_type_t then
-              DoFileOpen( file_ref, mode, create, to_string( fileName.value ), fileName.metaLabel );
+              DoFileOpen( file_ref, mode, create, to_string( fileName.value ), fileName.policyMetaLabels );
            else
-              DoSocketOpen( file_ref, fileName.value, fileName.metaLabel );
+              DoSocketOpen( file_ref, fileName.value, fileName.policyMetaLabels );
            end if;
         exception when msg : others =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -802,7 +805,7 @@ procedure ParseReset is
   file_ref: reference;
   mode    : identifier := eof_t;
   name    : unbounded_string;
-  fileMetaLabel : metaLabelID;
+  fileMetaLabels : metaLabelHashedSet.Set;
   modestr : unbounded_string;
   fd      : aFileDescriptor;
   closeResult : int;
@@ -829,7 +832,7 @@ begin
         begin
            fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
            name := stringField( file_ref, name_field );
-           fileMetaLabel := theFileRec.metaLabel;
+           fileMetaLabels := theFileRec.policyMetaLabels;
            if mode = eof_t then
               modestr := stringField( file_ref, mode_field );
               if to_string( modestr ) = in_file_t'img then
@@ -849,7 +852,7 @@ begin
                  goto retry;
               end if;
            end if;
-           DoFileOpen( file_ref, mode, false, to_string( name ), fileMetaLabel );
+           DoFileOpen( file_ref, mode, false, to_string( name ), fileMetaLabels );
 
         exception when msg : others =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -1104,8 +1107,11 @@ begin
                  err( +"end of file" );
               else
                  ch := Element( fileInfo.value, 1 );
-                 AssignParameter( id_ref, storage'( to_unbounded_string( "" & ch ),
-                    identifiers( file_ref.id ).store.metaLabel  ) );
+                 AssignParameter( id_ref,
+                    storage'( to_unbounded_string( "" & ch ),
+                    unitMetaLabel => noMetaLabel,
+                    policyMetaLabels => identifiers( file_ref.id ).store.policyMetaLabels )
+                 );
                  AssignParameter( file_ref, fileInfo );
                  DoGet( file_ref );
               end if;
@@ -1123,8 +1129,11 @@ begin
               elsif result = 0 then
                  err( +"end of file" );
               else
-                 AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ),
-                    identifiers( standard_input_t ).store.metaLabel ) );
+                 AssignParameter( id_ref,
+                    storage'(to_unbounded_string( "" & ch ),
+                    unitMetaLabel => noMetaLabel,
+                    policyMetaLabels => identifiers( standard_input_t ).store.policyMetaLabels )
+                 );
               end if;
               if ch = ASCII.LF then -- not stdin (or error)?
                  replaceField( file_ref, line_field,
@@ -1902,11 +1911,19 @@ begin
                    -- run yet.
                    getKey( ch, nonblock => true );
                    -- when non-blocking, Control-D indicates nothing read
-                   AssignParameter( avail_ref, storage'(to_spar_boolean( ch = ASCII.EOT ), theInputFile.metaLabel ) );
+                   AssignParameter( avail_ref,
+                      storage'(to_spar_boolean( ch = ASCII.EOT ),
+                      unitMetaLabel => noMetaLabel,
+                      policyMetaLabels => theInputFile.policyMetaLabels )
+                   );
                  else
                    getKey( ch );
                  end if;
-                 AssignParameter( id_ref, storage'(to_unbounded_string( "" & ch ), theInputFile.metaLabel ) );
+                 AssignParameter( id_ref,
+                    storage'(to_unbounded_string( "" & ch ),
+                    unitMetaLabel => noMetaLabel,
+                    policyMetaLabels => theInputFile.policyMetaLabels )
+                 );
               else
                  err( +"only implemented for a tty/terminal" );
               end if;

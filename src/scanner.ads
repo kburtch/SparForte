@@ -364,12 +364,12 @@ function metaLabelOk( context : identifier; firstStorage, secondStorage, thirdSt
 -- Data Meta Label Resolution
 ------------------------------------------------------------------------------
 
-function resolveEffectiveMetaLabel(
+function resolveEffectiveMetaLabels(
    kind          : identifier;
    firstStorage  : storage;
    secondStorage : storage := nullStorage;
    thirdStorage  : storage := nullStorage;
-   fourthStorage : storage := nullStorage ) return identifier;
+   fourthStorage : storage := nullStorage ) return metaLabelHashedSet.Set;
 
 function assignSystemIndexMetaLabel return identifier;
 pragma inline( assignSystemIndexMetaLabel );
@@ -384,7 +384,7 @@ procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_st
 procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier );
 -- Convert an array to a JSON string.
 
-procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabel : identifier );
+procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabels : metaLabelHashedSet.Set );
 
 -- Convert a JSON string and store in an array.
 
@@ -544,7 +544,7 @@ type blockDeclaration is record
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;
   occurrence_full      : unbounded_string;
-  metaLabel       : identifier; -- the security level
+  metaLabels       : metaLabelHashedSet.Set; -- the security level
 end record;
 
 type blocksArray is array( block ) of blockDeclaration;

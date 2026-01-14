@@ -55,6 +55,7 @@ use ada.text_io,
     pegasoft.script_io,
     world,
     world.constraints,
+    symbol_table,
     reports,
     reports.test,
     pegasoft.strings,
@@ -69,6 +70,8 @@ use ada.text_io,
     parser.decl.as,
     parser_teams,
     parser_tio;
+
+use world.metaLabelHashedSet;
 
 package body parser_pragmas is
 
@@ -1657,7 +1660,7 @@ begin
      if getUniType( identifiers( metaLabel ).kind ) /= meta_t then
         err( +"meta tag expected" );
      end if;
-     if identifiers( var_id ).store.metaLabel /= noMetaLabel then
+     if identifiers( var_id ).store.policyMetaLabels /= noMetaLabels then
         err( +"meta tag already assigned" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
@@ -2356,10 +2359,11 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue, noMetaLabel );
+                           DoJsonToArray( var_id, newValue, noMetaLabels );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            jsonStore.value := newValue;
-                           jsonStore.metaLabel := sparMetaLabel;
+                           jsonStore.unitMetaLabel := noMetaLabel;
+                           jsonStore.policyMetaLabels := sparMetaLabels;
                            DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );
@@ -2412,10 +2416,11 @@ begin
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                             DoJsonToString( identifiers( var_id ).store.value, importValue );
                          elsif identifiers( var_id ).list then                           -- array
-                            DoJsonToArray( var_id, importValue, noMetaLabel );
+                            DoJsonToArray( var_id, importValue, noMetaLabels );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
-                            jsonStore.value := importValue;
-                            jsonStore.metaLabel := sparMetaLabel;
+                             jsonStore.value := importValue;
+                             jsonStore.unitMetalabel := noMetaLabel;
+                            jsonStore.policyMetaLabels := sparMetaLabels;
                             DoJsonToRecord( var_id, jsonStore );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                             DoJsonToNumber( importValue, identifiers( var_id ).store.value );
@@ -2492,11 +2497,12 @@ begin
         end if;
      when meta_label =>  -- DATA META LABEL
         -- These are restricted to non-arrays
-        identifiers( var_id ).store.metaLabel := metaLabel;
+        identifiers( var_id ).store.unitMetaLabel := noMetaLabel;
+        identifiers( var_id ).store.policyMetaLabels := To_Set( metaLabel );
         if trace then
            put_trace( to_string( identifiers( var_id ).name ) &
-              " value has meta labels '" &
-              to_string( identifiers( identifiers( var_id ).store.metaLabel ).name ) & "'" );
+              " value has policy data meta labels '" &
+              to_string( image( identifiers( var_id ).store.policyMetaLabels ) ) & "'" );
         end if;
      when noCommandHash =>
         clearCommandHash;
@@ -2760,10 +2766,11 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue, noMetaLabel );
+                           DoJsonToArray( var_id, newValue, noMetaLabels );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            jsonStore.value := newValue;
-                           jsonStore.metaLabel := sparMetaLabel;
+                           jsonStore.unitMetaLabel := noMetaLabel;
+                           jsonStore.policyMetaLabels := sparMetaLabels;
                            DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );

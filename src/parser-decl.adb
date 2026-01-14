@@ -34,6 +34,7 @@ with gnat.source_info,
     spar_os,
     pegasoft.strings,
     pegasoft.numerics,
+    world,
     performance_monitoring,
     symbol_table,
     message_strings,
@@ -63,6 +64,9 @@ use gnat.io_aux,
     parser_aux,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
+
+use world.metaLabelHashedSet;
+-- for inline operators
 
 package body parser.decl is
 
@@ -1906,10 +1910,10 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- in the assignment list.
 
     if identifiers( new_const_id ).list then
---put_line( "verify: array assign part" ); -- DEBUG
+-- put_line( "verify: array assign part" ); -- DEBUG
        ParseArrayAssignPart( new_const_id );
     elsif getUniType( identifiers( new_const_id ).kind ) = root_record_t then
---put_line( "verify: record assign part" ); -- DEBUG
+-- put_line( "verify: record assign part" ); -- DEBUG
        ParseRecordAssignPart( new_const_id, type_token );
     end if;
 
@@ -1921,26 +1925,34 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        if trace then
           put_trace( "Completing constant specification for " & to_string( oldSpec.name ) );
        end if;
-       expr.value := castToType( expr.value, type_token );
-       -- Contracts only run on scalars currently
+       -- only for scalars
        if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
+          expr.value := castToType( expr.value, type_token );
+          -- Contracts only run on scalars currently
           if type_token /= right_type then
              DoContracts( identifiers( new_const_id ).kind, expr );
           end if;
-       end if;
-       identifiers( new_const_id ).store.all := expr;
-       if trace then
-          put_trace(
-             to_string( identifiers( new_const_id ).name ) & " := """ &
-             toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
-        end if;
-        if expr.metaLabel /= noMetaLabel then
+          identifiers( new_const_id ).store.all := expr;
           if trace then
-              put_trace( to_string( identifiers( new_const_id ).name ) &
-                  " value has meta labels '" &
-                  to_string( identifiers( identifiers( new_const_id ).store.metaLabel ).name ) & "'" );
+             put_trace(
+                to_string( identifiers( new_const_id ).name ) & " := """ &
+                 toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
+         end if;
+         if expr.unitMetaLabel /= noMetaLabel then
+            if trace then
+                put_trace( to_string( identifiers( new_const_id ).name ) &
+                    " value has unit of measure data meta labels '" &
+                    to_string( identifiers( identifiers( new_const_id ).store.unitMetaLabel ).name ) & "'" );
+            end if;
+         end if;
+         if expr.policyMetaLabels /= noMetaLabels then
+            if trace then
+               put_trace( to_string( identifiers( new_const_id ).name ) &
+                   " value has policy data meta labels '" &
+                   to_string( image( identifiers( new_const_id ).store.policyMetaLabels  ) ) & "'" );
            end if;
-        end if;
+        end if; -- is scalar
+      end if;
     end if;
   end VerifyConstantSpec;
 
@@ -2539,11 +2551,18 @@ begin
                toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
 
         end if;
-        if expr.metaLabel /= noMetaLabel then
+        if expr.unitMetaLabel /= noMetaLabel then
           if trace then
               put_trace( to_string( identifiers( id ).name ) &
-                  " value has meta labels '" &
-                  to_string( identifiers( identifiers( id ).store.metaLabel ).name ) & "'" );
+                  " value has unit of measure data meta labels '" &
+                  to_string( identifiers( identifiers( id ).store.unitMetaLabel ).name ) & "'" );
+           end if;
+        end if;
+        if expr.policyMetaLabels /= noMetaLabels then
+          if trace then
+              put_trace( to_string( identifiers( id ).name ) &
+                  " value has policy data meta labels '" &
+                  to_string( image( identifiers( id ).store.policyMetaLabels ) ) & "'" );
            end if;
         end if;
      else

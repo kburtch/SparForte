@@ -159,7 +159,8 @@ begin
   if isExecutingCommand then
      result.value := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
        random_generator ) ) );
-     result.metaLabel := sparMetaLabel;
+     result.unitMetaLabel := noMetaLabel;
+     result.policyMetaLabels := sparMetaLabels;
   end if;
 end ParseNumericsRandom;
 
@@ -182,7 +183,7 @@ begin
            result := storage'( to_unbounded_string( numericValue( shift_left(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), expr_st.metaLabel );
+           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -209,7 +210,7 @@ begin
            result := storage'( to_unbounded_string( numericValue( shift_right(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), expr_st.metaLabel );
+           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -236,7 +237,7 @@ begin
            result := storage'( to_unbounded_string( numericValue( rotate_left(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value) )
-           ) ) ), expr_st.metaLabel );
+           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -263,7 +264,7 @@ begin
            result := storage'( to_unbounded_string( numericValue( rotate_right(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value) )
-           ) ) ), expr_st.metaLabel );
+           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -290,7 +291,7 @@ begin
            result := storage'(to_unbounded_string( numericValue( shift_right_arithmetic(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), expr_st.metaLabel );
+           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -312,7 +313,7 @@ begin
     if isExecutingCommand then
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( sqrt( to_numeric( expr_st.value ) ) ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
     end if;
   exception when others =>
@@ -342,10 +343,10 @@ begin
         if metaLabelOk( subprogramId, expr_st ) then
            if base_type = eof_t then
               result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
            else
               result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ),
-                to_numeric( base_st.value ) ) ), expr_st.metaLabel );
+                to_numeric( base_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
            end if;
         end if;
      end if;
@@ -368,7 +369,7 @@ begin
     if isExecutingCommand then
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( exp( to_numeric( expr_st.value) ) ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when constraint_error =>
@@ -405,10 +406,10 @@ begin
         if metaLabelOk( subprogramId, expr_st ) then
            if cycle_type = eof_t then
               result := storage'(to_unbounded_string( sin( to_numeric( expr_st.value ) ) ),
-                 expr_st.metaLabel );
+                 noMetaLabel, expr_st.policyMetaLabels );
            else
               result := storage'( to_unbounded_string( sin( to_numeric( expr_st.value ),
-                to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+                to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
            end if;
         end if;
      end if;
@@ -446,10 +447,10 @@ begin
        if metaLabelOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
           else
              result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ),
-                to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+                to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
           end if;
        end if;
     end if;
@@ -487,10 +488,10 @@ begin
        if metaLabelOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
           else
              result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
           end if;
        end if;
     end if;
@@ -535,10 +536,10 @@ begin
        if metaLabelOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
           else
              result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
           end if;
        end if;
     end if;
@@ -583,10 +584,10 @@ begin
        if metaLabelOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
           else
              result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value),
-               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
           end if;
        end if;
     end if;
@@ -633,10 +634,10 @@ begin
        if metaLabelOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ) ) ),
-                expr_st.metaLabel );
+                noMetaLabel, expr_st.policyMetaLabels );
           else
              result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), expr_st.metaLabel );
+               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
           end if;
        end if;
     end if;
@@ -688,11 +689,13 @@ begin
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ) ) ),
-               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+               noMetaLabel,
+               resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
           else
              result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
-               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+               noMetaLabel,
+               resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
           end if;
        end if;
     end if;
@@ -742,11 +745,11 @@ begin
        if metaLabelOk( subprogramId, expr_st, expr2_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
-               to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+               to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
           else
              result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
-               resolveEffectiveMetaLabel( expr_type, expr_st, expr2_st ) );
+               noMetaLabel, resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
           end if;
        end if;
     end if;
@@ -769,7 +772,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( sinh( to_numeric( expr_st.value ) ) ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -791,7 +794,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( cosh( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -813,7 +816,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( tanh( to_numeric( expr_st.value) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -835,7 +838,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( coth(  to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when constraint_error =>
@@ -864,7 +867,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arcsinh( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -886,7 +889,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arccosh( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -922,7 +925,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arctanh( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -958,7 +961,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arccoth( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -994,7 +997,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'floor( to_numeric( expr_st.value ) ) ),
-            expr_st.metaLabel );
+            noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1016,7 +1019,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'ceiling( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1038,7 +1041,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'rounding( to_numeric( expr_st.value ) ) ),
-          expr_st.metaLabel );
+          noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1060,7 +1063,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1082,7 +1085,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
          result := storage'( to_unbounded_string( numericValue'truncation( to_numeric( expr_st.value ) ) ),
-            expr_st.metaLabel );
+            noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1107,7 +1110,7 @@ begin
      if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( remainder_t, expr2_st )  then
           result := storage'( to_unbounded_string( numericValue'remainder( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), expr_st.metaLabel );
+            to_numeric( expr2_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1129,7 +1132,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_st.value ) ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1151,7 +1154,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'fraction( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1176,7 +1179,7 @@ begin
      if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( leading_part_t, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'leading_part( to_numeric( expr_st.value ),
-             integer( to_numeric( expr2_st.value ) ) ) ), expr_st.metaLabel );
+             integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel, expr_st.policyMetaLabels );
        end if;
      end if;
   exception when others =>
@@ -1201,7 +1204,7 @@ begin
      if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'copy_sign( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel( kind, expr_st, expr2_st ) );
+            to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels( kind, expr_st, expr2_st ) );
        end if;
      end if;
   exception when others =>
@@ -1236,7 +1239,7 @@ begin
              numericValue'rounding(
                 (hi-lo) / 1.0+log( total )
              )
-          ), resolveEffectiveMetaLabel( kind, lo_st, hi_st, total_st ) );
+          ), noMetaLabel, resolveEffectiveMetaLabels( kind, lo_st, hi_st, total_st ) );
        end if;
      end if;
   exception when others =>
@@ -1261,7 +1264,7 @@ begin
      if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'max( to_numeric( expr_st.value ),
-             to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+             to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
        end if;
      end if;
   exception when others =>
@@ -1286,7 +1289,7 @@ begin
      if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'min( to_numeric( expr_st.value ),
-             to_numeric( expr2_st.value ) ) ), resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+             to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
         end if;
      end if;
   exception when others =>
@@ -1308,7 +1311,7 @@ begin
     if isExecutingCommand then
        if metaLabelOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'machine( to_numeric( expr_st.value ) ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
        end if;
     end if;
   exception when others =>
@@ -1334,7 +1337,7 @@ begin
        if metaLabelOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'scaling( to_numeric( expr_st.value ),
             integer( to_numeric( expr2_st.value ) ) ) ),
-            resolveEffectiveMetaLabel(kind, expr_st, expr2_st ) );
+            noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
         end if;
      end if;
   exception when others =>
@@ -1357,7 +1360,7 @@ begin
         if metaLabelOk( subprogramId, expr_st ) then
            --result := trim( storage'( to_unbounded_string( to_numeric( expr_st.value ) ), left );
            result := storage'( to_unbounded_string( to_numeric( expr_st.value ) ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception
@@ -1406,7 +1409,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( character'pos( Element( expr_st.value, 1 ) )'img ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1428,7 +1431,7 @@ begin
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'(
               to_unbounded_string( abs( to_numeric( expr_st.value ) ) ),
-              expr_st.metaLabel
+              noMetaLabel, expr_st.policyMetaLabels
            );
         end if;
      end if;
@@ -1456,7 +1459,7 @@ begin
           Update( C, to_string( expr_st.value ) );
           Final( C, FP );
           result := storage'( to_unbounded_string( Digest_To_Text( FP ) ),
-             expr_st.metaLabel );
+             noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1497,7 +1500,7 @@ begin
         if metaLabelOk( subprogramId, expr_st ) then
            -- from pegasoft.numerics
            result := storage'( to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_st.value ) ) ) ) ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1519,7 +1522,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 1 ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1541,7 +1544,7 @@ begin
      if isExecutingCommand then
         if metaLabelOk( subprogramId, expr_st ) then
            result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 0 ),
-              expr_st.metaLabel );
+              noMetaLabel, expr_st.policyMetaLabels );
         end if;
      end if;
   exception when others =>
@@ -1573,7 +1576,7 @@ begin
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Re( c ) ) ),
-            identifiers( real_t ).store.metaLabel );
+            noMetaLabel, identifiers( real_t ).store.policyMetaLabels );
        end if;
      end if;
   exception when others =>
@@ -1605,7 +1608,7 @@ begin
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Im( c ) ) ),
-             identifiers( img_t ).store.metaLabel );
+             noMetaLabel, identifiers( img_t ).store.policyMetaLabels );
        end if;
      end if;
   exception when others =>
@@ -1644,7 +1647,8 @@ begin
           c.im := to_numeric( identifiers( img_t ).store.value );
           Set_Re( c, to_numeric( expr_st.value ) );
           identifiers( real_t ).store.value := to_unbounded_string( numericValue( c.re ) );
-          identifiers( real_t ).store.metaLabel := expr_st.metaLabel;
+          identifiers( real_t ).store.unitMetaLabel := expr_st.unitMetaLabel;
+          identifiers( real_t ).store.policyMetaLabels := expr_st.policyMetaLabels;
        end if;
      end if;
   exception when others =>
@@ -1683,7 +1687,8 @@ begin
           c.im := to_numeric( identifiers( img_t ).store.value );
           Set_Im( c, to_numeric( expr_st.value ) );
           identifiers( img_t ).store.value := to_unbounded_string( numericValue( c.Im ) );
-          identifiers( img_t ).store.metaLabel := expr_st.metaLabel;
+          identifiers( img_t ).store.unitMetaLabel := expr_st.unitMetaLabel;
+          identifiers( img_t ).store.policyMetaLabels := expr_st.policyMetaLabels;
        end if;
      end if;
   exception when others =>
@@ -1738,7 +1743,8 @@ begin
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ),
-             resolveEffectiveMetaLabel(
+             noMetaLabel,
+             resolveEffectiveMetaLabels(
                 long_float_t,
                 identifiers( real_t ).store.all,
                 identifiers( img_t ).store.all
@@ -1786,7 +1792,8 @@ begin
        if metaLabelOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
           if has_cycle then
              result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ),
-                resolveEffectiveMetaLabel(
+                noMetaLabel,
+                resolveEffectiveMetaLabels(
                    long_float_t,
                    identifiers( real_t ).store.all,
                    identifiers( img_t ).store.all
@@ -1794,7 +1801,8 @@ begin
              );
           else
              result := storage'( to_unbounded_string( numericValue( Argument( c ) ) ),
-                resolveEffectiveMetaLabel(
+                noMetaLabel,
+                resolveEffectiveMetaLabels(
                    long_float_t,
                    identifiers( real_t ).store.all,
                    identifiers( img_t ).store.all
@@ -1871,7 +1879,8 @@ begin
        if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( hash_of( expr1_st.value, limit ) ) ),
-                resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+                noMetaLabel,
+                resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1898,7 +1907,8 @@ begin
        if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( sdbm_hash_of( expr1_st.value, limit ) ) ),
-                resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+                noMetaLabel,
+                resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1925,7 +1935,8 @@ begin
        if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( fnv_hash_of( expr1_st.value, limit ) ) ),
-             resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+             noMetaLabel,
+             resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1952,7 +1963,8 @@ begin
        if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
        limit := hash_integer( to_numeric( expr2_st.value ) );
        result := storage'( to_unbounded_string( numericValue( murmur_hash_of( expr1_st.value, limit ) ) ),
-          resolveEffectiveMetaLabel( kind, expr1_st, expr2_st ) );
+          noMetaLabel,
+          resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
     end if;
     end if;
   exception when others =>
@@ -1973,7 +1985,8 @@ begin
   if isExecutingCommand then
      if metaLabelOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA1.Digest( to_string( src_st.value ) ) ),
-           src_st.metaLabel );
+           noMetaLabel,
+           src_st.policyMetaLabels );
      end if;
   end if;
 end ParseNumericsSHA1DigestOf;
@@ -1991,7 +2004,8 @@ begin
   if isExecutingCommand then
      if metaLabelOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA224.Digest( to_string( src_st.value ) ) ),
-           src_st.metaLabel );
+           noMetaLabel,
+           src_st.policyMetaLabels );
      end if;
   end if;
 end ParseNumericsSHA224DigestOf;
@@ -2009,7 +2023,8 @@ begin
   if isExecutingCommand then
      if metaLabelOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA256.Digest( to_string( src_st.value ) ) ),
-           src_st.metaLabel );
+           noMetaLabel,
+           src_st.policyMetaLabels );
      end if;
   end if;
 end ParseNumericsSHA256DigestOf;
@@ -2027,7 +2042,8 @@ begin
   if isExecutingCommand then
      if metaLabelOK( sha512_digest_of_t, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA512.Digest( to_string( src_st.value ) ) ),
-           src_st.metaLabel );
+           noMetaLabel,
+           src_st.policyMetaLabels );
      end if;
   end if;
 end ParseNumericsSHA512DigestOf;
@@ -2045,7 +2061,8 @@ begin
   if isExecutingCommand then
      if metaLabelOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( shannon_entropy_of( src_st.value ) ),
-           src_st.metaLabel );
+           noMetaLabel,
+           src_st.policyMetaLabels );
      end if;
   end if;
 end ParseNumericsShannonEntropyOf;

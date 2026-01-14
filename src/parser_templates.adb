@@ -143,7 +143,7 @@ begin
   kind := boolean_t;
   if isExecutingCommand then
      if metaLabelOk( templates_has_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
-        result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel );
+        result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel, noMetaLabels );
      end if;
   end if;
 end ParseTemplatesHasPutTemplateHeader;

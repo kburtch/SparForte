@@ -83,7 +83,7 @@ begin
   kind := integer_t;
   expect( os_status_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aStatusCode'image( last_status ) ), noMetaLabel );
+     result := storage'( to_unbounded_string( aStatusCode'image( last_status ) ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseOSStatus;
 
@@ -93,7 +93,7 @@ begin
   kind := natural_t;
   expect( os_pid_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel );
+     result := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseOSPid;
 
@@ -109,7 +109,7 @@ begin
      if metaLabelOk( os_error_string_t, expr ) then
         begin
           result := storage'( to_unbounded_string( OSerror( integer( to_numeric( expr.value ) ) ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
         exception when others =>
            err_exception_raised;
         end;
@@ -123,7 +123,7 @@ begin
   kind := natural_t;
   expect( os_last_child_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel );
+     result := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel, sparMetaLabels );
   end if;
 end ParseOSLastChild;
 

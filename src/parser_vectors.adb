@@ -400,7 +400,8 @@ begin
         -- leaks in the resource table.
         if not identifiers( cursRef.id ).resource then
            declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-           identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.unitMetaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.policyMetaLabels := noMetaLabels;
            identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
            identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
            identifiers( cursRef.id ).resource := true;
@@ -443,7 +444,8 @@ begin
         -- leaks in the resource table.
         if not identifiers( cursRef.id ).resource then
            declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-           identifiers( cursRef.id ).sStorage.metaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.unitMetaLabel := noMetaLabel;
+           identifiers( cursRef.id ).sStorage.policyMetaLabels := noMetaLabels;
            identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
            identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
            identifiers( cursRef.id ).resource := true;
@@ -705,7 +707,7 @@ begin
          to_unbounded_string(
             ada.containers.count_type'image( Vector_Storage_Lists.Capacity( theVector.vslVector ) )
          ),
-         noMetaLabel
+         noMetaLabel, noMetaLabels
       );
      end;
   end if;
@@ -779,7 +781,7 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'(
          to_unbounded_string( ada.containers.count_type'image( Vector_Storage_Lists.Length( theVector.vslVector ) ) ),
-         noMetaLabel
+         noMetaLabel, noMetaLabels
       );
      end;
   end if;
@@ -852,7 +854,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsIsEmpty;
@@ -1099,7 +1101,7 @@ begin
        userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( long_integer'image(
             toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ),
-         noMetaLabel );
+         noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsFirstIndex;
@@ -1128,7 +1130,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
-       result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsLastIndex;
@@ -1448,7 +1450,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsContains;
@@ -1819,7 +1821,7 @@ begin
      begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsHasElement;
@@ -1857,7 +1859,7 @@ begin
        findResource( to_resource_id( leftVecResId.value ), leftVector );
        getParameterValue( rightVectorRef, rightVecResId );
        findResource( to_resource_id( rightVecResId.value ), rightVector );
-       result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel );
+       result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel, noMetaLabels );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -2383,7 +2385,7 @@ begin
                 );
                 AssignParameter(
                     positionCursorRef,
-                    storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
+                    storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
                 );
                 findResource( positionCursorResourceId, thePositionCursor );
              else
@@ -2617,7 +2619,7 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
@@ -2702,7 +2704,7 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
@@ -2767,7 +2769,7 @@ begin
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( subprogramId, vectorRef.Id, positionIdx ) ) );
         AssignParameter(
            positionIdxRef,
-           storage'( positionValue, noMetaLabel )
+           storage'( positionValue, noMetaLabel, noMetaLabels )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -2827,7 +2829,7 @@ begin
 
         AssignParameter(
             positionIdxRef,
-            storage'( positionValue, noMetaLabel )
+            storage'( positionValue, noMetaLabel, noMetaLabels )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -3103,7 +3105,7 @@ begin
          to_unbounded_string(
             long_integer'image( convertedIdx )
          ),
-         noMetaLabel );
+         noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsToIndex;

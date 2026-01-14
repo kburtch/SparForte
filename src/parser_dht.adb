@@ -211,7 +211,7 @@ begin
      getParameterValue( tableRef, tableResId );
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
-       result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel );
+       result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseDHTHasElement;
@@ -281,7 +281,7 @@ begin
        if metaLabelOk( dht_get_first_t, s ) then
           AssignParameter( itemRef, s );
        end if;
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel, noMetaLabels ) );
      end;
   end if;
 end ParseDHTGetFirst;
@@ -319,7 +319,7 @@ begin
        if metaLabelOk( dht_get_next_t, s ) then
           AssignParameter( itemRef, s );
        end if;
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel ) );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel, noMetaLabels ) );
      end;
   end if;
 end ParseDHTGetNext;

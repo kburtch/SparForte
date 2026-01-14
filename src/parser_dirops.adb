@@ -99,7 +99,7 @@ begin
   expect( subprogramId );
   if isExecutingCommand then
      begin
-       result := storage'( null_unbounded_string & dir_separator, noMetaLabel );
+       result := storage'( null_unbounded_string & dir_separator, noMetaLabel, noMetaLabels );
      exception when directory_error =>
        err( +"directory not accessible" );
      when others =>
@@ -246,7 +246,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( get_current_dir ), sparMetaLabel );
+       result := storage'( to_unbounded_string( get_current_dir ), noMetaLabel, sparMetaLabels );
      exception when directory_error =>
        err( +"directory not accessible" );
      when others =>
@@ -277,7 +277,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( Containing_Directory (
-             Full_Name( path_name( to_string( expr.value ))))), expr.metaLabel );
+             Full_Name( path_name( to_string( expr.value ))))), noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -307,7 +307,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ),
-            expr.metaLabel );
+            noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -344,7 +344,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -373,7 +373,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ),
-            expr.metaLabel );
+            noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -403,7 +403,7 @@ begin
      if metaLabelOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;
@@ -450,7 +450,7 @@ begin
                 style := System_Default;
              end if;
              result := storage'( to_unbounded_string( format_pathname( path_name( to_string( expr.value ) ), style ) ),
-                expr.metaLabel );
+                noMetaLabel, expr.policyMetaLabels );
         exception when directory_error =>
           err( +"directory not accessible" );
         when others =>
@@ -501,7 +501,7 @@ begin
              style := System_Default;
           end if;
           result := storage'( to_unbounded_string( expand_path( path_name( to_string( expr.value ) ), style ) ),
-             expr.metaLabel );
+             noMetaLabel, expr.policyMetaLabels );
        exception when directory_error =>
           err( +"directory not accessible" );
        when others =>
@@ -540,7 +540,7 @@ begin
           if not identifiers( ref.id ).resource then
              identifiers( ref.id ).resource := true;
              declareResource( resId, directory, getIdentifierBlock( ref.id ) );
-             AssignParameter( ref, storage'( to_unbounded_string( resId ), expr.metaLabel ) );
+             AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, expr.policyMetaLabels ) );
              findResource( resId, theDir );
           else
              -- Reuse existing resource
@@ -624,14 +624,14 @@ begin
         if dir.value /= null_unbounded_string then
            begin
              findResource( to_resource_id( dir.value ), theDir );
-             result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), sparMetaLabel );
+             result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaLabel, sparMetaLabels );
            exception when others =>
              err_exception_raised;
            end;
         else
            -- probably not open
            result := storage'( to_spar_boolean( false ),
-              dir.metaLabel );
+              noMetaLabel, dir.policyMetaLabels );
         end if;
      end if;
   end if;
@@ -668,7 +668,7 @@ begin
           findResource( to_resource_id( dir.value ), theDir );
           Read( theDir.dir, s, last );
           AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ),
-             dir.metaLabel ) );
+             noMetaLabel, dir.policyMetaLabels ) );
           --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
         exception when DIRECTORY_ERROR =>
           err( +"directory is not open" );

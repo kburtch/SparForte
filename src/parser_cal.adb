@@ -80,11 +80,12 @@ procedure ParseCalClock( result : out storage; kind : out identifier ) is
 begin
   kind := cal_time_t;
   expect( cal_clock_t );
-  if token = tagged_t then
-     ParseMetaLabelSuffix( result.metaLabel );
-  else
-     result.metaLabel := sparMetaLabel;
-  end if;
+  --if token = tagged_t then
+  --   ParseMetaLabelSuffix( result.policyMetaLabels );
+  --else
+  result.unitMetaLabel := noMetaLabel;
+  result.policyMetaLabels := sparMetaLabels;
+  --end if;
   result.value := to_unbounded_string( clock'img );
 end ParseCalClock;
 
@@ -109,7 +110,8 @@ begin
         begin
           result := storage'(
              to_unbounded_string( year( time( to_numeric( expr.value ) ) )'img ),
-             expr.metaLabel
+             noMetaLabel,
+             expr.policyMetaLabels
           );
         exception when others =>
           err_exception_raised;
@@ -139,7 +141,8 @@ begin
         begin
           result := storage'(
              to_unbounded_string( month( time( to_numeric( expr.value ) ) )'img ),
-             expr.metaLabel
+             noMetaLabel,
+             expr.policyMetaLabels
           );
         exception when others =>
           err_exception_raised;
@@ -169,7 +172,8 @@ begin
         begin
           result := storage'(
              to_unbounded_string( day( time( to_numeric( expr.value ) ) )'img ),
-             expr.metaLabel
+             noMetaLabel,
+             expr.policyMetaLabels
           );
         exception when others =>
           err_exception_raised;
@@ -200,7 +204,8 @@ begin
         begin
           result := storage'(
              to_unbounded_string( numericValue( seconds( time( to_numeric( expr.value ) ) ) )'img ),
-             expr.metaLabel
+             noMetaLabel,
+             expr.policyMetaLabels
           );
         exception when others =>
           err_exception_raised;
@@ -240,10 +245,10 @@ begin
      if metaLabelOk( subprogramId, dateExpr ) then
         begin
           Split( time( to_numeric( dateExpr.value ) ), year, month, day, seconds );
-          AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), dateExpr.metaLabel ));
-          AssignParameter( id2_ref, storage'( to_unbounded_string( month'img ), dateExpr.metaLabel ));
-          AssignParameter( id3_ref, storage'( to_unbounded_string( day'img ), dateExpr.metaLabel ));
-          AssignParameter( id4_ref, storage'( to_unbounded_string( seconds'img ), dateExpr.metaLabel ));
+          AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), noMetaLabel, dateExpr.policyMetaLabels ));
+          AssignParameter( id2_ref, storage'( to_unbounded_string( month'img ), noMetaLabel, dateExpr.policyMetaLabels ));
+          AssignParameter( id3_ref, storage'( to_unbounded_string( day'img ), noMetaLabel, dateExpr.policyMetaLabels ));
+          AssignParameter( id4_ref, storage'( to_unbounded_string( seconds'img ), noMetaLabel, dateExpr.policyMetaLabels ));
         exception when others =>
           err_exception_raised;
         end;
@@ -285,7 +290,8 @@ begin
                        month_number( to_numeric( monthExpr.value ) ),
                        day_number( to_numeric( dayExpr.value ) ),
                        day_duration( to_numeric( secsExpr.value ) ) )'img ),
-                 resolveEffectiveMetaLabel( kind, yearExpr, monthExpr, dayExpr, secsExpr )
+                 noMetaLabel,
+                 resolveEffectiveMetaLabels( kind, yearExpr, monthExpr, dayExpr, secsExpr )
               );
         exception when time_error =>
           err( +"time error: illegal time value" );
@@ -346,7 +352,7 @@ begin
                   ) / 100.0 )
                   ) / 4.0 );
          Julian := K - 32075.0 + Term1 + Term2 - Term3;
-         result := storage'( to_unbounded_string( long_integer( Julian )'img ), expr.metaLabel );
+         result := storage'( to_unbounded_string( long_integer( Julian )'img ), noMetaLabel, expr.policyMetaLabels );
        exception when others =>
          err_exception_raised;
        end;
@@ -399,7 +405,8 @@ begin
          Day := Day_Number( K );
          result := storage'(
            to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img ),
-           expr.metaLabel );
+           noMetaLabel,
+           expr.policyMetaLabels );
        exception when others =>
          err_exception_raised;
        end;
@@ -434,7 +441,7 @@ begin
         begin
           Split( time( to_numeric( expr.value ) ), Year, Month, Day, DayDur );
           C_day_of_week( wday, Year, Month, Day );
-          result := storage'( to_unbounded_string( wday'img ), expr.metaLabel );
+          result := storage'( to_unbounded_string( wday'img ), noMetaLabel, expr.policyMetaLabels );
         exception when others =>
           err_exception_raised;
         end;

@@ -2165,7 +2165,8 @@ procedure parseBackQuotedShellSubword(
 begin
    --put_line( "parseBackQuotedShellSubword" ); -- DEBUG
    expectChar( '`', rawWordValue, wordLen, wordPos );
-   commands.metaLabel := noMetaLabel;
+   commands.unitMetaLabel := noMetaLabel;
+   commands.policyMetaLabels := noMetaLabels;
 
    while wordPos <= wordLen and not error_found and not endOfShellWord loop
       ch := element( rawWordValue.value, wordPos );
@@ -2238,7 +2239,7 @@ begin
    if isExecutingCommand then
       for i in optionOffset+1..Argument_Count loop
            bourneShellWordLists.Queue( bourneShellWordList, anExpandedShellWord'(
-             to_unbounded_string( Argument( i ) ), noMetaLabel ) );
+             to_unbounded_string( Argument( i ) ), noMetaLabel, noMetaLabels ) );
       end loop;
    end if;
 end parseDollarAtSign;
@@ -2267,7 +2268,7 @@ begin
    -- quoted.
 
    if token = word_t then
-      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel );
+      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel, noMetaLabels );
       len := length( shellWord.value );
       if len > 0 then
          -- $@ is a special case because the word splitting is not done
@@ -2298,7 +2299,7 @@ begin
    elsif token = sql_word_t then
       -- An SQL word is a shell word with spaces in it containing the
       -- SQL command except for the first keywrod.
-      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel );
+      shellWord := aRawShellWord'( identifiers( token ).store.value, noMetaLabel, noMetaLabels );
       len := length( shellWord.value );
       if len > 0 then
          while wordPos <= len and not error_found and not endOfShellWord loop
@@ -2329,7 +2330,7 @@ begin
    elsif identifiers( token ).kind = new_t then
       -- If there's any kind of quotation, it will be a word not an identifier.
       -- This will always be a bareword.
-      shellWord := aRawShellWord'( identifiers( token ).name, noMetaLabel );
+      shellWord := aRawShellWord'( identifiers( token ).name, noMetaLabel, noMetaLabels );
       len := length( shellWord.value );
       discardUnusedIdentifier( token );
       parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
@@ -2423,7 +2424,7 @@ end parseUniqueShellWord;
 procedure addAdaScriptValue( wordList : in out bourneShellWordLists.List;
   unbounded_val : unbounded_string ) is
 begin
-  bourneShellWordLists.Queue( wordList, anExpandedShellWord'( unbounded_val, noMetaLabel ) );
+  bourneShellWordLists.Queue( wordList, anExpandedShellWord'( unbounded_val, noMetaLabel, noMetaLabels ) );
 end addAdaScriptValue;
 
 

@@ -27,6 +27,7 @@ with ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
   ada.calendar,
+  ada.containers.hashed_sets,
   pegasoft.gen_list,
   software_models,
   pegasock.memcache,
@@ -414,6 +415,18 @@ subtype  metaLabelID is identifier;
 
 noMetaLabel     : constant metaLabelID := identifier'first;
 
+function metaLabelSetHash( e : metaLabelID ) return ada.containers.hash_type;
+
+package metaLabelHashedSet is new ada.containers.hashed_sets(
+  element_type => MetaLabelID,
+  hash => metaLabelSetHash,
+  equivalent_elements => "=",
+  "=" => "="
+);
+
+-- image function is in symbol_table
+
+
 ------------------------------------------------------------------------------
 --
 -- VALUE STORAGE
@@ -430,10 +443,16 @@ function value_equal( left, right : storage ) return boolean;
 
 type storage is record
     value      : aliased unbounded_string;
-    metaLabel  : metaLabelID;  -- TODO: just one for now
+    unitMetaLabel  : metaLabelID;
+    --policyMetaLabel  : metaLabelID;  -- TODO: just one for now
+    policyMetaLabels  : metaLabelHashedSet.Set;
 end record;
-nullStorage : constant storage := ( null_unbounded_string, noMetaLabel );
-undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel );
+
+noMetaLabels : metaLabelHashedSet.Set renames metaLabelHashedSet.Empty_Set;
+
+nullStorage : constant storage := ( null_unbounded_string, noMetaLabel, noMetaLabels );
+undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel, noMetaLabels  );
+
 type storagePtr is access all storage;
 
 -- A storage for a variable is an array of storage elements, possibly with
@@ -476,7 +495,7 @@ noDeclaredAt : constant natural := 0;
 -- The run-time security level.
 ------------------------------------------------------------------------------
 
-sparMetaLabel    : metaLabelID := noMetaLabel;             -- the security level
+sparMetaLabels    : metaLabelHashedSet.Set := noMetaLabels;-- the security level
 
 stdinMetaLabel   : metaLabelID := noMetaLabel;
 stdoutMetaLabel  : metaLabelID := noMetaLabel;
