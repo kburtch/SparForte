@@ -352,16 +352,26 @@ declare
   new_a : arr_type;
 begin
   btree_io.open_cursor( fa, c );
-  btree_io.get_last( fa, c, key, new_a );
-  pragma assert( key = "bar" );
-  pragma assert( new_a(1) = 3 );
-  pragma assert( new_a(2) = 4 );
-
   btree_io.get_first( fa, c, key, new_a );
   pragma assert( key = "foo" );
   pragma assert( new_a(1) = 1 );
   pragma assert( new_a(2) = 2 );
+  btree_io.get_last( fa, c, key, new_a );
+  pragma assert( key = "bar" );
+  pragma assert( new_a(1) = 3 );
+  pragma assert( new_a(2) = 4 );
+  btree_io.close_cursor( fa, c );
+exception when others =>
+  btree_io.close_cursor( fa, c );
+  raise;
+end;
 
+declare
+  c : btree_io.cursor( arr_type );
+  key : string;
+  new_a : arr_type;
+begin
+  btree_io.open_cursor( fa, c );
   i := 1;
   loop
     btree_io.get_next( fa, c, key, new_a );

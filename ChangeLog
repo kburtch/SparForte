@@ -95,3 +95,4 @@ CHANGES SINCE 2.6.3
 
 45. New: spar -B displays build dependencies (Software Bill of Lading, SBOM).
 
+46. Fix: fixed cursor issue in btree get_first function.

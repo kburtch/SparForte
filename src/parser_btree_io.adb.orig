@@ -2159,7 +2159,7 @@ begin
               key : unbounded_string;
               jsonString : unbounded_string;
            begin
-              getParameterValue( fileRef, fileResId );
+              getParameterValue( cursRef, cursResId );
               findResource( to_resource_id( cursResId.value ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2180,8 +2180,13 @@ begin
               err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
               err( +"storage_error raised" );
-           when others =>
-              err_exception_raised;
+           when msg: others =>
+               err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " while reading the array" ),
+                  subject => subprogramId,
+                  reason => +"had an internal error because of an exception:",
+                  obstructorNotes => pl( exception_message( msg ) )
+               );
            end;
         end if;
      else
