@@ -23,6 +23,7 @@
 
 with
     Ada.Containers,
+    ada.exceptions,
     ada.strings.unbounded,
     gnat.source_info,
     pegasoft.strings,
@@ -38,6 +39,7 @@ with
     parser_params,
     parser_containers;
 use
+    ada.exceptions,
     ada.strings.unbounded,
     pegasoft,
     pegasoft.strings,
@@ -1794,8 +1796,12 @@ begin
        err_storage;
      when program_error =>
        err_cursor_mismatch;
-     when others =>
-       err_exception_raised;
+     when msg: others =>
+        err( contextNotes => pl( "At " & gnat.source_info.source_location ),
+            subject => subprogramId,
+            reason => +"had an internal error because of an exception:",
+            obstructorNotes => pl( exception_message( msg ) )
+           );
      end;
   end if;
 end ParseVectorsDelete;
