@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- btree get_last and get_first appear to be reversed?  regression testsuite failing
-
 - value meta labels project
   - split metaLabel into units and policy meta labels
   * adding tags to a set is probably not "include" but will need a
