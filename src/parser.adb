@@ -2045,7 +2045,7 @@ begin
 -- put( "ParseFactor: expr result " ); put( f.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( f.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseFactor: metaLabel is illegal value" ); 
+-- put_line( "ParseFactor: metaLabel is illegal value" );
 -- end;
 end ParseFactor;
 
@@ -2139,7 +2139,7 @@ begin
 -- put( "ParsePowerTerm: expr result " ); put( term.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( term.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParsePowerTerm: metaLabel is illegal value" ); 
+-- put_line( "ParsePowerTerm: metaLabel is illegal value" );
 -- end;
 end ParsePowerTerm;
 
@@ -2381,7 +2381,7 @@ begin
 -- put( "ParseTerm: expr result " ); put( term.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( term.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseTerm: metaLabel is illegal value" ); 
+-- put_line( "ParseTerm: metaLabel is illegal value" );
 -- end;
 --put_line("ParseTerm end"); -- DEBUG
 end ParseTerm;
@@ -2595,7 +2595,7 @@ begin
 -- put( "ParseSimpleExpression: expr result " ); put( se.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( se.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseSimpleExpression: metaLabel is illegal value" ); 
+-- put_line( "ParseSimpleExpression: metaLabel is illegal value" );
 -- end;
 end ParseSimpleExpression;
 
@@ -2862,7 +2862,7 @@ begin
 -- put( "ParseRelation: expr result " ); put( re.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( re.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseRelation: metaLabel is illegal value" ); 
+-- put_line( "ParseRelation: metaLabel is illegal value" );
 -- end;
 -- put_line("ParseRelation end"); -- DEBUG
 end ParseRelation;
@@ -3029,7 +3029,7 @@ begin
 -- put( "ParseExpression: expr result " ); put( ex.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( ex.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseExpression: metaLabel is illegal value" ); 
+-- put_line( "ParseExpression: metaLabel is illegal value" );
 -- end;
   -- Must pull before resetting...
   pullExpressionIds;

@@ -1767,7 +1767,7 @@ begin
               --   err_count( subprogramId, cntExpr, cntType );
               --   cnt := 0;
               --end;
-              
+
               --declare
               --   nextCursor : Vector_Storage_Lists.cursor;
               --begin

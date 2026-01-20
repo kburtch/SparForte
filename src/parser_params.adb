@@ -226,7 +226,7 @@ begin
 -- put( "ParseNextGenItemParameter: storing as " ); put( expr_se.metaLabel'img );
 --    put_line( "/" & to_string( identifiers( expr_se.metaLabel ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseNextGenItemParameter: metaLabel is illegal value" ); 
+-- put_line( "ParseNextGenItemParameter: metaLabel is illegal value" );
 -- end;
      u := getUniType( expected_type );
      if u = uni_string_t or u = uni_numeric_t or u = universal_t then

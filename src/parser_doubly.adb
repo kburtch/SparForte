@@ -514,7 +514,7 @@ end ParseDoublyDeleteFirst;
 --
 -- Syntax: doubly_linked_list.delete_last( l, [, n] );
 -- Ada:    doubly_linked_list.delete_last( l, [, n] );
--- Remove the list element from the end of the list. If n exists, remove n 
+-- Remove the list element from the end of the list. If n exists, remove n
 -- tems instead of one.
 ------------------------------------------------------------------------------
 
