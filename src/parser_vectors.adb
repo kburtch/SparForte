@@ -1709,17 +1709,6 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   expectParameterComma( subprogramId );
-
-     -- DEBUG
-     if identifiers( token ).class = varClass then
-	put_trace( "It's a variable" );
-        if getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-	   put_trace( "It's a cursor" );
-	end if;
-    else
-	put_trace( "It's not a variable" );
-    end if;
-
   if identifiers( token ).class = varClass and then
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
@@ -1742,15 +1731,11 @@ begin
         getParameterValue( vectorRef, vecResId );
         findResource( to_resource_id( vecResId.value ), theVector );
         if hasIdx then
-put_trace( "It's has an index" ); -- DEBUG
            if hasCnt then
-put_trace( "It's has a count" ); -- DEBUG
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
-put_trace( "The index is " & idx'img ); -- DEBUG
-put_trace( "The count is " & cnt'img ); -- DEBUG
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
                   if metaLabelOk( subprogramId, oldElem ) then
@@ -1760,7 +1745,6 @@ put_trace( "The count is " & cnt'img ); -- DEBUG
               -- Vector_Storage_Lists.Delete( theVector.vslVector, idx, cnt );
            else
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
-put_trace( "The index is " & idx'img ); -- DEBUG
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
               if metaLabelOk( subprogramId, oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
@@ -1802,7 +1786,7 @@ put_trace( "The index is " & idx'img ); -- DEBUG
               --end;
               -- Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
            else
-              oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
+              oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
               if metaLabelOk( subprogramId, oldElem ) then
                  Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
               end if;
