@@ -1713,6 +1713,16 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
   else
+     -- DEBUG
+     if identifiers( token ).class = varClass then
+	put_trace( "It's a variable" );
+        if getUniType( identifiers( token ).kind ) = vectors_cursor_t then
+	   put_trace( "It's a cursor" );
+	end if;
+    else
+	put_trace( "It's not a variable" );
+    end if;
+
      ParseGenItemParameter( idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
      -- This will not stronly match natural, positive and integer, as these
      -- subtypes.  But it will detect new data types derived from integer.
