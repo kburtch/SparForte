@@ -1709,10 +1709,7 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorRef, vectors_vector_t );
   expectParameterComma( subprogramId );
-  if identifiers( token ).class = varClass and then
-     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
-     ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
-  else
+
      -- DEBUG
      if identifiers( token ).class = varClass then
 	put_trace( "It's a variable" );
@@ -1723,6 +1720,10 @@ begin
 	put_trace( "It's not a variable" );
     end if;
 
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
+     ParseInOutInstantiatedParameter( subprogramId, cursorRef, vectors_cursor_t );
+  else
      ParseGenItemParameter( idxExpr, idxType, identifiers( vectorRef.Id ).genKind );
      -- This will not stronly match natural, positive and integer, as these
      -- subtypes.  But it will detect new data types derived from integer.
@@ -1741,11 +1742,15 @@ begin
         getParameterValue( vectorRef, vecResId );
         findResource( to_resource_id( vecResId.value ), theVector );
         if hasIdx then
+put_trace( "It's has an index" ); -- DEBUG
            if hasCnt then
+put_trace( "It's has a count" ); -- DEBUG
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+put_trace( "The index is " & idx'img ); -- DEBUG
+put_trace( "The count is " & cnt'img ); -- DEBUG
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
                   if metaLabelOk( subprogramId, oldElem ) then
@@ -1755,6 +1760,7 @@ begin
               -- Vector_Storage_Lists.Delete( theVector.vslVector, idx, cnt );
            else
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+put_trace( "The index is " & idx'img ); -- DEBUG
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
               if metaLabelOk( subprogramId, oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
