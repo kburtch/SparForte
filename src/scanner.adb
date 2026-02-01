@@ -386,13 +386,16 @@ begin
                   " while checking the type attributes" ),
                subject => id );
         end case;
-     when metaClass =>
+     when unitMetaClass =>
         if ident.usage = abstractUsage then
            put_retry( "abstract " );
-        -- elsif ident.usage = constantUsage then
-        --   put_retry( "constant " );
         end if;
-        put_retry( "value meta label " );
+        put_retry( "unit-of-measure value meta label " );
+     when policyMetaClass =>
+        if ident.usage = abstractUsage then
+           put_retry( "abstract " );
+        end if;
+        put_retry( "policy value meta label " );
      when funcClass =>
         put_retry( "built-in " );
         if ident.usage = abstractUsage then
@@ -491,7 +494,7 @@ begin
         null;
      elsif ident.class = genericTypeClass then
         null;
-     elsif ident.class = metaClass then
+     elsif ident.class = unitMetaClass or ident.class = policyMetaClass then
         put_retry( "of ");
         if ident.kind = eof_t then
            put_retry( " unknown" );
@@ -644,7 +647,8 @@ begin
         if ident.renaming_of /= identifier'first then
             null;
         elsif not ident.list and ident.kind /= root_record_t and
-               ident.class /= exceptionClass and ident.class /= metaClass then
+            ident.class /= exceptionClass and ident.class /= unitMetaClass and
+            ident.class /= policyMetaClass then
             put_retry( " := " );
             if ident.class = userProcClass then
                 -- this appears first because getBaseType will fail on a
@@ -3211,7 +3215,7 @@ end getBaseType;
 function class_ok( id : identifier; class : anIdentifierClass ) return boolean is
 begin
   if identifiers( id ).class /= class then
-     if id = eof_t then
+      if id = eof_t then
         err(
             contextNotes => pl( "At " & gnat.source_info.source_location &
                 " while in class_ok(1)" ),
@@ -3219,18 +3223,23 @@ begin
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
+     -- Normally, this should not happen by the time this is called
+     --elsif identifiers( id ).kind = new_t then
+     --   err_previous( pl( "While checking the identifier category, " ) &
+     --      name_em( id ) &
+     --      pl( " is not declared" ) );
      elsif id = exception_t then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "an " ) & em( "exception" ) &
            pl( " is not a " &
            getIdentifierClassImage( class ) ) );
      elsif id < reserved_top then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "a " ) & em( "keyword" ) &
            pl( " is not a " &
            getIdentifierClassImage( class ) ) );
      else
-        err_previous( pl( "While checking the identifier category," ) &
+        err_previous( pl( "While checking the identifier category, " ) &
            name_em( id ) &
            pl( " is a " &
            getIdentifierClassImage( identifiers( id ).class ) ) &
@@ -3263,22 +3272,27 @@ begin
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
+     -- Normally, this should not happen by the time this is called
+     --elsif identifiers( id ).kind = new_t then
+     --   err_previous( pl( "While checking the identifier category, " ) &
+     --      name_em( id ) &
+     --      pl( " is not declared" ) );
      elsif id = exception_t then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "an " ) & em( "exception" ) &
            pl( " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
            getIdentifierClassImage( c2 ) ) );
      elsif id < reserved_top then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "a " ) & em( "keyword" ) & pl(
            " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
            getIdentifierClassImage( c2 ) ) );
      else
-        err_previous( +"While checking the identifier category," &
+        err_previous( +"While checking the identifier category, " &
            name_em( id ) &
            pl( " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
@@ -3313,8 +3327,13 @@ begin
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
+     -- Normally, this should not happen by the time this is called
+     --elsif identifiers( id ).kind = new_t then
+     --   err_previous( pl( "While checking the identifier category, " ) &
+     --      name_em( id ) &
+     --      pl( " is not declared" ) );
      elsif id = exception_t then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "an " ) & em( "exception" ) &
            pl( " is not a " &
            getIdentifierClassImage( c1 ) &
@@ -3323,7 +3342,7 @@ begin
            " or a " &
            getIdentifierClassImage( c3 ) ) );
      elsif id < reserved_top then
-        err_previous( pl( "While checking the identifier category," &
+        err_previous( pl( "While checking the identifier category, " &
            "a " ) & em( "keyword" ) &
            pl( " is not a " &
            getIdentifierClassImage( c1 ) &
@@ -3332,7 +3351,7 @@ begin
            " or a " &
            getIdentifierClassImage( c3 ) ) );
      else
-        err_previous( pl( "While checking the identifier category," ) &
+        err_previous( pl( "While checking the identifier category, " ) &
            name_em( id ) &
            pl( " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &

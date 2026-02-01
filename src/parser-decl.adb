@@ -3102,9 +3102,14 @@ procedure ParseMeta is
   newmeta_id : identifier;
   oldmeta_id : identifier;
   isAbstract : boolean := false;
+  isPolicy   : boolean := false;
   b : boolean;
 begin
   expect( meta_t );
+  if token = policy_t then
+     isPolicy := true;
+     expect( policy_t );
+  end if;
   ParseNewIdentifier( newmeta_id );
   expect( is_t );
   expect( new_t );
@@ -3118,11 +3123,16 @@ begin
      oldmeta_id := meta_t;
   else
      ParseIdentifier( oldmeta_id );
+     b := class_ok( oldmeta_id, policyMetaClass );
   end if;
 
   if isExecutingCommand or syntax_check then
      identifiers( newmeta_id ).kind := oldmeta_id;
-     identifiers( newmeta_id ).class := metaClass;
+     if isPolicy then
+        identifiers( newmeta_id ).class := policyMetaClass;
+     else
+        identifiers( newmeta_id ).class := unitMetaClass;
+     end if;
      if isAbstract then
        identifiers( newmeta_id ).usage := abstractUsage;
      else

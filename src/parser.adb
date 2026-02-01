@@ -1427,21 +1427,29 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   ---------------------------------------------------------------------------
 
   procedure ParseFactorMetaLabel is
+      id : identifier;
+      s  : storage; -- KLUDGE
   begin
      if token = tagged_t then
         expect( tagged_t );
         if token = policy_t then
            expect( policy_t );
-           if class_ok(token, metaClass ) then
-              f.unitMetaLabel := noMetaLabel;
-              f.policyMetaLabels := metaLabelHashedSet.To_Set( token );
-              getNextToken;
+           ParseIdentifier( id );
+           if class_ok( id, policyMetaClass ) then
+              s.unitMetaLabel := noMetaLabel; -- KLUDGE
+              s.policyMetaLabels := metaLabelHashedSet.To_Set( id );
+              if metaLabelOk( "While adding tags to the factor", s ) then
+                 f.unitMetaLabel := noMetaLabel;
+                 f.policyMetaLabels := metaLabelHashedSet.To_Set( id );
+                 identifiers( id ).wasReferenced := true;
+              end if;
            end if;
         else
-           if class_ok(token, metaClass ) then
-              f.unitMetaLabel := token;
+           ParseIdentifier( id );
+           if class_ok(id, unitMetaClass ) then
+              f.unitMetaLabel := id;
               f.policyMetaLabels := noMetaLabels;
-              getNextToken;
+              identifiers( id ).wasReferenced := true;
            end if;
         end if;
      else
@@ -1653,9 +1661,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
              end if;
           end if;
        end if;
-       f.policyMetaLabels := identifiers( t ).store.policyMetaLabels;
-       f.unitMetaLabel := noMetaLabel;
-       f.value := identifiers( t ).store.value;
+       f := identifiers( t ).store.all;
        kind := identifiers( t ).kind;
        -- Mark as used as a factor.  if it is a record field, mark the whole
        -- record as used as a factor for limit type testing purposes.
@@ -1698,21 +1704,16 @@ begin
   -- categories.  If the token isn't in the category, skip the rest.
   elsif token < reserved_top then
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
-        f.value := to_unbounded_string( last_status'img );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f := storage'( to_unbounded_string( last_status'img ), noMetaLabel, noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
-        f.value := to_unbounded_string( aPID'image( getpid ) );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
-        f.value := to_unbounded_string( aPID'image( lastChild ) );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel,
+             noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -1721,9 +1722,8 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
-           f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
+           f := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset) ),
+                          noMetaLabel, noMetaLabels );
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -1758,32 +1758,25 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
-           f.value := to_unbounded_string( Ada.Command_Line.Command_Name );
+            f := storage'( to_unbounded_string( Ada.Command_Line.Command_Name ),
+                           noMetaLabel, noMetaLabels );
         end if;
         kind := uni_string_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "@" then
         if onlyAda95 then
-           err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
-           f.value := null_unbounded_string;
+            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
+           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
            kind := eof_t;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
-           f.value := null_unbounded_string;
+           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( +"@ is not a variable" );
            kind := eof_t;
         else
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
-           f.value := itself;
+           f := storage'( itself, noMetaLabel, noMetaLabels );
            kind := itself_type;
         end if;
         getNextToken;
@@ -1900,42 +1893,31 @@ begin
         getNextToken;
         if onlyAda95 then
            err( +"system_metal_level_image is not allowed with " &
-              em( "pragma ada_95" ) );
-          f.unitMetaLabel := noMetaLabel;
-          f.policyMetaLabels := noMetaLabels;
-          f.value := null_unbounded_string;
+                em( "pragma ada_95" ) );
+           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
            kind := eof_t;
         else
-          f.unitMetaLabel := noMetaLabel;
-          f.policyMetaLabels := noMetaLabels;
-          f.value := image( sparMetaLabels );
-          kind := string_t;
+           f := storage'( image( sparMetaLabels ), noMetaLabel, noMetaLabels );
+           kind := string_t;
         end if;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with " &
               em( "pragma ada_95" ) );
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := sparMetaLabels;
-           f.value := null_unbounded_string;
+           f := storage'( null_unbounded_string, noMetaLabel, sparMetaLabels );
            kind := eof_t;
         else
-          f.unitMetaLabel := noMetaLabel;
-          f.policyMetaLabels := noMetaLabels;
-          f.value := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
+            f := storage'( delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 ),
+                           noMetaLabel, noMetaLabels );
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := sparMetaLabels;
-        f.value := basename( getSourceFileName );
+        f := storage'( basename( getSourceFileName ), noMetaLabel, sparMetaLabels );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := sparMetaLabels;
-        f.value := to_unbounded_string( getLineNo'img );
+        f := storage'( to_unbounded_string( getLineNo'img ), noMetaLabel, sparMetaLabels );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
@@ -3080,21 +3062,16 @@ begin
      expect( symbol_t, ")" );
   else
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
-        f.value := to_unbounded_string( last_status'img );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f := storage'( to_unbounded_string( last_status'img ), noMetaLabel, noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
-        f.value := to_unbounded_string( aPID'image( getpid ) );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
-        f.value := to_unbounded_string( aPID'image( lastChild ) );
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+         f := storage'( to_unbounded_string( aPID'image( lastChild ) ),
+                 noMetaLabel, noMetaLabels );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -3103,9 +3080,8 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingStaticCommand then
-           f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
+           f := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset) ),
+                   noMetaLabel, noMetaLabels );
         end if;
         kind := uni_numeric_t;
         getNextToken;

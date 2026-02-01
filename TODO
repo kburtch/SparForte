@@ -12,6 +12,8 @@ Long term Ongoing Work
 ----------------------
 
 - value meta labels project
+  - need to distinguish between policy and unit tags: otherwise,
+    unit tags can be assigned as a policy and vice versa
   - split metaLabel into units and policy meta labels
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities

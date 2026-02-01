@@ -284,11 +284,5 @@ procedure ParseLastOutParameter(
   ref : out reference;
   defaultType : identifier );
 
-------------------------------------------------------------------------------
---
-------------------------------------------------------------------------------
-
-procedure ParseMetaLabelSuffix( label : out identifier );
-
 end parser_params;
 

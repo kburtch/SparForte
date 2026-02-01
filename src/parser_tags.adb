@@ -50,22 +50,27 @@ package body parser_tags is
 -- tags package identifiers
 ------------------------------------------------------------------------------
 
-tags_has_tags_t       : identifier;
-tags_contains_t       : identifier;
-tags_get_tags_image_t : identifier;
+tags_has_unit_tag_t          : identifier;
+tags_contains_unit_t         : identifier;
+tags_get_unit_tag_image_t    : identifier;
+tags_has_policy_tags_t       : identifier;
+tags_contains_policy_t       : identifier;
+tags_get_policy_tags_image_t : identifier;
 
 
-------------------------------------------------------------------------------
---  HAS TAGS
+-----------------------------------------------------------------------------
+--  PARSE TAGS HAS UNIT TAG                               (built-in function)
 --
--- Syntax: b := tags.has_tags( x )
--- Ada:    N/A
-------------------------------------------------------------------------------
+-- AdaScript Syntax: b := tags.has_unit tag( x );
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.has_unit_tag
+-----------------------------------------------------------------------------
 
-procedure ParseTagsHasTags( result : out storage; kind : out identifier ) is
+procedure ParseTagsHasUnitTag( result : out storage; kind : out identifier ) is
   expr : storage;
   expr_type : identifier;
-  subprogramId : constant identifier := tags_has_tags_t;
+  subprogramId : constant identifier := tags_has_unit_tag_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
@@ -73,24 +78,26 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.policyMetaLabels /= noMetaLabels ), noMetaLabel, noMetaLabels );
+     result := storage'( to_spar_boolean( expr.unitMetaLabel /= noMetaLabel ), noMetaLabel, noMetaLabels );
   end if;
-end ParseTagsHasTags;
+end ParseTagsHasUnitTag;
 
 
-------------------------------------------------------------------------------
---  TAGS CONTAINS
+-----------------------------------------------------------------------------
+--  PARSE TAGS CONTAINS UNIT                              (built-in function)
 --
--- Syntax: b := tags.contains( x, t )
--- Ada:    N/A
-------------------------------------------------------------------------------
+-- AdaScript Syntax: b := tags.contains_unit( x, t ));
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.contains_unit
+-----------------------------------------------------------------------------
 
-procedure ParseTagsContains( result : out storage; kind : out identifier ) is
+procedure ParseTagsContainsUnit( result : out storage; kind : out identifier ) is
   expr         : storage;
   expr_type    : identifier;
-  tagId        : identifier;
+  tagId        : metaLabelID;
   limitedVarId : identifier;
-  subprogramId : constant identifier := tags_contains_t;
+  subprogramId : constant identifier := tags_contains_unit_t;
 begin
   kind := boolean_t;
   expect( subprogramId );
@@ -106,29 +113,123 @@ begin
      ParseExpression( expr, expr_type );
   end if;
   expect( symbol_t, "," );
-  if getUniType( identifiers( token ).kind ) = meta_t then
-     ParseIdentifier( tagId );
+  ParseIdentifier( tagId );
+  if class_ok( tagId, unitMetaClass ) then
      expect( symbol_t, ")" );
   else
-     err( +"meta tag expected" );
+     err( +"unit value meta tag expected" );
+  end if;
+  if isExecutingCommand then
+     result := storage'( to_spar_boolean( expr.unitMetaLabel = tagid ), noMetaLabel, noMetaLabels );
+  end if;
+end ParseTagsContainsUnit;
+
+
+-----------------------------------------------------------------------------
+--  PARSE TAGS GET UNIT TAG IMAGE                         (built-in function)
+--
+-- AdaScript Syntax: b := tags.get_unit_tag_image( x );
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.get_unit_tag_image
+-----------------------------------------------------------------------------
+
+procedure ParseTagsGetUnitTagImage( result : out storage; kind : out identifier ) is
+  expr : storage;
+  expr_type : identifier;
+  subprogramId : constant identifier := tags_get_unit_tag_image_t;
+begin
+  kind := string_t;
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseExpression( expr, expr_type );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     result := storage'( identifiers( expr.unitMetaLabel ).name, noMetaLabel, noMetaLabels );
+  end if;
+end ParseTagsGetUnitTagImage;
+
+
+-----------------------------------------------------------------------------
+--  PARSE TAGS HAS POLICY TAGS                            (built-in function)
+--
+-- AdaScript Syntax: b := tags.has_policy tags( x );
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.has_policy_tags
+-----------------------------------------------------------------------------
+
+procedure ParseTagsHasPolicyTags( result : out storage; kind : out identifier ) is
+  expr : storage;
+  expr_type : identifier;
+  subprogramId : constant identifier := tags_has_policy_tags_t;
+begin
+  kind := boolean_t;
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  ParseExpression( expr, expr_type );
+  expect( symbol_t, ")" );
+  if isExecutingCommand then
+     result := storage'( to_spar_boolean( expr.policyMetaLabels /= noMetaLabels ), noMetaLabel, noMetaLabels );
+  end if;
+end ParseTagsHasPolicyTags;
+
+
+-----------------------------------------------------------------------------
+--  PARSE TAGS CONTAINS POLICY                            (built-in function)
+--
+-- AdaScript Syntax: b := tags.contains_policy( x, t ));
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.contains_policy
+-----------------------------------------------------------------------------
+
+procedure ParseTagsContainsPolicy( result : out storage; kind : out identifier ) is
+  expr         : storage;
+  expr_type    : identifier;
+  tagId        : identifier;
+  limitedVarId : identifier;
+  subprogramId : constant identifier := tags_contains_policy_t;
+begin
+  kind := boolean_t;
+  expect( subprogramId );
+  expect( symbol_t, "(" );
+  -- An arbitrary expression can be tested.  However, expressions cannot
+  -- contain a limited variable, such as file or directory resource, and
+  -- those also need to be checked.  Abstract variables do not exist.
+  -- What about arrays?
+  if identifiers( token ).usage = limitedUsage then
+     Parseidentifier( limitedVarId );
+     expr := identifiers( limitedVarId ).store.all;
+  else
+     ParseExpression( expr, expr_type );
+  end if;
+  expect( symbol_t, "," );
+  ParseIdentifier( tagId );
+  if class_ok( tagId, policyMetaClass ) then
+     expect( symbol_t, ")" );
+  else
+     err( +"policy value meta tag expected" );
   end if;
   if isExecutingCommand then
      result := storage'( to_spar_boolean( expr.policyMetaLabels.contains( tagid ) ), noMetaLabel, noMetaLabels );
   end if;
-end ParseTagsContains;
+end ParseTagsContainsPolicy;
 
 
-------------------------------------------------------------------------------
---  TAGS GET TAGS IMAGE
+-----------------------------------------------------------------------------
+--  PARSE TAGS GET POLICY TAGS IMAGE                      (built-in function)
 --
--- Syntax: s := tags.get_tags_image( x )
--- Ada:    N/A
-------------------------------------------------------------------------------
+-- AdaScript Syntax: b := tags.get_policy_tags_image( x );
+--       Ada Target: N/A
+--   GNAT Spec File: N/A
+--   SparForte Docs: doc/pkg_tags.html#tags.get_policy_tags_image
+-----------------------------------------------------------------------------
 
-procedure ParseTagsGetTagsImage( result : out storage; kind : out identifier ) is
+procedure ParseTagsGetPolicyTagsImage( result : out storage; kind : out identifier ) is
   expr : storage;
   expr_type : identifier;
-  subprogramId : constant identifier := tags_get_tags_image_t;
+  subprogramId : constant identifier := tags_get_policy_tags_image_t;
 begin
   kind := string_t;
   expect( subprogramId );
@@ -138,7 +239,9 @@ begin
   if isExecutingCommand then
      result := storage'( image( expr.policyMetaLabels ), noMetaLabel, noMetaLabels );
   end if;
-end ParseTagsGetTagsImage;
+end ParseTagsGetPolicyTagsImage;
+
+-- Future: Class tag handling here
 
 
 ------------------------------------------------------------------------------
@@ -149,9 +252,12 @@ end ParseTagsGetTagsImage;
 procedure StartupTags is
 begin
   declareNamespace( "tags" );
-  declareFunction( tags_has_tags_t, "tags.has_tags", ParseTagsHasTags'access );
-  declareFunction( tags_contains_t, "tags.contains", ParseTagsContains'access );
-  declareFunction( tags_get_tags_image_t, "tags.get_tags_image",ParseTagsGetTagsImage'access );
+  declareFunction( tags_has_unit_tag_t, "tags.has_unit_tag", ParseTagsHasUnitTag'access );
+  declareFunction( tags_contains_unit_t, "tags.contains_unit", ParseTagsContainsUnit'access );
+  declareFunction( tags_get_unit_tag_image_t, "tags.get_unit_tag_image",ParseTagsGetUnitTagImage'access );
+  declareFunction( tags_has_policy_tags_t, "tags.has_policy_tags", ParseTagsHasPolicyTags'access );
+  declareFunction( tags_contains_policy_t, "tags.contains_policy", ParseTagsContainsPolicy'access );
+  declareFunction( tags_get_policy_tags_image_t, "tags.get_policy_tags_image",ParseTagsGetPolicyTagsImage'access );
   declareNamespaceClosed( "tags" );
 end StartupTags;
 

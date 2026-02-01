@@ -52,7 +52,7 @@ package world is
 version   : constant string  := "3.0";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
-copyright : constant string  :=  " Copyright (c)2001-2025 Free Software Foundation";
+copyright : constant string  :=  " Copyright (c)2001-2026 Free Software Foundation";
 
 globalConfigPath  : constant string := "/etc/sparforte_config";
 globalPolicyPath  : constant string := "/etc/sparforte_policy";
@@ -332,28 +332,29 @@ current_working_directory : unbounded_string := null_unbounded_string;
 --
 -- Identifier classes
 --
---   constClass    - a constant (removed 17/11/14)
---   subClass      - a subtype
---   typeClass     - a type
---   funcClass     - a function
---   procClass     - a procedure
---   userProcClass - a user-defined procedure
---   taskClass     - a task
---   exceptionClass - an exception
---   varClass      - a variable
---   namespaceClass - a namespace marker
---   enumClass     - an enumerated item
---   policyClass   - a policy block
+--   constClass       - a constant (removed 17/11/14)
+--   subClass         - a subtype
+--   typeClass        - a type
+--   funcClass        - a function
+--   procClass        - a procedure
+--   userProcClass    - a user-defined procedure
+--   taskClass        - a task
+--   exceptionClass   - an exception
+--   varClass         - a variable
+--   namespaceClass   - a namespace marker
+--   enumClass        - an enumerated item
+--   policyClass      - a policy block
 --   configurationClass - a configuration block
 --   formalParamClass - formal parameters
---   metaClass     - a value metalabel
---   otherClass    - an undefined class
+--   unitMetaClass    - a unit value metalabel
+--   policyMetaClass  - a policy value metalabel
+--   otherClass       - an undefined class
 
 type anIdentifierClass is ( subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, namespaceClass, enumClass, policyClass,
   configurationClass, genericTypeClass, formalParamClass, userCaseProcClass,
-  metaClass, otherClass );
+  unitMetaClass, policyMetaClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 

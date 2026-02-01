@@ -303,7 +303,8 @@ begin
   when genericTypeClass => return "generic type";
   when formalParamClass => return "formal parameter";
   when userCaseProcClass => return "user-defined case procedure";
-  when metaClass        => return "value meta label";
+  when unitMetaClass     => return "unit-of-measure value meta label";
+  when policyMetaClass   => return "policy value meta label";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

@@ -697,6 +697,7 @@ begin
    content( e, "logs" );
    content( e, "loop" );
    content( e, "memcache" );
+   content( e, "meta" );
    content( e, "mode" );
    content( e, "mysql" );
    content( e, "mysqlm" );
@@ -729,6 +730,7 @@ begin
    content( e, "strings.perl_match" );
    content( e, "subtype" );
    content( e, "System" );
+   content( e, "tagged" );
    content( e, "teams" );
    content( e, "templates" );
    content( e, "trace" );
@@ -2198,6 +2200,21 @@ begin
      footer( e, "This is not complete.  See the PCRE documentation for more." );
      seeAlso( e, "doc/pkg_strings.html, https://pcre.org" );
      endHelp( e );
+  elsif helpTopic = "meta" then
+     startHelp( e, "meta" );
+     summary( e, "meta statement" );
+     content( e, "meta [policy] tag is new [abstract] meta|parent_tag" );
+     authorKen( e );
+     categoryKeyword( e );
+     description( e, "Declare value meta labels for units-of-measure or " &
+     "security policies.  A parent of 'meta' represents no parent. " &
+     "Abstract meta labels cannot be assigned to values." );
+     examples( e, "meta us_denominations is new abstract meta" );
+     examples( e, "meta us_dollars is new us_denominations" );
+     examples( e, "meta policy confidential is new meta" );
+     errors( e, "An exception is raised if the meta label is a different category from the parent" );
+     --seeAlso( e, "doc/pkg_templates.html" );
+     endHelp( e );
   elsif helpTopic = "mysql" then
      helpMySQL;
   elsif helpTopic = "mysqlm" then
@@ -2398,6 +2415,18 @@ begin
      content( e, "return [expression] [when condition]" );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
+  elsif helpTopic = "tagged" then
+     startHelp( e, "tagged" );
+     summary( e, "tagged clause" );
+     content( e, "literal tagged [policy] tag" );
+     authorKen( e );
+     categoryKeyword( e );
+     description( e, "Add a unit-of-measure value meta label or security policy to a value." );
+     examples( e, "temperature := 15 tagged celsius" );
+     examples( e, "credit_card := ""123456789"" tagged policy pci" );
+     errors( e, "An exception is raised if the literal already has a similar meta label" );
+     --seeAlso( e, "doc/pkg_templates.html" );
+     endHelp( e );
   elsif helpTopic = "typeset" then
      startHelp( e, "typeset" );
      summary( e, "typeset var is type" );
@@ -2550,10 +2579,13 @@ begin
      summary( e, "tags package" );
      authorKen( e );
      categoryPackage( e );
-     description( e, "A collection of common routines using data meta labels." );
-     content( e, "b := has_tags( x )" );
-     content( e, "b := contains( x, t )" );
-     content( e, "s := get_tags_image( x )" );
+     description( e, "A collection of common routines using value meta labels." );
+     content( e, "b := has_policy_tags( x )" );
+     content( e, "b := has_unit_tag( x )" );
+     content( e, "b := contains_policy( x, t )" );
+     content( e, "b := contains_unit( x, t )" );
+     content( e, "s := get_unit_tag_image( x )" );
+     content( e, "s := get_policy_tags_image( x )" );
      --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "teams" then
