@@ -833,6 +833,7 @@ exception when symbol_table_overflow =>
 end ParseDesignPragmaAffinityModeIdentifier;
 
 
+
 -----------------------------------------------------------------------------
 --  PARSE VARIABLE IDENTIFIER
 --
@@ -1260,6 +1261,62 @@ end ParseStaticIdentifier;
 
 
 -----------------------------------------------------------------------------
+--  PARSE META IDENTIFIER
+--
+-- Expect a  previously declared identifier of the appropriate
+-- value meta label class.
+-----------------------------------------------------------------------------
+
+procedure ParseMetaIdentifier( id : out identifier; metaClass : anIdentifierClass ) is
+begin
+  id := eof_t; -- assume failure
+  if isTokenValidIdentifier( "" ) then
+     if identifiers( token ).kind = new_t or identifiers( token ).deleted then
+        -- if we're skipping a block, it doesn't matter if the identifier is
+        -- declared, but it does if we're executing a block or checking syntax
+        if isExecutingCommand or syntax_check then
+           for i in reverse identifiers'first..identifiers_top-1 loop
+               if i /= token and not identifiers(i).deleted then
+                  if typoOf( identifiers(i).name, identifiers(token).name ) then
+                     discardUnusedIdentifier( token );
+                     err( subject => token,
+                          reason => +"is not declared",
+                          obstructorNotes => nullMessageStrings,
+                          remedy => + "you mean " & name_em( i )
+                     );
+                     exit;
+                  end if;
+              end if;
+          end loop;
+          if not error_found then
+             -- token will be eof_t if error has already occurred
+             discardUnusedIdentifier( token );
+             -- help for common mistakes
+             -- php/shell - checking for echo/print doesn't work since these
+             -- are Linux commands anyway and will be found.  Code removed.
+             err( subject => token,
+                  reason => +"is not declared",
+                  obstructorNotes => nullMessageStrings
+             );
+          end if;
+        end if;
+        -- this only appears if err in typo loop didn't occur
+        --if not error_found then
+        --   discardUnusedIdentifier( token );
+        --end if;
+    elsif class_ok( token, metaClass  ) then
+        id := token;
+    end if;
+  end if;
+  getNextToken;
+exception when symbol_table_overflow =>
+  err_symbol_table_overflow;
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseMetaIdentifier;
+
+
+-----------------------------------------------------------------------------
 --  PARSE PROGRAM NAME
 --
 -- Handle the identifier that names the program.  Check for proper style.
@@ -1424,11 +1481,12 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   -- A literal factor may be followed by a meta tag which will be associated
   -- to the factor's value.  A literal factor is considered the origin for
   -- its value.  The tag must be a meta value tag or an error will be raised.
+  -- The meta labels are assumed to be initialized already.
   ---------------------------------------------------------------------------
 
   procedure ParseFactorMetaLabel is
       id : identifier;
-      s  : storage; -- KLUDGE
+      newPolicies : metaLabelHashedSet.Set;
   begin
      if token = tagged_t then
         expect( tagged_t );
@@ -1436,11 +1494,10 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
            expect( policy_t );
            ParseIdentifier( id );
            if class_ok( id, policyMetaClass ) then
-              s.unitMetaLabel := noMetaLabel; -- KLUDGE
-              s.policyMetaLabels := metaLabelHashedSet.To_Set( id );
-              if metaLabelOk( "While adding tags to the factor", s ) then
-                 f.unitMetaLabel := noMetaLabel;
-                 f.policyMetaLabels := metaLabelHashedSet.To_Set( id );
+              newPolicies := metaLabelHashedSet.To_Set( id );
+              if metaLabelOk( "While adding tags to the factor", newPolicies ) then
+                 --f.unitMetaLabel := noMetaLabel;
+                 f.policyMetaLabels := newPolicies; -- TODO: should include the policy?
                  identifiers( id ).wasReferenced := true;
               end if;
            end if;
@@ -1448,13 +1505,14 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
            ParseIdentifier( id );
            if class_ok(id, unitMetaClass ) then
               f.unitMetaLabel := id;
-              f.policyMetaLabels := noMetaLabels;
+              --f.policyMetaLabels := noMetaLabels;
               identifiers( id ).wasReferenced := true;
            end if;
         end if;
-     else
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+     --else
+     --   f.unitMetaLabel := noMetaLabel;
+     --   f.policyMetaLabels := noMetaLabels;
+     -- RETAGGED
      end if;
   end ParseFactorMetaLabel;
 
@@ -1801,16 +1859,22 @@ begin
         getNextToken;
      elsif token = number_t then                           -- numeric literal
         f.value := identifiers( token ).store.value;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
      elsif token = charlit_t then                          -- character literal
         f.value := identifiers( token ).store.value;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
      elsif token = strlit_t then                           -- string literal
         f.value := identifiers( token ).store.value;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         kind := identifiers( token ).kind;
         getNextToken;
         ParseFactorMetaLabel;                                -- meta tag if any
@@ -1839,6 +1903,8 @@ begin
            CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         end if;
         getNextToken;
+        f.unitMetaLabel := noMetaLabel;
+        f.policyMetaLabels := noMetaLabels;
         ParseFactorMetaLabel;                                -- meta tag if any
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );

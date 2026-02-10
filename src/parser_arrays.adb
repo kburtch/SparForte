@@ -520,13 +520,17 @@ begin
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
-        if kind = uni_string_t or kind = universal_t then
-           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
-        elsif kind = uni_numeric_t or kind = root_enumerated_t then
-           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
-        else
-           expectSortableArray( subprogramId, var_id );
-        end if;
+        begin
+           if kind = uni_string_t or kind = universal_t then
+              GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
+           elsif kind = uni_numeric_t or kind = root_enumerated_t then
+              GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
+           else
+              expectSortableArray( subprogramId, var_id );
+           end if;
+        exception when others =>
+          err_exception_raised;
+        end;
      end if;
   end if;
 end ParseArraysBubbleSort;
@@ -571,13 +575,17 @@ begin
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
-        if kind = uni_string_t or kind = universal_t then
-           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
-        elsif kind = uni_numeric_t or kind = root_enumerated_t then
-           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
-        else
-           expectSortableArray( subprogramId, var_id );
-        end if;
+        begin
+           if kind = uni_string_t or kind = universal_t then
+              GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
+           elsif kind = uni_numeric_t or kind = root_enumerated_t then
+              GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
+           else
+              expectSortableArray( subprogramId, var_id );
+           end if;
+        exception when others =>
+          err_exception_raised;
+        end;
      end if;
   end if;
 end ParseArraysBubbleSortDescending;
@@ -622,13 +630,17 @@ begin
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
-        if kind = uni_string_t or kind = universal_t then
-           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
-        elsif kind = uni_numeric_t or kind = root_enumerated_t then
-           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
-        else
-           expectSortableArray( subprogramId, var_id );
-        end if;
+        begin
+          if kind = uni_string_t or kind = universal_t then
+             GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
+          elsif kind = uni_numeric_t or kind = root_enumerated_t then
+             GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
+          else
+             expectSortableArray( subprogramId, var_id );
+          end if;
+        exception when others =>
+          err_exception_raised;
+        end;
      end if;
   end if;
 end ParseArraysHeapSort;
@@ -675,13 +687,17 @@ begin
      if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
-        if kind = uni_string_t or kind = universal_t then
-           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
-        elsif kind = uni_numeric_t or kind = root_enumerated_t then
-           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
-        else
-           expectSortableArray( subprogramId, var_id );
-        end if;
+        begin
+           if kind = uni_string_t or kind = universal_t then
+              GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
+           elsif kind = uni_numeric_t or kind = root_enumerated_t then
+              GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
+           else
+              expectSortableArray( subprogramId, var_id );
+           end if;
+        exception when others =>
+           err_exception_raised;
+        end;
      end if;
   end if;
 end ParseArraysHeapSortDescending;
@@ -1131,7 +1147,11 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     DoArrayToJson( jsonString, source_var_id );
+     begin
+        DoArrayToJson( jsonString, source_var_id );
+     exception when others =>
+        err_exception_raised;
+     end;
      assignParameter( target_ref, storage'(jsonString , noMetaLabel, noMetaLabels ) );
   end if;
 end ParseArraysToJSON;

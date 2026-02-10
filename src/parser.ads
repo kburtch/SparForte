@@ -40,6 +40,7 @@ procedure ParseProcedureIdentifier( id : out identifier );
 procedure ParseVariableIdentifier( id : out identifier );
 procedure ParseNewIdentifier( id : out identifier );
 procedure ParseIdentifier( id : out identifier );
+procedure ParseMetaIdentifier( id : out identifier; metaClass : anIdentifierClass );
 procedure ParseStaticIdentifier( id : out identifier );
 procedure ParseProgramName( program_id : out identifier );
 procedure ParseExpression( ex : out storage; expr_type : out identifier );

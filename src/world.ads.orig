@@ -445,7 +445,6 @@ function value_equal( left, right : storage ) return boolean;
 type storage is record
     value      : aliased unbounded_string;
     unitMetaLabel  : metaLabelID;
-    --policyMetaLabel  : metaLabelID;  -- TODO: just one for now
     policyMetaLabels  : metaLabelHashedSet.Set;
 end record;
 

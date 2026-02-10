@@ -3122,8 +3122,9 @@ begin
      expect( meta_t );
      oldmeta_id := meta_t;
   else
-     ParseIdentifier( oldmeta_id );
-     b := class_ok( oldmeta_id, policyMetaClass );
+     ParseMetaIdentifier( oldmeta_id, policyMetaClass );
+     -- ParseIdentifier( oldmeta_id );
+     -- b := class_ok( oldmeta_id, policyMetaClass );
   end if;
 
   if isExecutingCommand or syntax_check then

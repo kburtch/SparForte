@@ -353,6 +353,8 @@ procedure discardUnusedIdentifier( id : identifier );
 
 function metaLabelOk( contextNotes : string; theStorage : storage ) return boolean;
 function metaLabelOk( context : identifier; theStorage : storage ) return boolean;
+function metaLabelOk( contextNotes : string; policies : metaLabelHashedSet.Set ) return boolean;
+function metaLabelOk( contextNotes : string; unit : metaLabelID ) return boolean;
 function metaLabelOk( contextNotes : string; leftStorage, rightStorage : storage ) return boolean;
 function metaLabelOk( context : identifier; leftStorage, rightStorage : storage ) return boolean;
 function metaLabelOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean;

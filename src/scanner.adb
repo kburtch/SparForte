@@ -4264,6 +4264,22 @@ begin
   return true;
 end metaLabelOk;
 
+function metaLabelOk( contextNotes : string; policies : metaLabelHashedSet.Set ) return boolean is
+   s : storage;
+begin
+   s.policyMetaLabels := policies;
+   s.unitMetaLabel := noMetaLabel;
+   return metaLabelOk( contextNotes, s );
+end metaLabelOk;
+
+function metaLabelOk( contextNotes : string; unit : metaLabelID ) return boolean is
+   s : storage;
+begin
+   s.policyMetaLabels := noMetaLabels;
+   s.unitMetaLabel := unit;
+   return metaLabelOk( contextNotes, s );
+end metaLabelOk;
+
 function metaLabelOk( context : identifier; theStorage : storage ) return boolean is
 begin
    return metaLabelOk( to_string( identifiers( context ).name ), theStorage );
@@ -5000,33 +5016,35 @@ begin
            result := to_unbounded_string( "[" );
            for arrayElementPos in source_first..source_last loop
                -- data := arrayElement( sourceArrayId, arrayElementPos );
-               data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
-               if length( data ) = 0 then
-                  err(
-                      contextNotes => +"enoding the JSON array value",
-                      subject => source_var_id,
-                      subjectType => identifiers( source_var_id ).kind,
-                      reason => pl( "has an " ) & em( "undefined value" ) &
-                         pl(" at index" & arrayElementPos'img ),
-                      obstructorNotes => nullMessageStrings
-                  );
-               else
-                  enum_val := integer( to_numeric( data ) );
-                  if enum_val = 0 then
-                     item := to_unbounded_string( "false" );
-                  elsif enum_val = 1 then
-                     item := to_unbounded_string( "true" );
-                  else
+               if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+                  data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
+                  if length( data ) = 0 then
                      err(
-                         contextNotes => pl( "At " & gnat.source_info.source_location &
-                             " while enoding the JSON array value" ),
-                         subjectNotes => subjectInterpreter,
-                         reason => +"had an internal error because of",
-                         obstructorNotes => pl( "an unexpect boolean position" & enum_val'img )
+                         contextNotes => +"enoding the JSON array value",
+                         subject => source_var_id,
+                         subjectType => identifiers( source_var_id ).kind,
+                         reason => pl( "has an " ) & em( "undefined value" ) &
+                            pl(" at index" & arrayElementPos'img ),
+                         obstructorNotes => nullMessageStrings
                      );
-                  end if;
-                  if arrayElementPos /= source_last then
-                     result := result & item & to_unbounded_string( "," );
+                  else
+                     enum_val := integer( to_numeric( data ) );
+                     if enum_val = 0 then
+                        item := to_unbounded_string( "false" );
+                     elsif enum_val = 1 then
+                        item := to_unbounded_string( "true" );
+                     else
+                        err(
+                            contextNotes => pl( "At " & gnat.source_info.source_location &
+                                " while enoding the JSON array value" ),
+                            subjectNotes => subjectInterpreter,
+                            reason => +"had an internal error because of",
+                            obstructorNotes => pl( "an unexpect boolean position" & enum_val'img )
+                        );
+                     end if;
+                     if arrayElementPos /= source_last then
+                        result := result & item & to_unbounded_string( "," );
+                     end if;
                   end if;
                end if;
            end loop;
@@ -5037,17 +5055,19 @@ begin
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
-           data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
-           if elementKind = json_string_t then
-              -- if it's a JSON string, just copy the data
-              result := result & data;
-           else
-              item := to_unbounded_string( """" );
-              item := item & toJSONEscaped( data );
-              item := item & '"';
-           end if;
-           if arrayElementPos /= source_last then
-              result := result & item & to_unbounded_string( "," );
+           if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+              data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
+              if elementKind = json_string_t then
+                 -- if it's a JSON string, just copy the data
+                 result := result & data;
+              else
+                 item := to_unbounded_string( """" );
+                 item := item & toJSONEscaped( data );
+                 item := item & '"';
+              end if;
+              if arrayElementPos /= source_last then
+                 result := result & item & to_unbounded_string( "," );
+              end if;
            end if;
         end loop;
         result := result & item & to_unbounded_string( "]" );
@@ -5055,22 +5075,24 @@ begin
 
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
-           -- data := arrayElement( sourceArrayId, arrayElementPos );
-           data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
-           if length( data ) = 0 then
-              err(
-                  contextNotes => +"enoding the JSON array value",
-                  subject => source_var_id,
-                  subjectType => identifiers( source_var_id ).kind,
-                  reason => pl( "has an " ) & em( "undefined value" ) &
-                     pl(" at index" & arrayElementPos'img ),
-                  obstructorNotes => nullMessageStrings
-              );
-           elsif element( data, 1 ) = ' ' then
-              delete( data, 1, 1 );
-           end if;
-           if arrayElementPos /= source_last then
-              result := result & data & to_unbounded_string( "," );
+            -- data := arrayElement( sourceArrayId, arrayElementPos );
+           if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+              data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
+              if length( data ) = 0 then
+                 err(
+                    contextNotes => +"enoding the JSON array value",
+                    subject => source_var_id,
+                    subjectType => identifiers( source_var_id ).kind,
+                    reason => pl( "has an " ) & em( "undefined value" ) &
+                       pl(" at index" & arrayElementPos'img ),
+                    obstructorNotes => nullMessageStrings
+                 );
+              elsif element( data, 1 ) = ' ' then
+                 delete( data, 1, 1 );
+              end if;
+              if arrayElementPos /= source_last then
+                 result := result & data & to_unbounded_string( "," );
+              end if;
            end if;
         end loop;
         result := result & data & to_unbounded_string( "]" );

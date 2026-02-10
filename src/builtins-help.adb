@@ -646,6 +646,7 @@ begin
      "the arrays package. These are the internal topics:" );
    content( e, "affirm" );
    content( e, "arrays" );
+   content( e, "authorize" );
    content( e, "calendar" );
    content( e, "case" );
    content( e, "case procedure" );
@@ -1389,6 +1390,18 @@ begin
      content( e, "rotate_left( a )","rotate_right( a )" );
      content( e, "to_array( a, s )","to_json( s, a )" );
      seeAlso( e, "doc/pkg_arrays.html" );
+     endHelp( e );
+  elsif helpTopic = "authorize" then
+     startHelp( e, "authorize" );
+     summary( e, "authorize statement" );
+     content( e, "authorize policy tag begin...end" );
+     authorKen( e );
+     categoryKeyword( e );
+     description( e, "Add a security policy tag to the list of authorized tags " &
+     "that may be used in a script." );
+     examples( e, "authorize policy pci begin ... end;" );
+     errors( e, "An exception is raised if the meta label is not a policy" );
+     --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "btree_io" then
      helpBTreeIO;
