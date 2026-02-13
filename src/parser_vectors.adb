@@ -113,7 +113,8 @@ vectors_decrement_t     : identifier;
 vectors_to_index_t      : identifier;
 vectors_no_index_t      : identifier;
 
-User_No_Index : constant long_integer := long_integer( integer'first - 1 );
+User_No_Index : constant long_long_integer := long_long_integer( integer'first - 1 );
+-- long_integer and integer are the same on Raspberry Pi
 -- long_integer'first will become a long float with an exponent.
 
 ------------------------------------------------------------------------------
@@ -473,7 +474,7 @@ end ParseLastOutVectorCursor;
 -- the Ada vector.
 ------------------------------------------------------------------------------
 
-function toRealVectorIndex( subId : identifier; vectorId : identifier; UserIdx : long_integer ) return vector_index is
+function toRealVectorIndex( subId : identifier; vectorId : identifier; UserIdx : long_long_integer ) return vector_index is
    kind  : identifier;
    baseKind : identifier;
    uniKind : identifier;
@@ -507,7 +508,7 @@ begin
             convertedIdx := Vector_Storage_Lists.Extended_Index( UserIdx );
          elsif kind = integer_t or baseKind = integer_t then
             convertedIdx := Vector_Storage_Lists.Extended_Index(
-               UserIdx-long_integer( integer'first ) );
+               UserIdx-long_long_integer( integer'first ) );
          else
             err(
                 contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -551,11 +552,11 @@ end toRealVectorIndex;
 ------------------------------------------------------------------------------
 
 function toUserVectorIndex( subId : identifier; vectorId : identifier;
-     realIdx : Vector_Storage_Lists.Extended_Index ) return long_integer is
+     realIdx : Vector_Storage_Lists.Extended_Index ) return long_long_integer is
    kind  : identifier;
    baseKind : identifier;
    uniKind : identifier;
-   convertedIdx : long_integer;
+   convertedIdx : long_long_integer;
    theVector : resPtr;
 begin
    kind  := identifiers( vectorId ).genKind;
@@ -573,11 +574,11 @@ begin
          if realIdx = Vector_Storage_Lists.No_Index then
             convertedIdx := User_No_Index;
          elsif kind = positive_t or baseKind = positive_t then
-            convertedIdx := long_integer( realIdx )+1;
+            convertedIdx := long_long_integer( realIdx )+1;
          elsif kind = natural_t or baseKind = natural_t then
-            convertedIdx := long_integer( realIdx );
+            convertedIdx := long_long_integer( realIdx );
          elsif kind = integer_t or baseKind = integer_t then
-            convertedIdx := long_integer( realIdx ) + long_integer( integer'first );
+            convertedIdx := long_long_integer( realIdx ) + long_long_integer( integer'first );
          else
             err(
                 contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -597,7 +598,7 @@ begin
          );
       else
          -- for an enumerated, asuume it starts at zero
-         convertedIdx := long_integer( realIdx );
+         convertedIdx := long_long_integer( realIdx );
       end if;
    exception when constraint_error =>
       err( context => subId,
@@ -1005,7 +1006,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
        -- Append( theVector.vslVector, idx, strExpr );
        declare
          the_string : storage;
@@ -1056,7 +1057,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
        -- Prepend( theVector.vslVector, idx, strExpr );
        declare
          the_string : storage;
@@ -1101,7 +1102,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
-       result := storage'( to_unbounded_string( long_integer'image(
+       result := storage'( to_unbounded_string( long_long_integer'image(
             toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ),
          noMetaLabel, noMetaLabels );
      end;
@@ -1132,7 +1133,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
-       result := storage'( to_unbounded_string( long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_unbounded_string( long_long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel, noMetaLabels );
      end;
   end if;
 end ParseVectorsLastIndex;
@@ -1222,7 +1223,7 @@ begin
          getParameterValue( vectorRef, vecResId );
          findResource( to_resource_id( vecResId.value ), theVector );
          --idx := vector_index( to_numeric( idxExpr ) );
-         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
          oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
          if metaLabelOk( subprogramId, oldElem ) then
             result := oldElem;
@@ -1735,7 +1736,7 @@ begin
               -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
               -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
                   if metaLabelOk( subprogramId, oldElem ) then
@@ -1744,7 +1745,7 @@ begin
               end loop;
               -- Vector_Storage_Lists.Delete( theVector.vslVector, idx, cnt );
            else
-              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+              idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
               if metaLabelOk( subprogramId, oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
@@ -1945,7 +1946,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( beforeExpr.value ) ) );
+       idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( beforeExpr.value ) ) );
        if hasCnt then
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
@@ -2354,7 +2355,7 @@ begin
           declare
              idx : vector_index;
           begin
-             idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( beforeIdxExpr.value ) ) );
+             idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( beforeIdxExpr.value ) ) );
              Vector_Storage_Lists.Insert_Space( theVector.vslVector, idx, cnt );
           end;
        else
@@ -2524,8 +2525,8 @@ begin
            idx1 : vector_index;
            idx2 : vector_index;
         begin
-           idx1 := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idx1Expr.value ) ) );
-           idx2 := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idx2Expr.value ) ) );
+           idx1 := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idx1Expr.value ) ) );
+           idx2 := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idx2Expr.value ) ) );
            getParameterValue( vectorRef, vecResId );
            findResource( to_resource_id( vecResId.value ), theVector );
            if metaLabelOK( subprogramId, Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
@@ -2766,7 +2767,7 @@ begin
      begin
         getParameterValue( vectorRef, vecResId );
         findResource( to_resource_id( vecResId.value ), theVector );
-        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer(
+        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer(
            to_numeric( startIdxExpr.value ) ) );
         if metaLabelOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector,
@@ -2824,7 +2825,7 @@ begin
         getParameterValue( vectorRef, vecResId );
         findResource( to_resource_id( vecResId.value ), theVector );
 
-        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( startIdxExpr.value ) ) );
+        startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( startIdxExpr.value ) ) );
 
         if metaLabelOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector,
@@ -2904,7 +2905,7 @@ begin
          getParameterValue( vectorRef, vecResId );
          findResource( to_resource_id( vecResId.value ), theVector );
          begin
-           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
            err( context => subprogramId,
@@ -2998,7 +2999,7 @@ begin
          idx : vector_index;
        begin
          begin
-           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+           idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
            err( context => subprogramId,
@@ -3011,7 +3012,7 @@ begin
          end;
          getParameterValue( vectorRef, vecResId );
          findResource( to_resource_id( vecResId.value ), theVector );
-         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_integer( to_numeric( idxExpr.value ) ) );
+         idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
          -- Decrement( theVector.vslVector, idx, floatVal );
          declare
            the_string : storage;
@@ -3093,7 +3094,7 @@ procedure ParseVectorsToIndex( result : out storage; kind : out identifier ) is
   vectorRef  : reference;
   theCursor  : resPtr;
   cursResId  : storage;
-  convertedIdx : long_integer;
+  convertedIdx : long_long_integer;
   subprogramId : constant identifier := vectors_to_index_t;
 begin
   -- kind := identifiers( vectorId ).genKind;
@@ -3109,7 +3110,7 @@ begin
            Vector_Storage_Lists.To_Index( theCursor.vslCursor ) );
        result := storage'(
          to_unbounded_string(
-            long_integer'image( convertedIdx )
+            long_long_integer'image( convertedIdx )
          ),
          noMetaLabel, noMetaLabels );
      end;
@@ -3125,7 +3126,7 @@ end ParseVectorsToIndex;
 
 
 procedure StartupVectors is
-  userNoIndexStr : string := long_integer'image( User_No_Index );
+  userNoIndexStr : string := long_long_integer'image( User_No_Index );
 begin
   declareNamespace( "vectors" );
 
