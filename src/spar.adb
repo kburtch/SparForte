@@ -65,6 +65,21 @@ procedure spar is
   wasMaintenance : boolean := false;
   wasTest : boolean := false;
   i : positive := 1;
+
+  procedure showSBOM is
+  begin
+    for i in sparBuildDependencies'range loop
+        put( i'img & ": " );
+        put( "Name: " & ASCII.Quotation & to_string( sparBuildDependencies( i ).names ) & ASCII.Quotation & ", " );
+        put( "Version: " & ASCII.Quotation & to_string( sparBuildDependencies( i ).version ) & ASCII.Quotation & ", " );
+        put( "Kind: " & ASCII.Quotation & to_string( sparBuildDependencies( i ).kind ) & ASCII.Quotation & ", " );
+        put( "Files: " & ASCII.Quotation & to_string( sparBuildDependencies( i ).files ) & ASCII.Quotation & ", " );
+        put( "License: " & ASCII.Quotation & to_string( sparBuildDependencies( i ).license ) & ASCII.Quotation  );
+        new_line;
+    end loop;
+    put_line( "There are" & sparBuildDependencies'length'img & " build dependencies." );
+  end showSBOM;
+
 begin
   startSignalFlags;
 
@@ -84,7 +99,6 @@ begin
         Put_Line( "SparForte usage" );
         Put_Line( "spar [-BbcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--builddeps][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--session s][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
-        Put_Line( "  -B                  - list build dependencies (SBOM)" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
         Put_Line( "  --color or --colour - enable coloured messages and UTF-8 icons" );
@@ -102,6 +116,7 @@ begin
         Put_Line( "  --pref or -p        - show performance stats" );
         Put_Line( "  --quiet or -q       - brief error messages" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
+        Put_Line( "  --sbom or -B        - list build dependencies (SBOM)" );
         Put_Line( "  --session s         - start a session with the name s" );
         Put_Line( "  --test or -t        - test phase mode (default)" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
@@ -113,6 +128,9 @@ begin
      elsif Argument(1) = "-V" or Argument( 1 ) = "--version" then
         displayVersionSplash;
         Set_Exit_Status( 0 );
+        return;
+     elsif Argument(1) = "-B" or Argument( 1 ) = "--sbom" then
+        showSBOM;
         return;
      end if;
   end if;
@@ -176,6 +194,10 @@ begin
             quietOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
+         elsif Argument(i) = "--sbom" then
+            Put_Line( standard_error, Command_Name & ": --sbom should appear by itself" );
+            Set_Exit_Status( 192 );
+	    return;
          elsif Argument(i) = "--test" then
             testOpt := true;
             wasTest := true;
@@ -250,17 +272,9 @@ begin
                    if Args(letter) = 'b' then
                       breakoutOpt := true;
                    elsif Args(letter) = 'B' then
-                      for i in sparBuildDependencies'range loop
-                          put( i'img & ": " );
-                          put( "Name: " & to_string( sparBuildDependencies( i ).names ) & ", " );
-                          put( "Version: " & to_string( sparBuildDependencies( i ).version ) & ", " );
-                          put( "Kind: " & to_string( sparBuildDependencies( i ).kind ) & ", " );
-                          put( "Files: " & to_string( sparBuildDependencies( i ).files ) & ", " );
-                          put( "License: " & to_string( sparBuildDependencies( i ).license ) );
-                          new_line;
-                      end loop;
-                      put_line( "There are" & sparBuildDependencies'length'img & " build dependencies." );
-                      return;
+                      Put_Line( standard_error, Command_Name & ": -B should appear by itself" );
+                      Set_Exit_Status( 192 );
+		      return;
                    elsif Args(letter) = 'c' then
                       syntaxOpt := true;
                    elsif Args(letter) = 'C' then
