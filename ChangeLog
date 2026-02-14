@@ -93,10 +93,11 @@ CHANGES SINCE 2.6.3
 
 44. Fix: get_line reads from current input by default not standard input.
 
-45. New: spar -B displays build dependencies (Software Bill of Lading, SBOM).
-Only supports on Ubuntu.
+45. New: spar -B displays build dependencies (Software Bill of Lading, SBOM).  Only supports on Ubuntu, Raspberry Pi.
 
 46. Fix: fixed cursor issue in btree get_first function.
 
 47. Fix: fix for btree good regression tests.
+
+48. Fix: broken custom command prompt fixed.
 

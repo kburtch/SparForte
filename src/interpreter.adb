@@ -168,6 +168,8 @@ begin
 
           -- Apply the xterm window title
           put_retry( termTitle );
+       else
+          prompt := prompt_st.value;
        end if;
     end if;
 
