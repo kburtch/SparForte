@@ -53,9 +53,6 @@ Use "return" to continue execution or "logout" to terminate script.  A
 breakout prompt will allow you to assign values to constants, such as
 a for loop index, with a warning.</li>
 
-  <li> <b>-B</b> - show the list of build dependencies (the Software
-Bill of Lading, SBOM).  That is, show all the O/S libraries that are
-used by the SparForte interpreter</li>
   <li> <b>--check (or -c)</b> - check the syntax of a script but do
 not
 run the script</li>
@@ -71,9 +68,7 @@ Without this, pragma debug has no effect.</li>
 design phase of the software development life cycle.  This will enable/
 disable language features and errors suitable to this phase.</li>
   <li> <b>--exec (or -e)</b> -&nbsp; the script path is not a path but
-a
-script to
-execute.</li>
+a script to execute.</li>
   <li> <b>--gcc-errors (or -g)</b> - show simple GCC-style error
 messages
 to be
@@ -93,8 +88,14 @@ on the static metrics (such as number of blocks) and run-time performance
 information (such as how many lines were executed)</li>
   <li> <b>--profile (or -P)</b> - run the profile script even though not
 logging in.</li>
+  <li> <b>--quiet or -q</b> - use brief error messages</li>
   <li> <b>--restricted (or -r)</b> - run as a restricted shell, where
 a several features are disabled to create a more controlled environment.</li>
+  <li> <b>--session s</b> - start a session with the name s.  Each session
+uses a different profile and history file which includes the session name.</li>
+  <li> <b>--sbom (or -B)</b> - experimental. Output a software bill-of-materials
+and exit.  Show a list of build dependencies: all the O/S libraries that are
+used by the SparForte interpreter</li>
   <li> <b>--test (or -t)</b> -&nbsp; specify that this project is in the
 testing phase of the software development life cycle.  This will enable/
 disable language features and errors suitable to this phase. For example,

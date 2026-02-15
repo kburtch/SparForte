@@ -6,6 +6,9 @@
 DF="world-deps.ads"
 BIN="spar"
 
+DPKG_CMD="/usr/bin/dpkg"
+ZYPPER_CMD="/usr/bin/zypper"
+
 if [ ! -f "$BIN" ] ; then
    echo "$0: cannot create dependencies without the executable"
    exit 192
@@ -57,13 +60,21 @@ sparBuildDependencies : array( Positive range <> ) of aDependency := (
   )
 HERE
 
+DPKG_OUTPUT=""
+ZYPPER_OUTPUT=""
+
 # C Dependencies
 
 LDD_OUTPUT=`ldd spar | sed 's/\t//g'`
 echo "$LDD_OUTPUT" | ( while read LDD_LINE ; do
   LDD_FILE=`echo "$LDD_LINE" | cut -d' ' -f 1`
   LDD_PATH=`echo "$LDD_LINE" | cut -d' ' -f 3`
-  DPKG_OUTPUT=`dpkg -S "$LDD_FILE"`
+  # Determine the package providing the file
+  if [ -x "$DPKG_CMD" ] ; then
+     DPKG_OUTPUT=`"$DPKG_CMD" -S "$LDD_FILE"`
+  elif [ -x "$ZYPPER_CMD" ] ; then
+     ZYPPER_OUTPUT=`"$ZYPPER_CMD" -n -t --no-refresh search --provides --match-exact "$LDD_FILE" | tail -1 | sed 's/\ //g' | cut -d'|' -f2`
+  fi
   if [ -n "$DPKG_OUTPUT" ] ; then
      FIRST=1
      echo "$DPKG_OUTPUT" | (while read DPKG_LINE ; do
@@ -105,6 +116,22 @@ echo "$LDD_OUTPUT" | ( while read LDD_LINE ; do
   )
 HERE
   )
+  elif [ -n "$ZYPPER_OUTPUT" ] ; then
+     # Zypper seems to pick the first matching package even if it is not
+     # installed.
+     ZYPPER_PKG="$ZYPPER_OUTPUT"
+     ZYPPER_OUTPUT=`zypper -n -t --no-refresh product-info "package:""$ZYPPER_PKG"`
+     # Berkeley DB has a "version" in its description so we use head -1
+     ZYPPER_VERSION=`echo "$ZYPPER_OUTPUT" | fgrep Version | head -1 | cut -d: -f2-`
+ cat >> "$DF" <<HERE
+  , aDependency'(
+     names   => to_unbounded_string( "$ZYPPER_PKG" ),
+     version => to_unbounded_string( "$ZYPPER_VERSION" ),
+     kind    => to_unbounded_string( "C Library" ),
+     files   => to_unbounded_string( "$LDD_PATH" ),
+     license => to_unbounded_string( "N/A" )
+  )
+HERE
   else
 cat >> "$DF"  <<HERE
   , aDependency'(
