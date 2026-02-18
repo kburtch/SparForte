@@ -62,6 +62,7 @@ package body reports.help is
     contentList.Clear( e.examples );
     contentList.Clear( e.exceptions );
     e.createdOn := null_unbounded_string;
+    e.releaseDate := null_unbounded_string;
     e.footer := null_unbounded_string;
     contentList.Clear( e.rationale );
     e.modified := null_unbounded_string;
@@ -238,6 +239,11 @@ package body reports.help is
     e.createdOn := to_unbounded_string( s );
   end createdOn;
 
+  procedure releaseDate( e : in out aHelpEntry; s : string ) is
+  begin
+    e.releaseDate := to_unbounded_string( s );
+  end releaseDate;
+
   procedure section( e : in out aHelpEntry; s : string ) is
   begin
     if e.inSection then
@@ -406,6 +412,7 @@ package body reports.help is
      renderText( r, "Author", e.author );
      renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
+     renderText( r, "Release Date", e.releaseDate );
      renderText( r, "Version", e.version );
      --if contentList.length( e.todos ) > 0 then -- TODO: needed?
      renderBulletList( r, e.todos, "To Do" );
@@ -471,6 +478,7 @@ package body reports.help is
      renderText( r, "Author", e.author );
      renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
+     renderText( r, "Release Date", e.releaseDate );
      renderText( r, "Version", e.version );
      renderBulletList( r, e.todos, "To Do" );
      renderBulletList( r, e.rationale, "Rationale" );
@@ -555,6 +563,7 @@ package body reports.help is
      renderText( r, "Author", e.author );
      renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
+     renderText( r, "Release Date", e.releaseDate );
      renderText( r, "Version", e.version );
      --if contentList.length( e.todos ) > 0 then
      --   new_line( r.outputfile );

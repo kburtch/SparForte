@@ -130,6 +130,7 @@ package body builtins.help is
        param_str       : constant unbounded_string := to_unbounded_string( "param" );
        return_str      : constant unbounded_string := to_unbounded_string( "return" );
        rationale_str   : constant unbounded_string := to_unbounded_string( "rationale" );
+       release_date_str: constant unbounded_string := to_unbounded_string( "release_date" );
        screenshot_str  : constant unbounded_string := to_unbounded_string( "screenshot" );
        see_also_str    : constant unbounded_string := to_unbounded_string( "see_also" );
        summary_str     : constant unbounded_string := to_unbounded_string( "summary" );
@@ -333,6 +334,8 @@ package body builtins.help is
                   params( e, to_string(expr.value)  );
                elsif annotationKind = return_str then
                   returns( e, to_string(expr.value)  );
+               elsif annotationKind = release_date_str then
+                  releaseDate( e, to_string(expr.value)  );
                elsif annotationKind = rationale_str then
                   rationale( e, to_string(expr.value)  );
                elsif annotationKind = screenshot_str then

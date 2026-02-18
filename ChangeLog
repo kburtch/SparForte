@@ -106,3 +106,5 @@ CHANGES SINCE 2.6.3
 
 50. Change: the provision.sh script updated for FreeBSD 15.
 
+51. New: pragma annotate( release date, "string" ).
+

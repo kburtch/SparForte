@@ -44,6 +44,7 @@ package reports.help is
        sectionContent: contentList.List;
        contentWidth  : positive := 1;
        createdOn     : unbounded_string;
+       releaseDate   : unbounded_string;
        exceptions    : contentList.List;
        exceptionsWidth : positive := 1;
        rationale      : contentList.List;
@@ -97,6 +98,8 @@ package reports.help is
   procedure categoryKeyword( e : in out aHelpEntry );
 
   procedure createdOn( e : in out aHelpEntry; s : string );
+
+  procedure releaseDate( e : in out aHelpEntry; s : string );
 
   procedure description( e : in out aHelpEntry; s : string );
 
