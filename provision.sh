@@ -561,12 +561,12 @@ freebsd )
    echo "y" | pkg install wget
    if [ -z "$NO_MYSQL" ] ; then
       # echo "y" | pkg install libmysqlclient-dev
-      echo "y" | pkg install mysql57-client
-      echo "y" | pkg install mysql57-server
+      echo "y" | pkg install mysql84-client
+      echo "y" | pkg install mysql84-server
    fi
    if [ -z "$NO_POSTGRES" ] ; then
-      echo "y" | pkg install postgresql12-client
-      echo "y" | pkg install postgresql12-server
+      echo "y" | pkg install postgresql18-client
+      echo "y" | pkg install postgresql18-server
    fi
    if [ -z "$NO_SOUND" ] ; then
       # echo "y" | pkg install postgresql-server-dev-all

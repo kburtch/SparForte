@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Error message improvements
+Objective: Foundation for value meta labels
 
 Known Issues
 
@@ -9,6 +9,7 @@ CHANGES SINCE 2.6.3
 1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
 
 2. Fix: command type variables must contain paths to files in a secure directory.
+
 3. Fix: arrays with limited or constant elements cannot be rearranged by sorting, shuffling, rotating, shifting, or flipping.  to_array also will no longer write to limited or constant array elements.
 
 4. Fix: malformed numeric literals like "123_" no longer throw an Ada exception.
@@ -93,11 +94,15 @@ CHANGES SINCE 2.6.3
 
 44. Fix: get_line reads from current input by default not standard input.
 
-45. New: spar -B displays build dependencies (Software Bill of Lading, SBOM).  Only supports on Ubuntu, Raspberry Pi.
+45. New: spar --sbom/-B displays build dependencies (Software Bill of Lading, SBOM).  Tested on Ubuntu, Raspberry Pi, Arch, FreeBSD.  Licenses not available on all systems.
 
 46. Fix: fixed cursor issue in btree get_first function.
 
 47. Fix: fix for btree good regression tests.
 
 48. Fix: broken custom command prompt fixed.
+
+49. Change: a short bug report message appears when an uncaught exception is raised to the main program.
+
+50. Change: the provision.sh script updated for FreeBSD 15.
 

@@ -8,6 +8,8 @@ BIN="spar"
 
 DPKG_CMD="/usr/bin/dpkg"
 ZYPPER_CMD="/usr/bin/zypper"
+PACMAN_CMD="/usr/bin/pacman"
+PKG_CMD="/usr/sbin/pkg"
 
 if [ ! -f "$BIN" ] ; then
    echo "$0: cannot create dependencies without the executable"
@@ -62,18 +64,34 @@ HERE
 
 DPKG_OUTPUT=""
 ZYPPER_OUTPUT=""
+PACMAN_OUTPUT=""
+PKG_OUTPUT=""
 
 # C Dependencies
 
 LDD_OUTPUT=`ldd spar | sed 's/\t//g'`
 echo "$LDD_OUTPUT" | ( while read LDD_LINE ; do
   LDD_FILE=`echo "$LDD_LINE" | cut -d' ' -f 1`
+  # This file is always included and is not a real file.  It's a
+  # virtual file added for the Linux kernel.
+  if [ "${LDD_FILE:0:13}" = "linux-vdso.so" ] ; then
+     continue
+  fi
   LDD_PATH=`echo "$LDD_LINE" | cut -d' ' -f 3`
   # Determine the package providing the file
   if [ -x "$DPKG_CMD" ] ; then
      DPKG_OUTPUT=`"$DPKG_CMD" -S "$LDD_FILE"`
   elif [ -x "$ZYPPER_CMD" ] ; then
      ZYPPER_OUTPUT=`"$ZYPPER_CMD" -n -t --no-refresh search --provides --match-exact "$LDD_FILE" | tail -1 | sed 's/\ //g' | cut -d'|' -f2`
+  elif [ -x "$PACMAN_CMD" ] ; then
+     PACMAN_OUTPUT=`"$PACMAN_CMD" --query --owns "$LDD_PATH"`
+  elif [ -x "$PKG_CMD" ] ; then
+     # PKG_OUTPUT=`"$PKG_CMD" shlib "$LDD_PATH" | grep -Fv "provided by"`
+     PKG_OUTPUT=`"$PKG_CMD" which "$LDD_PATH"`
+     PKG_OUTPUT=`echo "${PKG_OUTPUT##*\ }"`  # last string
+     if [ "${PKG_OUTPUT:0:12}" = "No packages " ] ; then
+        PKG_OUTPUT=""
+     fi
   fi
   if [ -n "$DPKG_OUTPUT" ] ; then
      FIRST=1
@@ -130,6 +148,58 @@ HERE
      kind    => to_unbounded_string( "C Library" ),
      files   => to_unbounded_string( "$LDD_PATH" ),
      license => to_unbounded_string( "N/A" )
+  )
+HERE
+  elif [ -n "$PACMAN_OUTPUT" ] ; then
+     PACMAN_PKG=`echo "$PACMAN_OUTPUT" | cut -d' ' -f 5 | cut -d. -f1-2`
+     PACMAN_OUTPUT=`"$PACMAN_CMD" --query --info "$PACMAN_PKG"`
+      With version, strip any leading space
+     PACMAN_VERSION=`echo "$PACMAN_OUTPUT" | grep -F "Version" | cut -d: -f2-`
+     if [ "${PACMAN_VERSION:0:1}" = ' ' ] ; then
+        PACMAN_VERSION="${PACMAN_VERSION:1}"
+     fi
+     # With license, strip any leading space
+     PACMAN_LICENSE=`echo "$PACMAN_OUTPUT" | grep -F "Licenses" | cut -d: -f2-`
+     if [ "${PACMAN_LICENSE:0:1}" = ' ' ] ; then
+        PACMAN_LICENSE="${PACMAN_LICENSE:1}"
+     fi
+     if [ -z "$PACMAN_LICENSE" ] ; then
+        PACMAN_LICENSE="N/A"
+     fi
+ cat >> "$DF" <<HERE
+  , aDependency'(
+     names   => to_unbounded_string( "$PACMAN_PKG" ),
+     version => to_unbounded_string( "$PACMAN_VERSION" ),
+     kind    => to_unbounded_string( "C Library" ),
+     files   => to_unbounded_string( "$LDD_PATH" ),
+     license => to_unbounded_string( "$PACMAN_LICENSE" )
+  )
+HERE
+  elif [ -n "$PKG_OUTPUT" ] ; then
+    if [ "$PKG_OUTPUT" = "database" ] ; then
+       continue
+    fi
+    PKG_PKGS="$PKG_OUTPUT"
+    PKG_OUTPUT=`pkg info "$PKG_PKGS"`
+    PKG_VERSION=`echo "$PKG_OUTPUT" | grep -F "Version" | cut -d: -f2-`
+    if [ "${PKG_VERSION:0:1}" = ' ' ] ; then
+       PKG_VERSION="${PKG_VERSION:1}"
+    fi
+    PKG_LICENSE=`echo "$PKG_OUTPUT" | grep -F "Licenses" | cut -d: -f2-`
+    # Remove leading space
+    if [ "${PKG_LICENSE:0:1}" = ' ' ] ; then
+       PKG_LICENSE="${PKG_LICENSE:1}"
+    fi
+    if [ -z "$PKG_LICENSE" ] ; then
+       PKG_LICENSE="N/A"
+    fi
+ cat >> "$DF" <<HERE
+  , aDependency'(
+     names   => to_unbounded_string( "$PKG_PKGS" ),
+     version => to_unbounded_string( "$PKG_VERSION" ),
+     kind    => to_unbounded_string( "C Library" ),
+     files   => to_unbounded_string( "$LDD_PATH" ),
+     license => to_unbounded_string( "$PKG_LICENSE" )
   )
 HERE
   else

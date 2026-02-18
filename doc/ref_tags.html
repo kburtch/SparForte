@@ -41,6 +41,8 @@
 	<!-- Content Area -->
 <h2>Value Meta Labels</h2>
 
+<p><b>NOTE: This feature is under construction.  The features have not been finalized.</b></p>
+
 <p>Variables and parameters have types or subtypes.  The values that are
 stored in them can have optional data meta labels.  The labels are names
 that are attached to a value and follow the values as they move through
@@ -53,6 +55,27 @@ that store values will also store the tags along with them.</p>
 </p>
 
 <h3>The Meta Statement</h3>
+
+<p>The meta statement defines new meta labels.</p>
+
+<pre>
+   <b>meta</b> uom_name <b>is</b> <b>new</b> <b>meta</b>;
+   <b>meta</b> <b>policy</b> polcy_name <b>is</b> <b>new</b> <b>meta</b>;
+</pre>
+
+<p>Meta labels can also be abstract.  These can be declared but not tagged
+to values.</p>
+
+<pre>
+   <b>meta</b> uom_name <b>is</b> <b>new</b> <b>abstract</b> <b>meta</b>;
+</pre>
+
+<p>New labels can be extended from existing labels.</p>
+
+<pre>
+   <b>meta</b> metric <b>is</b> <b>new</b> <b>abstract</b> <b>meta</b>;
+   <b>meta</b> kilometers <b>is</b> <b>new</b> metric;
+</pre>
 
 <h3>Unit-of-Measure Labels</h3>
 
@@ -132,9 +155,9 @@ derived values.</p>
 the script is authorized to use the meta label.</p>
 
 <pre>
-  authorize policy pci begin
+  <b>authorize</b> <b>meta</b> <b>policy</b> pci <b>begin</b>
     credit_card := "1234567890" <b>tagged</b> <b>policy</b> pci;
- end;
+  <b>end</b> <b>meta</b> pci;
 </pre>
 
 <br>

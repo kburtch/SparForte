@@ -24,6 +24,7 @@
 with ada.text_io,
      ada.strings.unbounded,
      ada.command_line,
+     ada.exceptions,
      world.splashes,
      world.deps,
      symbol_table,
@@ -38,6 +39,7 @@ with ada.text_io,
 use ada.text_io,
     ada.strings.unbounded,
     ada.command_line,
+    ada.exceptions,
     world,
     world.splashes,
     world.deps,
@@ -197,7 +199,7 @@ begin
          elsif Argument(i) = "--sbom" then
             Put_Line( standard_error, Command_Name & ": --sbom should appear by itself" );
             Set_Exit_Status( 192 );
-	    return;
+            return;
          elsif Argument(i) = "--test" then
             testOpt := true;
             wasTest := true;
@@ -274,7 +276,7 @@ begin
                    elsif Args(letter) = 'B' then
                       Put_Line( standard_error, Command_Name & ": -B should appear by itself" );
                       Set_Exit_Status( 192 );
-		      return;
+                      return;
                    elsif Args(letter) = 'c' then
                       syntaxOpt := true;
                    elsif Args(letter) = 'C' then
@@ -402,5 +404,20 @@ begin
   shutdownCompiler;
   shutdownSignalFlags;
   shutdownCommunications;
+exception when msg : others =>
+  put_line( standard_error, "SparForte Bug" );
+  new_line( standard_error );
+  put_line( standard_error, "SparForte " & version & "(" & buildDate & ")" );
+  put_line( standard_error, "An unexpected exception was raised to the main program:" );
+  put_line( standard_error, Exception_Message( msg ) ) ;
+  new_line( standard_error );
+  put_line( standard_error, "To report bugs, please read 'Reporting Bugs' at" );
+  put_line( standard_error, "in the Preface of the SparForte documentation" );
 
+  shutdownInterpreter;
+  shutdownParser;
+  shutdownScanner;
+  shutdownCompiler;
+  shutdownSignalFlags;
+  shutdownCommunications;
 end spar;
