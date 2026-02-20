@@ -29,7 +29,7 @@ with
     gnat.source_info,
     pegasoft.strings,
     pegasoft.user_io,
-    pegasoft.hmaps,
+    --pegasoft.hmaps,
     world,
     symbol_table,
     message_strings,
@@ -46,7 +46,7 @@ use
     pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
-    pegasoft.hmaps,
+    --pegasoft.hmaps,
     symbol_table,
     message_strings,
     value_conversion,
@@ -912,7 +912,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- increment( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       floatVal := numericValue( to_numeric( original.value ) ) + floatVal;
+       floatVal := numericValue( natural( to_numeric( original.value ) ) ) + floatVal;
        if hasAmt then
           if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, incExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
@@ -985,7 +985,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- decrement( theMap.shmMap, keyExpr, floatVal );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       floatVal := numericValue( to_numeric( original.value ) ) - floatVal;
+       floatVal := numericValue( natural( to_numeric( original.value ) ) ) - floatVal;
        if hasAmt then
           if metaLabelOk( subprogramId, decExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;

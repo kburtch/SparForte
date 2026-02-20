@@ -687,7 +687,7 @@ procedure ParseOpen( create : boolean := false ) is
   kind : identifier;
   expr     : storage;
   exprType : identifier;
-  subprogramId :  identifier := open_t;
+  subprogramId :  constant identifier := open_t;
 begin
   if create then
      if rshOpt then
@@ -810,7 +810,7 @@ procedure ParseReset is
   fd      : aFileDescriptor;
   closeResult : int;
   theFileRec : storage;
-  subprogramId :  identifier := reset_t;
+  subprogramId :  constant identifier := reset_t;
 begin
   expect( subprogramId );
   expect( symbol_t, "(" );
@@ -875,7 +875,7 @@ procedure ParseClose is
   kind : identifier;
   theFileRec : storage;
   closeResult : int;
-  subprogramId :  identifier := close_t;
+  subprogramId :  constant identifier := close_t;
 begin
   expect( subprogramId );
   expect( symbol_t, "(" );
@@ -928,7 +928,7 @@ procedure ParseDelete is
   result : integer;
   closeResult : int;
   theFileRec : storage;
-  subprogramId :  identifier := delete_t;
+  subprogramId :  constant identifier := delete_t;
 begin
   expect( subprogramId );
   expect( symbol_t, "(" );
@@ -988,7 +988,7 @@ procedure ParseSkipLine is
   kind   : identifier;
   str    : unbounded_string;
   theFileRec : storage;
-  subprogramId :  identifier := skip_line_t;
+  subprogramId :  constant identifier := skip_line_t;
 begin
   file_ref.id := eof_t;
   expect( subprogramId );
@@ -1072,7 +1072,7 @@ procedure ParseGet is
   result    : size_t;
   fileInfo  : storage;
   theFileRec: storage;
-  subprogramId :  identifier := get_t;
+  subprogramId : constant identifier := get_t;
 begin
   file_ref.id := eof_t;
   expect( subprogramId );
@@ -1171,7 +1171,7 @@ procedure ParsePutLine is
   fd        : aFileDescriptor;
   retry     : boolean;
   theFileRec: storage;
-  subprogramId :  identifier := put_line_t;
+  subprogramId : constant identifier := put_line_t;
 begin
   target_ref.index := 0;
   expect( subprogramId );
@@ -1469,7 +1469,7 @@ procedure ParsePut is
   retry     : boolean;
   temp      : unbounded_string;
   theFileRec: storage;
-  subprogramId :  identifier := put_t;
+  subprogramId : constant identifier := put_t;
 begin
   expect( subprogramId );
   expect( symbol_t, "(" );
@@ -1600,7 +1600,7 @@ procedure ParseNewLine is
   ch     : character;
   theFileRec : storage;
   result : size_t;
-  subprogramId :  identifier := new_line_t;
+  subprogramId : constant identifier := new_line_t;
 begin
   expect( subprogramId );
   if token = symbol_t and identifiers( token ).store.value = "(" then
@@ -1868,7 +1868,7 @@ procedure ParseGetImmediate is
   hasAvail  : boolean := false;
   baseType  : identifier;
   theInputFile : storage;
-  subprogramId :  identifier := get_immediate_t;
+  subprogramId : constant identifier := get_immediate_t;
 begin
   file_ref.id := eof_t;
   expect( subprogramId );

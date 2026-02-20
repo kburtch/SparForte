@@ -22,19 +22,11 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-pragma warnings( off ); -- suppress Gnat-specific package warning
-with ada.command_line.environment;
-pragma warnings( on );
-
 with ada.text_io,
     gnat.source_info,
-    CGI,
-    pegasoft.strings,
     pegasoft.user_io;
 use ada.text_io,
-    ada.command_line,
-    ada.command_line.environment,
-    pegasoft.strings,
+    pegasoft,
     pegasoft.user_io;
 
 package body symbol_table is
@@ -146,12 +138,6 @@ end image;
 --
 -----------------------------------------------------------------------------
 
-function value_equal( left, right : storage ) return boolean is
-begin
-  return left.value = right.value;
-end value_equal;
-
-
 -----------------------------------------------------------------------------
 -- STORAGE CACHE
 --
@@ -167,7 +153,8 @@ end value_equal;
 -----------------------------------------------------------------------------
 
 storageCache     : storageGroupPtr := null;
-storageCacheMiss : natural := 0;
+--storageCacheMiss : natural := 0;
+
 
 -- CACHE OR FREE STORAGE
 --
@@ -184,54 +171,6 @@ begin
   end if;
 end cacheOrFreeStorage;
 pragma inline( cacheOrFreeStorage );
-
--- FIND STORAGE
---
--- Allocate storage space (or get it from the cache) and return a
--- pointer to it.  If what is in the cache is missed three times,
--- forcibly discard it.
------------------------------------------------------------------------------
-
-function findStorage( lbound, ubound : long_integer ) return storageGroupPtr is
-  sp : storagegroupPtr;
-begin
-  if storageCache = null then
-     sp := new StorageGroup( lbound..ubound );
-     storageCacheMiss := 0;
-  else
-     if storageCacheMiss >= 3 then
-        free( storageCache );
-        storageCache := null;
-        storageCacheMiss := 0;
-     elsif storageCache'first = lbound and
-           storageCache'last = ubound then
-        sp := storageCache;
-        storageCache := null;
-        storageCacheMiss := 0;
-     else
-        sp := new StorageGroup( lbound..ubound );
-        storageCacheMiss := storageCacheMiss + 1;
-     end if;
-  end if;
-  return sp;
-end findStorage;
-
-function to_string( mode : aParameterPassingMode ) return string is
-begin
-  case mode is
-     when none =>
-        return "none";
-     when in_mode =>
-        return "in";
-     when out_mode =>
-        return "out";
-     when in_out_mode =>
-        return "in out";
-     when others =>
-        raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-          ": internal error: unexpected mode ";
-  end case;
-end to_string;
 
 -- Symbol Table Utilities
 --
@@ -1708,16 +1647,5 @@ begin
       end if;
   end loop;
 end findField;
-
-
--- Type Conversions
-
-
-function to_numeric( id : identifier ) return numericValue is
--- Look up an identifier's value and return it as a long float
--- (Spar's numeric representation).
-begin
-   return to_numeric( identifiers( id ).store.value );
-end to_numeric;
 
 end symbol_table;

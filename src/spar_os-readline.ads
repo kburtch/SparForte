@@ -23,8 +23,7 @@
 ------------------------------------------------------------------------------
 
 with interfaces.C.strings;
-use  interfaces.C,
-     interfaces.C.strings;
+use  interfaces.C.strings;
 
 package spar_os.readline is
 

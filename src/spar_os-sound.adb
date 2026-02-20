@@ -3,9 +3,9 @@
 -- Protected under the GNU GPL License
 -- Modified by K Burtch
 
-with Ada.Text_IO,
-Ada.Command_Line,
-GNAT.Command_Line;
+--with Ada.Text_IO,
+--Ada.Command_Line,
+--GNAT.Command_Line;
 -- with Ada.IO_Exceptions;
 -- with Gnat.Command_Line;
 
@@ -127,9 +127,9 @@ package body spar_os.sound is
    --------------------------------------------------
 
    procedure Play( soundFile : unbounded_string; priority : integer := 0) is
-      use Ada.Text_IO;
-      use Ada.Command_Line;
-      use GNAT.Command_Line;
+      --use Ada.Text_IO;
+      --use Ada.Command_Line;
+      --use GNAT.Command_Line;
 
       --Optch :  Character;
       --Req :    Source_Request;

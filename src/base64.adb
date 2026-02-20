@@ -77,7 +77,7 @@ package body Base64 is
   -- Target'length = Output_Byte_Count + 2 * (Output_Byte_Count / 76)
   -- Constraint_Error will be raised if Target isn't long enough.
     use type Ada.Streams.Stream_Element;
-    use type Ada.Streams.Stream_Element_Offset;
+    --use type Ada.Streams.Stream_Element_Offset;
     D       : Six_Bits;
     type Slots is mod 3;
     Slot    : Slots := 0;
@@ -120,7 +120,7 @@ package body Base64 is
    function Encode_Length(Length : Ada.Streams.Stream_Element_Offset) return
         Natural
     is
-        use type Ada.Streams.Stream_Element_Offset;
+        --use type Ada.Streams.Stream_Element_Offset;
         Output_Quad_Count : constant Natural := (Natural(Length) + 2) / 3;
         Output_Byte_Count : constant Natural := 4 * Output_Quad_Count;
         Result : constant Natural := Output_Byte_Count +

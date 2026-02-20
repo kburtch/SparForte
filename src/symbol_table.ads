@@ -21,21 +21,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.numerics.float_random,
-  ada.unchecked_deallocation,
+with
   ada.strings.unbounded,
   ada.calendar,
-  pegasoft.gen_list,
-  software_models,
-  pegasock.memcache,
-  spar_os,
   world;
 use ada.strings.unbounded,
   ada.calendar,
-  software_models,
-  pegasoft,
-  pegasock.memcache,
-  spar_os,
   world;
 
 package symbol_table is

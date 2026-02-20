@@ -21,10 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
-     spar_os;
-use ada.text_io,
-    spar_os;
+with ada.text_io;
+use  ada.text_io;
 
 package body world.splashes is
 

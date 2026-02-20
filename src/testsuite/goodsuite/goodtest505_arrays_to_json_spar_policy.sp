@@ -9,6 +9,6 @@ a(2) := 2 tagged policy fakepolicy;
 
 authorize meta fakepolicy begin
   arrays.to_json(js, a);
-  pragma assert( not tags.has_policy_tags( js ) );
+  pragma assert( not tags.has_policies( js ) );
 end meta fakepolicy;
 

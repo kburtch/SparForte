@@ -22,8 +22,8 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io;
+--use ada.text_io;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -40,7 +40,6 @@ with ada.command_line,
     compiler,
     scanner.calendar,
     scanner.communications,
-    scanner_res,
     parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_sidefx,
     parser_tio,
@@ -58,7 +57,6 @@ use ada.command_line,
     scanner,
     scanner.calendar,
     scanner.communications,
-    scanner_res,
     parser.decl,
     parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_sidefx,

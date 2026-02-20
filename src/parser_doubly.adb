@@ -26,7 +26,7 @@
 with
     Ada.Containers,
     ada.strings.unbounded,
-    pegasoft.user_io,
+    pegasoft,
     world,
     symbol_table,
     message_strings,
@@ -35,14 +35,12 @@ with
     scanner.communications,
     scanner_res,
     scanner_restypes,
-    parser,
     parser_params,
     parser_containers;
 use
     ada.strings.unbounded,
     pegasoft,
     world,
-    pegasoft.user_io,
     symbol_table,
     message_strings,
     value_conversion,
@@ -50,7 +48,6 @@ use
     scanner.communications,
     scanner_res,
     scanner_restypes,
-    parser,
     parser_params,
     parser_containers;
 

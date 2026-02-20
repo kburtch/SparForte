@@ -25,7 +25,7 @@
 with ada.text_io;
 use ada.text_io;
 
-with unchecked_deallocation,
+with System,
      gnat.source_info,
      pegasoft.user_io;
 
@@ -44,7 +44,7 @@ package argConvert is new System.Address_To_Access_Conversions( argumentPtr );
 
 -----------------------------------
 
-procedure freeArgList is new unchecked_deallocation( argumentList,
+procedure freeArgList is new ada.unchecked_deallocation( argumentList,
   argumentListPtr );
 -- Deallocate an argument list (but not the elements within it)
 

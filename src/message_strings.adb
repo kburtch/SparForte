@@ -26,8 +26,7 @@ with CGI,
      pegasoft.user_io,
      spar_os,
      symbol_table;
-use  CGI,
-     spar_os,
+use  spar_os,
      pegasoft.strings,
      pegasoft.user_io,
      symbol_table;

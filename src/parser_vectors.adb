@@ -3126,7 +3126,7 @@ end ParseVectorsToIndex;
 
 
 procedure StartupVectors is
-  userNoIndexStr : string := long_long_integer'image( User_No_Index );
+  userNoIndexStr : constant string := long_long_integer'image( User_No_Index );
 begin
   declareNamespace( "vectors" );
 

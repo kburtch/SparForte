@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with unchecked_deallocation,
+with ada.unchecked_deallocation,
      ada.text_io,
      ada.strings.unbounded;
 
@@ -65,7 +65,7 @@ package reports is
       screenWidth  : natural;     -- size of the display
   end record;
   type aRootReportPtr is access all rootReport'class;
-  procedure free is new unchecked_deallocation( rootReport'class, aRootReportPtr );
+  procedure free is new ada.unchecked_deallocation( rootReport'class, aRootReportPtr );
 
 
   -- START

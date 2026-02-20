@@ -28,13 +28,11 @@ with gnat.cgi,
      gnat.cgi.cookie,
      gnat.cgi.debug;
 #end if;
-with ada.strings.unbounded,
-    world,
+with world,
     symbol_table,
     message_strings,
     scanner.communications;
-use ada.strings.unbounded,
-    world,
+use world,
     symbol_table,
     message_strings,
     scanner,
@@ -107,7 +105,7 @@ gnat_cgi_cookie_set_t : identifier;
 gnat_cgi_debug_text_output_t : identifier;
 gnat_cgi_debug_html_output_t : identifier;
 
-right_bracket : constant unbounded_string := to_unbounded_string( ")" );
+--right_bracket : constant unbounded_string := to_unbounded_string( ")" );
 
 --procedure ParseSingleStringExpression( expr : out unbounded_string;
 --  expr_type : out identifier ) is

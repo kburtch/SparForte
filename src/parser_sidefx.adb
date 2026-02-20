@@ -21,12 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with pegasoft.user_io,
-     symbol_table,
+with symbol_table,
      message_strings,
      scanner.communications;
-use  pegasoft.user_io,
-     symbol_table,
+use  symbol_table,
      message_strings,
      scanner,
      scanner.communications;

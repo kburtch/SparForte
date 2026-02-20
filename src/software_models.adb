@@ -36,7 +36,6 @@ begin
 end meetsRequirements;
 
 function error( r : nonstandardRequirements ) return unbounded_string is
-  msg : unbounded_string;
 begin
   return null_unbounded_string;
 end error;
@@ -80,7 +79,6 @@ begin
 end meetsRequirements;
 
 function error( r : shellBatchRequirements ) return unbounded_string is
-  msg : unbounded_string;
 begin
   return error( shellScriptRequirements( r ) );
 end error;
@@ -99,7 +97,6 @@ begin
 end meetsRequirements;
 
 function error( r : shellFilterScriptRequirements ) return unbounded_string is
-  msg : unbounded_string;
 begin
   return error( shellScriptRequirements( r ) );
 end error;
@@ -118,7 +115,6 @@ begin
 end meetsRequirements;
 
 function error( r : shellReportScriptRequirements ) return unbounded_string is
-  msg : unbounded_string;
 begin
   return error( shellScriptRequirements( r ) );
 end error;

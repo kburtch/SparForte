@@ -23,7 +23,7 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-with unchecked_deallocation,
+with ada.unchecked_deallocation,
      ada.text_io,
      gnat.source_info,
      spar_os.exec,
@@ -91,7 +91,7 @@ lastTerm    : unbounded_string := to_unbounded_string( "<undefined>" );
 tput_path1  : constant unbounded_string := to_unbounded_string( "/bin/tput" );
 tput_path2  : constant unbounded_string := to_unbounded_string( "/usr/bin/tput" );
 
-procedure free_list is new unchecked_deallocation( argumentList,
+procedure free_list is new ada.unchecked_deallocation( argumentList,
    argumentListPtr );
 -- Free in spawn package also tries deleting memory which we are
 --using

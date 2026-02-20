@@ -8,5 +8,5 @@ a : atype := (1 tagged fakeunit, 2 tagged fakeunit);
 i : integer;
 
 i := arrays.last(a);
-pragma assert( not tags.has_unit_tag( i ) );
+pragma assert( not tags.has_unit( i ) );
 

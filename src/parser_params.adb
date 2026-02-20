@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+--with ada.text_io; use ada.text_io;
+
 with ada.strings,
-    pegasoft.user_io,
+    pegasoft,
     message_strings,
     compiler,
     scanner.communications,
@@ -31,7 +33,6 @@ with ada.strings,
     parser;
 use ada.strings,
     pegasoft,
-    pegasoft.user_io,
     message_strings,
     compiler,
     scanner,
@@ -39,8 +40,6 @@ use ada.strings,
     performance_monitoring,
     parser_sidefx,
     parser;
-
-with ada.text_io; use ada.text_io;
 
 package body parser_params is
 
@@ -66,7 +65,6 @@ discard_result : boolean;
 -- For a scalar, use store (not sstorage) because of renamings
 ------------------------------------------------------------------------------
 
-pragma inline( AssignParameter );
 procedure AssignParameter( ref : in reference; value_se : storage ) is
 begin
    if not ref.hasIndex then
@@ -86,7 +84,6 @@ end AssignParameter;
 -- For a scalar, use store (not sstorage) because of renamings
 ------------------------------------------------------------------------------
 
-pragma inline( GetParameterValue );
 procedure GetParameterValue( ref : in reference; value_se : out storage ) is
 begin
    if not ref.hasIndex then
@@ -460,20 +457,20 @@ end ParseLastInOutRecordParameter;
 -- some kind of record, but we don't know the type beforehand.
 ------------------------------------------------------------------------------
 
-procedure ParseNextInOutRecordParameter( param_id : out identifier ) is
-begin
-  expectParameterComma;
-  ParseIdentifier( param_id ); -- in out
-  if syntax_check and then not error_found then
-     identifiers( param_id ).wasWritten := true;
-  end if;
-  if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleDataFlowWrite( param_id );
-     --checkDoubleGlobalWrite( param_id );
-     identifiers( param_id ).writtenOn := perfStats.lineCnt;
-  end if;
-end ParseNextInOutRecordParameter;
+--procedure ParseNextInOutRecordParameter( param_id : out identifier ) is
+--begin
+--  expectParameterComma;
+--  ParseIdentifier( param_id ); -- in out
+--  if syntax_check and then not error_found then
+--     identifiers( param_id ).wasWritten := true;
+--  end if;
+--  if isExecutingCommand then
+--     checkExpressionFactorVolatilityOnWrite( param_id );
+--     checkDoubleDataFlowWrite( param_id );
+--     --checkDoubleGlobalWrite( param_id );
+--     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+--  end if;
+--end ParseNextInOutRecordParameter;
 
 
 ------------------------------------------------------------------------------

@@ -21,10 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded,
-     Ada.Containers.Vectors;
-
-use  Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
 
 package pegasoft.vectors is
 

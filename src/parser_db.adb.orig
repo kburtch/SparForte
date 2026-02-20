@@ -22,7 +22,6 @@
 ------------------------------------------------------------------------------
 
 with ada.io_exceptions,
-     ada.text_io,
 #if POSTGRES
      APQ.PostgreSQL.Client,
      pegasoft.pg,
@@ -39,19 +38,17 @@ with ada.io_exceptions,
      scanner.communications,
      parser,
      parser_params;
-use  ada.text_io,
+use  spar_os.tty,
 #if POSTGRES
      APQ,
      APQ.PostgreSQL,
      APQ.PostgreSQL.Client,
      pegasoft.pg,
 #end if;
-     spar_os.tty,
      signal_flags,
      pegasoft,
      pegasoft.strings,
      pegasoft.user_io,
-     world,
      world.utf8,
      symbol_table,
      message_strings,

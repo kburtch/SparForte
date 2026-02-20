@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
 
 with system,
     interfaces.c,
@@ -33,7 +33,7 @@ with system,
     spar_os.opengl,
 #end if;
 #end if;
-    pegasoft.user_io,
+    pegasoft, --pegasoft.user_io,
     world,
     symbol_table,
     message_strings,
@@ -48,15 +48,15 @@ use interfaces.c,
 #if SDL
     pegasoft.pen,
 #end if;
-    spar_os,
+    --spar_os,
 #if SDL
     spar_os.sdl,
 #if OPENGL
     spar_os.opengl,
 #end if;
 #end if;
-    pegasoft.user_io,
-    world,
+    pegasoft, --pegasoft.user_io,
+    --world,
     symbol_table,
     message_strings,
     value_conversion,
@@ -158,7 +158,7 @@ begin
   ParseSingleNumericParameter( eof_t, val, kind, boolean_t );
   if isExecutingCommand then
      declare
-       flag : boolean := val.value = to_unbounded_string( "1" );
+       flag : constant boolean := val.value = to_unbounded_string( "1" );
      begin
        raiseGlExceptions := flag;
      exception when others =>
@@ -186,7 +186,7 @@ procedure ParsePenSetRect is
   -- Syntax: pen.set_rect( rec, left, top, right, bottom );
   -- Source: Pen.setRect
   record_ref : reference;
-  record_type : identifier := pen_rect_t;
+  record_type : constant identifier := pen_rect_t;
   -- record_id : identifier;
   leftExpr,  topExpr,  rightExpr,  bottomExpr  : storage;
   left_type, top_type, right_type, bottom_type : identifier;
@@ -831,7 +831,7 @@ procedure ParsePenNewScreenCanvas is
   hExpr,  vExpr,  cExpr : storage;
   h_type, v_type, c_type : identifier;
   canvas_ref : reference;
-  canvas_type : identifier := pen_canvas_id_t;
+  canvas_type : constant identifier := pen_canvas_id_t;
   C_Res : positive;
 begin
   expect( pen_new_screen_canvas_t );
@@ -900,7 +900,7 @@ procedure ParsePenNewGLScreenCanvas is
   hExpr,  vExpr,  cExpr : storage;
   h_type, v_type, c_type : identifier;
   canvas_ref : reference;
-  canvas_type : identifier := pen_canvas_id_t;
+  canvas_type : constant identifier := pen_canvas_id_t;
   C_Res : positive;
 begin
   expect( pen_new_gl_screen_canvas_t );
@@ -969,7 +969,7 @@ procedure ParsePenNewWindowCanvas is
   hExpr,  vExpr,  cExpr : storage;
   h_type, v_type, c_type : identifier;
   canvas_ref : reference;
-  canvas_type : identifier := pen_canvas_id_t;
+  canvas_type : constant identifier := pen_canvas_id_t;
   C_Res : positive;
 begin
   expect( pen_new_window_canvas_t );
@@ -1034,7 +1034,7 @@ procedure ParsePenNewGlWindowCanvas is
   hExpr,  vExpr,  cExpr : storage;
   h_type, v_type, c_type : identifier;
   canvas_ref : reference;
-  canvas_type : identifier := pen_canvas_id_t;
+  canvas_type : constant identifier := pen_canvas_id_t;
   C_Res : positive;
 begin
   expect( pen_new_gl_window_canvas_t );

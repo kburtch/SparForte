@@ -23,18 +23,11 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-pragma warnings( off ); -- suppress Gnat-specific package warning
-with ada.command_line.environment;
-pragma warnings( on );
-
 with ada.text_io,
     gnat.source_info,
-    CGI,
     pegasoft.strings,
     pegasoft.user_io;
 use ada.text_io,
-    ada.command_line,
-    ada.command_line.environment,
     pegasoft.strings,
     pegasoft.user_io;
 
@@ -173,16 +166,16 @@ storageCacheMiss : natural := 0;
 -- Cache or destroy storage pointer sp.
 -----------------------------------------------------------------------------
 
-procedure cacheOrFreeStorage( sp : storageGroupPtr ) is
-begin
-  if storageCache = null then
-     storageCache := sp;
-  else
-     free( storageCache );
-     storageCache := sp;
-  end if;
-end cacheOrFreeStorage;
-pragma inline( cacheOrFreeStorage );
+--procedure cacheOrFreeStorage( sp : storageGroupPtr ) is
+--begin
+--  if storageCache = null then
+--     storageCache := sp;
+--  else
+--     free( storageCache );
+--     storageCache := sp;
+--  end if;
+--end cacheOrFreeStorage;
+--pragma inline( cacheOrFreeStorage );
 
 -- FIND STORAGE
 --

@@ -23,12 +23,10 @@
 
 with ada.strings.unbounded,
      pegasoft,
-     world,
-     symbol_table;
+     world;
 use  ada.strings.unbounded,
      pegasoft,
-     world,
-     symbol_table;
+     world;
 
 package value_conversion is
 

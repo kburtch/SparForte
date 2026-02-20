@@ -21,8 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with pegasoft.gen_list;
-
 package world.byte_conversion is
 
 function toHighASCII( ch : character ) return character;

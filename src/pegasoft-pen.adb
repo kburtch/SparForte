@@ -23,8 +23,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system.address_to_access_conversions,
-     interfaces,
+with System.Address_To_Access_Conversions,
      interfaces.c,
      ada.text_io,
      pegasoft.user_io,
@@ -34,7 +33,6 @@ with system.address_to_access_conversions,
      interfaces.c,
      ada.text_io,
      pegasoft.user_io,
-     spar_os.sdl,
      spar_os.sdl.SDL_Surface_Conv;
 
 package body pegasoft.pen is

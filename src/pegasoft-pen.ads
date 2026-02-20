@@ -25,11 +25,9 @@
 -- This is loosely based on my Texttools' userio package.
 
 with system,
-     ada.strings.unbounded,
      spar_os.sdl;
 
-use ada.strings.unbounded,
-    spar_os.sdl;
+use  spar_os.sdl;
 
 with pegasoft.gen_list;
 

@@ -2595,13 +2595,13 @@ begin
      summary( e, "tags package" );
      authorKen( e );
      categoryPackage( e );
-     description( e, "A collection of common routines using value meta labels." );
-     content( e, "b := has_policy_tags( x )" );
-     content( e, "b := has_unit_tag( x )" );
+     description( e, "A collection of common routines using value meta tags." );
+     content( e, "b := has_policies( x )" );
+     content( e, "b := has_unit( x )" );
      content( e, "b := contains_policy( x, t )" );
      content( e, "b := contains_unit( x, t )" );
-     content( e, "s := get_unit_tag_image( x )" );
-     content( e, "s := get_policy_tags_image( x )" );
+     content( e, "s := get_unit_image( x )" );
+     content( e, "s := get_policies_image( x )" );
      --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "teams" then

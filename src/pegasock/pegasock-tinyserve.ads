@@ -4,8 +4,8 @@
 -----------------------------------------------------------------------------
 pragma ada_2005;
 
-with system, interfaces.c;
-use system, interfaces.c;
+with system;
+use system;
 
 package pegasock.tinyserve is
 

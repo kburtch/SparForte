@@ -119,6 +119,14 @@ endif
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
+	@echo
+	@echo "To include a full software bill-of-materials, run 'make sbom' to"
+	@echo "build a version with all software dependencies.  Packaging"
+	@echo "SparForte with 'make bintar' will do this automatically."
+	@echo
+	@echo "The 'spar' program will be in the src directory."
+	@echo "To install SparForte, run 'make install'."
+	@echo "For other options, run 'make help'."
 	@echo "---------------------------------------------------------------"
 	@echo
 
@@ -219,6 +227,14 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	$(GNATMAKE) -j$(GMAKEJOBS) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
+
+sbom:
+	@echo "---------------------------------------------------------------"
+	@echo "Searching for library dependencies"
+	@echo "---------------------------------------------------------------"
+	@echo
+	sh build_world_deps.sh
+	$(MAKE) all
 
 clean:
 	$(MAKE) -C adacgi-1.6 clean

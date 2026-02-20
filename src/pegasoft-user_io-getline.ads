@@ -21,11 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.C.strings,
-     ada.strings.unbounded;
+with interfaces.C.strings;
 use  interfaces.C,
-     interfaces.C.strings,
-     ada.strings.unbounded;
+     interfaces.C.strings;
 
 package pegasoft.user_io.getline is
 

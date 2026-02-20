@@ -20,7 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 
 with gnat.source_info,
      ada.strings.unbounded,

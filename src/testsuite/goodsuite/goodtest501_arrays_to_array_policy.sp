@@ -7,6 +7,6 @@ aalias : atype renames a;
 
 js := "[1,2]" tagged policy fakepolicy;
 arrays.to_array(aalias, js);
-pragma assert( not tags.has_policy_tags( a(1) ) );
-pragma assert( not tags.has_policy_tags( a(2) ) );
+pragma assert( not tags.has_policies( a(1) ) );
+pragma assert( not tags.has_policies( a(2) ) );
 

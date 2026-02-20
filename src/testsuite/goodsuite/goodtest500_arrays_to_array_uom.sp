@@ -7,6 +7,6 @@ aalias : atype renames a;
 
 js := "[1,2]" tagged inches;
 arrays.to_array(aalias, js);
-pragma assert( not tags.has_unit_tag( a(1) ) );
-pragma assert( not tags.has_unit_tag( a(2) ) );
+pragma assert( not tags.has_unit( a(1) ) );
+pragma assert( not tags.has_unit( a(2) ) );
 

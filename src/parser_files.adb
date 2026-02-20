@@ -34,7 +34,6 @@ with gnat.io_aux,
      value_conversion,
      scanner.calendar,
      scanner.communications,
-     parser_aux,
      parser,
      parser_cal;
 use  gnat.io_aux,
@@ -49,7 +48,6 @@ use  gnat.io_aux,
      scanner,
      scanner.calendar,
      scanner.communications,
-     parser_aux,
      parser,
      parser_cal;
 

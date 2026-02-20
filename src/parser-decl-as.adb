@@ -33,14 +33,12 @@ with Interfaces.C,
     pegasoft.user_io,
     world.utf8,
     performance_monitoring,
-    builtins,
     jobs,
     signal_flags,
     message_strings,
     value_conversion,
     compiler,
     scanner.communications,
-    scanner_res,
     parser.decl.shell, -- sibling package
     parser_aux,
     parser_sidefx,
@@ -58,14 +56,12 @@ use Interfaces.C,
     pegasoft.user_io,
     world.utf8,
     performance_monitoring,
-    builtins,
     jobs,
     signal_flags,
     message_strings,
     value_conversion,
     compiler,
     scanner.communications,
-    scanner_res,
     parser.decl.shell, -- sibling package
     parser_aux,
     parser_sidefx,
@@ -3395,7 +3391,7 @@ procedure ParseCaseProcedureBlock is
   procStart : natural;
   procEnd   : natural;
   no_params   : integer := 0;  -- TODO: delete this
-  old_error_found : constant boolean := error_found;
+  --old_error_found : constant boolean := error_found;
   abstract_parameter : identifier := eof_t;
   declarationFile : unbounded_string;
   declarationLine : natural;
@@ -5378,7 +5374,7 @@ begin
         getNextToken;
      elsif identifiers( token ).kind = new_t then
         parseUniqueShellWord( shellWord );
-        cmdName := unbounded_string( shellWord.value );
+        cmdName := shellWord.value;
      elsif identifiers( token ).class = typeClass then
          err(
             contextNotes => +"in the shell command",
@@ -5407,14 +5403,14 @@ begin
             seeAlso => +"doc/ref_shellcmds.html"
         );
         parseUniqueShellWord( shellWord );
-        cmdName := unbounded_string( shellWord.value );
+        cmdName := shellWord.value;
      elsif getBaseType( identifiers( token ).kind ) = command_t then
         cmdName := identifiers( token ).store.value;
         identifiers( token ).wasReferenced := true;
         getNextToken;
      else
         parseUniqueShellWord( shellWord );
-        cmdName := unbounded_string( shellWord.value );
+        cmdName := shellWord.value;
      end if;
 
      itself := cmdName;                                    -- this is new @

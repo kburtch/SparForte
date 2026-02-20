@@ -37,7 +37,6 @@ use
     pegasock,
     pegasoft,
     pegasock.tinyserve,
-    pegasoft,
     symbol_table,
     message_strings,
     scanner,

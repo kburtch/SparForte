@@ -21,6 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with symbol_table;
+use  symbol_table;
+
 package body value_conversion is
 
 function to_numeric( id : identifier ) return numericValue is

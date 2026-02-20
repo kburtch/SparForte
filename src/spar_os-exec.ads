@@ -22,8 +22,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system,
-     unchecked_deallocation,
+with ada.unchecked_deallocation,
      ada.strings.unbounded;
 use  ada.strings.unbounded;
 
@@ -36,7 +35,7 @@ type argumentPtr is access all String;
 type argumentList is array( positive range <> ) of argumentPtr;
 type argumentListPtr is access all argumentList;
 
-procedure Free is new Unchecked_Deallocation( Object => String,
+procedure Free is new ada.Unchecked_Deallocation( Object => String,
    Name => argumentPtr );
 
 procedure free( ap : in out argumentListPtr );

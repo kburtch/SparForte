@@ -108,3 +108,5 @@ CHANGES SINCE 2.6.3
 
 51. New: pragma annotate( release date, "string" ).
 
+52. New: added "make sbom" to gather a full sbom when building from sources".
+

@@ -21,13 +21,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 with ada.calendar,
-     ada.strings,
+     --ada.strings,
      -- ada.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
      world.utf8;
-use  ada.strings,
+use  --ada.strings,
      ada.calendar,
      -- ada.text_io,
      cgi,

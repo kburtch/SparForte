@@ -5,11 +5,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>SparForte - Packages - Stats</title>
+	<title>SparForte - Packages - Tags</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_sound.html" />
-	<link rel="next" href="pkg_strings.html" />
+	<link rel="prev" href="pkg_system.html" />
+	<link rel="next" href="pkg_teams.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -30,7 +30,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_sinfo.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_strings.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_system.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_teams.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -42,34 +42,40 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.17"></a>Stats Package</h2>
-<p>This package contains a set of statistical calculations for numeric arrays,
-including calculating averages, standard deviations and more.</p>
+<h2><a NAME="4.22"></a>Tags Package</h2>
+
+<p>The SparForte built-in tags package provides subprograms to manipulate
+value meta tags.</p>
+
+<p><u>Introduced</u>: SparForte 3.0<br>
+
+<p><u>GCC Ada Equivalent</u>: N/A<br>
 
         <center>
         <div class="code">
 <pre>
-  <a href="#stats.average">r := average( a )</a>             <a href="#stats.max">r := max( a )</a>              <a href="#stats.min">r := min( a )</a>
-  <a href="#stats.standard_deviation">r := standard_deviation( a )</a>  <a href="#stats.sum">r := sum( a )</a>              <a href="#stats.variance">r := variance( a )</a>
+  <a href="#tags.contains_policy">b := contains_policy( x, t )</a>    <a href="#tags.contains_unit">b := contains_unit( x, t )</a>      <a href="#tags.get_policies_image">s := get_policies_image( x )</a>
+  <a href="#tags.get_unit_image">s := get_unit_image( x )</a>        <a href="#tags.has_policies">b := has_policies( x )</a>          <a href="#tags.has_unit">b := has_unit( x )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the stats package
+        <b>Help Command</b>: Contents of the tags package
         </div>
         </div>
         </center>
 
-<a name="stats.average"></a><h3>r := stats.average( a )</h3>
+<a name="tags.contains_policy"></a><h3>b := tags.contains_policy( x, t )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Calculate the average (mean) value of the array.</p></td>
+<td><p>Return true if the given tag is in the policies of x.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.average( numbers_collected );</span></p></td>
+<td><span class="code">credit_card := "1234567890" tagged pci;<br>
+b := tags.contains_policy( credit_card, pci ); -- returns true</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -77,18 +83,121 @@ including calculating averages, standard deviations and more.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
 <td><span>required</span></td>
-<td><span>the array to average</span></td>
+<td><span>the item with the value to test</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>meta policy</span></td>
+<td><span>required</span></td>
+<td><span>the policy to check</span></td>
 </tr>
 <tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>the array to evaluate</span></td>
+<td><span>true if the value has the policy</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the tag is for a unit of measure</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="tags.contains_unit"></a><h3>b := tags.contains_unit( x, t )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if the given tag is the unit of measure for x.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">temperature := 20.0 tagged celsius;<br>
+b := tags.contains_unit( temperature, kilometers ); -- returns false</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
+<td><span>required</span></td>
+<td><span>the item with the value to test</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in</span></td>
+<td><span>meta unit of measure</span></td>
+<td><span>required</span></td>
+<td><span>the unit of measure to check</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the value has the unit of measure</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the tag is for a policy</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="tags.get_policies_image"></a><h3>s := tags.get_policies_image( x )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the policy tags of x as a human-readable string.  If there are no
+policy tags, an empty string is returned.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">x := "1234567890" tagged pci;<br>
+s := tags.get_policies_image( credit_card ); -- returns "pci"</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
+<td><span>required</span></td>
+<td><span>the item with the value</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string of the policies</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -103,17 +212,19 @@ including calculating averages, standard deviations and more.</p>
 </tr>
 </table>
 
-<a name="stats.max"></a><h3>r := stats.max( a )</h3>
+<a name="tags.get_unit_image"></a><h3>s := tags.get_unit_image( x )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Find the maximum (largest) value of the array.</p></td>
+<td><p>Return the unit of measure tag of x as a human-readable string.  If there is no
+unit of measure tag, an empty string is returned.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.max( numbers_collected );</span></p></td>
+<td><span class="code">distance := 100.0 tagged miles;<br>
+s := tags.get_unit_image( distance ); -- returns "miles"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -121,18 +232,18 @@ including calculating averages, standard deviations and more.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
 <td><span>required</span></td>
-<td><span>the maximum value</span></td>
+<td><span>the item with the value</span></td>
 </tr>
 <tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the array to search</span></td>
+<td><span>the string of the units of measure</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -140,24 +251,25 @@ including calculating averages, standard deviations and more.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#stats.min">stats.min</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: max</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-<a name="stats.min"></a><h3>r := stats.min( a )</h3>
+<a name="tags.has_policies"></a><h3>b := tags.has_policies( x )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Find the minimum (smallest) value of the array.</p></td>
+<td><p>Return true if x has been assigned one or more policy tags.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.min( numbers_collected );</span></p></td>
+<td><span class="code">credit_card := "1234567890";<br>
+b := tags.has_policies( credit_card ); -- returns false</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -165,18 +277,18 @@ including calculating averages, standard deviations and more.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
 <td><span>required</span></td>
-<td><span>the minimum value</span></td>
+<td><span>the item with the value</span></td>
 </tr>
 <tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>the array to search</span></td>
+<td><span>true if there are policies</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -184,24 +296,26 @@ including calculating averages, standard deviations and more.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#stats.max">stats.max</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: min</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-<a name="stats.standard_deviation"></a><h3>r := stats.standard_deviation( a )</h3>
+
+<a name="tags.has_unit"></a><h3>b := tags.has_unit( x )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Calculate the standard deviation of the array elements.</p></td>
+<td><p>Return true if x has been assigned a unit_of_measure tag.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.standard_deviation( numbers_collected );</span></p></td>
+<td><span class="code">bank_account := 1000.0 tagged us_dollars;<br>
+b := tags.has_unit( bank_account ); -- returns true</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
 <tr>
 <td><span class="pkg_param">Param</span></td>
 <td><span class="pkg_param">Mode</span></td>
@@ -209,18 +323,18 @@ including calculating averages, standard deviations and more.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
+<td><span>x</span></td>
+<td><span>in</span></td>
+<td><span><i>any scalar type</i></span></td>
 <td><span>required</span></td>
-<td><span>the standard deviation</span></td>
+<td><span>the item with the value</span></td>
 </tr>
 <tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>the array to evaluate</span></td>
+<td><span>true if there is a unit of measure</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -231,97 +345,12 @@ including calculating averages, standard deviations and more.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: stats_standard_deviation</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
-<a name="stats.sum"></a><h3>r := stats.sum( a )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Calculate the total value of the array by adding all elements.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.sum( numbers_collected );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
-<td><span>required</span></td>
-<td><span>the total value</span></td>
-</tr>
-<tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
-<td><span>required</span></td>
-<td><span>the array to sum</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: array_sum</p></td>
-</tr>
-</table>
 
-<a name="stats.variance"></a><h3>r := stats.variance( a )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Calculate the variance of the array elements.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><p><span class="code">r := stats.variance( numbers_collected );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>r</span></td>
-<td><span>result</span></td>
-<td><span>element type</span></td>
-<td><span>required</span></td>
-<td><span>the variance</span></td>
-</tr>
-<tr>
-<td><span>a</span></td>
-<td><span>in out</span></td>
-<td><span>numeric array type</span></td>
-<td><span>required</span></td>
-<td><span>the array to evaluate</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: stats_variance</p></td>
-</tr>
-</table>
+&nbsp;<br>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
@@ -358,10 +387,10 @@ including calculating averages, standard deviations and more.</p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;<b>stats</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_tags.html">&nbsp;tags</a></p>
+				<p class="rmt"><a class="rightmenutext" href="pkg_tags.html">&nbsp;<b>tags</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;teams</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_templates.html">&nbsp;templates</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>

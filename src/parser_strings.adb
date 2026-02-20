@@ -38,7 +38,6 @@ with interfaces.c,
     message_strings,
     value_conversion,
     scanner.communications,
-    parser_aux,
     parser_params,
     parser,
     parser_strings_pcre;
@@ -60,7 +59,6 @@ use interfaces.c,
     scanner,
     scanner.communications,
     parser_params,
-    parser_aux,
     parser;
 
 package body parser_strings is

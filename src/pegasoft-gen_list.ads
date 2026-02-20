@@ -26,7 +26,7 @@
 -- eg. package AnIntegerList is new list_manager(integer, "=", ">=");
 --     MyIntegerList : AnIntegerList.List;
 
-with Unchecked_Deallocation;
+with Ada.Unchecked_Deallocation;
 
 generic
 
@@ -118,7 +118,7 @@ procedure Insert( TheList : in out List ; atIndex : AListIndex;
 -- Clear - remove the nth object from a list; returns Constraint_Error
 --         if index is out of range
 
-procedure Free is new Unchecked_Deallocation(
+procedure Free is new Ada.Unchecked_Deallocation(
        Object => AListRecord,
        Name   => AListRecordPtr );
 procedure Pull( TheList : in out List ; data : in out AListElement );

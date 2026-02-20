@@ -21,11 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.C.strings,
-     ada.strings.unbounded;
-use  interfaces.C,
-     interfaces.C.strings,
-     ada.strings.unbounded;
+with interfaces.C.strings;
+use  interfaces.C.strings;
 
 package body spar_os.l10n is
 

@@ -222,7 +222,7 @@ begin
      for i in 1..length( expr ) loop
          ch := Element( expr, i );
 <<logwrite>> writechar( result, fd, ch, 1 );
-         if result < 0 then
+         if result < 0 or result > 1 then
             if C_errno = EAGAIN or C_errno = EINTR then
                goto logwrite;
             end if;
@@ -237,7 +237,7 @@ begin
         ch := eol_characters(i);
 <<logwrite2>>
         writechar( result, fd, ch, 1 ); -- add a line feed
-        if result < 0 then
+        if result < 0 or result > 1 then
            if C_errno = EAGAIN or C_errno = EINTR then
               goto logwrite2;
            end if;

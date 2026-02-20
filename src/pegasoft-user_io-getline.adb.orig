@@ -28,7 +28,6 @@ with ada.text_io,
      gnat.os_lib,
      gnat.directory_operations,
      gnat.source_info,
-     ada.containers.vectors,
      spar_os.tty,
      spar_os.readline,
      pegasoft.strings,
@@ -127,8 +126,8 @@ readline_idle_timeout  : duration;
 -- May be removed
 
 
-package completionLists is new ada.containers.vectors( Positive,
-  chars_ptr );
+--package completionLists is new ada.containers.vectors( Positive,
+--  chars_ptr );
 -- memoryLeakCnt : integer := 0;
 
 

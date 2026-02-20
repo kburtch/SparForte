@@ -3,10 +3,10 @@
 -- e.g. To connect to test, telnet <host> <port>
 -----------------------------------------------------------------------------
 
-with ada.text_io,
-     ada.strings.unbounded;
-use  ada.text_io,
-     ada.strings.unbounded;
+--with ada.text_io; use ada.text_io;
+
+--with ada.strings.unbounded;
+--use  ada.strings.unbounded;
 
 package body pegasock.tinyserve is
 

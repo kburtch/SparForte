@@ -23,13 +23,8 @@
 ------------------------------------------------------------------------------
 
 with
-  ada.strings.unbounded,
-  world,
-  symbol_table,
   message_strings;
-use ada.strings.unbounded,
-  world,
-  symbol_table,
+use
   message_strings;
 
 package scanner.communications is

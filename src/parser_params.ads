@@ -207,6 +207,9 @@ procedure ParseLastInOutParameter(
 
 procedure ParseLastInOutRecordParameter( subprogram : identifier; param_id : out identifier );
 
+--procedure ParseNextInOutRecordParameter( param_id : out identifier );
+-- Not used
+
 ------------------------------------------------------------------------------
 -- Instantiated Generics Parameters
 ------------------------------------------------------------------------------

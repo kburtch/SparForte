@@ -7,5 +7,5 @@ a : atype;
 a(1) := 1 tagged inches;
 a(2) := 2 tagged inches;
 arrays.to_json(js, a);
-pragma assert( not tags.has_unit_tag( js ) );
+pragma assert( not tags.has_unit( js ) );
 

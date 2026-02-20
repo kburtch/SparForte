@@ -27,20 +27,17 @@ with ada.text_io,
      pegasoft.strings,
      pegasoft.user_io,
      spar_os,
-     world.utf8,
+     world.utf8;
      -- TODO: references own parent.  This is messy to sort out.  Will
      -- deal with it later.
-     scanner;
 
 use  ada.text_io,
      ada.strings.fixed,
-     pegasoft.strings,
      pegasoft.script_io,
      pegasoft.strings,
      pegasoft.user_io,
      spar_os,
-     world.utf8,
-     scanner;
+     world.utf8;
 
 package body scanner.communications is
 

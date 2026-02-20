@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+with ada.text_io;use ada.text_io;
 with gnat.source_info,
     ada.strings.unbounded,
     spar_os.sound,
@@ -30,8 +30,7 @@ with gnat.source_info,
     message_strings,
     scanner,
     scanner.communications,
-    parser,
-    builtins;
+    parser;
 use ada.strings.unbounded,
     spar_os,
     spar_os.sound,
@@ -40,8 +39,7 @@ use ada.strings.unbounded,
     message_strings,
     scanner,
     scanner.communications,
-    parser,
-    builtins;
+    parser;
 
 package body parser_sound is
 

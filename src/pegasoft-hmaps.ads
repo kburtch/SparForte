@@ -21,10 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded,
-     Ada.Containers.Hashed_Maps;
-
-use  Ada.Strings.Unbounded;
+with Ada.Containers.Hashed_Maps;
 
 package pegasoft.hmaps is
 
