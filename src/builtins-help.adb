@@ -1222,6 +1222,8 @@ begin
   content( e, "pragma declare_constraint( mode, constraint, value [,limit] ) - create a design constraint" );
   content( e, "pragma depreciated/deprecated( " & Ada.Characters.Latin_1.Quotation & "newscript" & Ada.Characters.Latin_1.Quotation &" ) - report script as obsolete by newscript" );
   content( e, "pragma dispute( from, to, message ) - request program review" );
+  content( e, "pragma error( msg ) - force an error to occur" );
+  content( e, "pragma error_processor( path, param ) - on errors, run the given program" );
   content( e, "pragma export( shell | local_memcache | memcache | session , var ) - export a variable" );
   content( e, "pragma export_json( shell | local_memcache | memcache | session , var )" );
   content( e, "pragma gcc_errors - same as --gcc-errors" );

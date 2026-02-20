@@ -65,6 +65,7 @@ environment.</p>
   <b>pragma</b> depreciated/deprecated( "newscript" )
   <b>pragma</b> dispute( from, message )
   <b>pragma</b> error( "message" )
+  <b>pragma</b> error_processor( path, param )
   <b>pragma</b> export( shell | local_memcache | memcache | session , var )
   <b>pragma</b> export_json( shell | local_memcache | memcache | session , var )
   <b>pragma</b> gcc_errors
@@ -534,6 +535,13 @@ a semi-colon.  Without a parameter, same as --debug (turn on debugging).
 The debugging commands are run in restricted shell mode.  Because this
 is a pragma, it can be placed in variable declarations or other places
 executable statements are not normally allowed.</li>
+  <li> <b>pragma error_processor( path, param )</b> - instead of
+displaying the error message, run the program at the path and pass
+in the param and the error message as script parameters.  This can
+be used to log errors, speak errors, analyze errors and so forth. In some
+situations, an error message may not be submitted to the error
+processor.  Be aware that raising an error in the processor can
+create an infinite loop.</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
 as --gcc-errors.&nbsp; Show simplified GCC-style errors.<br>
   </li>
@@ -570,6 +578,43 @@ variable's description whenever a user breaks to a command prompt. Has
 no
 effect if --break option isn't used.</li>
 </ul>
+
+<p>As an example of pragma error_processor, supposed you want the
+error message to be spoken using the festival speach program.
+Use error_processor to run your error processing script. In this
+case, run SparForte and the parameter is the name of the script:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+   <b>pragma</b> error_processor( "/usr/local/bin/spar", "/home/ken/bin_spar/error_processor.sp" );</p>
+        </div>
+        </center>
+
+<p>Your error processing script may look like this:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+  #!/usr/local/bin/spar<br />
+
+  -- Speak the error message (text-to-speech)<br />
+  -- Change SparForte to "SparFortay" to get the pronounciation correct<br />
+
+  msg : string;<br />
+  msg := command_line.argument( 1 );<br />
+  msg := `echo "$MSG" | sed 's/SparForte/SparFortay/g'`;<br />
+  <b>if</b> files.is_executable_file( "/usr/bin/festival" ) <b>then</b><br />
+     echo "$msg" | /usr/bin/festival '--tts';<br />
+  <b>end</b> <b>if</b>;
+        <div class="code_caption">
+                <b>Example</b>: A example of an error processor script</span>
+        </div>
+        </div>
+        </center>
+
+<p>Instead of the error message appearing on the screen, it will
+be spoken (if festival is installed).</p>
 
 <h4>Testing Pragmas</h4>
 

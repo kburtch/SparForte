@@ -40,6 +40,9 @@ package scanner.communications is
 function get_script_execution_position( msg : messageStrings; utf_icon : string ) return unbounded_string;
 -- get the script position but do not cause an error
 
+procedure showErrorOrRunErrorProcessor( errmsg : unbounded_string );
+-- show the error on standard error or run the error processor (if any)
+
 procedure err_shell( msg : messageStrings; wordOffset : natural );
 -- a shell error message with an offset into the token (shell word)
 

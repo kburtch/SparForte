@@ -110,3 +110,5 @@ CHANGES SINCE 2.6.3
 
 52. New: added "make sbom" to gather a full sbom when building from sources".
 
+53. New: pragma error_processor [Tests needed]
+

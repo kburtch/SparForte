@@ -21,15 +21,15 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io,
+with unchecked_deallocation,
+     ada.text_io,
      ada.strings.fixed,
      pegasoft.script_io,
      pegasoft.strings,
      pegasoft.user_io,
-     spar_os,
-     world.utf8;
-     -- TODO: references own parent.  This is messy to sort out.  Will
-     -- deal with it later.
+     spar_os.exec,
+     world.utf8,
+     jobs;
 
 use  ada.text_io,
      ada.strings.fixed,
@@ -37,7 +37,9 @@ use  ada.text_io,
      pegasoft.strings,
      pegasoft.user_io,
      spar_os,
-     world.utf8;
+     spar_os.exec,
+     world.utf8,
+     jobs;
 
 package body scanner.communications is
 
@@ -352,7 +354,7 @@ begin
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
-  needGccVersion := boolean( gccOpt ) or hasTemplate;
+  needGccVersion := boolean( gccOpt ) or hasTemplate or ErrorProcessorPath /= null_unbounded_string;
 
   -- Returns the current token position and the line number.
   -- We're not using cmdline.
@@ -472,6 +474,38 @@ end get_script_execution_position;
 
 
 -----------------------------------------------------------------------------
+--  SHOW ERROR OR RUN ERROR PROCESSOR
+--
+-- show the error on standard error or run the error processor (if any)
+-----------------------------------------------------------------------------
+
+procedure free_list is new unchecked_deallocation( argumentList,
+   argumentListPtr );
+-- Free in spawn package also tries deleting memory which we are
+--using
+
+procedure showErrorOrRunErrorProcessor( errmsg : unbounded_string ) is
+   ap : argumentListPtr := new ArgumentList( 1..2 );
+   param1 : aliased string := to_string( errorProcessorScript ) & ASCII.NUL;
+   param2 : aliased string := to_string( fullErrorMessage.templateMessage ) & ASCII.NUL;
+   success: boolean;
+begin
+   if errorProcessorPath /= null_unbounded_string then
+      ap(1) := param1'unchecked_access;
+      ap(2) := param2'unchecked_access;
+      run( cmd => errorProcessorPath,
+           ap => ap,
+           success => success,
+           background => true
+      );
+      free_list( ap );
+   else
+      put_line_retry( standard_error, fullErrorMessage.templateMessage );
+   end if;
+end showErrorOrRunErrorProcessor;
+
+
+-----------------------------------------------------------------------------
 --  ERR SHELL
 --
 -- Stop execution and record an compile-time or run-time error.  Format the
@@ -504,7 +538,7 @@ begin
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
-  needGccVersion := boolean( gccOpt ) or hasTemplate;
+  needGccVersion := boolean( gccOpt ) or hasTemplate or ErrorProcessorPath /= null_unbounded_string;
 
   -- Returns the current token position and the line number.
   -- We're not using cmdline.
@@ -754,7 +788,7 @@ begin
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
-  needGccVersion := boolean( gccOpt ) or hasTemplate;
+  needGccVersion := boolean( gccOpt ) or hasTemplate or ErrorProcessorPath /= null_unbounded_string;
 
   -- Returns the current token position and the line number.
   --
@@ -885,7 +919,7 @@ procedure err_test_result is
   gccFormatMsg : messageStrings;
 begin
   -- determine if GCC format is requested or required
-  needGccVersion := boolean( gccOpt ) or hasTemplate;
+  needGccVersion := boolean( gccOpt ) or hasTemplate or ErrorProcessorPath /= null_unbounded_string;
 
   -- Get the command line position.  We don't care about the command
   -- line.  Script should always exist so a null script check is not done.

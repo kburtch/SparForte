@@ -306,7 +306,7 @@ begin
                 putTemplateHeader( templateHeader );
                 put_line_retry( fullErrorMessage.templateMessage );
              else
-                put_line_retry( standard_error, fullErrorMessage.templateMessage );
+                showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
              end if;
           end if;
        end if;
@@ -851,7 +851,7 @@ begin
         putTemplateHeader( templateHeader );
         put_line_retry( fullErrorMessage.templateMessage );
      else
-        put_line_retry( standard_error, fullErrorMessage.templateMessage );
+        showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
      end if;
      if last_status = 0 then                       -- no last command status?
         set_exit_status( Failure );                -- just set to 1
@@ -976,7 +976,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line_retry( standard_error, fullErrorMessage.templateMessage );
+     showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1035,7 +1035,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line_retry( standard_error, fullErrorMessage.templateMessage );
+     showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1088,7 +1088,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line_retry( standard_error, fullErrorMessage.templateMessage );
+     showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1155,7 +1155,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line_retry( standard_error, fullErrorMessage.templateMessage );
+     showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1195,7 +1195,7 @@ begin
   --   end if;
   --   interpretScript( Argument( OptionOffset ) );    -- run the script
      if error_found then
-        put_line_retry( standard_error, fullErrorMessage.templateMessage );
+        showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
      end if;
   else
      syntax_check := true;                           -- check syntax only
@@ -1223,7 +1223,7 @@ begin
            putTemplateHeader( templateHeader );
            put_line_retry( fullErrorMessage.templateMessage );
         else
-           put_line_retry( standard_error, fullErrorMessage.templateMessage );
+           showErrorOrRunErrorProcessor( fullErrorMessage.templateMessage );
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?

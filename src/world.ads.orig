@@ -236,6 +236,8 @@ annotationTodoFound : boolean := false; -- pragma annotations_no_todo
 licenseSet       : boolean := false;
 softwareModelSet : boolean := false;
 softwareModelReq : softwareModelPtr := null;
+errorProcessorPath : unbounded_string; -- pragma error_processor
+errorProcessorScript : unbounded_string; -- pragma error_processor
 
 ------------------------------------------------------------------------------
 -- Templates
