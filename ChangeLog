@@ -106,9 +106,11 @@ CHANGES SINCE 2.6.3
 
 50. Change: the provision.sh script updated for FreeBSD 15.
 
-51. New: pragma annotate( release date, "string" ).
+51. New: pragma annotate( release_date, "string" ).
 
 52. New: added "make sbom" to gather a full sbom when building from sources".
 
 53. New: pragma error_processor [Tests needed]
+
+54. New: basic C type names such as "int", "long" "char", "bool" will have a unique error message if type are not defined.
 

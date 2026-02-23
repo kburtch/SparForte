@@ -98,6 +98,7 @@ type aPragmaKind is (
      depreciated,
      dispute,
      error,
+     error_processor,
      export,
      export_json,
      gcc_errors,
@@ -211,6 +212,8 @@ begin
      pragmaKind :=  dispute;
   elsif name = "error" then
      pragmaKind := error;
+  elsif name = "error_processor" then
+     pragmaKind := error_processor;
   elsif name = "export" then
      pragmaKind := export;
   elsif name = "export_json" then
@@ -1555,6 +1558,14 @@ begin
   when error =>                                 -- pragma error
      ParseStaticExpression( expr, var_id );
      baseTypesOK( var_id, uni_string_t );
+  when error_processor =>
+     ParseStaticExpression( expr, var_id );
+     baseTypesOK( var_id, uni_string_t );
+     expectPragmaComma;
+     ParseStaticExpression( expr2, var_id );
+     baseTypesOK( var_id, uni_string_t );
+     errorProcessorPath := expr.value;
+     errorProcessorScript := expr2.value;
   when export | export_json =>                  -- pragma export/json
      ParseExportKind( var_id, exportType );
   when import | unchecked_import | import_json | unchecked_import_json =>
@@ -2206,6 +2217,8 @@ begin
         null;
      when error =>
         err( pl( "error: " & to_string( expr.value )) );
+     when error_processor =>
+	null;
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;

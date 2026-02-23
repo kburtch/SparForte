@@ -487,12 +487,17 @@ procedure free_list is new unchecked_deallocation( argumentList,
 procedure showErrorOrRunErrorProcessor( errmsg : unbounded_string ) is
    ap : argumentListPtr := new ArgumentList( 1..2 );
    param1 : aliased string := to_string( errorProcessorScript ) & ASCII.NUL;
-   param2 : aliased string := to_string( fullErrorMessage.templateMessage ) & ASCII.NUL;
+   param2templ: aliased string := to_string( fullErrorMessage.templateMessage ) & ASCII.NUL;
+   param2gcc : aliased string := to_string( fullErrorMessage.gccMessage ) & ASCII.NUL;
    success: boolean;
 begin
    if errorProcessorPath /= null_unbounded_string then
       ap(1) := param1'unchecked_access;
-      ap(2) := param2'unchecked_access;
+      if param2gcc /= null_unbounded_string then
+         ap(2) := param2gcc'unchecked_access;
+      else
+         ap(2) := param2templ'unchecked_access;
+      end if;
       run( cmd => errorProcessorPath,
            ap => ap,
            success => success,

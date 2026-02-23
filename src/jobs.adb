@@ -457,13 +457,23 @@ begin
         remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
      );
   else
-     err(
-        contextNotes => unb_pl( current_working_directory ),
-        subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
-        reason       => +"was " & em( "not found" ),
-        obstructorNotes => nullMessageStrings,
-        remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
-     );
+     if cmd = "=" then -- probably ";=" instead of ":="
+        err(
+           contextNotes => unb_pl( current_working_directory ),
+           subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+           reason       => +"was " & em( "not found" ),
+           obstructorNotes => nullMessageStrings,
+           remedy       => +"an asignment operator ':=' was spelled wrong as ';=' (semi-colon equals)"
+        );
+     else
+        err(
+           contextNotes => unb_pl( current_working_directory ),
+           subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+           reason       => +"was " & em( "not found" ),
+           obstructorNotes => nullMessageStrings,
+           remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
+        );
+     end if;
   end if;
 end err_cmd_not_found;
 

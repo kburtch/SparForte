@@ -600,12 +600,13 @@ case, run SparForte and the parameter is the name of the script:</p>
 
   -- Speak the error message (text-to-speech)<br />
   -- Change SparForte to "SparFortay" to get the pronounciation correct<br />
-
+  -- Make colon and semicolon pronounced (normally skipped by festival)<br />
+ 
   msg : string;<br />
   msg := command_line.argument( 1 );<br />
-  msg := `echo "$MSG" | sed 's/SparForte/SparFortay/g'`;<br />
+  msg := `echo "$msg" | sed 's/SparForte/SparFortay/g';s 's/\:/colon/g;s/\;/semicolon/g'`;<br />
   <b>if</b> files.is_executable_file( "/usr/bin/festival" ) <b>then</b><br />
-     echo "$msg" | /usr/bin/festival '--tts';<br />
+&nbsp;&nbsp;echo "$msg" | /usr/bin/festival '--tts';<br />
   <b>end</b> <b>if</b>;
         <div class="code_caption">
                 <b>Example</b>: A example of an error processor script</span>
@@ -615,6 +616,95 @@ case, run SparForte and the parameter is the name of the script:</p>
 
 <p>Instead of the error message appearing on the screen, it will
 be spoken (if festival is installed).</p>
+
+<p>Here is an example of a script that gives the error message to a LLM chatbot
+for an opinion.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+#!/usr/local/bin/spar<br />
+&nbsp;<br />
+<b>pragma</b> error_processor( "/usr/local/bin/spar", "/home/ken/bin_spar/error_processor_ai.sp" );<br />
+&nbsp;<br />
+i : integer ;= 5;<br />
+s : string := "5";<br />
+put_line( i );<br />
+put_line( s );<br />
+        </div>
+        </center>
+
+<p>This is the error processor script:</p>
+        <center>
+        <div class="code">
+                <p class="code">
+#!/usr/local/bin/spar<br />
+&nbsp;<br />
+CAT_CMD : <b>constant</b> string := "/bin/cat";<br />
+OLLAMA_CMD : <b>constant</b> string := "/usr/local/bin/ollama";<br />
+MODEL : <b>constant</b> string := "codellama";<br />
+&nbsp;<br />
+errmsg : <b>constant</b> string := command_line.argument(1);<br />
+filename : <b>constant</b> string := `echo "$errmsg" | cut -d: -f1`;<br />
+content : string;<br />
+&nbsp;<br />
+<b>if</b> files.is_readable_file( filename ) <b>then</b><br />
+&nbsp;&nbsp;content := `"$CAT_CMD" "$filename"`;<br />
+<b>else</b><br />
+&nbsp;&nbsp;put_line( standard_error, "cannot load file '" &amp; filename &amp; "'" );<br />
+<b>end</b> <b>if</b>;<br />
+&nbsp;<br />
+<b>if</b> content /= "" <b>then</b><br />
+&nbsp;&nbsp;prompt := "SparForte is a programming language based on Ada. " &amp;<br />
+&nbsp;&nbsp;"pragma error_processor is valid and has two string parameters. " &amp; ASCII.LF &amp;<br />
+&nbsp;&nbsp;"Given the following SparForte script named " &amp; filename &amp; ":" &amp; ASCII.LF &amp;<br />
+&nbsp;&nbsp;ASCII.LF &amp;<br />
+&nbsp;&nbsp;content &amp; ASCII.LF &amp;<br />
+&nbsp;&nbsp;ASCII.LF &amp;<br />
+&nbsp;&nbsp;"Also given the following error message:" &amp; ASCII.LF &amp;<br />
+&nbsp;&nbsp;errmsg &amp; ASCII.LF &amp;<br />
+&nbsp;&nbsp;ASCII.LF &amp;<br />
+&nbsp;&nbsp;"Explain the error message and provide relevant example. " &amp;<br />
+&nbsp;&nbsp;"Output the results as plain text.";<br />
+&nbsp;<br />
+&nbsp;&nbsp;<b>if</b> files.is_executable_file( OLLAMA_CMD ) <b>then</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;"$OLLAMA_CMD" run "$MODEL" "$prompt";<br />
+&nbsp;&nbsp;<b>else</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;put_line( standard_error, "cannot run '" &amp; OLLAMA_CMD &amp; "'" );<br />
+&nbsp;&nbsp;<b>end</b> <b>if</b>;<br />
+<b>else</b><br />
+&nbsp;&nbsp;put_line( errmsg );<br />
+<b>end</b> <b>if</b>;<br />
+        <div class="code_caption">
+                <b>Example</b>: A example of an error processor script for a LLM chatbot</span>
+        </div>
+        </div>
+        </center>
+
+<p>This is the chatbot's response but the example shows the semi-colon corrected:</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+The error message indicates that there is a problem with the assignment statement `i : integer ;= 5;`. The assignment operator in 
+SparForte is `:=`, not `=`. Therefore, the correct assignment statement should be written as `i : integer := 5;`.<br />
+&nbsp;<br />
+Here's an example of how to fix the error:<br />
+```<br />
+#!/usr/local/bin/spar<br />
+&nbsp;<br />
+pragma error_processor( "/home/kenrdp/ada/SparForte/src/spar", "/home/kenrdp/bin_spar/error_processor_ai.sp" );<br />
+&nbsp;<br />
+i : integer := 5;<br />
+s : string := "5";<br />
+put_line( i );<br />
+put_line( s );<br />
+```<br />
+This code will assign the value `5` to the variable `i`, and the string `"5"` to the variable `s`. The `put_line` procedure is used to 
+print the values of these variables on separate lines.<br />
+        </div>
+        </center>
+
 
 <h4>Testing Pragmas</h4>
 

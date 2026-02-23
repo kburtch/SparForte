@@ -1087,15 +1087,45 @@ begin
               end if;
           end loop;
           if not error_found then
-             -- token will be eof_t if error has already occurred
-             discardUnusedIdentifier( token );
              -- help for common mistakes
-             -- php/shell - checking for echo/print doesn't work since these
-             -- are Linux commands anyway and will be found.  Code removed.
-             err( subject => token,
-                  reason => +"is not declared",
-                  obstructorNotes => nullMessageStrings
-             );
+             -- data types
+
+	     declare
+               alternative : unbounded_string;
+             begin
+	        if to_string( identifiers( token ).name ) = "Integer" then
+                   alternative := to_unbounded_string( "integer" );
+	        elsif to_string( identifiers( token ).name ) = "int" then
+                   alternative := to_unbounded_string( "integer" );
+	        elsif to_string( identifiers( token ).name ) = "Boolean" then
+                   alternative := to_unbounded_string( "boolean" );
+	        elsif to_string( identifiers( token ).name ) = "bool" then
+                   alternative := to_unbounded_string( "boolean" );
+	        elsif to_string( identifiers( token ).name ) = "long" then
+                   alternative := to_unbounded_string( "long_integer" );
+	        elsif to_string( identifiers( token ).name ) = "char" then
+                   alternative := to_unbounded_string( "character" );
+                end if;
+
+                -- token will be eof_t if error has already occurred
+                discardUnusedIdentifier( token );
+
+	        if alternative /= null_unbounded_string then
+                   err( subject => token,
+                        reason => +"is not declared",
+                        obstructorNotes => nullMessageStrings,
+		        remedy => pl( "you mean the type " ) & unb_em( alternative ) &
+		           pl( " or you can define " ) & unb_pl( identifiers( token ).name ) &
+			   pl( " to be an alias for " ) &
+			   unb_pl( alternative ) & pl( " using a subtype statement" )
+                   );
+	        else
+                   err( subject => token,
+                        reason => +"is not declared",
+                        obstructorNotes => nullMessageStrings
+                   );
+                end if;
+	     end;
           end if;
         end if;
         -- this only appears if err in typo loop didn't occur
