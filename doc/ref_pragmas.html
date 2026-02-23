@@ -537,11 +537,8 @@ is a pragma, it can be placed in variable declarations or other places
 executable statements are not normally allowed.</li>
   <li> <b>pragma error_processor( path, param )</b> - instead of
 displaying the error message, run the program at the path and pass
-in the param and the error message as script parameters.  This can
-be used to log errors, speak errors, analyze errors and so forth. In some
-situations, an error message may not be submitted to the error
-processor.  Be aware that raising an error in the processor can
-create an infinite loop.</li>
+in the param and the error message (in gcc format) as script parameters.
+This can be used to log errors, speak errors, analyze errors and so forth.</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
 as --gcc-errors.&nbsp; Show simplified GCC-style errors.<br>
   </li>
@@ -647,6 +644,7 @@ MODEL : <b>constant</b> string := "codellama";<br />
 errmsg : <b>constant</b> string := command_line.argument(1);<br />
 filename : <b>constant</b> string := `echo "$errmsg" | cut -d: -f1`;<br />
 content : string;<br />
+prompt : string;<br />
 &nbsp;<br />
 <b>if</b> files.is_readable_file( filename ) <b>then</b><br />
 &nbsp;&nbsp;content := `"$CAT_CMD" "$filename"`;<br />
