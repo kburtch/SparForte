@@ -235,11 +235,20 @@ begin
 
   if firstpos >= line_firstpos then                 -- token on line?
      token_firstpos := firstpos-line_firstpos;      -- position in
-     -- KB: 26/02/23: this was +1 but was throwing off indent by one
-     -- e.g. x : unsigned := 1, unsigned was one too far over
+     -- KB: 26/02/23: when unit test results put a failed error, the
+     -- script is at end of file so the position will appear to be zero
+     -- Add one to see eof token.
+     if token_firstpos = 0 then
+        token_firstpos := 1;
+     end if;
      token_lastpos := lastpos-line_firstpos;        -- returned string
-     -- KB: 26/02/23: this was +1 but was throwing off indent by one
-     -- e.g. x : unsigned := 1, unsigned was one too far over
+     -- KB: 26/02/23: when unit test results put a failed error, the
+     -- script is at end of file so the position will appear to be zero
+     -- Add one to see eof token.
+     if token_lastpos = 0 then
+        token_lastpos := 1;
+     end if;
+     token_lastpos := lastpos-line_firstpos;        -- returned string
      cmdline := nullMessageStrings;                 -- begin decompression
      --for i in line_firstpos..line_lastpos loop      -- for bytes in script
      i := line_firstpos;
