@@ -114,3 +114,5 @@ CHANGES SINCE 2.6.3
 
 54. New: basic C type names such as "int", "long" "char", "bool" will have a unique error message if type are not defined.
 
+55. Fix: error pointer was adjusted by -1 but may still have other issues.
+

@@ -234,8 +234,12 @@ begin
   -- find token in command line
 
   if firstpos >= line_firstpos then                 -- token on line?
-     token_firstpos := firstpos-line_firstpos+1;    -- position in
-     token_lastpos := lastpos-line_firstpos+1;      -- returned string
+     token_firstpos := firstpos-line_firstpos;      -- position in
+     -- KB: 26/02/23: this was +1 but was throwing off indent by one
+     -- e.g. x : unsigned := 1, unsigned was one too far over
+     token_lastpos := lastpos-line_firstpos;        -- returned string
+     -- KB: 26/02/23: this was +1 but was throwing off indent by one
+     -- e.g. x : unsigned := 1, unsigned was one too far over
      cmdline := nullMessageStrings;                 -- begin decompression
      --for i in line_firstpos..line_lastpos loop      -- for bytes in script
      i := line_firstpos;

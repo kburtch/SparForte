@@ -1088,24 +1088,46 @@ begin
           end loop;
           if not error_found then
              -- help for common mistakes
-             -- data types
+             -- common scalar data types from other languages and Ada and
+       	     -- their SparForte equivalents.  These are only applied to
+             -- identifiers that have not been declared.
 
 	     declare
-               alternative : unbounded_string;
-             begin
-	        if to_string( identifiers( token ).name ) = "Integer" then
-                   alternative := to_unbounded_string( "integer" );
-	        elsif to_string( identifiers( token ).name ) = "int" then
-                   alternative := to_unbounded_string( "integer" );
-	        elsif to_string( identifiers( token ).name ) = "Boolean" then
+            alternative : unbounded_string;
+         begin
+	        if to_string( identifiers( token ).name ) = "Boolean" then
                    alternative := to_unbounded_string( "boolean" );
 	        elsif to_string( identifiers( token ).name ) = "bool" then
                    alternative := to_unbounded_string( "boolean" );
-	        elsif to_string( identifiers( token ).name ) = "long" then
-                   alternative := to_unbounded_string( "long_integer" );
+	        elsif to_string( identifiers( token ).name ) = "byte" then
+                   alternative := to_unbounded_string( "short_short_integer" );
 	        elsif to_string( identifiers( token ).name ) = "char" then
                    alternative := to_unbounded_string( "character" );
-                end if;
+	        elsif to_string( identifiers( token ).name ) = "char" then
+                   alternative := to_unbounded_string( "character" );
+	        elsif to_string( identifiers( token ).name ) = "Float" then
+                   alternative := to_unbounded_string( "float" );
+	        elsif to_string( identifiers( token ).name ) = "double" then
+                   alternative := to_unbounded_string( "long_float" );
+	        elsif to_string( identifiers( token ).name ) = "Integer" then
+                   alternative := to_unbounded_string( "integer" );
+	        elsif to_string( identifiers( token ).name ) = "int" then
+                   alternative := to_unbounded_string( "integer" );
+	        elsif to_string( identifiers( token ).name ) = "Long_Float" then
+                   alternative := to_unbounded_string( "long_float" );
+	        elsif to_string( identifiers( token ).name ) = "Long_Integer" then
+                   alternative := to_unbounded_string( "long_integer" );
+	        elsif to_string( identifiers( token ).name ) = "long" then
+                   alternative := to_unbounded_string( "long_integer" );
+	        elsif to_string( identifiers( token ).name ) = "Short" then
+                   alternative := to_unbounded_string( "short" );
+	        elsif to_string( identifiers( token ).name ) = "Short_Integer" then
+                   alternative := to_unbounded_string( "short_integer" );
+	        elsif to_string( identifiers( token ).name ) = "String" then
+                   alternative := to_unbounded_string( "string" );
+	        elsif to_string( identifiers( token ).name ) = "str" then
+                   alternative := to_unbounded_string( "string" );
+            end if;
 
                 -- token will be eof_t if error has already occurred
                 discardUnusedIdentifier( token );
@@ -1114,18 +1136,26 @@ begin
                    err( subject => token,
                         reason => +"is not declared",
                         obstructorNotes => nullMessageStrings,
-		        remedy => pl( "you mean the type " ) & unb_em( alternative ) &
-		           pl( " or you can define " ) & unb_pl( identifiers( token ).name ) &
-			   pl( " to be an alias for " ) &
-			   unb_pl( alternative ) & pl( " using a subtype statement" )
+                        remedy => pl( "you mean the type " ) & unb_em( alternative ) &
+                        pl( " or you can define " ) & unb_pl( identifiers( token ).name ) &
+                        pl( " to be an alias for " ) &
+                       unb_pl( alternative ) & pl( " using a subtype statement" )
                    );
+	        elsif to_string( identifiers( token ).name ) = "unsigned" then
+                   err( subject => token,
+                        reason => +"is not declared",
+                        obstructorNotes => nullMessageStrings,
+		                remedy => pl( "you mean the C type unsigned" &
+                          " which can be defined with the" &
+                          " SparForte subtype statement and an affirm clause" )
+                );
 	        else
                    err( subject => token,
                         reason => +"is not declared",
                         obstructorNotes => nullMessageStrings
                    );
                 end if;
-	     end;
+            end;
           end if;
         end if;
         -- this only appears if err in typo loop didn't occur
