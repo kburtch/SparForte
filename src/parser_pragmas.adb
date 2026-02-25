@@ -2218,7 +2218,7 @@ begin
      when error =>
         err( pl( "error: " & to_string( expr.value )) );
      when error_processor =>
-	null;
+        null;
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;

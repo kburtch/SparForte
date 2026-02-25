@@ -1089,43 +1089,43 @@ begin
           if not error_found then
              -- help for common mistakes
              -- common scalar data types from other languages and Ada and
-       	     -- their SparForte equivalents.  These are only applied to
+             -- their SparForte equivalents.  These are only applied to
              -- identifiers that have not been declared.
 
-	     declare
+         declare
             alternative : unbounded_string;
          begin
-	        if to_string( identifiers( token ).name ) = "Boolean" then
+            if to_string( identifiers( token ).name ) = "Boolean" then
                    alternative := to_unbounded_string( "boolean" );
-	        elsif to_string( identifiers( token ).name ) = "bool" then
+            elsif to_string( identifiers( token ).name ) = "bool" then
                    alternative := to_unbounded_string( "boolean" );
-	        elsif to_string( identifiers( token ).name ) = "byte" then
+            elsif to_string( identifiers( token ).name ) = "byte" then
                    alternative := to_unbounded_string( "short_short_integer" );
-	        elsif to_string( identifiers( token ).name ) = "char" then
+            elsif to_string( identifiers( token ).name ) = "char" then
                    alternative := to_unbounded_string( "character" );
-	        elsif to_string( identifiers( token ).name ) = "char" then
+            elsif to_string( identifiers( token ).name ) = "char" then
                    alternative := to_unbounded_string( "character" );
-	        elsif to_string( identifiers( token ).name ) = "Float" then
+            elsif to_string( identifiers( token ).name ) = "Float" then
                    alternative := to_unbounded_string( "float" );
-	        elsif to_string( identifiers( token ).name ) = "double" then
+            elsif to_string( identifiers( token ).name ) = "double" then
                    alternative := to_unbounded_string( "long_float" );
-	        elsif to_string( identifiers( token ).name ) = "Integer" then
+            elsif to_string( identifiers( token ).name ) = "Integer" then
                    alternative := to_unbounded_string( "integer" );
-	        elsif to_string( identifiers( token ).name ) = "int" then
+            elsif to_string( identifiers( token ).name ) = "int" then
                    alternative := to_unbounded_string( "integer" );
-	        elsif to_string( identifiers( token ).name ) = "Long_Float" then
+            elsif to_string( identifiers( token ).name ) = "Long_Float" then
                    alternative := to_unbounded_string( "long_float" );
-	        elsif to_string( identifiers( token ).name ) = "Long_Integer" then
+            elsif to_string( identifiers( token ).name ) = "Long_Integer" then
                    alternative := to_unbounded_string( "long_integer" );
-	        elsif to_string( identifiers( token ).name ) = "long" then
+            elsif to_string( identifiers( token ).name ) = "long" then
                    alternative := to_unbounded_string( "long_integer" );
-	        elsif to_string( identifiers( token ).name ) = "Short" then
+            elsif to_string( identifiers( token ).name ) = "Short" then
                    alternative := to_unbounded_string( "short" );
-	        elsif to_string( identifiers( token ).name ) = "Short_Integer" then
+            elsif to_string( identifiers( token ).name ) = "Short_Integer" then
                    alternative := to_unbounded_string( "short_integer" );
-	        elsif to_string( identifiers( token ).name ) = "String" then
+            elsif to_string( identifiers( token ).name ) = "String" then
                    alternative := to_unbounded_string( "string" );
-	        elsif to_string( identifiers( token ).name ) = "str" then
+            elsif to_string( identifiers( token ).name ) = "str" then
                    alternative := to_unbounded_string( "string" );
             end if;
 

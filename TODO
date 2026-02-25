@@ -13,6 +13,7 @@ Long term Ongoing Work
 
 - sbom process, the need to compile twice, so that it is not
     confusing to people, needs to be improved
+  - make sbom test
 
 - value meta labels project
   * adding tags to a set is probably not "include" but will need a

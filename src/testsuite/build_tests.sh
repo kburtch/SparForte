@@ -27,6 +27,27 @@ if [ "$TMP" = "false" ] ; then
    exit 192
 fi
 
+# Make with SBOM
+# ---------------------------------------------------------------------------
+
+echo "Build with SBOM..."
+echo "-----------------------------------------------------------------------"
+echo
+make distclean
+./configure --jobs=1
+if [ $? -ne 0 ] ; then
+   echo "$0: defaults failed"
+   exit 192
+fi
+make all
+if [ $? -ne 0 ] ; then
+   echo "$0: make failed"
+fi
+make sbom
+if [ $? -ne 0 ] ; then
+   echo "$0: make failed"
+fi
+
 # Make both MySQL and PostgreSQL
 # ---------------------------------------------------------------------------
 

@@ -29,6 +29,9 @@ releasetest:
 max:
 	$(MAKE) -C src max
 
+sbom:
+	$(MAKE) -C src sbom
+
 install:
 ifdef RPM_BUILD_ROOT
 	install -pd ${DESTDIR}${PREFIX}/bin
@@ -56,5 +59,5 @@ help:
 	@echo "If you have the sources, there are more options"
 	@echo "in the src directory"
 
-.PHONY: all clean distclean test max install uninstall help
+.PHONY: all clean distclean test max sbom install uninstall help
 
