@@ -2217,8 +2217,8 @@ begin
         if operation = uni_numeric_t then
            if operator = "**" then
               begin
-                 if metaLabelOk( "**", term, factor2 ) then
-                    if isExecutingCommand then
+                 if isExecutingCommand then
+                    if metaLabelOk( "**", term, factor2 ) then
                        term.value := to_unbounded_string(
                             to_numeric( term.value ) **
                             natural( to_numeric( factor2.value ) ) );
@@ -2233,7 +2233,7 @@ begin
               end;
           else
               err( pl( gnat.source_info.source_location &
-                   "interal error: unknown power operator" ) );
+                   "internal error: unknown power operator" ) );
           end if;
         else
            err( +"operation ** not defined for these types" );

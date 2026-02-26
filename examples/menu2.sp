@@ -7,7 +7,6 @@ pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
 pragma ada_95;
-pragma restriction( no_external_commands );
 
 trace( false );
 

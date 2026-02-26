@@ -4361,14 +4361,14 @@ begin
     leftUnitMetaLabel := leftStorage.unitMetaLabel;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "left unit of measure meta label is not initialized" ) );
+       pl( ", left unit of measure meta label is not initialized" ) );
     leftUnitMetaLabel := noMetaLabel;
   end;
   begin
     rightUnitMetaLabel := rightStorage.unitMetaLabel;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "right unit of measure meta label is not initialized" ) );
+       pl( ", right unit of measure meta label is not initialized" ) );
     rightUnitMetaLabel := noMetaLabel;
   end;
 
@@ -4535,21 +4535,21 @@ begin
     leftUnitMetaLabel := leftStorage.unitMetaLabel;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "left unit of measure data meta label is not initialized" ) );
+       pl( ", left unit of measure data meta label is not initialized" ) );
     leftUnitMetaLabel := noMetaLabel;
   end;
   begin
     middleUnitMetaLabel := middleStorage.unitMetaLabel;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "middle unit of measure data meta label is not initialized" ) );
+       pl( ", middle unit of measure data meta label is not initialized" ) );
     middleUnitMetaLabel := noMetaLabel;
   end;
   begin
     rightUnitMetaLabel := rightStorage.unitMetaLabel;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "right unit of measure data meta label is not initialized" ) );
+       pl( ", right unit of measure data meta label is not initialized" ) );
     rightUnitMetaLabel := noMetaLabel;
   end;
 
