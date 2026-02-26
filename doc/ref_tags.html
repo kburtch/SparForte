@@ -160,6 +160,18 @@ the script is authorized to use the meta label.</p>
   <b>end</b> <b>meta</b> pci;
 </pre>
 
+<h3>Assigning Meta Policies to Standard Files</h3>
+
+<p>Policies can be assigned to standard input, standard output or
+standard error using <tt>pragma meta_label</tt>.  Once a policy
+has been set, it cannot be changed.</p>
+
+<pre>
+  pragma meta_label( standard_output, pci );
+</pre>
+
+<p>Other kinds of files inherit the policy of their pathnames.</p>
+
 <br>
 &nbsp;
 

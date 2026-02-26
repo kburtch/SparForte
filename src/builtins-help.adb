@@ -1235,6 +1235,7 @@ begin
   content( e, "pragma license( license_name [, extra] ) - specify a software license" );
   content( e, "pragma manual_test( owner, name, objective, description, category, preconditions, steps, postconditions, units, work estimate, units, work priority, ticket) - manual test case" );
   content( e, "pragma manual_test_result( tester, date, notes, screenshots, status [, ticket] - manual test result" );
+  content( e, "pragma meta_label( file, label ) - assign policies on standard files" );
   content( e, "pragma no_command_hash - do not store command pathnames in the hash table" );
   content( e, "pragma prompt_script( `commands` ) - commands to draw command prompt" );
   content( e, "pragma prompt_idle_script( `commands` ) - commands to run when command prompt is idle" );
@@ -1399,14 +1400,14 @@ begin
   elsif helpTopic = "authorize" then
      startHelp( e, "authorize" );
      summary( e, "authorize statement" );
-     content( e, "authorize policy tag begin...end" );
+     content( e, "authorize policy tag begin...end meta tag" );
      authorKen( e );
      categoryKeyword( e );
      description( e, "Add a security policy tag to the list of authorized tags " &
      "that may be used in a script." );
-     examples( e, "authorize policy pci begin ... end;" );
+     examples( e, "authorize policy pci begin ... end meta pci;" );
      errors( e, "An exception is raised if the meta label is not a policy" );
-     --seeAlso( e, "doc/pkg_templates.html" );
+     seeAlso( e, "doc/ref_tags.html" );
      endHelp( e );
   elsif helpTopic = "btree_io" then
      helpBTreeIO;
@@ -2604,7 +2605,7 @@ begin
      content( e, "b := contains_unit( x, t )" );
      content( e, "s := get_unit_image( x )" );
      content( e, "s := get_policies_image( x )" );
-     --seeAlso( e, "doc/pkg_templates.html" );
+     seeAlso( e, "doc/pkg_tags.html" );
      endHelp( e );
   elsif helpTopic = "teams" then
      startHelp( e, "teams" );

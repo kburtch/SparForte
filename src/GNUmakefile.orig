@@ -120,13 +120,13 @@ endif
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
 	@echo
-	@echo "To include a full software bill-of-materials, run 'make sbom' to"
-	@echo "build a version with all software dependencies.  Packaging"
-	@echo "SparForte with 'make bintar' will do this automatically."
+	@echo "  To include a full software bill-of-materials, run '$(MAKE) sbom'"
+	@echo "  to build a version with all software dependencies.  Packaging"
+	@echo "  SparForte with '$(MAKE)' bintar' will do this automatically."
 	@echo
-	@echo "The 'spar' program will be in the src directory."
-	@echo "To install SparForte, run 'make install'."
-	@echo "For other options, run 'make help'."
+	@echo "  The 'spar' program will be in the src directory."
+	@echo "  To install SparForte, run '$(MAKE) install'."
+	@echo "  For other options, run '$(MAKE) help'."
 	@echo "---------------------------------------------------------------"
 	@echo
 
