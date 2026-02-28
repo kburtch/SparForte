@@ -1493,14 +1493,24 @@ pragma assert( enums.first( boolean ) = false );
 pragma assert( enums.last( boolean ) = true );
 pragma assert( enums.pred( true ) = false );
 pragma assert( enums.succ( false ) = true );
+pragma assert( enums.pos( false ) = 0 );
+pragma assert( enums.pos( true ) = 1 );
+pragma assert( enums.val( boolean, 0 ) = false );
+pragma assert( enums.val( boolean, 1 ) = true );
 
 pragma assert( enums.first( new_enum2 ) = enum1 );
 pragma assert( enums.last( new_enum2 ) = enum3 );
 pragma assert( enums.pred( enum2 ) = enum1 );
 pragma assert( enums.succ( enum2 ) = enum3 );
+pragma assert( enums.pos( enum1 ) = 0 );
+pragma assert( enums.pos( enum3 ) = 2 );
+pragma assert( enums.val( new_enum2, 0 ) = enum1 );
+pragma assert( enums.val( new_enum2, 2 ) = enum3 );
 
 pragma assert( enums.first( new_enum ) = enum0 );
 pragma assert( enums.last( new_enum ) = enum0 );
+pragma assert( enums.pos( enum0 ) = 0 );
+pragma assert( enums.val( new_enum, 0 ) = enum0 );
 
 -- arrays
 

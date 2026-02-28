@@ -105,7 +105,6 @@ begin
   -- An arbitrary expression can be tested.  However, expressions cannot
   -- contain a limited variable, such as file or directory resource, and
   -- those also need to be checked.  Abstract variables do not exist.
-  -- What about arrays?
   if identifiers( token ).usage = limitedUsage then
      Parseidentifier( limitedVarId );
      expr := identifiers( limitedVarId ).store.all;
@@ -197,7 +196,6 @@ begin
   -- An arbitrary expression can be tested.  However, expressions cannot
   -- contain a limited variable, such as file or directory resource, and
   -- those also need to be checked.  Abstract variables do not exist.
-  -- What about arrays?
   if identifiers( token ).usage = limitedUsage then
      Parseidentifier( limitedVarId );
      expr := identifiers( limitedVarId ).store.all;

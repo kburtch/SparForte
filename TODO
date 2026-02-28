@@ -11,7 +11,18 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
+=> (error: side-effects: offender_file used here in
+reblock_all is also changed by main task.  Perhaps
+refactor so one is a procedure, or break up the shared
+expression or use pragma unchecked_volatile.)
+"  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
+-- unchecked volatile did not cure this issue
+
+- enum : constant fruit := apple tagged inches;
+  does not work, error on tagged
+
 - value meta labels project
+  - NOTE: left off good testing of arrays package
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
   - tagged does not have a way to not clear either unit or policy tags
@@ -37,12 +48,10 @@ Long term Ongoing Work
       overwrite the existing meta labels as a special case.
       But this means the field meta labels should exist first.
 
-  - error message on declare...begin meta...
-
-    - text_io.parseOpenFile requires special type checking
-    - tinyserve needs to be fixed for storage
-      - a resource is an attribute associated with a value, not a variable
-        itself
+  - text_io.parseOpenFile requires special type checking
+  - tinyserve needs to be fixed for storage
+    - a resource is an attribute associated with a value, not a variable
+      itself
 
   - subsystems involving files or other output do not necessarily
     have a tag but perhaps they should.  For example, CGI.Argument_Count
@@ -78,8 +87,6 @@ Long term Ongoing Work
    - cgi package will require extensive testing
    - cgi needs ParseExpression replaced with parser_param functions
 
-  - tags.contains handles expressions but should handle limiteds,
-    arrays, etc.
   - factors can be labelled but continue with expressions and labels
     - related unit tests
     calendar.clock [tagged tag] may not be the best syntax

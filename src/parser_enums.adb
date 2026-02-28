@@ -256,7 +256,7 @@ begin
         candidate : natural;
      begin
         for id in reverse keywords_top..identifiers_top-1 loop
-           if identifiers( id ).kind = kind then
+           if identifiers( id ).kind = identifiers( var_id ).kind then
               if identifiers( id ).class = enumClass then
                  candidate := integer( to_numeric( identifiers( id ).store.value ) );
                  if candidate = item then
@@ -279,6 +279,7 @@ begin
         end;
      exception when others =>
         err( +"exception thrown" );
+raise;
      end;
    end if;
 end ParseEnumsPos;
