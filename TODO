@@ -11,12 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- error indentation
-
-badtest201_enums_val_out_of_range2.sp: 7: 31: 78%:in script
-b := enums.val(user_type, 3);  -- no such value
-                              ^ In enums.val, user_type does not have an item for position 3. See also doc/pkg_enums.html
-
 => (error: side-effects: offender_file used here in
 reblock_all is also changed by main task.  Perhaps
 refactor so one is a procedure, or break up the shared

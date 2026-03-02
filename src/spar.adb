@@ -420,4 +420,6 @@ exception when msg : others =>
   shutdownCompiler;
   shutdownSignalFlags;
   shutdownCommunications;
+
+  raise;
 end spar;

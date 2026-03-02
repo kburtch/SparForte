@@ -551,7 +551,7 @@ begin
   if script /= null then
      getCommandLine( discardCmdLine, firstpos, lastpos, lineno,
         distance_percent, fileno );
-  else
+ else
      firstPos := 1;
      lastPos := 1;
   end if;

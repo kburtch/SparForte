@@ -248,7 +248,9 @@ begin
      if token_lastpos = 0 then
         token_lastpos := 1;
      end if;
-     token_lastpos := lastpos-line_firstpos;        -- returned string
+     --token_lastpos := lastpos-line_firstpos;        -- returned string
+--     put_line( "GCL: token_firstpos: " & token_firstpos'img ); -- DEBUG
+--     put_line( "GCL: token_lastpos:  " & token_lastpos'img ); -- DEBUG
      cmdline := nullMessageStrings;                 -- begin decompression
      --for i in line_firstpos..line_lastpos loop      -- for bytes in script
      i := line_firstpos;
@@ -267,20 +269,30 @@ begin
                   script( i ) = immediate_symbol_delimiter then
                -- these characters have no visible representation
                i := i + 1;
+               -- if the token position in the byte code is past i, then
+               -- we counted the invisible character in the on-screen token
+               -- pointer position.  Move the pointer one to the left.
+               if lastpos > i then                          -- token shifted?
+                  token_firstpos := token_firstpos - 1;     -- adjust
+                  token_lastpos := token_lastpos - 1;
+               end if;
             else
                if not is_escaping then              -- not escaping?
                   --cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
                   --len := length( identifiers( character'pos( script(i) ) - 128 ).name );
                   toIdentifier( script(i), script(i+1), id, adv );
-                  cmdline := cmdline & name_em( id );
+--put_line( "GCL: expanding '" & to_string( identifiers( id ).name ) ); -- DEBUG
+                  cmdline := cmdline & name_em( id );        -- highlight keyword
                   len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- tokenized keyword?
                      token_lastpos := token_lastpos + len-1; -- adjust end position
+--put_line( "GCL: keyword expansion 1, token_lastpos =" & token_lastpos'img ); -- DEBUG
                   elsif lastpos > i then                     -- token shifted?
                      token_lastpos := token_lastpos + len-1; -- adjust
                      if firstpos > i then
                         token_firstpos := token_firstpos + len-1;
                      end if;
+--put_line( "GCL: keyword expansion 2, token_firstpos =" & token_firstpos'img ); -- DEBUG
                   end if;
                   i := i + adv;
                else
@@ -296,9 +308,12 @@ begin
      end loop;                                            -- for all codes
      token_firstpos := token_firstpos + indent;           -- adj token pos
      token_lastpos := token_lastpos + indent;             -- for ident size
+--put_line( "GCL: indenting, token_firstpos =" & token_firstpos'img ); -- DEBUG
+--put_line( "GCL: indenting, token_lastpos =" & token_lastpos'img ); -- DEBUG
   else                                                    -- not processed yet?
      token_firstpos := 1;                                 -- position at
      token_lastpos := 1;                                  -- first character
+--put_line( "GCL: token position set to one" ); -- DEBUG
      cmdline := nullMessageStrings;                       -- same, without
      --for i in line_firstpos..line_lastpos loop            -- token stuff...
      i := line_firstpos;
@@ -353,7 +368,8 @@ begin
   cmdLine := unb_pl( indent * " " ) & cmdLine;
 
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
-     -- token_firstpos := line_lastpos+1-line_firstpos;
+--put_line( "GCL: token past end of message -- should not happen" ); -- DEBUG
+      -- token_firstpos := line_lastpos+1-line_firstpos;
      token_firstpos := length( cmdline.gccMessage )+1;    -- treat token as
      -- KLUDGE:  UTF-8 extended ASCII may begin with character 195
      -- I'm not sure if this is always true.  Discount this when calculating
@@ -361,6 +377,7 @@ begin
      token_firstpos := token_firstpos - ada.strings.unbounded.count(cmdline.gccMessage, "" & character'val( 195 ) );
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
+--put_line( "GCL: returning '" & to_string( cmdLine.templateMessage ) & "'" ); -- DEBUG
 end getCommandLine;
 
 function getCommandLine return messageStrings is
