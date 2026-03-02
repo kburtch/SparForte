@@ -1132,7 +1132,7 @@ begin
                 -- token will be eof_t if error has already occurred
                 discardUnusedIdentifier( token );
 
-	        if alternative /= null_unbounded_string then
+            if alternative /= null_unbounded_string then
                    err( subject => token,
                         reason => +"is not declared",
                         obstructorNotes => nullMessageStrings,
@@ -1141,15 +1141,15 @@ begin
                         pl( " to be an alias for " ) &
                        unb_pl( alternative ) & pl( " using a subtype statement" )
                    );
-	        elsif to_string( identifiers( token ).name ) = "unsigned" then
+           elsif to_string( identifiers( token ).name ) = "unsigned" then
                    err( subject => token,
                         reason => +"is not declared",
                         obstructorNotes => nullMessageStrings,
-		                remedy => pl( "you mean the C type unsigned" &
+                        remedy => pl( "you mean the C type unsigned" &
                           " which can be defined with the" &
                           " SparForte subtype statement and an affirm clause" )
                 );
-	        else
+          else
                    err( subject => token,
                         reason => +"is not declared",
                         obstructorNotes => nullMessageStrings

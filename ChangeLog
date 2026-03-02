@@ -36,7 +36,7 @@ CHANGES SINCE 2.6.3
 
 15. Fix: documentation corrected for doubly_linked_lists.insert_before, cgi package, calendar.to_julian.
 
-16. New: enum.pos / enum.val [negative tests needed].
+16. New: enum.pos / enum.val.
 
 17. New: added type calendar.julian_date.
 

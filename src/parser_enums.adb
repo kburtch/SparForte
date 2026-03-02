@@ -25,6 +25,7 @@ pragma ada_2005;
 --with ada.text_io; use ada.text_io;
 
 with ada.strings.unbounded,
+     gnat.source_info,
      pegasoft,
      world,
      symbol_table,
@@ -255,6 +256,7 @@ begin
         ok : boolean := false;
         candidate : natural;
      begin
+        -- TODO: this does not account for namespaces
         for id in reverse keywords_top..identifiers_top-1 loop
            if identifiers( id ).kind = identifiers( var_id ).kind then
               if identifiers( id ).class = enumClass then
@@ -291,15 +293,16 @@ procedure ParseEnumsVal( result : out storage; kind : out identifier ) is
   expr       : storage;
   exprKind   : identifier;
   item       : natural;
+  subprogramId : constant identifier := enums_val_t;
 begin
-  expect( enums_val_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( enumTypeId );
   if identifiers( enumTypeId ).kind /= root_enumerated_t and
      (identifiers( enumTypeId ).class /= typeClass and
       identifiers( enumTypeId ).class /= subClass ) then
      err(
-        context => enums_val_t,
+        context => subprogramId,
         subject => enumTypeId,
         reason => +"is not an enumerated type",
         obstructorNotes => nullMessageStrings,
@@ -322,19 +325,45 @@ begin
   if isExecutingCommand then
      begin
         item := natural( to_numeric( expr.value ) );
-        declare
-           s : constant string := item'img;
-        begin
-           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
-        exception when others =>
-           err( +"exception thrown" );
-        end;
+        -- we need to confirm that there is such an enum value
+        -- TODO: this does not account for namespaces
+        for id in reverse keywords_top..identifiers_top-1 loop
+           if identifiers( id ).kind = enumTypeId then
+              if identifiers( id ).class = enumClass then
+                 if natural( to_numeric( identifiers( id ).store.value ) ) = item then
+                    declare
+                       s : constant string := item'img;
+                    begin
+                       result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+                       exit;
+                    exception when others =>
+                       err(
+                           contextNotes => pl( "At " & gnat.source_info.source_location &
+                               " while in " ) & em( to_string( identifiers( subprogramId ).name ) ),
+                           subjectNotes => subjectInterpreter,
+                           reason => +"had an internal error because",
+                           obstructorNotes => +"an unexpected exception was raised"
+                       );
+                    end;
+                 end if;
+              end if;
+           end if;
+        end loop;
+        if result.value = null_unbounded_string then
+           err(
+              context => subprogramId,
+              subject => enumTypeId,
+              reason => +"does not have an item for position",
+              obstructorNotes => unb_em( ada.strings.unbounded.trim( expr.value, ada.strings.both ) ),
+              seeAlso => +"doc/pkg_enums.html"
+           );
+        end if;
      exception  when constraint_error =>
         err(
-           context => enums_val_t,
+           context => subprogramId,
            subject => enumTypeId,
-           reason => +"does not have a value for position",
-           obstructorNotes => unb_em( expr.value ),
+           reason => +"does not have an item for position",
+           obstructorNotes => unb_em( ada.strings.unbounded.trim( expr.value, ada.strings.both ) ),
            seeAlso => +"doc/pkg_enums.html"
         );
      end;
