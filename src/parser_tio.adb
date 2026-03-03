@@ -712,6 +712,7 @@ begin
      -- the name is optional, default to a temp file name
      if token = symbol_t and identifiers( token ).store.value = ")" then
         makeTempFile( fileName.value );
+        fileName.unitMetaLabel := noMetaLabel;
         fileName.policyMetaLabels := sparMetaLabels;
      else
         expectParameterComma;

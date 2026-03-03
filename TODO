@@ -167,8 +167,6 @@ expression or use pragma unchecked_volatile.)
       message
     - custom error for subtype x is array... where arrays must be a type
 
-    - many error messages have the source arrow 1 position to the right
-      of where it should be
     - subjectLocation may not be relevant for built-in types like
       integer.  How should this be distinguised to avoid nonsense
       locations?
