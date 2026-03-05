@@ -18,10 +18,7 @@ expression or use pragma unchecked_volatile.)
 "  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
 -- unchecked volatile did not cure this issue
 
-
 - value meta labels project
-  - enum : constant fruit := apple tagged inches;
-    does not work, error on tagged
   - consistent use of "meta tag" and "meta label" in code and docs
   - NOTE: left off good testing of arrays package
   * adding tags to a set is probably not "include" but will need a

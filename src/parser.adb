@@ -2000,7 +2000,7 @@ begin
               remedy => +"an expression factor expects a variable, value or subexpression"          );
         end if;
      end if;
-     -- Another board category, is the token a pre-defined idenifier?
+     -- Another board category, is the token a pre-defined identifier?
   elsif token < predefined_top then
      if identifiers( token ).funcCB /= null then         -- a built-in function?
 --put_line("C1 - " & identifiers( token ).name ); -- DEBUG
@@ -2108,7 +2108,14 @@ begin
       end if;
 
   else                                                  -- a user ident?
-     ParseFactorIdentifier;
+      -- as a special case, an enumerated type is treated like a literal and
+      -- may have a meta label
+      if identifiers( token ).class = enumClass then
+         ParseFactorIdentifier;                               -- the enum item
+         ParseFactorMetaLabel;                                -- meta tag if any
+      else                                                    -- otherwise an
+         ParseFactorIdentifier;                               -- ident no tag
+      end if;
   end if;
   case uniOp is
   when noOp => null;

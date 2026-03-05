@@ -142,7 +142,8 @@ end resetLineNo;
 --
 -- Return current command line, decoded into normal text, but not including
 -- the LF separating lines.  token_firstpos and token_lastpos is the location
--- of the current token on the expanded line.
+-- of the current token on the expanded line.  The token positions begin at
+-- position 1.
 -----------------------------------------------------------------------------
 
 procedure getCommandLine ( cmdline : out messageStrings;
@@ -234,14 +235,16 @@ begin
   -- find token in command line
 
   if firstpos >= line_firstpos then                 -- token on line?
-     token_firstpos := firstpos-line_firstpos;      -- position in
+     -- KB: 26/03/05: plus 1 because the first char on line is pos 1
+     token_firstpos := firstpos-line_firstpos+1;    -- position in
      -- KB: 26/02/23: when unit test results put a failed error, the
      -- script is at end of file so the position will appear to be zero
      -- Add one to see eof token.
      if token_firstpos = 0 then
         token_firstpos := 1;
      end if;
-     token_lastpos := lastpos-line_firstpos;        -- returned string
+     -- KB: 26/03/05: plus 1 because the first char on line is pos 1
+     token_lastpos := lastpos-line_firstpos+1;        -- returned string
      -- KB: 26/02/23: when unit test results put a failed error, the
      -- script is at end of file so the position will appear to be zero
      -- Add one to see eof token.
@@ -249,8 +252,8 @@ begin
         token_lastpos := 1;
      end if;
      --token_lastpos := lastpos-line_firstpos;        -- returned string
---     put_line( "GCL: token_firstpos: " & token_firstpos'img ); -- DEBUG
---     put_line( "GCL: token_lastpos:  " & token_lastpos'img ); -- DEBUG
+     --put_line( "GCL: token_firstpos: " & token_firstpos'img ); -- DEBUG
+     --put_line( "GCL: token_lastpos:  " & token_lastpos'img ); -- DEBUG
      cmdline := nullMessageStrings;                 -- begin decompression
      --for i in line_firstpos..line_lastpos loop      -- for bytes in script
      i := line_firstpos;
@@ -286,13 +289,14 @@ begin
                   len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- tokenized keyword?
                      token_lastpos := token_lastpos + len-1; -- adjust end position
---put_line( "GCL: keyword expansion 1, token_lastpos =" & token_lastpos'img ); -- DEBUG
+--put_line( "GCL: keyword expansion 1, token_lastpos =" & token_lastpos'img & ", " & len'img ); -- DEBUG
                   elsif lastpos > i then                     -- token shifted?
                      token_lastpos := token_lastpos + len-1; -- adjust
+--put_line( "GCL: keyword expansion 2, was token_firstpos =" & token_firstpos'img ); -- DEBUG
                      if firstpos > i then
                         token_firstpos := token_firstpos + len-1;
                      end if;
---put_line( "GCL: keyword expansion 2, token_firstpos =" & token_firstpos'img ); -- DEBUG
+--put_line( "GCL: keyword expansion 2, token_firstpos =" & token_firstpos'img & ", " & len'img  ); -- DEBUG
                   end if;
                   i := i + adv;
                else

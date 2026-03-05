@@ -4,6 +4,8 @@ Objective: Foundation for value meta labels
 
 Known Issues
 
+SparForte will run slower because of the value meta labels checking at run-time.
+
 CHANGES SINCE 2.6.3
 
 1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
@@ -72,7 +74,7 @@ CHANGES SINCE 2.6.3
 
 33. Fix: logs.mode, logs.width no longer run during a syntax check.
 
-34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Docs needed] [Tests needed]
+34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Tests needed]
 
 35. Fix: added missing logs.width function to logs documentation.
 
