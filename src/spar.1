@@ -3,10 +3,10 @@
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcCdDeghilLmppPqrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
+[\-bBcCdDeghilLmppPqrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
 [\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-quiet] [\-\-version]
-[\-\-restricted] [\-\-session s] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
-[\-\-] [script [param1 ...] ]
+[\-\-restricted] [\-\-session s] [\-\-sbom] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test]
+[\-\-trace] [\-\-] [script [param1 ...] ]
 .SH DESCRIPTION
 .\" Add any additional description here
 .PP
@@ -16,7 +16,7 @@ that executes commands read from the standard
 input or from a file.
 .PP
 .B SparForte
-May be embedded in templates using the <?spar tag.
+may be embedded in templates using the <?spar tag.
 .PP
 .B SparForte
 uses the high reliability AdaScript language and supports web and database
@@ -27,6 +27,9 @@ Single-character options may be combined into one argument.
 .TP
 \fB\-b\fR, \fB\-\-break\fR
 enable breakout debugging prompt
+.TP
+\fB\-B\fR, \fB\-\--sbom\fR
+list build dependencies (SBOM)
 .TP
 \fB\-c\fR, \fB\-\-check\fR
 syntax check the script but do not run
@@ -110,7 +113,7 @@ Written by Ken O. Burtch and other volunteers.
 .SH "REPORTING BUGS"
 Report bugs to <ken@pegasoft.ca>.
 .SH COPYRIGHT
-SparForte is Copyright (c)2001-2022 Free Software Foundation, Inc.
+SparForte is Copyright (c)2001-2026 Free Software Foundation, Inc.
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

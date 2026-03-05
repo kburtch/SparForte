@@ -39,9 +39,9 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2>Value Meta Labels</h2>
+<h2>Value Meta Tags</h2>
 
-<p><b>NOTE: This feature is under construction.  The features have not been finalized.</b></p>
+<p><b>NOTE: This feature is under construction.  The features are not complete and may change.</b></p>
 
 <p>Variables and parameters have types or subtypes.  The values that are
 stored in them can have optional data meta labels.  The labels are names
@@ -56,11 +56,12 @@ that store values will also store the tags along with them.</p>
 
 <h3>The Meta Statement</h3>
 
-<p>The meta statement defines new meta labels.</p>
+<p>The meta statement defines new meta labels.  A top-level meta tag
+is created with "is new meta".</p>
 
 <pre>
-   <b>meta</b> uom_name <b>is</b> <b>new</b> <b>meta</b>;
-   <b>meta</b> <b>policy</b> polcy_name <b>is</b> <b>new</b> <b>meta</b>;
+   <b>meta</b> uom_name <b>is</b> <b>new</b> <b>meta</b>; -- a new unit-of-measure
+   <b>meta</b> <b>policy</b> policy_name <b>is</b> <b>new</b> <b>meta</b>; -- a new security policy
 </pre>
 
 <p>Meta labels can also be abstract.  These can be declared but not tagged
@@ -73,8 +74,9 @@ to values.</p>
 <p>New labels can be extended from existing labels.</p>
 
 <pre>
-   <b>meta</b> metric <b>is</b> <b>new</b> <b>abstract</b> <b>meta</b>;
-   <b>meta</b> kilometers <b>is</b> <b>new</b> metric;
+   <b>meta</b> distance <b>is</b> <b>new</b> <b>abstract</b> <b>meta</b>;
+   <b>meta</b> kilometers <b>is</b> <b>new</b> distance;
+   <b>meta</b> miles <b>is</b> <b>new</b> distance;
 </pre>
 
 <h3>Unit-of-Measure Labels</h3>
@@ -149,16 +151,59 @@ derived values.</p>
    checksum := strings.md5( credit_card );
 </pre>
 
+<h3>Meta Tags and Arrays</h3>
+
+<p>An array can contain values with any kind of meta tags.
+Each array item has its own meta tags.  The array as a whole
+does not have meta tags because it does not have a value of
+its own.</p>
+
+<p>This is allowed:</p>
+
+<pre>
+  some_array(1) := 15 <b>tagged</b> miles;
+  some_array(2) := 25 <b>tagged</b> kilometers;
+</pre>
+
+<p>However, some subprograms using arrays may fail.  For example,
+you won't be able to use <tt>stats.sum</tt> to add the values in
+an array unless the items all have the same unit-of-measure.</p>
+
 <h3>The Authorize Statement</h3>
 
+<p>SparForte is always running with a set of system security policies
+that it will enforce: anything policy that it not in SparForte's
+system policies will be rejected.  These policies are managed at
+run-time, not compile-time, so that security policies are dynamic and
+a script can change policies when needed.</p>
+
+<p>Security policies are a three-way relationship: the security policy
+of the source, the security policy of a target file and the
+current system security policies.</p>
+
+<p>The default security policy set is empty, meaning security policies
+will not be enforced.  This is for backward compatibility.</p>
+
 <p>For policy meta labels, the label cannot be assigned unless
-the script is authorized to use the meta label.</p>
+the script is authorized to use the meta label.  The authorization
+expires at the end of the <tt>authorize</tt> block.</p>
 
 <pre>
   <b>authorize</b> <b>meta</b> <b>policy</b> pci <b>begin</b>
     credit_card := "1234567890" <b>tagged</b> <b>policy</b> pci;
   <b>end</b> <b>meta</b> pci;
 </pre>
+
+<p>However, this will fail because policy <tt>gdpr</tt> is not the same
+as policy <tt>pci</tt>:</p>
+
+<pre>
+  <b>authorize</b> <b>meta</b> <b>policy</b> gdpr <b>begin</b>
+    credit_card := "1234567890" <b>tagged</b> <b>policy</b> pci;
+  <b>end</b> <b>meta</b> gdpr;
+</pre>
+
+<p>You cannot authorize unit-of-measure tags.</p>
 
 <h3>Assigning Meta Policies to Standard Files</h3>
 
@@ -167,10 +212,37 @@ standard error using <tt>pragma meta_label</tt>.  Once a policy
 has been set, it cannot be changed.</p>
 
 <pre>
-  pragma meta_label( standard_output, pci );
+  <b>pragma</b> meta_label( standard_input, unchecked );
+  <b>pragma</b> meta_label( standard_output, pci );
 </pre>
 
-<p>Other kinds of files inherit the policy of their pathnames.</p>
+<p>In this example, every value read from standard input will have
+a policy of "unchecked".  Every value written to standard output
+must have a policy of "pci".</p>
+
+<pre>
+  s : string;
+  s := get_line;
+  put_line( s ); -- error: policy unchecked is not policy pci
+</pre>
+
+<p>In this example, the value of variable <tt>s</tt> has the <tt>unchecked</tt> policy label.
+Since unchecked is not the expected policy, the <tt>put_line</tt> will fail.</p>
+
+<p>User files inherit the policy of their pathnames.</p>
+
+<pre>
+   credit_card_file : file_type;
+   credit_card_file_path : constant string := "cc.dat" <b>tagged</b> pci;
+   open( credit_card_file, credit_card_file_path ); -- credit card file will have policy pci
+</pre>
+
+<p>In this example, any value written to <tt>credit_card_file</tt> must have a
+<tt>pci</tt> policy tag.</p>
+
+<h3>Changing the Tag of a Value</h3>
+
+<p>This feature has not yet been written.</p>
 
 <br>
 &nbsp;
