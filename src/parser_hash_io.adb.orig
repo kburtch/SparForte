@@ -655,9 +655,9 @@ begin
      begin
         getParameterValue( fileRef, fileResId );
         findResource( to_resource_id( fileResId.value ), theFile );
-        result := storage'( to_spar_boolean( theFile.hash.isOpen ), noMetaLabel, noMetaLabels );
+        result := storage'( to_spar_boolean( theFile.hash.isOpen ), noMetaTag, noMetaTags );
      exception when berkeley_error =>
-        result := storage'( to_spar_boolean( false ), noMetaLabel, noMetaLabels );
+        result := storage'( to_spar_boolean( false ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashIsOpen;
@@ -683,7 +683,7 @@ begin
      begin
         getParameterValue( fileRef, fileResId );
         findResource( to_resource_id( fileResId.value ), theFile );
-        result := storage'( theFile.hash.name, noMetaLabel, noMetaLabels );
+        result := storage'( theFile.hash.name, noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashName;
@@ -817,7 +817,7 @@ procedure ParseHashSet is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
-  recStore   : storage; -- kludge for recs with meta labels
+  recStore   : storage; -- kludge for recs with meta tags
 begin
   if rshOpt then
      err( +"set not allowed in a " & em( "restricted shell" ) );
@@ -971,8 +971,8 @@ begin
               jsonStore : storage;
            begin
               get( theFile.hash.session, to_string( keyExpr.value ), jsonStore.value );
-              jsonStore.unitMetaLabel := noMetaLabel;
-              jsonStore.policyMetaLabels := sparMetaLabels;
+              jsonStore.unitMetaTag := noMetaTag;
+              jsonStore.policyMetaTags := sparMetaTags;
               DoJsonToRecord( itemRef.id, jsonStore );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
@@ -992,7 +992,7 @@ begin
               jsonString : unbounded_string;
            begin
               get( theFile.hash.session, to_string( keyExpr.value ), jsonString );
-              DoJsonToArray( itemRef.id, jsonString, noMetaLabels );
+              DoJsonToArray( itemRef.id, jsonString, noMetaTags );
            exception when msg: berkeley_error =>
               if last_error( theFile.hash.session ) = DB_NOTFOUND then
                  err( +"key not found" );
@@ -1052,9 +1052,9 @@ begin
      if isVerifiedOpenFile( fileRef.Id, theFile ) then
         begin
            exists( theFile.hash.session, to_string( keyExpr.value ) );
-           result := storage'( to_spar_boolean( true ), noMetaLabel, noMetaLabels );
+           result := storage'( to_spar_boolean( true ), noMetaTag, noMetaTags );
         exception when berkeley_error =>
-           result := storage'( to_spar_boolean( false ), noMetaLabel, noMetaLabels );
+           result := storage'( to_spar_boolean( false ), noMetaTag, noMetaTags );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         end;
@@ -1283,7 +1283,7 @@ procedure ParseHashAdd is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
-  recStore   : storage; -- kludge for recs with meta labels
+  recStore   : storage; -- kludge for recs with meta tags
 begin
   if rshOpt then
      err( +"add not allowed in a " & em( "restricted shell" ) );
@@ -1401,7 +1401,7 @@ procedure ParseHashReplace is
   cursRef    : reference;
   theCurs    : resPtr;
   cursResId  : storage;
-  recStore   : storage; -- kludge for recs with meta labels
+  recStore   : storage; -- kludge for recs with meta tags
 begin
   if rshOpt then
      err( +"replace not allowed in a " & em( "restricted shell" ) );
@@ -1931,9 +1931,9 @@ begin
                       jsonStore.value,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    jsonStore.unitMetaLabel := noMetaLabel;
-                    jsonStore.policyMetaLabels := sparMetaLabels;
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    jsonStore.unitMetaTag := noMetaTag;
+                    jsonStore.policyMetaTags := sparMetaTags;
                     DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
@@ -1964,8 +1964,8 @@ begin
                       jsonString,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    DoJsonToArray( valRef.id, jsonString, noMetaLabels );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaTags );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -1995,8 +1995,8 @@ begin
                       data,
                       DB_C_GET_FIRST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    AssignParameter( valRef, storage'( data, noMetaLabel, noMetaLabels ) );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    AssignParameter( valRef, storage'( data, noMetaTag, noMetaTags ) );
                  end if;
               end if;
            exception when msg: berkeley_error =>
@@ -2092,9 +2092,9 @@ begin
                       jsonStore.value,
                       DB_C_GET_NEXT );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    jsonStore.unitMetaLabel := noMetaLabel;
-                    jsonStore.policyMetaLabels := sparMetaLabels;
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    jsonStore.unitMetaTag := noMetaTag;
+                    jsonStore.policyMetaTags := sparMetaTags;
                     DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
@@ -2125,8 +2125,8 @@ begin
                       jsonString,
                       DB_C_GET_NEXT );
                 if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    DoJsonToArray( valRef.id, jsonString, noMetaLabels );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaTags );
                  end if;
               end if;
            end if;
@@ -2156,8 +2156,8 @@ begin
                       data,
                       DB_C_GET_NEXT );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    AssignParameter( valRef, storage'( data, noMetaLabel, noMetaLabels ) );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    AssignParameter( valRef, storage'( data, noMetaTag, noMetaTags ) );
                  end if;
               end if;
            end if;
@@ -2261,9 +2261,9 @@ begin
                       jsonStore.value,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    jsonStore.unitMetaLabel := noMetaLabel;
-                    jsonStore.policyMetaLabels := sparMetaLabels;
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    jsonStore.unitMetaTag := noMetaTag;
+                    jsonStore.policyMetaTags := sparMetaTags;
                     DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
@@ -2294,8 +2294,8 @@ begin
                       jsonString,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    DoJsonToArray( valRef.id, jsonString, noMetaLabels );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaTags );
                  end if;
               end if;
            end if;
@@ -2325,8 +2325,8 @@ begin
                       data,
                       DB_C_GET_LAST );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    AssignParameter( valRef, storage'( data, noMetaLabel, noMetaLabels ) );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    AssignParameter( valRef, storage'( data, noMetaTag, noMetaTags ) );
                  end if;
               end if;
            end if;
@@ -2422,9 +2422,9 @@ begin
                       jsonStore.value,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    jsonStore.unitMetaLabel := noMetaLabel;
-                    jsonStore.policyMetaLabels := sparMetaLabels;
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    jsonStore.unitMetaTag := noMetaTag;
+                    jsonStore.policyMetaTags := sparMetaTags;
                     DoJsonToRecord( valRef.id, jsonStore );
                  end if;
               end if;
@@ -2455,8 +2455,8 @@ begin
                       jsonString,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    DoJsonToArray( valRef.id, jsonString, noMetaLabels );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    DoJsonToArray( valRef.id, jsonString, noMetaTags );
                  end if;
               end if;
            end if;
@@ -2486,8 +2486,8 @@ begin
                       data,
                       DB_C_GET_PREV );
                  if last_error( theFile.hash.session ) = DB_OK then
-                    AssignParameter( keyRef, storage'( key, noMetaLabel, noMetaLabels ) );
-                    AssignParameter( valRef, storage'( data, noMetaLabel, noMetaLabels ) );
+                    AssignParameter( keyRef, storage'( key, noMetaTag, noMetaTags ) );
+                    AssignParameter( valRef, storage'( data, noMetaTag, noMetaTags ) );
                  end if;
               end if;
            end if;
@@ -2521,10 +2521,10 @@ begin
         getParameterValue( fileRef, fileResId );
         findResource( to_resource_id( fileResId.value ), theFile );
         if isVerifiedOpenFile( fileRef.Id, theFile ) then
-           result := storage'( to_spar_boolean( will_raise( theFile.hash.session ) ), noMetaLabel, noMetaLabels );
+           result := storage'( to_spar_boolean( will_raise( theFile.hash.session ) ), noMetaTag, noMetaTags );
         end if;
      exception when berkeley_error =>
-        result := storage'( to_spar_boolean( false ), noMetaLabel, noMetaLabels );
+        result := storage'( to_spar_boolean( false ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashWillRaise;
@@ -2551,7 +2551,7 @@ begin
        getParameterValue( fileRef, fileResId );
        findResource( to_resource_id( fileResId.value ), theFile );
        if isVerifiedOpenFile( fileRef.Id, theFile ) then
-          result := storage'( to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) ), noMetaLabel, noMetaLabels );
+          result := storage'( to_unbounded_string( db_error'image( last_error( theFile.hash.session ) ) ), noMetaTag, noMetaTags );
        end if;
      exception when msg: berkeley_error =>
         err( pl( exception_message( msg ) ) );

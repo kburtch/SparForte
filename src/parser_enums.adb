@@ -58,9 +58,9 @@ enums_val_t          : identifier;
 ---------------------------------------------------------
 -- PARSE THE ENUMS PACKAGE
 --
--- For business considerations, enums cannot possess meta labels.  The enum
+-- For business considerations, enums cannot possess meta tags.  The enum
 -- values are their ordinal position and constants, and the true value, if any,
--- is their names which do not possess labels.  It's not clear that giving
+-- is their names which do not possess tags.  It's not clear that giving
 -- enums tags bring significant business value.
 ---------------------------------------------------------
 
@@ -85,7 +85,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      -- first item in an enumerated type is always value 0
-     result := storage'( to_unbounded_string( "0" ), noMetaLabel, noMetaLabels );
+     result := storage'( to_unbounded_string( "0" ), noMetaTag, noMetaTags );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   end if;
@@ -129,7 +129,7 @@ begin
         s : constant string := best'img;
      begin
         --f := to_unbounded_string( s(2..s'last) );
-        result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+        result := storage'( to_unbounded_string( s ), noMetaTag, noMetaTags );
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
@@ -164,7 +164,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( s ), noMetaTag, noMetaTags );
         end;
      exception when others =>
         err_exception_raised;
@@ -220,7 +220,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( s ), noMetaTag, noMetaTags );
         end;
      exception when others =>
         err( +"exception thrown" );
@@ -277,7 +277,7 @@ begin
            s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
-           result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( s ), noMetaTag, noMetaTags );
         end;
      exception when others =>
         err( +"exception thrown" );
@@ -334,7 +334,7 @@ begin
                     declare
                        s : constant string := item'img;
                     begin
-                       result := storage'( to_unbounded_string( s ), noMetaLabel, noMetaLabels );
+                       result := storage'( to_unbounded_string( s ), noMetaTag, noMetaTags );
                        exit;
                     exception when others =>
                        err(

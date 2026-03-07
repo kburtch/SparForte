@@ -1235,7 +1235,7 @@ begin
   content( e, "pragma license( license_name [, extra] ) - specify a software license" );
   content( e, "pragma manual_test( owner, name, objective, description, category, preconditions, steps, postconditions, units, work estimate, units, work priority, ticket) - manual test case" );
   content( e, "pragma manual_test_result( tester, date, notes, screenshots, status [, ticket] - manual test result" );
-  content( e, "pragma meta_label( file, label ) - assign policies on standard files" );
+  content( e, "pragma meta_tag( file, label ) - assign policies on standard files" );
   content( e, "pragma no_command_hash - do not store command pathnames in the hash table" );
   content( e, "pragma prompt_script( `commands` ) - commands to draw command prompt" );
   content( e, "pragma prompt_idle_script( `commands` ) - commands to run when command prompt is idle" );
@@ -1406,7 +1406,7 @@ begin
      description( e, "Add a security policy tag to the list of authorized tags " &
      "that may be used in a script." );
      examples( e, "authorize policy pci begin ... end meta pci;" );
-     errors( e, "An exception is raised if the meta label is not a policy" );
+     errors( e, "An exception is raised if the meta tag is not a policy" );
      seeAlso( e, "doc/ref_tags.html" );
      endHelp( e );
   elsif helpTopic = "btree_io" then
@@ -2225,13 +2225,13 @@ begin
      content( e, "meta [policy] tag is new [abstract] meta|parent_tag" );
      authorKen( e );
      categoryKeyword( e );
-     description( e, "Declare value meta labels for units-of-measure or " &
+     description( e, "Declare value meta tag for units-of-measure or " &
      "security policies.  A parent of 'meta' represents no parent. " &
-     "Abstract meta labels cannot be assigned to values." );
+     "Abstract meta tags cannot be assigned to values." );
      examples( e, "meta us_denominations is new abstract meta" );
      examples( e, "meta us_dollars is new us_denominations" );
      examples( e, "meta policy confidential is new meta" );
-     errors( e, "An exception is raised if the meta label is a different category from the parent" );
+     errors( e, "An exception is raised if the meta tag is a different category from the parent" );
      --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "mysql" then
@@ -2440,10 +2440,10 @@ begin
      content( e, "literal tagged [policy] tag" );
      authorKen( e );
      categoryKeyword( e );
-     description( e, "Add a unit-of-measure value meta label or security policy to a value." );
+     description( e, "Add a unit-of-measure value meta tag or security policy to a value." );
      examples( e, "temperature := 15 tagged celsius" );
      examples( e, "credit_card := ""123456789"" tagged policy pci" );
-     errors( e, "An exception is raised if the literal already has a similar meta label" );
+     errors( e, "An exception is raised if the literal already has a similar meta tag" );
      --seeAlso( e, "doc/pkg_templates.html" );
      endHelp( e );
   elsif helpTopic = "typeset" then

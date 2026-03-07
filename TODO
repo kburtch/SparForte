@@ -19,7 +19,6 @@ expression or use pragma unchecked_volatile.)
 -- unchecked volatile did not cure this issue
 
 - value meta labels project
-  - consistent use of "meta tag" and "meta label" in code and docs
   - NOTE: left off good testing of arrays package
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
@@ -30,7 +29,7 @@ expression or use pragma unchecked_volatile.)
   - gnat.cgi not converted or tested
   - volatiles and meta labels.  I've documented behaviour of JSON
     arrays and records but should be checked.
-  - pragma meta_label only takes one meta label but needs to take multiple
+  - pragma meta_tag only takes one meta label but needs to take multiple
   - hierarchy of meta tags not working
   - defaults to no security (i.e. no spar meta label) and, therefore,
     any policy goes.

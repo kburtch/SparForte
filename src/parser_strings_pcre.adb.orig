@@ -65,7 +65,7 @@ begin
   ParseFirstStringParameter( perl_match_t, patExpr, pat_type );
   ParseLastStringParameter( perl_match_t, expr, expr_type );
   if isExecutingCommand then
-     if metaLabelOk( perl_match_t, expr ) and metaLabelOk( perl_match_t, patExpr ) then
+     if metaTagOk( perl_match_t, expr ) and metaTagOk( perl_match_t, patExpr ) then
         #if PCRE
         declare
           regex_errmsg : regex_errmsgs;
@@ -81,7 +81,7 @@ begin
              end loop;
              err( unb_pl( toescaped( errmsg ) ) );
           elsif integer(res_int) = 1 then
-             result := storage'( to_unbounded_string( "1" ), noMetaLabel, noMetaLabels );
+             result := storage'( to_unbounded_string( "1" ), noMetaTag, noMetaTags );
              if trace then
                 put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
                            "' pattern matches string '" &
@@ -89,7 +89,7 @@ begin
                            "'" );
              end if;
           else
-             result := storage'( to_unbounded_string( "0" ), noMetaLabel, expr.policyMetaLabels );
+             result := storage'( to_unbounded_string( "0" ), noMetaTag, expr.policyMetaTags );
              if trace then
                 put_trace( "'" & toSecureData( to_string( toEscaped( patExpr.value ) ) ) &
                            "' pattern does not match string '" &

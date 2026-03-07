@@ -74,11 +74,11 @@ procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
 -- Create the fields in a new file variable
 
 procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
-  name : string; fileMetaLabels : metaLabelHashedSet.Set );
+  name : string; fileMetaTags : metaTagHashedSet.Set );
 -- Open a file for a variable of type file_type and set the file record's
 -- data fields.
 
-procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaLabels : metaLabelHashedSet.set );
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaTags : metaTagHashedSet.set );
 -- Open a network socket with the name and port specified in name (port in :n
 -- format).  The default port is port 80 (usually HTTP).  Update the socket_type
 -- variable referenced by ref to reflect the open file.

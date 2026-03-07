@@ -200,7 +200,7 @@ begin
   expect( gnat_cgi_ok_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_bush_boolean( gnat.cgi.ok ), noMetaLabel );
+       result := storage'( to_bush_boolean( gnat.cgi.ok ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when others =>
@@ -232,7 +232,7 @@ begin
                    integer'image(
                       gnat.cgi.method_type'pos( mt )
                    )(2)&""
-                 ), noMetaLabel );
+                 ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -279,7 +279,7 @@ begin
        result := storage'( to_unbounded_string( Gnat.Cgi.Metavariable(
           gnat.cgi.metavariable_name'val( integer'value( " " & to_string( metaExpr.value ) ) ),
           bool_val = identifiers( true_t ).value.all
-       ) ), noMetaLabel );
+       ) ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -322,7 +322,7 @@ begin
                 integer'value(
                    " " & to_string (
                       metaExpr
-       ) ) ) ) ), noMetaLabel );
+       ) ) ) ) ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -348,7 +348,7 @@ begin
   kind := string_t;
   expect( gnat_cgi_url_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( gnat.cgi.url ), noMetaLabel );
+     result := storage'( to_unbounded_string( gnat.cgi.url ), noMetaTag );
   end if;
 end ParseGnatCGIURL;
 
@@ -369,7 +369,7 @@ begin
   expect( gnat_cgi_argument_count_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( natural'image( gnat.cgi.argument_count ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( natural'image( gnat.cgi.argument_count ) ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -431,11 +431,11 @@ begin
           result := storage'( to_unbounded_string( gnat.cgi.value(
             to_string( expr.value ),
             bool_val = identifiers( true_t ).value.all
-          ) ), noMetaLabel );
+          ) ), noMetaTag );
        else
           result := storage'( to_unbounded_string( gnat.cgi.value(
             positive'value( " " & to_string( expr.value ) )
-          ) ), noMetaLabel );
+          ) ), noMetaTag );
        end if;
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
@@ -469,7 +469,7 @@ begin
      begin
        result := storage'( to_bush_boolean(
          gnat.cgi.key_exists( to_string( keyExpr.value ))
-       ), noMetaLabel );
+       ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -507,7 +507,7 @@ begin
      begin
        result := storage'( to_unbounded_string(
          gnat.cgi.key( positive'value( " " & to_string( posExpr.value ) ) )
-       ), noMetaLabel );
+       ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -601,7 +601,7 @@ begin
   expect( gnat_cgi_cookie_ok_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_bush_boolean( gnat.cgi.cookie.ok ), noMetaLabel );
+       result := storage'( to_bush_boolean( gnat.cgi.cookie.ok ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when others =>
@@ -627,7 +627,7 @@ begin
   expect( gnat_cgi_cookie_count_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( natural'image( gnat.cgi.cookie.count ) ), noMetaLabel );
+       result := storage'( to_unbounded_string( natural'image( gnat.cgi.cookie.count ) ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -691,11 +691,11 @@ begin
           result := storage'( to_unbounded_string( gnat.cgi.cookie.value(
             to_string( expr.value ),
             bool_val = identifiers( true_t ).value.all
-          ) ), noMetaLabel );
+          ) ), noMetaTag );
        else
           result := storage'( to_unbounded_string( gnat.cgi.cookie.value(
             positive'value( " " & to_string( expr.value ) )
-          ) ), noMetaLabel );
+          ) ), noMetaTag );
        end if;
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
@@ -731,7 +731,7 @@ begin
      begin
        result := storage'( to_bush_boolean(
          gnat.cgi.cookie.exists( to_string( keyExpr.value ))
-       ), noMetaLabel );
+       ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -771,7 +771,7 @@ begin
      begin
        result := storage'( to_unbounded_string(
          gnat.cgi.cookie.key( positive'value( " " & to_string( posExpr.value ) ) )
-       ), noMetaLabel );
+       ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -905,7 +905,7 @@ begin
   expect( gnat_cgi_debug_text_output_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( Gnat.Cgi.Debug.Text_Output ), noMetaLabel );
+       result := storage'( to_unbounded_string( Gnat.Cgi.Debug.Text_Output ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
@@ -934,7 +934,7 @@ begin
   expect( gnat_cgi_debug_html_output_t );
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( Gnat.Cgi.Debug.HTML_Output ), noMetaLabel );
+       result := storage'( to_unbounded_string( Gnat.Cgi.Debug.HTML_Output ), noMetaTag );
      exception when Gnat.Cgi.Data_Error =>
        err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>

@@ -116,10 +116,10 @@ begin
   return left.value = right.value;
 end value_equal;
 
-function metaLabelSetHash( e : metaLabelID ) return ada.containers.hash_type is
+function metaTagSetHash( e : metaTagID ) return ada.containers.hash_type is
 begin
   return ada.containers.hash_type( e );
-end metaLabelSetHash;
+end metaTagSetHash;
 
 
 ---> IS EXECUTING COMMAND

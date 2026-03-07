@@ -1322,7 +1322,7 @@ end ParseStaticIdentifier;
 --  PARSE META IDENTIFIER
 --
 -- Expect a  previously declared identifier of the appropriate
--- value meta label class.
+-- value meta tags class.
 -----------------------------------------------------------------------------
 
 procedure ParseMetaIdentifier( id : out identifier; metaClass : anIdentifierClass ) is
@@ -1531,7 +1531,7 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   t : identifier;
   codeFragment : unbounded_string;
 
-  -- PARSE FACTOR META LABEL
+  -- PARSE FACTOR META TAG
   --
   -- Syntax: ... [tagged tag]
   -- Example: ... "joe doe" tagged grdp
@@ -1539,12 +1539,12 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
   -- A literal factor may be followed by a meta tag which will be associated
   -- to the factor's value.  A literal factor is considered the origin for
   -- its value.  The tag must be a meta value tag or an error will be raised.
-  -- The meta labels are assumed to be initialized already.
+  -- The meta tags are assumed to be initialized already.
   ---------------------------------------------------------------------------
 
-  procedure ParseFactorMetaLabel is
+  procedure ParseFactorMetaTag is
       id : identifier;
-      newPolicies : metaLabelHashedSet.Set;
+      newPolicies : metaTagHashedSet.Set;
   begin
      if token = tagged_t then
         expect( tagged_t );
@@ -1552,27 +1552,27 @@ procedure ParseFactor( f : out storage; kind : out identifier ) is
            expect( policy_t );
            ParseIdentifier( id );
            if class_ok( id, policyMetaClass ) then
-              newPolicies := metaLabelHashedSet.To_Set( id );
-              if metaLabelOk( "While adding tags to the factor", newPolicies ) then
-                 --f.unitMetaLabel := noMetaLabel;
-                 f.policyMetaLabels := newPolicies; -- TODO: should include the policy?
+              newPolicies := metaTagHashedSet.To_Set( id );
+              if metaTagOk( "While adding tags to the factor", newPolicies ) then
+                 --f.unitMetaTag := noMetaTag;
+                 f.policyMetaTags := newPolicies; -- TODO: should include the policy?
                  identifiers( id ).wasReferenced := true;
               end if;
            end if;
         else
            ParseIdentifier( id );
            if class_ok(id, unitMetaClass ) then
-              f.unitMetaLabel := id;
-              --f.policyMetaLabels := noMetaLabels;
+              f.unitMetaTag := id;
+              --f.policyMetaTags := noMetaTags;
               identifiers( id ).wasReferenced := true;
            end if;
         end if;
      --else
-     --   f.unitMetaLabel := noMetaLabel;
-     --   f.policyMetaLabels := noMetaLabels;
+     --   f.unitMetaTag := noMetaTag;
+     --   f.policyMetaTags := noMetaTags;
      -- RETAGGED
      end if;
-  end ParseFactorMetaLabel;
+  end ParseFactorMetaTag;
 
   --  PARSE FACTOR IDENTIFIER
   --
@@ -1820,16 +1820,16 @@ begin
   -- categories.  If the token isn't in the category, skip the rest.
   elsif token < reserved_top then
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
-        f := storage'( to_unbounded_string( last_status'img ), noMetaLabel, noMetaLabels );
+        f := storage'( to_unbounded_string( last_status'img ), noMetaTag, noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
-        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, noMetaLabels );
+        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaTag, noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
-        f := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel,
-             noMetaLabels );
+        f := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaTag,
+             noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -1839,7 +1839,7 @@ begin
         end if;
         if isExecutingCommand then
            f := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset) ),
-                          noMetaLabel, noMetaLabels );
+                          noMetaTag, noMetaTags );
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -1852,8 +1852,8 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingCommand then
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
+           f.unitMetaTag := noMetaTag;
+           f.policyMetaTags := noMetaTags;
            begin
               f.value := to_unbounded_string(
                  Argument(
@@ -1875,24 +1875,24 @@ begin
         end if;
         if isExecutingCommand then
             f := storage'( to_unbounded_string( Ada.Command_Line.Command_Name ),
-                           noMetaLabel, noMetaLabels );
+                           noMetaTag, noMetaTags );
         end if;
         kind := uni_string_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "@" then
         if onlyAda95 then
             err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
+           f := storage'( null_unbounded_string, noMetaTag, noMetaTags );
            kind := eof_t;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
-           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
+           f := storage'( null_unbounded_string, noMetaTag, noMetaTags );
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( +"@ is not a variable" );
            kind := eof_t;
         else
-           f := storage'( itself, noMetaLabel, noMetaLabels );
+           f := storage'( itself, noMetaTag, noMetaTags );
            kind := itself_type;
         end if;
         getNextToken;
@@ -1908,8 +1908,8 @@ begin
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              f.unitMetaLabel := noMetaLabel;
-              f.policyMetaLabels := noMetaLabels;
+              f.unitMetaTag := noMetaTag;
+              f.policyMetaTags := noMetaTags;
               f := last_output;
            end if;
            kind := last_output_type;
@@ -1917,25 +1917,25 @@ begin
         getNextToken;
      elsif token = number_t then                           -- numeric literal
         f.value := identifiers( token ).store.value;
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := noMetaTags;
         kind := identifiers( token ).kind;
         getNextToken;
-        ParseFactorMetaLabel;                                -- meta tag if any
+        ParseFactorMetaTag;                                -- meta tag if any
      elsif token = charlit_t then                          -- character literal
         f.value := identifiers( token ).store.value;
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := noMetaTags;
         kind := identifiers( token ).kind;
         getNextToken;
-        ParseFactorMetaLabel;                                -- meta tag if any
+        ParseFactorMetaTag;                                -- meta tag if any
      elsif token = strlit_t then                           -- string literal
         f.value := identifiers( token ).store.value;
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := noMetaTags;
         kind := identifiers( token ).kind;
         getNextToken;
-        ParseFactorMetaLabel;                                -- meta tag if any
+        ParseFactorMetaTag;                                -- meta tag if any
      elsif token = backlit_t then           -- `cmds`
         kind := identifiers( token ).kind;
         -- If the backquoted commands don't end with a semi-colon, add one.
@@ -1961,9 +1961,9 @@ begin
            CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         end if;
         getNextToken;
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := noMetaLabels;
-        ParseFactorMetaLabel;                                -- meta tag if any
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := noMetaTags;
+        ParseFactorMetaTag;                                -- meta tag if any
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );
         kind := uni_numeric_t;
@@ -2008,20 +2008,20 @@ begin
      elsif token = is_open_t then                         -- is_open function
         ParseIsOpen( f );
         --if isExecutingCommand then
-        --   f.metaLabel := noMetaLabel;
+        --   f.metaTag := noMetaTag;
         --   f.value := identifiers( t ).store.value;
         --end if;
         kind := boolean_t;
      elsif token = system_meta_level_image_t then         -- Security Level
-        -- VALUE META LABELS: this is mainly for debugging labels
+        -- VALUE META TAGS: this is mainly for debugging labels
         getNextToken;
         if onlyAda95 then
            err( +"system_metal_level_image is not allowed with " &
                 em( "pragma ada_95" ) );
-           f := storage'( null_unbounded_string, noMetaLabel, noMetaLabels );
+           f := storage'( null_unbounded_string, noMetaTag, noMetaTags );
            kind := eof_t;
         else
-           f := storage'( image( sparMetaLabels ), noMetaLabel, noMetaLabels );
+           f := storage'( image( sparMetaTags ), noMetaTag, noMetaTags );
            kind := string_t;
         end if;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
@@ -2029,31 +2029,31 @@ begin
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with " &
               em( "pragma ada_95" ) );
-           f := storage'( null_unbounded_string, noMetaLabel, sparMetaLabels );
+           f := storage'( null_unbounded_string, noMetaTag, sparMetaTags );
            kind := eof_t;
         else
             f := storage'( delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 ),
-                           noMetaLabel, noMetaLabels );
+                           noMetaTag, noMetaTags );
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f := storage'( basename( getSourceFileName ), noMetaLabel, sparMetaLabels );
+        f := storage'( basename( getSourceFileName ), noMetaTag, sparMetaTags );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f := storage'( to_unbounded_string( getLineNo'img ), noMetaLabel, sparMetaLabels );
+        f := storage'( to_unbounded_string( getLineNo'img ), noMetaTag, sparMetaTags );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := sparMetaLabels;
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := sparMetaTags;
         f.value := to_unbounded_string( getLineNo'img );
         f.value := basename( getSourceFileName ) & ":" & f.value;
         kind := string_t;
         getNextToken;
      elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
-        f.unitMetaLabel := noMetaLabel;
-        f.policyMetaLabels := sparMetaLabels;
+        f.unitMetaTag := noMetaTag;
+        f.policyMetaTags := sparMetaTags;
         if blocks_top > block'First then
            f.value := getBlockName( block'First );
         else
@@ -2072,9 +2072,9 @@ begin
      --   kind := eof_t;
      else
         -- System package constants, ASCII constants, etc.
-        -- These have no meta data labels so probably need an optional label
+        -- These have no value meta tags so probably need an optional label
         ParseFactorIdentifier;
-        ParseFactorMetaLabel;
+        ParseFactorMetaTag;
      end if;
   elsif identifiers( token ).class = userFuncClass then  -- a user function?
      declare
@@ -2108,13 +2108,13 @@ begin
       end if;
 
   else                                                  -- a user ident?
-      -- as a special case, an enumerated type is treated like a literal and
-      -- may have a meta label
+      -- As a special case, an enumerated type is treated like a literal and
+      -- may have a meta tag
       if identifiers( token ).class = enumClass then
-         ParseFactorIdentifier;                               -- the enum item
-         ParseFactorMetaLabel;                                -- meta tag if any
-      else                                                    -- otherwise an
-         ParseFactorIdentifier;                               -- ident no tag
+         ParseFactorIdentifier;                              -- the enum item
+         ParseFactorMetaTag;                                 -- meta tag if any
+      else                                                   -- otherwise an
+         ParseFactorIdentifier;                              -- ident no tag
       end if;
   end if;
   case uniOp is
@@ -2155,10 +2155,10 @@ begin
   end case;
 --put_line("ParseFactor end"); -- DEBUG
 -- begin
--- put( "ParseFactor: expr result " ); put( f.metaLabel'img );
---    put_line( "/" & to_string( identifiers( f.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseFactor: expr result " ); put( f.metaTag'img );
+--    put_line( "/" & to_string( identifiers( f.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseFactor: metaLabel is illegal value" );
+-- put_line( "ParseFactor: metaTag is illegal value" );
 -- end;
 end ParseFactor;
 
@@ -2225,7 +2225,7 @@ begin
            if operator = "**" then
               begin
                  if isExecutingCommand then
-                    if metaLabelOk( "**", term, factor2 ) then
+                    if metaTagOk( "**", term, factor2 ) then
                        term.value := to_unbounded_string(
                             to_numeric( term.value ) **
                             natural( to_numeric( factor2.value ) ) );
@@ -2249,10 +2249,10 @@ begin
   end loop;
 --put_line("ParsePowerTerm end"); -- DEBUG
 -- begin
--- put( "ParsePowerTerm: expr result " ); put( term.metaLabel'img );
---    put_line( "/" & to_string( identifiers( term.metaLabel ).name ) ); -- DEBUG
+-- put( "ParsePowerTerm: expr result " ); put( term.metaTag'img );
+--    put_line( "/" & to_string( identifiers( term.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParsePowerTerm: metaLabel is illegal value" );
+-- put_line( "ParsePowerTerm: metaTag is illegal value" );
 -- end;
 end ParsePowerTerm;
 
@@ -2332,7 +2332,7 @@ begin
                       identifiers( term_type ).wasCastTo := true;
                    end if;
                   if isExecutingCommand then
-                     if metaLabelOk( "*", term, pterm2 ) then
+                     if metaTagOk( "*", term, pterm2 ) then
                         term.value := castToType(
                            to_numeric( term.value ) *
                            to_numeric( pterm2.value ),
@@ -2366,7 +2366,7 @@ begin
                      -- As a kludge, we'll break up this function call into
                      -- its parts and explicitly test for division by zero.
                      -- this could likely be improved.
-                     if metaLabelOk( "/", term, pterm2 ) then
+                     if metaTagOk( "/", term, pterm2 ) then
                         t := to_numeric( term.value );
                         p := to_numeric( pterm2.value );
                         if p = 0.0 then
@@ -2391,7 +2391,7 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( "mod", term, pterm2 ) then
+                     if metaTagOk( "mod", term, pterm2 ) then
                         term.value := castToType(
                            --long_long_integer'image(
                            numericValue(
@@ -2414,7 +2414,7 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( "rem", term, pterm2 ) then
+                     if metaTagOk( "rem", term, pterm2 ) then
                         term.value := castToType(
                            --long_long_integer'image(
                            numericValue(
@@ -2455,7 +2455,7 @@ begin
                  end if;
                  if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingCommand then
-                       if metaLabelOk( "&", term, pterm2 ) then
+                       if metaTagOk( "&", term, pterm2 ) then
                           term.value := term.value & pterm2.value;
                        end if;
                     end if;
@@ -2464,7 +2464,7 @@ begin
                  if type_checks_done or else baseTypesOK( kind1, natural_t ) then
                     if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
-                          if metaLabelOk( "*", term, pterm2 ) then
+                          if metaTagOk( "*", term, pterm2 ) then
                              term.value := natural( to_numeric( term.value ) ) * pterm2.value;
                           end if;
                        end if;
@@ -2491,10 +2491,10 @@ begin
         end if;
   end loop;
 -- begin
--- put( "ParseTerm: expr result " ); put( term.metaLabel'img );
---    put_line( "/" & to_string( identifiers( term.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseTerm: expr result " ); put( term.metaTag'img );
+--    put_line( "/" & to_string( identifiers( term.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseTerm: metaLabel is illegal value" );
+-- put_line( "ParseTerm: metaTag is illegal value" );
 -- end;
 --put_line("ParseTerm end"); -- DEBUG
 end ParseTerm;
@@ -2594,7 +2594,7 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( "+", se, term2 ) then
+                     if metaTagOk( "+", se, term2 ) then
                         se.value := castToType(
                            to_numeric( se.value ) +
                            to_numeric( term2.value ),
@@ -2615,7 +2615,7 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     if metaLabelOk( "-", se, term2 ) then
+                     if metaTagOk( "-", se, term2 ) then
                         se.value := castToType(
                            to_numeric( se.value ) -
                            to_numeric( term2.value ),
@@ -2633,7 +2633,7 @@ begin
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
               if isExecutingCommand then
-                 if metaLabelOk( "+", se, term2 ) then
+                 if metaTagOk( "+", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2645,7 +2645,7 @@ begin
               end if;
            elsif operator = "-" then
               if isExecutingCommand then
-                 if metaLabelOk( "-", se, term2 ) then
+                 if metaTagOk( "-", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2659,7 +2659,7 @@ begin
         elsif operation = variable_t then -- duration + time
            if operator = "+" then
               if isExecutingCommand then
-                 if metaLabelOk( "+", se, term2 ) then
+                 if metaTagOk( "+", se, term2 ) then
                     declare
                        c : scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( term2.value ) );
@@ -2677,7 +2677,7 @@ begin
               err( +"operation + not defined for these types" );
            else
               if isExecutingCommand then
-                 if metaLabelOk( "+", se, term2 ) then
+                 if metaTagOk( "+", se, term2 ) then
                     declare
                        c : constant scanner.calendar.time :=
                            scanner.calendar.time( to_numeric( se.value ) );
@@ -2705,10 +2705,10 @@ begin
 --put_line("ParseSimpleExpression end"); -- DEBUG
   --put_line( "Simple Expression value = " & to_string( se ) );
 -- begin
--- put( "ParseSimpleExpression: expr result " ); put( se.metaLabel'img );
---    put_line( "/" & to_string( identifiers( se.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseSimpleExpression: expr result " ); put( se.metaTag'img );
+--    put_line( "/" & to_string( identifiers( se.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseSimpleExpression: metaLabel is illegal value" );
+-- put_line( "ParseSimpleExpression: metaTag is illegal value" );
 -- end;
 end ParseSimpleExpression;
 
@@ -2826,49 +2826,49 @@ begin
              begin
                if operator = ">=" then
                   if isExecutingCommand then
-                     if metaLabelOk( ">=", se1, se2 ) then
+                     if metaTagOk( ">=", se1, se2 ) then
                         b := to_numeric( se1.value ) >= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = ">" then
                   if isExecutingCommand then
-                     if metaLabelOk( ">", se1, se2 ) then
+                     if metaTagOk( ">", se1, se2 ) then
                         b := to_numeric( se1.value ) > to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "<" then
                   if isExecutingCommand then
-                     if metaLabelOk( "<", se1, se2 ) then
+                     if metaTagOk( "<", se1, se2 ) then
                         b := to_numeric( se1.value ) < to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "<=" then
                   if isExecutingCommand then
-                     if metaLabelOk( "<=", se1, se2 ) then
+                     if metaTagOk( "<=", se1, se2 ) then
                         b := to_numeric( se1.value ) <= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "=" then
                   if isExecutingCommand then
-                     if metaLabelOk( "=", se1, se2 ) then
+                     if metaTagOk( "=", se1, se2 ) then
                         b := to_numeric( se1.value ) = to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "/=" then
                   if isExecutingCommand then
-                     if metaLabelOk( "/=", se1, se2 ) then
+                     if metaTagOk( "/=", se1, se2 ) then
                         b := to_numeric( se1.value ) /= to_numeric( se2.value );
                      end if;
                   end if;
                elsif operator = "in" then
                   if isExecutingCommand then
-                     if metaLabelOk( "in", se1, se2 ) then
+                     if metaTagOk( "in", se1, se2 ) then
                         b := to_numeric( se1.value ) in to_numeric( se2.value )..to_numeric( se3.value );
                      end if;
                   end if;
                elsif operator = "not in" then
                   if isExecutingCommand then
-                     if metaLabelOk( "not in", se1, se2 ) then
+                     if metaTagOk( "not in", se1, se2 ) then
                         b := to_numeric( se1.value ) not in to_numeric( se2.value )..to_numeric( se3.value );
                      end if;
                   end if;
@@ -2887,37 +2887,37 @@ begin
         elsif operation = uni_string_t then
              if operator = ">=" then
                 if isExecutingCommand then
-                   if metaLabelOk( ">=", se1, se2 ) then
+                   if metaTagOk( ">=", se1, se2 ) then
                       b := se1.value >= se2.value;
                    end if;
                 end if;
              elsif operator = ">" then
                 if isExecutingCommand then
-                   if metaLabelOk( ">", se1, se2 ) then
+                   if metaTagOk( ">", se1, se2 ) then
                       b := se1.value > se2.value;
                    end if;
                 end if;
              elsif operator = "<" then
                 if isExecutingCommand then
-                   if metaLabelOk( "<", se1, se2 ) then
+                   if metaTagOk( "<", se1, se2 ) then
                       b := se1.value < se2.value;
                    end if;
                 end if;
              elsif operator = "<=" then
                 if isExecutingCommand then
-                   if metaLabelOk( "<=", se1, se2 ) then
+                   if metaTagOk( "<=", se1, se2 ) then
                       b := se1.value <= se2.value;
                    end if;
                 end if;
              elsif operator = "=" then
                 if isExecutingCommand then
-                   if metaLabelOk( "=", se1, se2 ) then
+                   if metaTagOk( "=", se1, se2 ) then
                       b := se1.value = se2.value;
                    end if;
                 end if;
              elsif operator = "/=" then
                 if isExecutingCommand then
-                   if metaLabelOk( "/=", se1, se2 ) then
+                   if metaTagOk( "/=", se1, se2 ) then
                       b := se1.value /= se2.value;
                    end if;
                 end if;
@@ -2927,7 +2927,7 @@ begin
                       length( se2.value ) /= 1 or
                       length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
-                   elsif metaLabelOk( "in", se1, se2, se3 ) then
+                   elsif metaTagOk( "in", se1, se2, se3 ) then
                       declare
                         c1 : constant character := element( se1.value, 1 );
                         c2 : constant character := element( se2.value, 1 );
@@ -2945,7 +2945,7 @@ begin
                       length( se2.value ) /= 1 or
                       length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
-                   elsif metaLabelOk( "not in", se1, se2, se3 ) then
+                   elsif metaTagOk( "not in", se1, se2, se3 ) then
                       declare
                         c1 : constant character := element( se1.value, 1 );
                         c2 : constant character := element( se2.value, 1 );
@@ -2972,10 +2972,10 @@ begin
      end if;
   end if;
 -- begin
--- put( "ParseRelation: expr result " ); put( re.metaLabel'img );
---    put_line( "/" & to_string( identifiers( re.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseRelation: expr result " ); put( re.metaTag'img );
+--    put_line( "/" & to_string( identifiers( re.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseRelation: metaLabel is illegal value" );
+-- put_line( "ParseRelation: metaTag is illegal value" );
 -- end;
 -- put_line("ParseRelation end"); -- DEBUG
 end ParseRelation;
@@ -3139,10 +3139,10 @@ begin
   end loop;
   ex := re1;
 -- begin -- DEBUG
--- put( "ParseExpression: expr result " ); put( ex.metaLabel'img );
---    put_line( "/" & to_string( identifiers( ex.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseExpression: expr result " ); put( ex.metaTag'img );
+--    put_line( "/" & to_string( identifiers( ex.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseExpression: metaLabel is illegal value" );
+-- put_line( "ParseExpression: metaTag is illegal value" );
 -- end;
   -- Must pull before resetting...
   pullExpressionIds;
@@ -3193,16 +3193,16 @@ begin
      expect( symbol_t, ")" );
   else
      if Token = symbol_t and then identifiers( Token ).store.value = "$?" then
-        f := storage'( to_unbounded_string( last_status'img ), noMetaLabel, noMetaLabels );
+        f := storage'( to_unbounded_string( last_status'img ), noMetaTag, noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$$" then
-        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, noMetaLabels );
+        f := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaTag, noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$!" then
          f := storage'( to_unbounded_string( aPID'image( lastChild ) ),
-                 noMetaLabel, noMetaLabels );
+                 noMetaTag, noMetaTags );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).store.value = "$#" then
@@ -3212,7 +3212,7 @@ begin
         end if;
         if isExecutingStaticCommand then
            f := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset) ),
-                   noMetaLabel, noMetaLabels );
+                   noMetaTag, noMetaTags );
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -3225,8 +3225,8 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingStaticCommand then
-           f.unitMetaLabel := noMetaLabel;
-           f.policyMetaLabels := noMetaLabels;
+           f.unitMetaTag := noMetaTag;
+           f.policyMetaTags := noMetaTags;
            begin
               f.value := to_unbounded_string(
                  Argument(

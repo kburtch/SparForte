@@ -351,30 +351,30 @@ procedure discardUnusedIdentifier( id : identifier );
 --
 ------------------------------------------------------------------------------
 
-function metaLabelOk( contextNotes : string; theStorage : storage ) return boolean;
-function metaLabelOk( context : identifier; theStorage : storage ) return boolean;
-function metaLabelOk( contextNotes : string; policies : metaLabelHashedSet.Set ) return boolean;
-function metaLabelOk( contextNotes : string; unit : metaLabelID ) return boolean;
-function metaLabelOk( contextNotes : string; leftStorage, rightStorage : storage ) return boolean;
-function metaLabelOk( context : identifier; leftStorage, rightStorage : storage ) return boolean;
-function metaLabelOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean;
-function metaLabelOk( context : identifier; leftStorage, middleStorage, rightStorage: storage ) return boolean;
-function metaLabelOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
-function metaLabelOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
+function metaTagOk( contextNotes : string; theStorage : storage ) return boolean;
+function metaTagOk( context : identifier; theStorage : storage ) return boolean;
+function metaTagOk( contextNotes : string; policies : metaTagHashedSet.Set ) return boolean;
+function metaTagOk( contextNotes : string; unit : metaTagID ) return boolean;
+function metaTagOk( contextNotes : string; leftStorage, rightStorage : storage ) return boolean;
+function metaTagOk( context : identifier; leftStorage, rightStorage : storage ) return boolean;
+function metaTagOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean;
+function metaTagOk( context : identifier; leftStorage, middleStorage, rightStorage: storage ) return boolean;
+function metaTagOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
+function metaTagOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean;
 
 ------------------------------------------------------------------------------
 -- Data Meta Label Resolution
 ------------------------------------------------------------------------------
 
-function resolveEffectiveMetaLabels(
+function resolveEffectiveMetaTags(
    kind          : identifier;
    firstStorage  : storage;
    secondStorage : storage := nullStorage;
    thirdStorage  : storage := nullStorage;
-   fourthStorage : storage := nullStorage ) return metaLabelHashedSet.Set;
+   fourthStorage : storage := nullStorage ) return metaTagHashedSet.Set;
 
-function assignSystemIndexMetaLabel return identifier;
-pragma inline( assignSystemIndexMetaLabel );
+function assignSystemIndexMetaTag return identifier;
+pragma inline( assignSystemIndexMetaTag );
 
 -----------------------------------------------------------------------------
 -- JSON
@@ -386,7 +386,7 @@ procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_st
 procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier );
 -- Convert an array to a JSON string.
 
-procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabels : metaLabelHashedSet.Set );
+procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaTags : metaTagHashedSet.Set );
 
 -- Convert a JSON string and store in an array.
 
@@ -546,7 +546,7 @@ type blockDeclaration is record
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;
   occurrence_full      : unbounded_string;
-  metaLabels       : metaLabelHashedSet.Set; -- the security level
+  metaTags       : metaTagHashedSet.Set; -- the security level
 end record;
 
 type blocksArray is array( block ) of blockDeclaration;

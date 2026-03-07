@@ -137,14 +137,14 @@ begin
        -- the key, value and existing value must all be checked.
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldElem /= nullStorage then
-          if metaLabelOK( dht_set_t, oldElem ) and
-             metaLabelOK( dht_set_t, keyExpr ) and metaLabelOK( dht_set_t, itemExpr ) then
+          if metaTagOK( dht_set_t, oldElem ) and
+             metaTagOK( dht_set_t, keyExpr ) and metaTagOK( dht_set_t, itemExpr ) then
              Dynamic_Storage_Hash_Tables.Set(
                 theTable.dsht,
                 keyExpr,
                 itemExpr );
           end if;
-       elsif metaLabelOK( dht_set_t, keyExpr ) and metaLabelOK( dht_set_t, itemExpr ) then
+       elsif metaTagOK( dht_set_t, keyExpr ) and metaTagOK( dht_set_t, itemExpr ) then
           Dynamic_Storage_Hash_Tables.Set(
              theTable.dsht,
              keyExpr,
@@ -181,7 +181,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
-       if metaLabelOk( dht_get_t, oldElem ) then
+       if metaTagOk( dht_get_t, oldElem ) then
           result := oldElem;
        end if;
      end;
@@ -211,7 +211,7 @@ begin
      getParameterValue( tableRef, tableResId );
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
-       result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr ) /= nullStorage ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseDHTHasElement;
@@ -240,7 +240,7 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldElem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
-       if metaLabelOk( dht_remove_t, oldElem ) and metaLabelOk( dht_remove_t, keyExpr ) then
+       if metaTagOk( dht_remove_t, oldElem ) and metaTagOk( dht_remove_t, keyExpr ) then
           Dynamic_Storage_Hash_Tables.Remove( theTable.dsht, keyExpr );
        end if;
      exception when storage_error =>
@@ -278,10 +278,10 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_First( theTable.dsht );
-       if metaLabelOk( dht_get_first_t, s ) then
+       if metaTagOk( dht_get_first_t, s ) then
           AssignParameter( itemRef, s );
        end if;
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel, noMetaLabels ) );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaTag, noMetaTags ) );
      end;
   end if;
 end ParseDHTGetFirst;
@@ -316,10 +316,10 @@ begin
      begin
        findResource( to_resource_id( tableResId.value ), theTable );
        s := Dynamic_Storage_Hash_Tables.Get_Next( theTable.dsht );
-       if metaLabelOk( dht_get_next_t, s ) then
+       if metaTagOk( dht_get_next_t, s ) then
           AssignParameter( itemRef, s );
        end if;
-       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaLabel, noMetaLabels ) );
+       AssignParameter( eofRef, storage'( to_spar_boolean( s = nullStorage ), noMetaTag, noMetaTags ) );
      end;
   end if;
 end ParseDHTGetNext;
@@ -353,7 +353,7 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem = nullStorage then
-          if metaLabelOk( dht_add_t, keyExpr ) and metaLabelOk( dht_add_t, itemExpr ) then
+          if metaTagOk( dht_add_t, keyExpr ) and metaTagOk( dht_add_t, itemExpr ) then
              Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
           end if;
        end if;
@@ -392,8 +392,8 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOk( dht_replace_t, keyExpr ) and metaLabelOk( dht_replace_t, itemExpr ) and
-             metaLabelOk( dht_replace_t, oldItem ) then
+          if metaTagOk( dht_replace_t, keyExpr ) and metaTagOk( dht_replace_t, itemExpr ) and
+             metaTagOk( dht_replace_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, itemExpr );
           end if;
        end if;
@@ -435,7 +435,7 @@ begin
        findResource( to_resource_id( tableResId.value ), theTable );
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
-          if metaLabelOk( dht_append_t, keyExpr ) and metaLabelOk( dht_append_t, itemExpr, oldItem ) then
+          if metaTagOk( dht_append_t, keyExpr ) and metaTagOk( dht_append_t, itemExpr, oldItem ) then
              -- labels must be the same for the original value and the appending value
              oldItem.value := oldItem.value & itemExpr.value;
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
@@ -480,7 +480,7 @@ begin
        oldItem := Dynamic_Storage_Hash_Tables.Get( theTable.dsht, keyExpr );
        if oldItem /= nullStorage then
           -- labels must be the same for the original value and the appending value
-          if metaLabelOk( dht_prepend_t, keyExpr ) and metaLabelOK( dht_prepend_t, olditem, itemExpr ) then
+          if metaTagOk( dht_prepend_t, keyExpr ) and metaTagOK( dht_prepend_t, olditem, itemExpr ) then
              oldItem.value := itemExpr.value & oldItem.value;
              Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
           end if;
@@ -537,12 +537,12 @@ begin
              oldItem.value := to_unbounded_string(
                  oldItemValue + numericValue( natural( to_numeric( amtExpr.value ) ) )
              );
-             if metaLabelOk( dht_increment_t, keyExpr ) and metaLabelOk( dht_increment_t, amtExpr, oldItem ) then
+             if metaTagOk( dht_increment_t, keyExpr ) and metaTagOk( dht_increment_t, amtExpr, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
              end if;
           else
              oldItem.value := to_unbounded_string( oldItemValue + 1.0 );
-             if metaLabelOk( dht_increment_t, keyExpr ) and metaLabelOk( dht_increment_t, oldItem ) then
+             if metaTagOk( dht_increment_t, keyExpr ) and metaTagOk( dht_increment_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem );
              end if;
           end if;
@@ -599,12 +599,12 @@ begin
           oldItemValue := to_numeric( oldItem.value );
           if hasAmt then
              oldItem.value := to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr.value ) ) ) );
-             if metaLabelOk( dht_decrement_t, keyExpr ) and metaLabelOk( dht_decrement_t, amtExpr, oldItem ) then
+             if metaTagOk( dht_decrement_t, keyExpr ) and metaTagOk( dht_decrement_t, amtExpr, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
              end if;
           else
              oldItem.value := to_unbounded_string( oldItemValue - 1.0 );
-             if metaLabelOk( dht_decrement_t, keyExpr ) and metaLabelOk( dht_decrement_t, oldItem ) then
+             if metaTagOk( dht_decrement_t, keyExpr ) and metaTagOk( dht_decrement_t, oldItem ) then
                 Dynamic_Storage_Hash_Tables.Set( theTable.dsht, keyExpr, oldItem);
              end if;
           end if;

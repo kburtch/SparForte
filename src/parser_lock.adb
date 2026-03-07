@@ -58,8 +58,8 @@ procedure ParseLockLockFile is
   expr_type  : identifier;
   dirExpr    : storage;
   fileExpr   : storage;
-  waitExpr   : storage := storage'( to_unbounded_string( "1.0" ), noMetaLabel, noMetaLabels );
-  retryExpr  : storage := storage'( to_unbounded_string( natural'last'img ), noMetaLabel, noMetaLabels );
+  waitExpr   : storage := storage'( to_unbounded_string( "1.0" ), noMetaTag, noMetaTags );
+  retryExpr  : storage := storage'( to_unbounded_string( natural'last'img ), noMetaTag, noMetaTags );
 begin
   expect( locks_lock_t );
   expect( symbol_t, "(" );
@@ -106,7 +106,7 @@ begin
   if isExecutingCommand then
      begin
        if length( dirExpr.value ) > 0 then
-          if metaLabelOk( locks_lock_t, dirExpr, fileExpr ) then
+          if metaTagOk( locks_lock_t, dirExpr, fileExpr ) then
              Lock_File( to_string( dirExpr.value ),
                to_string( fileExpr.value ),
                duration( to_numeric( waitExpr.value ) ),
@@ -114,7 +114,7 @@ begin
           );
           end if;
        else
-          if metaLabelOk( locks_lock_t, fileExpr ) then
+          if metaTagOk( locks_lock_t, fileExpr ) then
             Lock_File( to_string( fileExpr.value ),
                duration( to_numeric( waitExpr.value ) ),
                natural( to_numeric( retryExpr.value ) )
@@ -152,12 +152,12 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if length( dirExpr.value ) > 0 then
-          if metaLabelOk( locks_unlock_t, dirExpr, fileExpr ) then
+          if metaTagOk( locks_unlock_t, dirExpr, fileExpr ) then
              Unlock_File( to_string( dirExpr.value ),
                to_string( fileExpr.value ) );
           end if;
      else
-        if metaLabelOk( locks_unlock_t, fileExpr ) then
+        if metaTagOk( locks_unlock_t, fileExpr ) then
            Unlock_File( to_string( fileExpr.value ) );
         end if;
      end if;

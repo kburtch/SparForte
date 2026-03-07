@@ -104,9 +104,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_exists_t, fileExpr ) then
+     if metaTagOk( files_exists_t, fileExpr ) then
      result := storage'( to_spar_boolean( File_Exists( to_string( fileExpr.value ) ) ),
-        noMetaLabel, noMetaLabels );
+        noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseFileExists;
@@ -132,9 +132,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_absolute_path_t, fileExpr ) then
+     if metaTagOk( files_is_absolute_path_t, fileExpr ) then
         result := storage'( to_spar_boolean( Is_Absolute_Path( to_string( fileExpr.value ) ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsAbsolutePath;
@@ -160,9 +160,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_regular_file_t, fileExpr ) then
+     if metaTagOk( files_is_regular_file_t, fileExpr ) then
         result := storage'( to_spar_boolean( Is_Regular_File( to_string( fileExpr.value ) ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsRegularFile;
@@ -188,9 +188,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_directory_t, fileExpr ) then
+     if metaTagOk( files_is_directory_t, fileExpr ) then
         result := storage'( to_spar_boolean( Is_Directory( to_string( fileExpr.value ) ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsDirectory;
@@ -216,9 +216,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_writable_file_t, fileExpr ) then
+     if metaTagOk( files_is_writable_file_t, fileExpr ) then
         result := storage'( to_spar_boolean( Is_Writable_File( to_string( fileExpr.value ) )
-          and Is_Regular_File( to_string( fileExpr.value ) ) ), noMetaLabel, noMetaLabels );
+          and Is_Regular_File( to_string( fileExpr.value ) ) ), noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsWritableFile;
@@ -244,9 +244,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_writable_t, fileExpr ) then
+     if metaTagOk( files_is_writable_t, fileExpr ) then
         result := storage'( to_spar_boolean( Is_Writable_File( to_string( fileExpr.value ) ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsWritable;
@@ -272,9 +272,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_executable_file_t, fileExpr ) then
+     if metaTagOk( files_is_executable_file_t, fileExpr ) then
         result := storage'( to_spar_boolean( C_Is_Executable_File( to_string( fileExpr.value ) & ASCII.NUL ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsExecutableFile;
@@ -300,9 +300,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_executable_t, fileExpr ) then
+     if metaTagOk( files_is_executable_t, fileExpr ) then
         result := storage'( to_spar_boolean( C_Is_Executable( to_string( fileExpr.value ) & ASCII.NUL ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsExecutable;
@@ -328,9 +328,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_readable_file_t, fileExpr ) then
+     if metaTagOk( files_is_readable_file_t, fileExpr ) then
         result := storage'( to_spar_boolean( C_Is_Readable_File( to_string( fileExpr.value ) & ASCII.NUL ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsReadableFile;
@@ -356,9 +356,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_readable_t, fileExpr ) then
+     if metaTagOk( files_is_readable_t, fileExpr ) then
         result := storage'( to_spar_boolean( C_Is_Readable( to_string( fileExpr.value ) & ASCII.NUL ) ),
-            noMetaLabel, noMetaLabels );
+            noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsReadable;
@@ -385,11 +385,11 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_size_t, fileExpr ) then
+     if metaTagOk( files_size_t, fileExpr ) then
         filesize := C_File_Length( to_string( fileExpr.value ) & ASCII.NUL );
         if filesize >= 0 then
            result := storage'( to_unbounded_string( long_integer'image( filesize ) ),
-              noMetaLabel, fileExpr.policyMetaLabels );
+              noMetaTag, fileExpr.policyMetaTags );
         else
            err( pl( "unable to get file size: " & OSError( spar_os.C_errno ) ) );
         end if;
@@ -419,8 +419,8 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_basename_t, fileExpr ) then
-        result := storage'( basename( fileExpr.value ), noMetaLabel, fileExpr.policyMetaLabels );
+     if metaTagOk( files_basename_t, fileExpr ) then
+        result := storage'( basename( fileExpr.value ), noMetaTag, fileExpr.policyMetaTags );
      end if;
   end if;
 end ParseBasename;
@@ -447,8 +447,8 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_dirname_t, fileExpr ) then
-        result := storage'( dirname( fileExpr.value ), noMetaLabel, fileExpr.policyMetaLabels );
+     if metaTagOk( files_dirname_t, fileExpr ) then
+        result := storage'( dirname( fileExpr.value ), noMetaTag, fileExpr.policyMetaTags );
      end if;
   end if;
 end ParseDirname;
@@ -474,9 +474,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_is_waiting_file_t, fileExpr ) then
+     if metaTagOk( files_is_waiting_file_t, fileExpr ) then
         result := storage'( to_spar_boolean( C_Is_Waiting_File( to_string( fileExpr.value ) & ASCII.NUL ) ),
-           noMetaLabel, noMetaLabels );
+           noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseIsWaitingFile;
@@ -503,12 +503,12 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_last_modified_t, fileExpr ) then
+     if metaTagOk( files_last_modified_t, fileExpr ) then
         C_File_Modify_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
         if year >= 0 then
            begin -- exception is possible but very unlikely
               result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ),
-                 noMetaLabel, fileExpr.policyMetaLabels );
+                 noMetaTag, fileExpr.policyMetaTags );
            exception when others =>
               err( +"execption raised when getting file modified time" );
            end;
@@ -541,12 +541,12 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_last_changed_t, fileExpr ) then
+     if metaTagOk( files_last_changed_t, fileExpr ) then
         C_File_Change_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
         if year >= 0 then
            begin -- exception is possible but very unlikely
               result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ),
-                 noMetaLabel, fileExpr.policyMetaLabels );
+                 noMetaTag, fileExpr.policyMetaTags );
            exception when others =>
               err( +"execption raised when getting file modified time" );
            end;
@@ -579,12 +579,12 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( files_last_accessed_t, fileExpr ) then
+     if metaTagOk( files_last_accessed_t, fileExpr ) then
         C_File_Access_Time( to_string( fileExpr.value ) & ASCII.NUL, year, month, day, seconds );
         if year >= 0 then
            begin -- exception is possible but very unlikely
               result := storage'( to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) ),
-                 noMetaLabel, fileExpr.policyMetaLabels );
+                 noMetaTag, fileExpr.policyMetaTags );
            exception when others =>
               err( +"execption raised when getting file modified time" );
            end;

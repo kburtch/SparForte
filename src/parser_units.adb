@@ -108,8 +108,8 @@ procedure ParseSimpleConversion( subprogramId : identifier; result : out storage
 -- cuts the (binary) size of this package in half.
 begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) * factor ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) * factor ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
 exception when others =>
@@ -911,8 +911,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr.value ) - 32.0 ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( 5.0 / 9.0 * (to_numeric( expr.value ) - 32.0 ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -941,8 +941,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( 9.0 / 5.0 * to_numeric( expr.value ) + 32.0 ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( 9.0 / 5.0 * to_numeric( expr.value ) + 32.0 ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -971,8 +971,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) - 273.15 ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) - 273.15 ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1001,8 +1001,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) + 273.15 ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) + 273.15 ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1252,8 +1252,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value )/1024.0/1024.0 ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( to_numeric( expr.value )/1024.0/1024.0 ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1282,8 +1282,8 @@ begin
   ParseSingleNumericParameter( subprogramId, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr ) then
-          result := storage'( to_unbounded_string( to_numeric( expr.value ) *1024.0*1024.0 ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( subprogramId, expr ) then
+          result := storage'( to_unbounded_string( to_numeric( expr.value ) *1024.0*1024.0 ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>

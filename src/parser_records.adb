@@ -93,7 +93,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     -- meta labels are checked by DoRecordToJson
+     -- meta tags are checked by DoRecordToJson
      DoRecordToJson( jsonStore, source_var_id );
      assignParameter( target_ref, jsonStore );
   end if;
@@ -140,9 +140,9 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, sourceStore ) then
+     if metaTagOk( subprogramId, sourceStore ) then
         begin
-          -- meta labels are checked by DoJsonToRecord
+          -- meta tags are checked by DoJsonToRecord
           DoJsonToRecord( target_ref.id, sourceStore );
         exception when constraint_error =>
           err( contextNotes => pl( "At " & gnat.source_info.source_location ) &

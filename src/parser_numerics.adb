@@ -159,8 +159,8 @@ begin
   if isExecutingCommand then
      result.value := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
        random_generator ) ) );
-     result.unitMetaLabel := noMetaLabel;
-     result.policyMetaLabels := sparMetaLabels;
+     result.unitMetaTag := noMetaTag;
+     result.policyMetaTags := sparMetaTags;
   end if;
 end ParseNumericsRandom;
 
@@ -179,11 +179,11 @@ begin
   ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( numericValue( shift_left(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+           ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -206,11 +206,11 @@ begin
   ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( numericValue( shift_right(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+           ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -233,11 +233,11 @@ begin
   ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( numericValue( rotate_left(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value) )
-           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+           ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -260,11 +260,11 @@ begin
   ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( numericValue( rotate_right(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value) )
-           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+           ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -287,11 +287,11 @@ begin
   ParseLastNumericParameter( subprogramId, amt_st, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'(to_unbounded_string( numericValue( shift_right_arithmetic(
               unsigned_64( to_numeric( expr_st.value ) ),
               natural( to_numeric( amt_st.value ) )
-           ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+           ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -311,9 +311,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( sqrt( to_numeric( expr_st.value ) ) ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
     end if;
   exception when others =>
@@ -340,13 +340,13 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            if base_type = eof_t then
               result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
            else
               result := storage'( to_unbounded_string( log( to_numeric( expr_st.value ),
-                to_numeric( base_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+                to_numeric( base_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
            end if;
         end if;
      end if;
@@ -367,9 +367,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( exp( to_numeric( expr_st.value) ) ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when constraint_error =>
@@ -403,13 +403,13 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            if cycle_type = eof_t then
               result := storage'(to_unbounded_string( sin( to_numeric( expr_st.value ) ) ),
-                 noMetaLabel, expr_st.policyMetaLabels );
+                 noMetaTag, expr_st.policyMetaTags );
            else
               result := storage'( to_unbounded_string( sin( to_numeric( expr_st.value ),
-                to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+                to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
            end if;
         end if;
      end if;
@@ -444,13 +444,13 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
           else
              result := storage'( to_unbounded_string( cos( to_numeric( expr_st.value ),
-                to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+                to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
           end if;
        end if;
     end if;
@@ -485,13 +485,13 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
           else
              result := storage'( to_unbounded_string( tan( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+               to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
           end if;
        end if;
     end if;
@@ -533,13 +533,13 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
           else
              result := storage'( to_unbounded_string( cot( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+               to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
           end if;
        end if;
     end if;
@@ -581,13 +581,13 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
           else
              result := storage'( to_unbounded_string( arcsin( to_numeric( expr_st.value),
-               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+               to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
           end if;
        end if;
     end if;
@@ -631,13 +631,13 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ) ) ),
-                noMetaLabel, expr_st.policyMetaLabels );
+                noMetaTag, expr_st.policyMetaTags );
           else
              result := storage'( to_unbounded_string( arccos( to_numeric( expr_st.value ),
-               to_numeric( cycle_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+               to_numeric( cycle_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
           end if;
        end if;
     end if;
@@ -685,17 +685,17 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ) ) ),
-               noMetaLabel,
-               resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
+               noMetaTag,
+               resolveEffectiveMetaTags( expr_type, expr_st, expr2_st ) );
           else
              result := storage'( to_unbounded_string( arctan( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
-               noMetaLabel,
-               resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
+               noMetaTag,
+               resolveEffectiveMetaTags( expr_type, expr_st, expr2_st ) );
           end if;
        end if;
     end if;
@@ -742,14 +742,14 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           if cycle_type = eof_t then
              result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
-               to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
+               to_numeric( expr2_st.value ) ) ), noMetaTag, resolveEffectiveMetaTags( expr_type, expr_st, expr2_st ) );
           else
              result := storage'( to_unbounded_string( arccot( to_numeric( expr_st.value ),
                to_numeric( expr2_st.value ), to_numeric( cycle_st.value ) ) ),
-               noMetaLabel, resolveEffectiveMetaLabels( expr_type, expr_st, expr2_st ) );
+               noMetaTag, resolveEffectiveMetaTags( expr_type, expr_st, expr2_st ) );
           end if;
        end if;
     end if;
@@ -770,9 +770,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( sinh( to_numeric( expr_st.value ) ) ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -792,9 +792,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( cosh( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -814,9 +814,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( tanh( to_numeric( expr_st.value) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -836,9 +836,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( coth(  to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when constraint_error =>
@@ -865,9 +865,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arcsinh( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -887,9 +887,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arccosh( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -923,9 +923,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arctanh( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -959,9 +959,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( arccoth( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when ada.numerics.argument_error =>
@@ -995,9 +995,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'floor( to_numeric( expr_st.value ) ) ),
-            noMetaLabel, expr_st.policyMetaLabels );
+            noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1017,9 +1017,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'ceiling( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1039,9 +1039,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'rounding( to_numeric( expr_st.value ) ) ),
-          noMetaLabel, expr_st.policyMetaLabels );
+          noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1061,9 +1061,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1083,9 +1083,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
          result := storage'( to_unbounded_string( numericValue'truncation( to_numeric( expr_st.value ) ) ),
-            noMetaLabel, expr_st.policyMetaLabels );
+            noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1108,9 +1108,9 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( remainder_t, expr2_st )  then
+       if metaTagOk( subprogramId, expr_st ) and metaTagOk( remainder_t, expr2_st )  then
           result := storage'( to_unbounded_string( numericValue'remainder( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+            to_numeric( expr2_st.value ) ) ), noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1130,9 +1130,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_st.value ) ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1152,9 +1152,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'fraction( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1177,9 +1177,9 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) and metaLabelOk( leading_part_t, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st ) and metaTagOk( leading_part_t, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'leading_part( to_numeric( expr_st.value ),
-             integer( to_numeric( expr2_st.value ) ) ) ), noMetaLabel, expr_st.policyMetaLabels );
+             integer( to_numeric( expr2_st.value ) ) ) ), noMetaTag, expr_st.policyMetaTags );
        end if;
      end if;
   exception when others =>
@@ -1202,9 +1202,9 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'copy_sign( to_numeric( expr_st.value ),
-            to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels( kind, expr_st, expr2_st ) );
+            to_numeric( expr2_st.value ) ) ), noMetaTag, resolveEffectiveMetaTags( kind, expr_st, expr2_st ) );
        end if;
      end if;
   exception when others =>
@@ -1231,7 +1231,7 @@ begin
   ParseLastNumericParameter( subprogramId, total_st, total_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, lo_st, hi_st, total_st ) then
+       if metaTagOk( subprogramId, lo_st, hi_st, total_st ) then
           lo := to_numeric( lo_st.value );
           hi := to_numeric( hi_st.value );
           total := to_numeric( total_st.value );
@@ -1239,7 +1239,7 @@ begin
              numericValue'rounding(
                 (hi-lo) / 1.0+log( total )
              )
-          ), noMetaLabel, resolveEffectiveMetaLabels( kind, lo_st, hi_st, total_st ) );
+          ), noMetaTag, resolveEffectiveMetaTags( kind, lo_st, hi_st, total_st ) );
        end if;
      end if;
   exception when others =>
@@ -1262,9 +1262,9 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'max( to_numeric( expr_st.value ),
-             to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
+             to_numeric( expr2_st.value ) ) ), noMetaTag, resolveEffectiveMetaTags(kind, expr_st, expr2_st ) );
        end if;
      end if;
   exception when others =>
@@ -1287,9 +1287,9 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'min( to_numeric( expr_st.value ),
-             to_numeric( expr2_st.value ) ) ), noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
+             to_numeric( expr2_st.value ) ) ), noMetaTag, resolveEffectiveMetaTags(kind, expr_st, expr2_st ) );
         end if;
      end if;
   exception when others =>
@@ -1309,9 +1309,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, expr_st ) then
           result := storage'( to_unbounded_string( numericValue'machine( to_numeric( expr_st.value ) ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1334,10 +1334,10 @@ begin
   ParseLastNumericParameter( subprogramId, expr2_st, expr2_type, integer_t );
   begin
      if isExecutingCommand then
-       if metaLabelOk( subprogramId, expr_st, expr2_st ) then
+       if metaTagOk( subprogramId, expr_st, expr2_st ) then
           result := storage'( to_unbounded_string( numericValue'scaling( to_numeric( expr_st.value ),
             integer( to_numeric( expr2_st.value ) ) ) ),
-            noMetaLabel, resolveEffectiveMetaLabels(kind, expr_st, expr2_st ) );
+            noMetaTag, resolveEffectiveMetaTags(kind, expr_st, expr2_st ) );
         end if;
      end if;
   exception when others =>
@@ -1357,10 +1357,10 @@ begin
   ParseSingleStringParameter( subprogramId, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            --result := trim( storage'( to_unbounded_string( to_numeric( expr_st.value ) ), left );
            result := storage'( to_unbounded_string( to_numeric( expr_st.value ) ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception
@@ -1407,9 +1407,9 @@ begin
   ParseSingleStringParameter( subprogramId, expr_st, expr_type, character_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_unbounded_string( character'pos( Element( expr_st.value, 1 ) )'img ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1428,10 +1428,10 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'(
               to_unbounded_string( abs( to_numeric( expr_st.value ) ) ),
-              noMetaLabel, expr_st.policyMetaLabels
+              noMetaTag, expr_st.policyMetaTags
            );
         end if;
      end if;
@@ -1454,12 +1454,12 @@ begin
   ParseSingleStringParameter( subprogramId, expr_st, expr_type, string_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            Init( C );
           Update( C, to_string( expr_st.value ) );
           Final( C, FP );
           result := storage'( to_unbounded_string( Digest_To_Text( FP ) ),
-             noMetaLabel, expr_st.policyMetaLabels );
+             noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1497,10 +1497,10 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type, positive_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            -- from pegasoft.numerics
            result := storage'( to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_st.value ) ) ) ) ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1520,9 +1520,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 1 ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1542,9 +1542,9 @@ begin
   ParseSingleNumericParameter( subprogramId, expr_st, expr_type, integer_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( subprogramId, expr_st ) then
+        if metaTagOk( subprogramId, expr_st ) then
            result := storage'( to_spar_boolean( integer( to_numeric( expr_st.value ) ) mod 2 = 0 ),
-              noMetaLabel, expr_st.policyMetaLabels );
+              noMetaTag, expr_st.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1572,11 +1572,11 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       if metaLabelOk( subprogramId, identifiers( real_t ).store.all ) then
+       if metaTagOk( subprogramId, identifiers( real_t ).store.all ) then
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Re( c ) ) ),
-            noMetaLabel, identifiers( real_t ).store.policyMetaLabels );
+            noMetaTag, identifiers( real_t ).store.policyMetaTags );
        end if;
      end if;
   exception when others =>
@@ -1604,11 +1604,11 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       if metaLabelOk( subprogramId, identifiers( img_t ).store.all ) then
+       if metaTagOk( subprogramId, identifiers( img_t ).store.all ) then
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Im( c ) ) ),
-             noMetaLabel, identifiers( img_t ).store.policyMetaLabels );
+             noMetaTag, identifiers( img_t ).store.policyMetaTags );
        end if;
      end if;
   exception when others =>
@@ -1641,14 +1641,14 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       if metaLabelOk( subprogramId, identifiers( real_t ).store.all ) and
-          metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, identifiers( real_t ).store.all ) and
+          metaTagOk( subprogramId, expr_st ) then
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           Set_Re( c, to_numeric( expr_st.value ) );
           identifiers( real_t ).store.value := to_unbounded_string( numericValue( c.re ) );
-          identifiers( real_t ).store.unitMetaLabel := expr_st.unitMetaLabel;
-          identifiers( real_t ).store.policyMetaLabels := expr_st.policyMetaLabels;
+          identifiers( real_t ).store.unitMetaTag := expr_st.unitMetaTag;
+          identifiers( real_t ).store.policyMetaTags := expr_st.policyMetaTags;
        end if;
      end if;
   exception when others =>
@@ -1681,14 +1681,14 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       if metaLabelOk( subprogramId, identifiers( img_t ).store.all ) and
-          metaLabelOk( subprogramId, expr_st ) then
+       if metaTagOk( subprogramId, identifiers( img_t ).store.all ) and
+          metaTagOk( subprogramId, expr_st ) then
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           Set_Im( c, to_numeric( expr_st.value ) );
           identifiers( img_t ).store.value := to_unbounded_string( numericValue( c.Im ) );
-          identifiers( img_t ).store.unitMetaLabel := expr_st.unitMetaLabel;
-          identifiers( img_t ).store.policyMetaLabels := expr_st.policyMetaLabels;
+          identifiers( img_t ).store.unitMetaTag := expr_st.unitMetaTag;
+          identifiers( img_t ).store.policyMetaTags := expr_st.policyMetaTags;
        end if;
      end if;
   exception when others =>
@@ -1739,12 +1739,12 @@ begin
      if isExecutingCommand then
        findField( record_id, 1, real_t );
        findField( record_id, 2, img_t );
-       if metaLabelOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
+       if metaTagOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
           c.re := to_numeric( identifiers( real_t ).store.value );
           c.im := to_numeric( identifiers( img_t ).store.value );
           result := storage'( to_unbounded_string( numericValue( Modulus( c ) ) ),
-             noMetaLabel,
-             resolveEffectiveMetaLabels(
+             noMetaTag,
+             resolveEffectiveMetaTags(
                 long_float_t,
                 identifiers( real_t ).store.all,
                 identifiers( img_t ).store.all
@@ -1789,11 +1789,11 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).store.value );
        c.im := to_numeric( identifiers( img_t ).store.value );
-       if metaLabelOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
+       if metaTagOk( subprogramId, identifiers( real_t ).store.all, identifiers( img_t ).store.all ) then
           if has_cycle then
              result := storage'( to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_st.value ) ) ) ),
-                noMetaLabel,
-                resolveEffectiveMetaLabels(
+                noMetaTag,
+                resolveEffectiveMetaTags(
                    long_float_t,
                    identifiers( real_t ).store.all,
                    identifiers( img_t ).store.all
@@ -1801,8 +1801,8 @@ begin
              );
           else
              result := storage'( to_unbounded_string( numericValue( Argument( c ) ) ),
-                noMetaLabel,
-                resolveEffectiveMetaLabels(
+                noMetaTag,
+                resolveEffectiveMetaTags(
                    long_float_t,
                    identifiers( real_t ).store.all,
                    identifiers( img_t ).store.all
@@ -1876,11 +1876,11 @@ begin
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+       if metaTagOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( hash_of( expr1_st.value, limit ) ) ),
-                noMetaLabel,
-                resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
+                noMetaTag,
+                resolveEffectiveMetaTags( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1904,11 +1904,11 @@ begin
     limit : hash_integer;
   begin
     if isExecutingCommand then
-       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+       if metaTagOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( sdbm_hash_of( expr1_st.value, limit ) ) ),
-                noMetaLabel,
-                resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
+                noMetaTag,
+                resolveEffectiveMetaTags( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1932,11 +1932,11 @@ begin
     limit  : hash_integer;
   begin
     if isExecutingCommand then
-       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+       if metaTagOK( subprogramId, expr1_st, expr2_st ) then
           limit := hash_integer( to_numeric( expr2_st.value ) );
           result := storage'( to_unbounded_string( numericValue( fnv_hash_of( expr1_st.value, limit ) ) ),
-             noMetaLabel,
-             resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
+             noMetaTag,
+             resolveEffectiveMetaTags( kind, expr1_st, expr2_st ) );
        end if;
     end if;
   exception when others =>
@@ -1960,11 +1960,11 @@ begin
     limit  : hash_integer;
   begin
     if isExecutingCommand then
-       if metaLabelOK( subprogramId, expr1_st, expr2_st ) then
+       if metaTagOK( subprogramId, expr1_st, expr2_st ) then
        limit := hash_integer( to_numeric( expr2_st.value ) );
        result := storage'( to_unbounded_string( numericValue( murmur_hash_of( expr1_st.value, limit ) ) ),
-          noMetaLabel,
-          resolveEffectiveMetaLabels( kind, expr1_st, expr2_st ) );
+          noMetaTag,
+          resolveEffectiveMetaTags( kind, expr1_st, expr2_st ) );
     end if;
     end if;
   exception when others =>
@@ -1983,10 +1983,10 @@ begin
   ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOK( subprogramId, src_st ) then
+     if metaTagOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA1.Digest( to_string( src_st.value ) ) ),
-           noMetaLabel,
-           src_st.policyMetaLabels );
+           noMetaTag,
+           src_st.policyMetaTags );
      end if;
   end if;
 end ParseNumericsSHA1DigestOf;
@@ -2002,10 +2002,10 @@ begin
   ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOK( subprogramId, src_st ) then
+     if metaTagOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA224.Digest( to_string( src_st.value ) ) ),
-           noMetaLabel,
-           src_st.policyMetaLabels );
+           noMetaTag,
+           src_st.policyMetaTags );
      end if;
   end if;
 end ParseNumericsSHA224DigestOf;
@@ -2021,10 +2021,10 @@ begin
   ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOK( subprogramId, src_st ) then
+     if metaTagOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA256.Digest( to_string( src_st.value ) ) ),
-           noMetaLabel,
-           src_st.policyMetaLabels );
+           noMetaTag,
+           src_st.policyMetaTags );
      end if;
   end if;
 end ParseNumericsSHA256DigestOf;
@@ -2040,10 +2040,10 @@ begin
   ParseSingleStringParameter( sha512_digest_of_t, src_st, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOK( sha512_digest_of_t, src_st ) then
+     if metaTagOK( sha512_digest_of_t, src_st ) then
         result := storage'( to_unbounded_string( Gnat.SHA512.Digest( to_string( src_st.value ) ) ),
-           noMetaLabel,
-           src_st.policyMetaLabels );
+           noMetaTag,
+           src_st.policyMetaTags );
      end if;
   end if;
 end ParseNumericsSHA512DigestOf;
@@ -2059,10 +2059,10 @@ begin
   ParseSingleStringParameter( subprogramId, src_st, src_type );
   kind := long_float_t;
   if isExecutingCommand then
-     if metaLabelOK( subprogramId, src_st ) then
+     if metaTagOK( subprogramId, src_st ) then
         result := storage'( to_unbounded_string( shannon_entropy_of( src_st.value ) ),
-           noMetaLabel,
-           src_st.policyMetaLabels );
+           noMetaTag,
+           src_st.policyMetaTags );
      end if;
   end if;
 end ParseNumericsShannonEntropyOf;

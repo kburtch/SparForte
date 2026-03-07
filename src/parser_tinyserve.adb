@@ -106,7 +106,7 @@ begin
      if not identifiers( ref.id ).resource then
         identifiers( ref.id ).resource := true;
         declareResource( resId, tinyserve_socket_server, getIdentifierBlock( ref.id ) );
-        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, noMetaLabels ) );
+        AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaTag, noMetaTags ) );
      end if;
   end if;
 end ParseTSNewSocketServer;
@@ -154,7 +154,7 @@ begin
         getParameterValue( serverRef, serverExpr );
         findServer( serverExpr.value, server );
         if server /= null then
-           if metaLabelOk( tinyserve_startup_t, identifiers( serverRef.id ).store.all ) then
+           if metaTagOk( tinyserve_startup_t, identifiers( serverRef.id ).store.all ) then
               -- TODO: number conversion could throw exception
               pegasock.tinyserve.startupTinyServe(
                  socket_data => server.tinyserve_server,
@@ -183,7 +183,7 @@ begin
   ParseSingleServerParameter( tinyserve_shutdown_t, serverRef );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     if metaLabelOk( tinyserve_shutdown_t, identifiers( serverRef.id ).store.all ) then
+     if metaTagOk( tinyserve_shutdown_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         if server /= null then
            pegasock.tinyserve.shutdownTinyServe( server.tinyserve_server );
@@ -205,10 +205,10 @@ begin
   ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     if metaLabelOk( tinyserve_manage_connections_t, identifiers( serverRef.id ).store.all ) then
+     if metaTagOk( tinyserve_manage_connections_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         manageConnections( server.tinyserve_server, client );
-        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel, noMetaLabels ) );
+        assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaTag, noMetaTags ) );
      end if;
   end if;
 end ParseTSManageConnections;
@@ -226,11 +226,11 @@ begin
   ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     if metaLabelOk( tinyserve_get_next_client_t, identifiers( serverRef.id ).store.all ) then
+     if metaTagOk( tinyserve_get_next_client_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         if server /= null then
            getNextClient( server.tinyserve_server, client );
-           assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaLabel, noMetaLabels ) );
+           assignParameter( clientRef, storage'( to_unbounded_string( client'img ), noMetaTag, noMetaTags ) );
         end if;
      end if;
   end if;
@@ -249,12 +249,12 @@ begin
   ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     if metaLabelOk( tinyserve_get_listener_socket_t, identifiers( serverRef.id ).store.all ) then
+     if metaTagOk( tinyserve_get_listener_socket_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         if server /= null then
            getListenerSocket( server.tinyserve_server, client );
            assignParameter( clientRef, storage'( to_unbounded_string( client'img ),
-              noMetaLabel, identifiers( serverRef.id ).store.policyMetaLabels ) );
+              noMetaTag, identifiers( serverRef.id ).store.policyMetaTags ) );
         end if;
      end if;
   end if;
@@ -272,12 +272,12 @@ begin
   ParseFirstServerParameter( tinyserve_count_clients_t, serverRef );
   if isExecutingCommand then
      getParameterValue( serverRef, serverExpr );
-     if metaLabelOk( tinyserve_count_clients_t, identifiers( serverRef.id ).store.all ) then
+     if metaTagOk( tinyserve_count_clients_t, identifiers( serverRef.id ).store.all ) then
         findServer( serverExpr.value, server );
         if server /= null then
            clients := countClients( server.tinyserve_server );
            result := storage'( to_unbounded_string( clients'img ),
-              noMetaLabel, identifiers( serverRef.id ).store.policyMetaLabels );
+              noMetaTag, identifiers( serverRef.id ).store.policyMetaTags );
         end if;
      end if;
   end if;
@@ -290,7 +290,7 @@ begin
   expect( tinyserve_get_fdset_size_t );
   if isExecutingCommand then
      fdsize := getFDSetSize;
-     result := storage'( to_unbounded_string( fdsize'img ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_unbounded_string( fdsize'img ), noMetaTag, sparMetaTags );
   end if;
 end ParseTSGetFDSetSize;
 

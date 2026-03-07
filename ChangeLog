@@ -6,7 +6,7 @@ Known Issues
 
 SparForte will run slower because of the value meta labels checking at run-time.
 
-CHANGES SINCE 2.6.3
+CHANGES SINCE 2.6.4
 
 1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
 

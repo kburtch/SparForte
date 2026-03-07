@@ -72,7 +72,7 @@ begin
        --identifiers( record_ref.id ).value := to_unbounded_string(
        --  numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
        AssignParameter( record_ref,
-          storage'( to_unbounded_string( numericValue( C ) ), noMetalabel, sparMetaLabels )
+          storage'( to_unbounded_string( numericValue( C ) ), noMetaTag, sparMetaTags )
        );
      exception when others =>
        err_exception_raised;
@@ -101,7 +101,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( crc_ref, crc );
-     if metaLabelOk( gnat_crc32_update_t, crc ) then
+     if metaTagOk( gnat_crc32_update_t, crc ) then
         declare
           c : Gnat.CRC32.CRC32 := Gnat.CRC32.CRC32'value( to_string(
               crc.value ) );
@@ -109,7 +109,7 @@ begin
           Gnat.CRC32.Update( C, to_string( expr.value ) );
           --identifiers( var_id ).value := to_unbounded_string( numericValue( 16#FFFF_FFFF# XOR Gnat.CRC32.Get_Value( C ) ) );
           AssignParameter( crc_ref,
-             storage'( to_unbounded_string( numericValue( C ) ), noMetalabel, sparMetaLabels )
+             storage'( to_unbounded_string( numericValue( C ) ), noMetaTag, sparMetaTags )
           );
         exception when others =>
           err_exception_raised;
@@ -131,7 +131,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( crc_ref, crc );
-     if metaLabelOk( gnat_crc32_get_value_t, crc ) then
+     if metaTagOk( gnat_crc32_get_value_t, crc ) then
         begin
           result := crc;
         exception when others =>

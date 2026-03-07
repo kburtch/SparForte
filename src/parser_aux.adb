@@ -351,7 +351,7 @@ end DoInitFileVariableFields;
 ------------------------------------------------------------------------------
 
 procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
-  name : string; fileMetaLabels : metaLabelHashedSet.Set ) is
+  name : string; fileMetaTags : metaTagHashedSet.Set ) is
   result : aFileDescriptor;
   flags  : anOpenFlag;
   fileOpenRec : storage;
@@ -389,8 +389,8 @@ begin
      fileOpenRec.value := fileOpenRec.value & to_unbounded_string( "0" ) & ASCII.NUL;
      -- 7. eof
      --end if;
-     fileOpenRec.unitMetaLabel := noMetaLabel;
-     fileOpenRec.policyMetaLabels := fileMetaLabels;
+     fileOpenRec.unitMetaTag := noMetaTag;
+     fileOpenRec.policyMetaTags := fileMetaTags;
      AssignParameter( ref, fileOpenRec );
      if mode = in_file_t then
         DoGet( ref ); -- buffer first character, set eof if none
@@ -410,7 +410,7 @@ end DoFileOpen;
 -- data fields.
 ------------------------------------------------------------------------------
 
-procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaLabels : metaLabelHashedSet.Set ) is
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string; socketMetaTags : metaTagHashedSet.Set ) is
   result : aSocketFD;
   --flags  : anOpenFlag;
   host   : unbounded_string;
@@ -466,8 +466,8 @@ begin
      fileInfo.value := fileInfo.value & to_unbounded_string( "0" ) & ASCII.NUL;
      --end if;
      -- 7. eof
-     fileInfo.policyMetaLabels := socketMetaLabels;
-     fileInfo.unitMetaLabel := noMetaLabel;
+     fileInfo.policyMetaTags := socketMetaTags;
+     fileInfo.unitMetaTag := noMetaTag;
      AssignParameter( file_ref, fileInfo );
 
      -- a socket cannot do an initial "DoGet" because we don't know if the user

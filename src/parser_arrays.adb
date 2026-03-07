@@ -190,8 +190,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.unitMetaLabel := noMetaLabel;
-     result.policyMetaLabels := noMetaLabels;
+     result.unitMetaTag := noMetaTag;
+     result.policyMetaTags := noMetaTags;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).firstBound ) );
      else
@@ -248,8 +248,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.unitMetaLabel := noMetaLabel;
-     result.policyMetaLabels := noMetaLabels;
+     result.unitMetaTag := noMetaTag;
+     result.policyMetaTags := noMetaTags;
      if identifiers( var_id ).class = subClass or identifiers( var_id ).class = typeClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound ) );
      else
@@ -305,8 +305,8 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result.unitMetaLabel := noMetaLabel;
-     result.policyMetaLabels := noMetaLabels;
+     result.unitMetaTag := noMetaTag;
+     result.policyMetaTags := noMetaTags;
      if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
         result.value := to_unbounded_string( long_integer'image( identifiers( var_id ).lastBound - identifiers( var_id ).firstBound + 1 ) );
      else
@@ -1102,9 +1102,9 @@ begin
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
-     if metaLabelOk( subprogramId, source_st ) then
+     if metaTagOk( subprogramId, source_st ) then
        begin
-         DoJsonToArray( target_var_id, source_st.value, noMetaLabels );
+         DoJsonToArray( target_var_id, source_st.value, noMetaTags );
        exception when constraint_error =>
           err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
                  contextAltText( source_st.value,"decoding the JSON string" ),
@@ -1151,7 +1151,7 @@ begin
      exception when others =>
         err_exception_raised;
      end;
-     assignParameter( target_ref, storage'(jsonString , noMetaLabel, noMetaLabels ) );
+     assignParameter( target_ref, storage'(jsonString , noMetaTag, noMetaTags ) );
   end if;
 end ParseArraysToJSON;
 

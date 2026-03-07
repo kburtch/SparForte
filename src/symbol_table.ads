@@ -582,6 +582,6 @@ err_exception    : declaration;           -- the exception else eof_t for none
 
 -- Meta Label Hashed Set utilities
 
-function image( set : metaLabelhashedSet.Set ) return unbounded_string;
+function image( set : metaTaghashedSet.Set ) return unbounded_string;
 
 end symbol_table;

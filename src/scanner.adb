@@ -157,7 +157,7 @@ use ada.text_io,
     parser_hmaps,
     parser_tags;
 
-use world.metaLabelHashedSet;
+use world.metaTagHashedSet;
 -- required for "=" operator
 
 package body scanner is
@@ -387,12 +387,12 @@ begin
         if ident.usage = abstractUsage then
            put_retry( "abstract " );
         end if;
-        put_retry( "unit-of-measure value meta label " );
+        put_retry( "unit-of-measure value meta tag " );
      when policyMetaClass =>
         if ident.usage = abstractUsage then
            put_retry( "abstract " );
         end if;
-        put_retry( "policy value meta label " );
+        put_retry( "policy value meta tag " );
      when funcClass =>
         put_retry( "built-in " );
         if ident.usage = abstractUsage then
@@ -495,8 +495,8 @@ begin
         put_retry( "of ");
         if ident.kind = eof_t then
            put_retry( " unknown" );
-        elsif ident.kind = noMetaLabel then
-           put_retry( "root value meta label" );
+        elsif ident.kind = noMetaTag then
+           put_retry( "root value meta tag" );
         else
            put_retry( identifiers( identifiers( ident.kind ).kind ).name );
         end if;
@@ -811,15 +811,15 @@ begin
             put( "renamed " );
          end if;
          begin
-           if identifiers( i ).store.unitMetaLabel = noMetaLabel then
-              put( "[unit noMetaLabel]" );
+           if identifiers( i ).store.unitMetaTag = noMetaTag then
+              put( "[unit noMetaTag]" );
            end if;
          exception when others =>
               put( "[unit undefined]" );
          end;
          begin
-           if identifiers( i ).store.policyMetaLabels = noMetaLabels then
-              put( "[policy noMetaLabel]" );
+           if identifiers( i ).store.policyMetaTags = noMetaTags then
+              put( "[policy noMetaTag]" );
            end if;
          exception when others =>
               put( "[policy undefined]" );
@@ -1426,7 +1426,7 @@ begin
         theBlock.identifiers_top := identifiers_top;               -- last ident
         theBlock.newScope := newScope;                             -- scope flag
         theBlock.blockName := To_Unbounded_String( newName );      -- name if any
-        theBlock.metaLabels := sparMetaLabels;
+        theBlock.metaTags := sparMetaTags;
         if newFlow = noDataFlow then
            if blocks_top = block'first then
               theBlock.flowName := mainDataFlow;
@@ -1483,7 +1483,7 @@ begin
          b := deleteIdent( i );
      end loop;
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
-     sparMetaLabels := blocks( blocks_top ).metaLabels;
+     sparMetaTags := blocks( blocks_top ).metaTags;
 
   -- Tiny Hash Cache
 
@@ -2385,7 +2385,7 @@ begin
   declareStandardConstant( "System.Development_Phase", boolean_t, integer'image( commandLineOption'pos( not testOpt and not maintenanceOpt and not designOpt ) )(2) & "" );
   declareStandardConstant( "System.Session_Name", uni_string_t, to_string( sessionName ) );
   declareFunction( system_meta_level_image_t, "System.Meta_Level_Image" );
-  -- VALUE META LABELS: a pseudo function
+  -- VALUE META TAGS: a pseudo function
   declareNamespaceClosed( "System" );
 end declareStandardPackage;
 
@@ -2795,10 +2795,10 @@ begin
   DesignAffinityLists.Clear( designAffinityList );
   declareDefaultDesignConstraints;
 
-  -- VALUE META LABELS
+  -- VALUE META TAGS
   -- Set the default run-time security level
 
-  sparMetaLabels := noMetaLabels;
+  sparMetaTags := noMetaTags;
 end resetScanner;
 
 
@@ -2896,7 +2896,7 @@ procedure refreshVolatile( id : identifier ) is
   ev  : unbounded_string;                                     -- an env var
   refreshed : boolean := false;
   importedStringValue : unbounded_string;
-  recStore : storage; -- kludge for records with meta data labels
+  recStore : storage; -- kludge for records with value meta tags
 begin
   -- If the volatile has a time-to-live, then if it has not expired, just
   -- return and do nothing.  Otherwise update the end-of-life and continue.
@@ -2996,21 +2996,21 @@ begin
         if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
            DoJsonToString( identifiers( id ).store.value, importedStringValue );
         elsif identifiers( id ).list then                           -- array
-           DoJsonToArray( id, importedStringValue, noMetaLabels );   -- VALUE META LABEL: TODO: assign the correct level
+           DoJsonToArray( id, importedStringValue, noMetaTags );   -- VALUE META LABEL: TODO: assign the correct level
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
            recStore.value := importedStringValue;
-           -- DATA META LABEL
-           -- The JSON routines will hande the meta labels.
+           -- VALUE META TAGS
+           -- The JSON routines will hande the meta tags.
            --
-           -- Further, retain the existing meta labels...if the labels already
+           -- Further, retain the existing meta tags...if the tags already
            -- exist.
            --
-           -- Unit meta label intentionally left unchanged.  This presumes the
+           -- Unit meta tag intentionally left unchanged.  This presumes the
            -- new value is in the same unit of measure.
            --
-           -- The data policy meta label cannot be set because this is a
+           -- The value policy meta tag cannot be set because this is a
            -- background task that happens unpredictably.  We don't know how
-           -- the current system meta label reflects the use of this variable.
+           -- the current system meta tags reflects the use of this variable.
            DoJsonToRecord( id, recStore );
         elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
            DoJsonToNumber( importedStringValue, identifiers( id ).store.value );
@@ -3097,7 +3097,7 @@ begin
   -- is a circular relationship (this should only occur in
   -- an internal error in SparForte).
   --
-  -- META DATA LABELS: for now, treat meta as the root of meta tag hierarchy
+  -- VALUE META TAGS: for now, treat meta as the root of meta tag hierarchy
   -- until it becomes more fully formed.
 
   temp_id := original;
@@ -3891,7 +3891,7 @@ function deleteIdent( id : identifier ) return boolean is
   ---------------------------------------------------------------------------
 
   function ConvertValueToJson( id : identifier ) return unbounded_string is
-    recStore : storage; -- kludge for data meta labels
+    recStore : storage; -- kludge for data meta tags
   begin
     tempStr := identifiers( id ).store.value;
     if getUniType( identifiers( id ).kind ) = uni_string_t then
@@ -4161,51 +4161,51 @@ end discardUnusedIdentifier;
 -----------------------------------------------------------------------------
 --  META LABEL OK
 --
--- TEST ONLY: meta label must be identical
+-- TEST ONLY: meta tags must be identical
 -----------------------------------------------------------------------------
 
-function metaLabelOk( contextNotes : string; theStorage : storage ) return boolean is
-  theUnitMetaLabelString : unbounded_string;
-  thePolicyMetaLabelString : unbounded_string;
-  sparMetaLabelString : unbounded_string;
-  leftUnitMetaLabel : identifier;
-  leftPolicyMetaLabels : metaLabelHashedSet.Set;
+function metaTagOk( contextNotes : string; theStorage : storage ) return boolean is
+  theUnitMetaTagString : unbounded_string;
+  thePolicyMetaTagString : unbounded_string;
+  sparMetaTagString : unbounded_string;
+  leftUnitMetaTag : identifier;
+  leftPolicyMetaTags : metaTagHashedSet.Set;
 
   -- GET LABEL STRINGS
   --
-  -- Return human-readable strings describing meta data labels, especially
+  -- Return human-readable strings describing value meta tags, especially
   -- when they are undefined or not initialized
-  -- TODO: this is a hack for testing data meta labels until we get better
+  -- TODO: this is a hack for testing data meta tags until we get better
   -- names/identifiers
 
   procedure getLabelStrings is
   begin
      begin
-       if sparMetaLabels = noMetaLabels then
-          sparMetaLabelString := to_unbounded_string( "undefined" );
+       if sparMetaTags = noMetaTags then
+          sparMetaTagString := to_unbounded_string( "undefined" );
        else
-          sparMetaLabelString := image( sparMetaLabels );
+          sparMetaTagString := image( sparMetaTags );
        end if;
      exception when constraint_error =>
-       sparMetaLabelString := to_unbounded_string( "not initialized" );
+       sparMetaTagString := to_unbounded_string( "not initialized" );
      end;
      begin
-        if theStorage.unitMetaLabel = noMetaLabel then
-           theUnitMetaLabelString := to_unbounded_string( "undefined" );
+        if theStorage.unitMetaTag = noMetaTag then
+           theUnitMetaTagString := to_unbounded_string( "undefined" );
         else
-           theUnitMetaLabelString :=  identifiers( theStorage.unitMetaLabel ).name;
+           theUnitMetaTagString :=  identifiers( theStorage.unitMetaTag ).name;
      end if;
      exception when constraint_error =>
-        theUnitMetaLabelString := to_unbounded_string( "not initialized" );
+        theUnitMetaTagString := to_unbounded_string( "not initialized" );
      end;
      begin
-        if theStorage.policyMetaLabels = noMetaLabels then
-           thePolicyMetaLabelString := to_unbounded_string( "undefined" );
+        if theStorage.policyMetaTags = noMetaTags then
+           thePolicyMetaTagString := to_unbounded_string( "undefined" );
         else
-           thePolicyMetaLabelString := image( theStorage.policyMetaLabels );
+           thePolicyMetaTagString := image( theStorage.policyMetaTags );
         end if;
      exception when constraint_error =>
-        thePolicyMetaLabelString := to_unbounded_string( "not initialized" );
+        thePolicyMetaTagString := to_unbounded_string( "not initialized" );
      end;
    end getLabelStrings;
 
@@ -4213,434 +4213,434 @@ begin
 
   -- Units of Measure Meta Labels
 
-  -- if the data meta labels are given an initial value, a constraint error
+  -- if the data meta tags are given an initial value, a constraint error
   -- is usually raised.
 
   begin
-    leftUnitMetaLabel := theStorage.unitMetaLabel;
+    leftUnitMetaTag := theStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", left unit of measure data meta label is not initialized" ) );
-    leftUnitMetaLabel := noMetaLabel;
+       pl( ", left unit of measure data meta tag is not initialized" ) );
+    leftUnitMetaTag := noMetaTag;
   end;
 
-  --if leftUnitMetaLabel /= sparMetaLabel then
+  --if leftUnitMetaTag /= sparMetaTag then
   --   getLabelStrings;
   --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-  --       pl( ", unit of measure data meta label " ) &
-  --       unb_em( theUnitMetaLabelString ) &
-  --       pl( " is not compatible with system meta label " ) &
-  --       unb_em( sparMetaLabelString )
+  --       pl( ", unit of measure data meta tag " ) &
+  --       unb_em( theUnitMetaTagString ) &
+  --       pl( " is not compatible with system meta tag " ) &
+  --       unb_em( sparMetaTagString )
   --   );
   --   return false;
   --end if;
 
-  -- Security Policy Meta Labels
+  -- Security Policy Meta Tags
 
-  -- if the data meta labels are given an initial value, a constraint error
+  -- if the data meta tags are given an initial value, a constraint error
   -- is usually raised.
 
   begin
-    leftPolicyMetaLabels := theStorage.policyMetaLabels;
+    leftPolicyMetaTags := theStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", left policy data meta label is not initialized" ) );
-    leftPolicyMetaLabels := noMetaLabels;
+       pl( ", left policy meta tags are not initialized" ) );
+    leftPolicyMetaTags := noMetaTags;
   end;
 
-  if not sparMetaLabels.is_subset( leftPolicyMetaLabels ) then
+  if not sparMetaTags.is_subset( leftPolicyMetaTags ) then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-         pl( ", policy data meta label " ) &
-         unb_em( thePolicyMetaLabelString ) &
-         pl( " is not compatible with system meta label " ) &
-         unb_em( sparMetaLabelString )
+         pl( ", policy meta tags " ) &
+         unb_em( thePolicyMetaTagString ) &
+         pl( " is not compatible with system meta tags " ) &
+         unb_em( sparMetaTagString )
      );
      return false;
   end if;
   return true;
-end metaLabelOk;
+end metaTagOk;
 
-function metaLabelOk( contextNotes : string; policies : metaLabelHashedSet.Set ) return boolean is
+function metaTagOk( contextNotes : string; policies : metaTagHashedSet.Set ) return boolean is
    s : storage;
 begin
-   s.policyMetaLabels := policies;
-   s.unitMetaLabel := noMetaLabel;
-   return metaLabelOk( contextNotes, s );
-end metaLabelOk;
+   s.policyMetaTags := policies;
+   s.unitMetaTag := noMetaTag;
+   return metaTagOk( contextNotes, s );
+end metaTagOk;
 
-function metaLabelOk( contextNotes : string; unit : metaLabelID ) return boolean is
+function metaTagOk( contextNotes : string; unit : metaTagID ) return boolean is
    s : storage;
 begin
-   s.policyMetaLabels := noMetaLabels;
-   s.unitMetaLabel := unit;
-   return metaLabelOk( contextNotes, s );
-end metaLabelOk;
+   s.policyMetaTags := noMetaTags;
+   s.unitMetaTag := unit;
+   return metaTagOk( contextNotes, s );
+end metaTagOk;
 
-function metaLabelOk( context : identifier; theStorage : storage ) return boolean is
+function metaTagOk( context : identifier; theStorage : storage ) return boolean is
 begin
-   return metaLabelOk( to_string( identifiers( context ).name ), theStorage );
-end metaLabelOk;
+   return metaTagOk( to_string( identifiers( context ).name ), theStorage );
+end metaTagOk;
 
-function metaLabelOk( contextNotes : string; leftStorage, rightStorage: storage ) return boolean is
-  leftUnitMetaLabelString : unbounded_string;
-  rightUnitMetaLabelString : unbounded_string;
-  leftPolicyMetaLabelString : unbounded_string;
-  rightPolicyMetaLabelString : unbounded_string;
-  sparMetaLabelString : unbounded_string;
+function metaTagOk( contextNotes : string; leftStorage, rightStorage: storage ) return boolean is
+  leftUnitMetaTagString : unbounded_string;
+  rightUnitMetaTagString : unbounded_string;
+  leftPolicyMetaTagString : unbounded_string;
+  rightPolicyMetaTagString : unbounded_string;
+  sparMetaTagString : unbounded_string;
 
   -- GET LABEL STRINGS
   --
-  -- Return human-readable strings describing meta data labels, especially
+  -- Return human-readable strings describing value meta tags, especially
   -- when they are undefined or not initialized
-  -- TODO: this is a hack for testing data meta labels until we get better
+  -- TODO: this is a hack for testing data meta tags until we get better
   -- names/identifiers
 
   procedure getLabelStrings is
   begin
     begin
-      if sparMetaLabels = noMetaLabels then
-         sparMetaLabelString := to_unbounded_string( "undefined" );
+      if sparMetaTags = noMetaTags then
+         sparMetaTagString := to_unbounded_string( "undefined" );
       else
-         sparMetaLabelString := image( sparMetaLabels );
+         sparMetaTagString := image( sparMetaTags );
       end if;
     exception when constraint_error =>
-      sparMetaLabelString := to_unbounded_string( "not initialized" );
+      sparMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if leftStorage.unitMetaLabel = noMetaLabel then
-         leftUnitMetaLabelString := to_unbounded_string( "undefined" );
+      if leftStorage.unitMetaTag = noMetaTag then
+         leftUnitMetaTagString := to_unbounded_string( "undefined" );
       else
-          leftUnitMetaLabelString :=  identifiers( leftStorage.unitMetaLabel ).name;
+          leftUnitMetaTagString :=  identifiers( leftStorage.unitMetaTag ).name;
       end if;
     exception when constraint_error =>
-      leftUnitMetaLabelString := to_unbounded_string( "not initialized" );
+      leftUnitMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if leftStorage.policyMetaLabels = noMetaLabels then
-         leftPolicyMetaLabelString := to_unbounded_string( "undefined" );
+      if leftStorage.policyMetaTags = noMetaTags then
+         leftPolicyMetaTagString := to_unbounded_string( "undefined" );
       else
-          leftPolicyMetaLabelString :=  image( leftStorage.policyMetaLabels );
+          leftPolicyMetaTagString :=  image( leftStorage.policyMetaTags );
       end if;
     exception when constraint_error =>
-      leftPolicyMetaLabelString := to_unbounded_string( "not initialized" );
+      leftPolicyMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if rightStorage.unitMetaLabel = noMetaLabel then
-         rightUnitMetaLabelString := to_unbounded_string( "undefined" );
+      if rightStorage.unitMetaTag = noMetaTag then
+         rightUnitMetaTagString := to_unbounded_string( "undefined" );
       else
-         rightUnitMetaLabelString :=  identifiers( rightStorage.unitMetaLabel ).name;
+         rightUnitMetaTagString :=  identifiers( rightStorage.unitMetaTag ).name;
       end if;
     exception when constraint_error =>
-      rightUnitMetaLabelString := to_unbounded_string( "not initialized" );
+      rightUnitMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if rightStorage.policyMetaLabels = noMetaLabels then
-         rightPolicyMetaLabelString := to_unbounded_string( "undefined" );
+      if rightStorage.policyMetaTags = noMetaTags then
+         rightPolicyMetaTagString := to_unbounded_string( "undefined" );
       else
-         rightPolicyMetaLabelString :=  image( rightStorage.policyMetaLabels );
+         rightPolicyMetaTagString :=  image( rightStorage.policyMetaTags );
       end if;
     exception when constraint_error =>
-      rightPolicyMetaLabelString := to_unbounded_string( "not initialized" );
+      rightPolicyMetaTagString := to_unbounded_string( "not initialized" );
     end;
   end getLabelStrings;
 
-  leftUnitMetaLabel : identifier;
-  rightUnitMetaLabel : identifier;
-  leftPolicyMetaLabels : metaLabelHashedSet.Set;
-  rightPolicyMetaLabels : metaLabelHashedSet.Set;
+  leftUnitMetaTag : identifier;
+  rightUnitMetaTag : identifier;
+  leftPolicyMetaTags : metaTagHashedSet.Set;
+  rightPolicyMetaTags : metaTagHashedSet.Set;
 
 begin
 
-  -- if the data meta labels are given an initial value, a constraint error
+  -- if the data meta tags are given an initial value, a constraint error
   -- is usually raised.
 
   -- Unit of Measure Meta Labels
 
   begin
-    leftUnitMetaLabel := leftStorage.unitMetaLabel;
+    leftUnitMetaTag := leftStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", left unit of measure meta label is not initialized" ) );
-    leftUnitMetaLabel := noMetaLabel;
+       pl( ", left unit of measure meta tag is not initialized" ) );
+    leftUnitMetaTag := noMetaTag;
   end;
   begin
-    rightUnitMetaLabel := rightStorage.unitMetaLabel;
+    rightUnitMetaTag := rightStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", right unit of measure meta label is not initialized" ) );
-    rightUnitMetaLabel := noMetaLabel;
+       pl( ", right unit of measure meta tag is not initialized" ) );
+    rightUnitMetaTag := noMetaTag;
   end;
 
-  if leftUnitMetaLabel /= rightUnitMetaLabel then
+  if leftUnitMetaTag /= rightUnitMetaTag then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-          pl( ", left unit of measure data meta label " ) &
-          unb_em( leftUnitMetaLabelString ) &
-          pl( " is not compatible with right data meta label " ) &
-          unb_em( rightUnitMetaLabelString )
+          pl( ", left unit of measure data meta tag " ) &
+          unb_em( leftUnitMetaTagString ) &
+          pl( " is not compatible with right data meta tag " ) &
+          unb_em( rightUnitMetaTagString )
      );
      return false;
-  --elsif leftUnitMetaLabel /= sparMetaLabel then
+  --elsif leftUnitMetaTag /= sparMetaTag then
   --   getLabelStrings;
   --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-  --       pl( ", unit of measure data meta label " ) &
-  --       unb_em( leftUnitMetaLabelString ) &
-  --       pl( " is not compatible with system meta label " ) &
-  --       unb_em( sparMetaLabelString )
+  --       pl( ", unit of measure data meta tag " ) &
+  --       unb_em( leftUnitMetaTagString ) &
+  --       pl( " is not compatible with system meta tag " ) &
+  --       unb_em( sparMetaTagString )
   --    );
   end if;
 
   -- Security Policy Meta Labels
 
   begin
-    leftPolicyMetaLabels := leftStorage.policyMetaLabels;
+    leftPolicyMetaTags := leftStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "left policy meta label is not initialized" ) );
-    leftPolicyMetaLabels := noMetaLabels;
+       pl( "left policy meta tags are not initialized" ) );
+    leftPolicyMetaTags := noMetaTags;
   end;
   begin
-    rightPolicyMetaLabels := rightStorage.policyMetaLabels;
+    rightPolicyMetaTags := rightStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "policy meta label is not initialized" ) );
-    rightPolicyMetaLabels := noMetaLabels;
+       pl( "policy meta tags are not initialized" ) );
+    rightPolicyMetaTags := noMetaTags;
   end;
 
-  if leftPolicyMetaLabels /= rightPolicyMetaLabels then
+  if leftPolicyMetaTags /= rightPolicyMetaTags then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-          pl( ", left policy data meta label " ) &
-          unb_em( leftPolicyMetaLabelString ) &
-          pl( " is not compatible with right data meta label " ) &
-          unb_em( rightPolicyMetaLabelString )
+          pl( ", left value policy meta tags " ) &
+          unb_em( leftPolicyMetaTagString ) &
+          pl( " is not compatible with right value meta tag " ) &
+          unb_em( rightPolicyMetaTagString )
      );
      return false;
-  elsif not sparMetaLabels.is_subset( leftPolicyMetaLabels ) then
+  elsif not sparMetaTags.is_subset( leftPolicyMetaTags ) then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-         pl( ", policy data meta label " ) &
-         unb_em( leftPolicyMetaLabelString ) &
-         pl( " is not compatible with system meta label " ) &
-         unb_em( sparMetaLabelString )
+         pl( ", policy meta tag " ) &
+         unb_em( leftPolicyMetaTagString ) &
+         pl( " is not compatible with system meta tag " ) &
+         unb_em( sparMetaTagString )
       );
   end if;
   return true;
-end metaLabelOk;
+end metaTagOk;
 
-function metaLabelOk( context : identifier; leftStorage, rightStorage : storage ) return boolean is
+function metaTagOk( context : identifier; leftStorage, rightStorage : storage ) return boolean is
 begin
-   return metaLabelOk( to_string( identifiers( context ).name ), leftStorage, rightStorage );
-end metaLabelOk;
+   return metaTagOk( to_string( identifiers( context ).name ), leftStorage, rightStorage );
+end metaTagOk;
 
-function metaLabelOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean is
-  leftUnitMetaLabelString : unbounded_string;
-  middleUnitMetaLabelString : unbounded_string;
-  rightUnitMetaLabelString : unbounded_string;
-  leftPolicyMetaLabelString : unbounded_string;
-  middlePolicyMetaLabelString : unbounded_string;
-  rightPolicyMetaLabelString : unbounded_string;
-  sparMetaLabelString : unbounded_string;
+function metaTagOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean is
+  leftUnitMetaTagString : unbounded_string;
+  middleUnitMetaTagString : unbounded_string;
+  rightUnitMetaTagString : unbounded_string;
+  leftPolicyMetaTagString : unbounded_string;
+  middlePolicyMetaTagString : unbounded_string;
+  rightPolicyMetaTagString : unbounded_string;
+  sparMetaTagString : unbounded_string;
 
   -- GET LABEL STRINGS
   --
-  -- Return human-readable strings describing meta data labels, especially
+  -- Return human-readable strings describing value meta tags, especially
   -- when they are undefined or not initialized
-  -- TODO: this is a hack for testing data meta labels until we get better
+  -- TODO: this is a hack for testing data meta tags until we get better
   -- names/identifiers
 
   procedure getLabelStrings is
   begin
     begin
-      if leftStorage.unitMetaLabel = noMetaLabel then
-         leftUnitMetaLabelString := to_unbounded_string( "undefined" );
+      if leftStorage.unitMetaTag = noMetaTag then
+         leftUnitMetaTagString := to_unbounded_string( "undefined" );
       else
-         leftUnitMetaLabelString := identifiers( leftStorage.unitMetaLabel ).name;
+         leftUnitMetaTagString := identifiers( leftStorage.unitMetaTag ).name;
       end if;
     exception when constraint_error =>
-      leftUnitMetaLabelString := to_unbounded_string( "not initialized" );
+      leftUnitMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if middleStorage.unitMetaLabel = noMetaLabel then
-         middleUnitMetaLabelString := to_unbounded_string( "undefined" );
+      if middleStorage.unitMetaTag = noMetaTag then
+         middleUnitMetaTagString := to_unbounded_string( "undefined" );
       else
-         middleUnitMetaLabelString := identifiers( middleStorage.unitMetaLabel ).name;
+         middleUnitMetaTagString := identifiers( middleStorage.unitMetaTag ).name;
       end if;
     exception when constraint_error =>
-      middleUnitMetaLabelString := to_unbounded_string( "not initialized" );
+      middleUnitMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if rightStorage.unitMetaLabel = noMetaLabel then
-         rightUnitMetaLabelString := to_unbounded_string( "undefined" );
+      if rightStorage.unitMetaTag = noMetaTag then
+         rightUnitMetaTagString := to_unbounded_string( "undefined" );
       else
-         rightUnitMetaLabelString := identifiers( rightStorage.unitMetaLabel ).name;
+         rightUnitMetaTagString := identifiers( rightStorage.unitMetaTag ).name;
       end if;
     exception when constraint_error =>
-      rightUnitMetaLabelString := to_unbounded_string( "not initialized" );
+      rightUnitMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if leftStorage.policyMetaLabels = noMetaLabels then
-         leftPolicyMetaLabelString := to_unbounded_string( "undefined" );
+      if leftStorage.policyMetaTags = noMetaTags then
+         leftPolicyMetaTagString := to_unbounded_string( "undefined" );
       else
-         leftPolicyMetaLabelString := image( leftStorage.policyMetaLabels );
+         leftPolicyMetaTagString := image( leftStorage.policyMetaTags );
       end if;
     exception when constraint_error =>
-      leftPolicyMetaLabelString := to_unbounded_string( "not initialized" );
+      leftPolicyMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if middleStorage.policyMetaLabels = noMetaLabels then
-         middlePolicyMetaLabelString := to_unbounded_string( "undefined" );
+      if middleStorage.policyMetaTags = noMetaTags then
+         middlePolicyMetaTagString := to_unbounded_string( "undefined" );
       else
-         middlePolicyMetaLabelString := image( middleStorage.policyMetaLabels );
+         middlePolicyMetaTagString := image( middleStorage.policyMetaTags );
       end if;
     exception when constraint_error =>
-      middlePolicyMetaLabelString := to_unbounded_string( "not initialized" );
+      middlePolicyMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if rightStorage.policyMetaLabels = noMetaLabels then
-         rightPolicyMetaLabelString := to_unbounded_string( "undefined" );
+      if rightStorage.policyMetaTags = noMetaTags then
+         rightPolicyMetaTagString := to_unbounded_string( "undefined" );
       else
-         rightPolicyMetaLabelString := image( rightStorage.policyMetaLabels );
+         rightPolicyMetaTagString := image( rightStorage.policyMetaTags );
       end if;
     exception when constraint_error =>
-      rightPolicyMetaLabelString := to_unbounded_string( "not initialized" );
+      rightPolicyMetaTagString := to_unbounded_string( "not initialized" );
     end;
     begin
-      if sparMetaLabels = noMetaLabels then
-         sparMetaLabelString := to_unbounded_string( "undefined" );
+      if sparMetaTags = noMetaTags then
+         sparMetaTagString := to_unbounded_string( "undefined" );
       else
-         sparMetaLabelString := image( sparMetaLabels );
+         sparMetaTagString := image( sparMetaTags );
       end if;
     exception when constraint_error =>
-      sparMetaLabelString := to_unbounded_string( "not initialized" );
+      sparMetaTagString := to_unbounded_string( "not initialized" );
     end;
   end getLabelStrings;
 
-  leftUnitMetaLabel   : identifier;
-  middleUnitMetaLabel : identifier;
-  rightUnitMetaLabel  : identifier;
-  leftPolicyMetaLabels   : metaLabelHashedSet.Set;
-  middlePolicyMetaLabels : metaLabelHashedSet.Set;
-  rightPolicyMetaLabels  : metaLabelHashedSet.Set;
+  leftUnitMetaTag   : identifier;
+  middleUnitMetaTag : identifier;
+  rightUnitMetaTag  : identifier;
+  leftPolicyMetaTags   : metaTagHashedSet.Set;
+  middlePolicyMetaTags : metaTagHashedSet.Set;
+  rightPolicyMetaTags  : metaTagHashedSet.Set;
 
 begin
 
-  -- if the data meta labels are given an initial value, a constraint error
+  -- if the data meta tags are given an initial value, a constraint error
   -- is usually raised.
 
-  -- Unit of Measure meta label
+  -- Unit of Measure meta tag
 
   begin
-    leftUnitMetaLabel := leftStorage.unitMetaLabel;
+    leftUnitMetaTag := leftStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", left unit of measure data meta label is not initialized" ) );
-    leftUnitMetaLabel := noMetaLabel;
+       pl( ", left unit of measure data meta tag is not initialized" ) );
+    leftUnitMetaTag := noMetaTag;
   end;
   begin
-    middleUnitMetaLabel := middleStorage.unitMetaLabel;
+    middleUnitMetaTag := middleStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", middle unit of measure data meta label is not initialized" ) );
-    middleUnitMetaLabel := noMetaLabel;
+       pl( ", middle unit of measure data meta tag is not initialized" ) );
+    middleUnitMetaTag := noMetaTag;
   end;
   begin
-    rightUnitMetaLabel := rightStorage.unitMetaLabel;
+    rightUnitMetaTag := rightStorage.unitMetaTag;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( ", right unit of measure data meta label is not initialized" ) );
-    rightUnitMetaLabel := noMetaLabel;
+       pl( ", right unit of measure data meta tag is not initialized" ) );
+    rightUnitMetaTag := noMetaTag;
   end;
 
-  if leftUnitMetaLabel /= middleUnitMetaLabel or
-     middleUnitMetaLabel /= rightUnitMetaLabel then
+  if leftUnitMetaTag /= middleUnitMetaTag or
+     middleUnitMetaTag /= rightUnitMetaTag then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-          pl( ", left unit of measure data meta label " ) &
-          unb_em( leftUnitMetaLabelString) &
-          pl( " is not compatible with middle data meta label " ) &
-             unb_em( middleUnitMetaLabelString ) &
+          pl( ", left unit of measure data meta tag " ) &
+          unb_em( leftUnitMetaTagString) &
+          pl( " is not compatible with middle data meta tag " ) &
+             unb_em( middleUnitMetaTagString ) &
           pl( " or right label " ) &
-             unb_em( rightUnitMetaLabelString )
+             unb_em( rightUnitMetaTagString )
      );
      return false;
-  --elsif leftUnitMetaLabel /= sparMetaLabel then
+  --elsif leftUnitMetaTag /= sparMetaTag then
   --   getLabelStrings;
   --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-  --       pl( ", unit of measure data meta label " ) &
-  --       unb_em( leftUnitMetaLabelString ) &
-  --       pl( " is not compatible with system meta label " ) &
-  --       unb_em( sparMetaLabelString )
+  --       pl( ", unit of measure data meta tag " ) &
+  --       unb_em( leftUnitMetaTagString ) &
+  --       pl( " is not compatible with system meta tag " ) &
+  --       unb_em( sparMetaTagString )
   --    );
   end if;
 
-  -- Security policy meta label
+  -- Security policy meta tag
 
   begin
-    leftPolicyMetaLabels := leftStorage.policyMetaLabels;
+    leftPolicyMetaTags := leftStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "left policy data meta label is not initialized" ) );
-    leftPolicyMetaLabels := noMetaLabels;
+       pl( "left value policy meta tags are not initialized" ) );
+    leftPolicyMetaTags := noMetaTags;
   end;
   begin
-    middlePolicyMetaLabels := middleStorage.policyMetaLabels;
+    middlePolicyMetaTags := middleStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "middle policy data meta label is not initialized" ) );
-    middlePolicyMetaLabels := noMetaLabels;
+       pl( "middle value policy meta tags are not initialized" ) );
+    middlePolicyMetaTags := noMetaTags;
   end;
   begin
-    rightPolicyMetaLabels := rightStorage.policyMetaLabels;
+    rightPolicyMetaTags := rightStorage.policyMetaTags;
   exception when constraint_error =>
     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-       pl( "right policy data meta label is not initialized" ) );
-    rightPolicyMetaLabels := noMetaLabels;
+       pl( "right value policy meta tags are not initialized" ) );
+    rightPolicyMetaTags := noMetaTags;
   end;
 
-  if leftPolicyMetaLabels /= middlePolicyMetaLabels or
-     middlePolicyMetaLabels /= rightPolicyMetaLabels then
+  if leftPolicyMetaTags /= middlePolicyMetaTags or
+     middlePolicyMetaTags /= rightPolicyMetaTags then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-          pl( ", left policy data meta label " ) &
-          unb_em( leftPolicyMetaLabelString) &
-          pl( " is not compatible with middle data meta label " ) &
-             unb_em( middlePolicyMetaLabelString ) &
+          pl( ", left value policy meta tag " ) &
+          unb_em( leftPolicyMetaTagString) &
+          pl( " is not compatible with middle data meta tag " ) &
+             unb_em( middlePolicyMetaTagString ) &
           pl( " or right label " ) &
-             unb_em( rightPolicyMetaLabelString )
+             unb_em( rightPolicyMetaTagString )
      );
      return false;
-  elsif not sparMetaLabels.is_subset( leftPolicyMetaLabels ) then
+  elsif not sparMetaTags.is_subset( leftPolicyMetaTags ) then
      getLabelStrings;
      err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-         pl( ", policy data meta label " ) &
-         unb_em( leftPolicyMetaLabelString ) &
-         pl( " is not compatible with system meta label " ) &
-         unb_em( sparMetaLabelString )
+         pl( ", policy meta tag " ) &
+         unb_em( leftPolicyMetaTagString ) &
+         pl( " is not compatible with system meta tags " ) &
+         unb_em( sparMetaTagString )
       );
   end if;
   return true;
-end metaLabelOk;
+end metaTagOk;
 
-function metaLabelOk( context : identifier; leftStorage, middleStorage, rightStorage : storage ) return boolean is
+function metaTagOk( context : identifier; leftStorage, middleStorage, rightStorage : storage ) return boolean is
 begin
-   return metaLabelOk( to_string( identifiers( context ).name ), leftStorage, middleStorage, rightStorage );
-end metaLabelOk;
+   return metaTagOk( to_string( identifiers( context ).name ), leftStorage, middleStorage, rightStorage );
+end metaTagOk;
 
--- META DATA LABELS - this doesn't produce meaningful error messages
-function metaLabelOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+-- VALUE META TAGS - this doesn't produce meaningful error messages
+function metaTagOk( contextNotes : string; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
 begin
-  return metaLabelOk( contextNotes, firstStorage,  secondStorage, thirdStorage ) and
-         metaLabelOk( contextNotes, secondStorage, thirdStorage,  fourthStorage ) and
-         metaLabelOk( contextNotes, firstStorage,  thirdStorage,  fourthStorage ) and
-         metalabelOk( contextNotes, firstStorage,  secondStorage, fourthStorage );
-end metaLabelOk;
+  return metaTagOk( contextNotes, firstStorage,  secondStorage, thirdStorage ) and
+         metaTagOk( contextNotes, secondStorage, thirdStorage,  fourthStorage ) and
+         metaTagOk( contextNotes, firstStorage,  thirdStorage,  fourthStorage ) and
+         metaTagOk( contextNotes, firstStorage,  secondStorage, fourthStorage );
+end metaTagOk;
 
-function metaLabelOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
+function metaTagOk( context : identifier; firstStorage, secondStorage, thirdStorage, fourthStorage: storage ) return boolean is
 begin
-   return metaLabelOk( to_string( identifiers( context ).name ), firstStorage, secondStorage, fourthStorage );
-end metaLabelOk;
+   return metaTagOk( to_string( identifiers( context ).name ), firstStorage, secondStorage, fourthStorage );
+end metaTagOk;
 
 
 -----------------------------------------------------------------------------
@@ -4650,39 +4650,39 @@ end metaLabelOk;
 -----------------------------------------------------------------------------
 --  RESOLVE EFFECTIVE META LABEL
 --
--- Decide on which data labels to return based on 1 to 4 sources for data
+-- Decide on which value tags to return based on 1 to 4 sources for data
 -- labels.  If the target type is an enumerated type, which has no significant
--- value, return no meta label.  Booleans are an enumerated type.
+-- value, return no meta tag.  Booleans are an enumerated type.
 -- This is an incomplete stub.  For now, it returns only the first label.
 -----------------------------------------------------------------------------
 
-function resolveEffectiveMetaLabels(
+function resolveEffectiveMetaTags(
    kind          : identifier;
    firstStorage  : storage;
    secondStorage : storage := nullStorage;
    thirdStorage  : storage := nullStorage;
-   fourthStorage : storage := nullStorage ) return metaLabelHashedSet.Set is
-   --tempSet : metaLabelHashedSet.Set;
+   fourthStorage : storage := nullStorage ) return metaTagHashedSet.Set is
+   --tempSet : metaTagHashedSet.Set;
 begin
    if getUniType( kind ) = root_enumerated_t then
-      return noMetaLabels;
+      return noMetaTags;
    end if;
    if firstStorage = nullStorage then
-      return sparMetaLabels;
+      return sparMetaTags;
    end if;
-   return firstStorage.policyMetaLabels;
-end resolveEffectiveMetaLabels;
+   return firstStorage.policyMetaTags;
+end resolveEffectiveMetaTags;
 
 -----------------------------------------------------------------------------
 --  ASSIGN SYSTEM INDEX META LABEL
 --
--- When something is a system-assigned index, assign this meta label
+-- When something is a system-assigned index, assign this meta tag
 -----------------------------------------------------------------------------
 
-function assignSystemIndexMetaLabel return identifier is
+function assignSystemIndexMetaTag return identifier is
 begin
-  return noMetaLabel;
-end assignSystemIndexMetaLabel;
+  return noMetaTag;
+end assignSystemIndexMetaTag;
 
 
 -----------------------------------------------------------------------------
@@ -5013,7 +5013,7 @@ begin
            result := to_unbounded_string( "[" );
            for arrayElementPos in source_first..source_last loop
                -- data := arrayElement( sourceArrayId, arrayElementPos );
-               if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+               if metaTagOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
                   data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
                   if length( data ) = 0 then
                      err(
@@ -5052,7 +5052,7 @@ begin
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
-           if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+           if metaTagOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
               data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
               if elementKind = json_string_t then
                  -- if it's a JSON string, just copy the data
@@ -5073,7 +5073,7 @@ begin
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
             -- data := arrayElement( sourceArrayId, arrayElementPos );
-           if metaLabelOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
+           if metaTagOk( "enoding the JSON array value", identifiers( source_var_id ).astorage( arrayElementPos ) ) then
               data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
               if length( data ) = 0 then
                  err(
@@ -5130,7 +5130,7 @@ end DoArrayToJson;
 -- not know what it should be.
 -----------------------------------------------------------------------------
 
-procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabels : metaLabelHashedSet.Set ) is
+procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaTags : metaTagHashedSet.Set ) is
   target_first  : long_integer;
   target_last   : long_integer;
   target_len    : long_integer;
@@ -5282,15 +5282,15 @@ begin
                      if item = "false" then
                         -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
                         identifiers( target_var_id ).astorage( arrayElement ).value := to_unbounded_string( "0" );
-                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      elsif item = "true" then
                         -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
                         identifiers( target_var_id ).astorage( arrayElement ).value := to_unbounded_string( "1" );
-                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      else
@@ -5344,8 +5344,8 @@ begin
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
                         identifiers( target_var_id ).astorage( arrayElement ).value := ' ' & item;
-                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+                        identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+                        identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      end if;
@@ -5392,8 +5392,8 @@ begin
 
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).astorage( arrayElement ).value := item;
-               identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-               identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+               identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+               identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
             else
@@ -5471,8 +5471,8 @@ begin
 
                -- assignElement( targetArrayId, arrayElement, decoded_item );
                identifiers( target_var_id ).astorage( arrayElement ).value := decoded_item;
-               identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-               identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+               identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+               identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
                --else
@@ -5522,8 +5522,8 @@ begin
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).astorage( arrayElement ).value := item;
-               identifiers( target_var_id ).astorage( arrayElement ).policyMetaLabels := newMetaLabels;
-               identifiers( target_var_id ).astorage( arrayElement ).unitMetaLabel := noMetaLabel;
+               identifiers( target_var_id ).astorage( arrayElement ).policyMetaTags := newMetaTags;
+               identifiers( target_var_id ).astorage( arrayElement ).unitMetaTag := noMetaTag;
                arrayElement := arrayElement + 1;
                skipJSONWhitespace( sourceVal, i );
                if i <= length( sourceVal ) then
@@ -5600,8 +5600,8 @@ procedure DoRecordToJson( result : out storage; source_var_id : identifier ) is
    item            : unbounded_string;
 begin
      result.value := to_unbounded_string( "{" );
-     result.unitMetaLabel := noMetaLabel;
-     result.policyMetaLabels := noMetaLabels;
+     result.unitMetaTag := noMetaTag;
+     result.policyMetaTags := noMetaTags;
      for i in 1..integer'value( to_string( identifiers( identifiers( source_var_id ).kind ).store.value ) ) loop
          for j in 1..identifiers_top-1 loop
              if identifiers( j ).field_of = identifiers( source_var_id ).kind then
@@ -5627,26 +5627,26 @@ begin
                       else
                          if firstField then
                             firstField := false;
-                            if metaLabelOk( "While encoding the record", identifiers( field_t ).store.all ) then
-                               result.policyMetaLabels := identifiers( field_t ).store.policyMetaLabels;
+                            if metaTagOk( "While encoding the record", identifiers( field_t ).store.all ) then
+                               result.policyMetaTags := identifiers( field_t ).store.policyMetaTags;
                                if trace then
                                   put_trace( "After " & to_string( identifiers( field_t ).name ) &
-                                  " json value has policy meta labels '" &
-                                  to_string( image( result.policyMetaLabels ) ) & "'" );
+                                  " json value has policy meta tags '" &
+                                  to_string( image( result.policyMetaTags ) ) & "'" );
                                end if;
                             end if;
                          else
                             result.value := result.value & ',';
-                            if metaLabelOk( "While encoding the record", identifiers( field_t ).store.all ) then
-                               result.policyMetaLabels  := resolveEffectiveMetaLabels(
+                            if metaTagOk( "While encoding the record", identifiers( field_t ).store.all ) then
+                               result.policyMetaTags  := resolveEffectiveMetaTags(
                                   identifiers( field_t ).kind,
                                   result,
                                   identifiers( field_t ).store.all
                                );
                                if trace then
                                   put_trace( "After " & to_string( identifiers( field_t ).name ) &
-                                  " json value has policy meta labels '" &
-                                  to_string( image( result.policyMetaLabels ) ) & "'" );
+                                  " json value has policy meta tags '" &
+                                  to_string( image( result.policyMetaTags ) ) & "'" );
                                end if;
                             end if;
                          end if;
@@ -5907,9 +5907,9 @@ begin
                  if not error_found then
                     -- for Booleans, it's true or false, not value
                     elementKind := getBaseType( identifiers( j ).kind );
-                    -- set the meta label, the same as the JSON string
-                    identifiers( j ).store.policyMetaLabels:= sourceStore.policyMetaLabels ;
-                    identifiers( j ).store.unitMetaLabel := noMetaLabel;
+                    -- set the meta tag, the same as the JSON string
+                    identifiers( j ).store.policyMetaTags:= sourceStore.policyMetaTags ;
+                    identifiers( j ).store.unitMetaTag := noMetaTag;
                     if elementKind = boolean_t then
                        if decodedItemValue = "true" then
                           identifiers( j ).store.value := to_unbounded_string( "1" );

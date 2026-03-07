@@ -42,7 +42,7 @@ use
     scanner.communications,
     parser;
 
-use world.metaLabelHashedSet;
+use world.metaTagHashedSet;
 
 package body parser_tags is
 
@@ -78,7 +78,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.unitMetaLabel /= noMetaLabel ), noMetaLabel, noMetaLabels );
+     result := storage'( to_spar_boolean( expr.unitMetaTag /= noMetaTag ), noMetaTag, noMetaTags );
   end if;
 end ParseTagsHasUnit;
 
@@ -95,7 +95,7 @@ end ParseTagsHasUnit;
 procedure ParseTagsContainsUnit( result : out storage; kind : out identifier ) is
   expr         : storage;
   expr_type    : identifier;
-  tagId        : metaLabelID;
+  tagId        : metaTagID;
   limitedVarId : identifier;
   subprogramId : constant identifier := tags_contains_unit_t;
 begin
@@ -119,7 +119,7 @@ begin
      err( +"unit value meta tag expected" );
   end if;
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.unitMetaLabel = tagid ), noMetaLabel, noMetaLabels );
+     result := storage'( to_spar_boolean( expr.unitMetaTag = tagid ), noMetaTag, noMetaTags );
   end if;
 end ParseTagsContainsUnit;
 
@@ -144,7 +144,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( identifiers( expr.unitMetaLabel ).name, noMetaLabel, noMetaLabels );
+     result := storage'( identifiers( expr.unitMetaTag ).name, noMetaTag, noMetaTags );
   end if;
 end ParseTagsGetUnitImage;
 
@@ -169,7 +169,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.policyMetaLabels /= noMetaLabels ), noMetaLabel, noMetaLabels );
+     result := storage'( to_spar_boolean( expr.policyMetaTags /= noMetaTags ), noMetaTag, noMetaTags );
   end if;
 end ParseTagsHasPolicies;
 
@@ -210,7 +210,7 @@ begin
      err( +"policy value meta tag expected" );
   end if;
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( expr.policyMetaLabels.contains( tagid ) ), noMetaLabel, noMetaLabels );
+     result := storage'( to_spar_boolean( expr.policyMetaTags.contains( tagid ) ), noMetaTag, noMetaTags );
   end if;
 end ParseTagsContainsPolicy;
 
@@ -235,7 +235,7 @@ begin
   ParseExpression( expr, expr_type );
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( image( expr.policyMetaLabels ), noMetaLabel, noMetaLabels );
+     result := storage'( image( expr.policyMetaTags ), noMetaTag, noMetaTags );
   end if;
 end ParseTagsGetPoliciesImage;
 

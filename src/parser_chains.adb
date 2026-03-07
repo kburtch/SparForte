@@ -71,7 +71,7 @@ begin
   kind := boolean_t;
   expect( chains_in_chain_t );
   if isExecutingCommand then
-     result := storage'( to_spar_boolean( in_chain /= none ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_spar_boolean( in_chain /= none ), noMetaTag, sparMetaTags );
   end if;
 end ParseChainsInChain;
 
@@ -89,15 +89,15 @@ begin
   expect( chains_chain_context_t );
   if isExecutingCommand then
      if in_chain = none then
-        result := storage'( to_unbounded_string( "3" ), noMetaLabel, sparMetaLabels );
+        result := storage'( to_unbounded_string( "3" ), noMetaTag, sparMetaTags );
      else
         case chain_context is
         when first =>
-           result := storage'( to_unbounded_string( "0" ), noMetaLabel, sparMetaLabels );
+           result := storage'( to_unbounded_string( "0" ), noMetaTag, sparMetaTags );
         when last =>
-           result := storage'( to_unbounded_string( "2" ), noMetaLabel, sparMetaLabels );
+           result := storage'( to_unbounded_string( "2" ), noMetaTag, sparMetaTags );
         when others =>
-           result := storage'( to_unbounded_string( "1" ), noMetaLabel, sparMetaLabels );
+           result := storage'( to_unbounded_string( "1" ), noMetaTag, sparMetaTags );
         end case;
      end if;
   end if;
@@ -121,7 +121,7 @@ begin
         err( +"not in a chain" );
      else
         findIdent( chain_count_str, chain_count_id );
-        result := storage'( identifiers( chain_count_id ).store.value, noMetaLabel, sparMetaLabels );
+        result := storage'( identifiers( chain_count_id ).store.value, noMetaTag, sparMetaTags );
      end if;
   end if;
 end ParseChainsChainCount;

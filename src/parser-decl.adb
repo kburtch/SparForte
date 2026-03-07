@@ -65,7 +65,7 @@ use gnat.io_aux,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 
-use world.metaLabelHashedSet;
+use world.metaTagHashedSet;
 -- for inline operators
 
 package body parser.decl is
@@ -1938,18 +1938,18 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
                 to_string( identifiers( new_const_id ).name ) & " := """ &
                  toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
          end if;
-         if expr.unitMetaLabel /= noMetaLabel then
+         if expr.unitMetaTag /= noMetaTag then
             if trace then
                 put_trace( to_string( identifiers( new_const_id ).name ) &
-                    " value has unit of measure data meta labels '" &
-                    to_string( identifiers( identifiers( new_const_id ).store.unitMetaLabel ).name ) & "'" );
+                    " value has unit of measure meta tags '" &
+                    to_string( identifiers( identifiers( new_const_id ).store.unitMetaTag ).name ) & "'" );
             end if;
          end if;
-         if expr.policyMetaLabels /= noMetaLabels then
+         if expr.policyMetaTags /= noMetaTags then
             if trace then
                put_trace( to_string( identifiers( new_const_id ).name ) &
-                   " value has policy data meta labels '" &
-                   to_string( image( identifiers( new_const_id ).store.policyMetaLabels  ) ) & "'" );
+                   " value has policy meta tags '" &
+                   to_string( image( identifiers( new_const_id ).store.policyMetaTags  ) ) & "'" );
            end if;
         end if; -- is scalar
       end if;
@@ -2551,18 +2551,18 @@ begin
                toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
 
         end if;
-        if expr.unitMetaLabel /= noMetaLabel then
+        if expr.unitMetaTag /= noMetaTag then
           if trace then
               put_trace( to_string( identifiers( id ).name ) &
-                  " value has unit of measure data meta labels '" &
-                  to_string( identifiers( identifiers( id ).store.unitMetaLabel ).name ) & "'" );
+                  " value has unit of measure meta tags '" &
+                  to_string( identifiers( identifiers( id ).store.unitMetaTag ).name ) & "'" );
            end if;
         end if;
-        if expr.policyMetaLabels /= noMetaLabels then
+        if expr.policyMetaTags /= noMetaTags then
           if trace then
               put_trace( to_string( identifiers( id ).name ) &
-                  " value has policy data meta labels '" &
-                  to_string( image( identifiers( id ).store.policyMetaLabels ) ) & "'" );
+                  " value has policy meta tags '" &
+                  to_string( image( identifiers( id ).store.policyMetaTags ) ) & "'" );
            end if;
         end if;
      else
@@ -3094,8 +3094,8 @@ end ParseCaseAffirmClause;
 -----------------------------------------------------------------------------
 -- PARSE META
 --
--- Handle a value meta label.
--- Syntax: meta = "meta newlabel is new [abstract] meta|oldlabel"
+-- Handle a value meta tag.
+-- Syntax: meta = "meta newtag is new [abstract] meta|oldtag"
 -----------------------------------------------------------------------------
 
 procedure ParseMeta is

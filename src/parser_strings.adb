@@ -177,7 +177,7 @@ begin
   ParseFirstStringParameter( glob_t, patExpr, pat_type );
   ParseLastStringParameter( glob_t, expr, expr_type );
   if isExecutingCommand then
-     if metaLabelOk( glob_t, expr ) and metaLabelOk( glob_t, patExpr ) then
+     if metaTagOk( glob_t, expr ) and metaTagOk( glob_t, patExpr ) then
         begin
           re := compile( to_string( patExpr.value ), glob => true,
                 case_sensitive => true );
@@ -195,9 +195,9 @@ begin
      end if;
      if not error_found then
         if b then
-           result := storage'( to_unbounded_string( "1" ), noMetaLabel, expr.policyMetaLabels );
+           result := storage'( to_unbounded_string( "1" ), noMetaTag, expr.policyMetaTags );
         else
-           result := storage'( to_unbounded_string( "0" ), noMetaLabel, expr.policyMetaLabels );
+           result := storage'( to_unbounded_string( "0" ), noMetaTag, expr.policyMetaTags );
         end if;
      end if;
   end if;
@@ -224,7 +224,7 @@ begin
   ParseFirstStringParameter( match_t, patExpr, pat_type );
   ParseLastStringParameter( match_t, expr, expr_type );
   if isExecutingCommand then
-     if metaLabelOk( match_t, expr ) and metaLabelOk( match_t, patExpr ) then
+     if metaTagOk( match_t, expr ) and metaTagOk( match_t, patExpr ) then
         begin
           b := match( to_string( patExpr.value ), to_string( expr.value ) );
         exception when expression_error =>
@@ -242,9 +242,9 @@ begin
         end;
         if not error_found then
            if b then
-              result := storage'( to_unbounded_string( "1" ), noMetaLabel, expr.policyMetaLabels );
+              result := storage'( to_unbounded_string( "1" ), noMetaTag, expr.policyMetaTags );
            else
-              result := storage'( to_unbounded_string( "0" ), noMetaLabel, expr.policyMetaLabels );
+              result := storage'( to_unbounded_string( "0" ), noMetaTag, expr.policyMetaTags );
            end if;
            if trace then
               if b then
@@ -284,10 +284,10 @@ begin
   ParseLastNumericParameter( element_t, indexExpr, index_type, positive_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( element_t, strExpr ) then
+        if metaTagOk( element_t, strExpr ) then
            result := storage'( to_unbounded_string( "" &
               Element( strExpr.value, positive( to_numeric( indexExpr.value ) ) ) ),
-              noMetaLabel, strExpr.policyMetaLabels );
+              noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -318,12 +318,12 @@ begin
   ParseLastNumericParameter( slice_t, hiExpr,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( slice_t, strExpr ) then
+        if metaTagOk( slice_t, strExpr ) then
            result := storage'( to_unbounded_string(
               Slice( strExpr.value,
                 positive( to_numeric( lowExpr.value ) ),
                 natural( to_numeric( hiExpr.value ) )
-              ) ), noMetaLabel, strExpr.policyMetaLabels );
+              ) ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -374,10 +374,10 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( index_t, strExpr ) and metaLabelOk( index_t, patExpr ) then
+        if metaTagOk( index_t, strExpr ) and metaTagOk( index_t, patExpr ) then
            result := storage'( to_unbounded_string( Index( strExpr.value, to_string( patExpr.value ),
            Going => dir )'img ),
-           noMetaLabel, strExpr.policyMetaLabels );
+           noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -419,8 +419,8 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( index_non_blank_t, strExpr ) then
-           result := storage'( to_unbounded_string( Index_Non_Blank( strExpr.value, dir )'img ), noMetaLabel, noMetaLabels );
+        if metaTagOk( index_non_blank_t, strExpr ) then
+           result := storage'( to_unbounded_string( Index_Non_Blank( strExpr.value, dir )'img ), noMetaTag, noMetaTags );
         end if;
      end if;
   exception when others =>
@@ -488,10 +488,10 @@ begin
      map := to_set( to_string( setExpr.value ) );
      first := positive( to_numeric( firstExpr.value ) );
      if isExecutingCommand then
-        if metaLabelOk( index_set_t, strExpr ) then
+        if metaTagOk( index_set_t, strExpr ) then
            result := storage'( to_unbounded_string( Index( strExpr.value, map, first, test,
            Going => dir )'img ),
-           noMetaLabel, setExpr.policyMetaLabels );
+           noMetaTag, setExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -519,10 +519,10 @@ begin
   ParseLastStringParameter( count_t, patExpr, pat_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        if metaLabelOk( count_t, strExpr ) and metaLabelOk( count_t, patExpr ) then
+        if metaTagOk( count_t, strExpr ) and metaTagOk( count_t, patExpr ) then
            result := storage'( to_unbounded_string( Ada.Strings.Unbounded.Count( strExpr.value,
               to_string( patExpr.value ) )'img ),
-              noMetaLabel, strExpr.policyMetaLabels );
+              noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -556,12 +556,12 @@ begin
   ParseLastStringParameter(  replace_slice_t, byExpr,  by_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        if metaLabelOk( replace_slice_t, strExpr, byExpr ) then
+        if metaTagOk( replace_slice_t, strExpr, byExpr ) then
            result := storage'( Replace_Slice( strExpr.value,
               positive( to_numeric( lowExpr.value ) ),
               natural( to_numeric( hiExpr.value ) ),
               to_string( byExpr.value )
-           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, byExpr )
+           ), noMetaTag, resolveEffectiveMetaTags( kind, strExpr, byExpr )
            );
         end if;
      end if;
@@ -601,12 +601,12 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( replace_all_t, strExpr, needleExpr, newstrExpr ) then
+        if metaTagOk( replace_all_t, strExpr, needleExpr, newstrExpr ) then
            if length( needleExpr.value ) = 0 then
               err( +"search substring is an empty string" );
            else
               result := storage'( replaceAll( strExpr.value, needleExpr.value, newstrExpr.value, sensitivityExpr.value = "1" ),
-                 noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, needleExpr, newstrExpr ) );
+                 noMetaTag, resolveEffectiveMetaTags( kind, strExpr, needleExpr, newstrExpr ) );
            end if;
         end if;
      end if;
@@ -638,11 +638,11 @@ begin
   ParseLastStringParameter( strings_insert_t, newExpr, new_type, uni_string_T );
   begin
      if isExecutingCommand then
-        if metaLabelOk( strings_insert_t, strExpr, newExpr ) then
+        if metaTagOk( strings_insert_t, strExpr, newExpr ) then
            result := storage'( Insert( strExpr.value,
               positive( to_numeric( beforeExpr.value ) ),
               to_string( newExpr.value )
-           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, newExpr ) );
+           ), noMetaTag, resolveEffectiveMetaTags( kind, strExpr, newExpr ) );
         end if;
      end if;
   exception when others =>
@@ -673,11 +673,11 @@ begin
   ParseLastStringParameter( overwrite_t, newExpr, new_type, Uni_String_T );
   begin
      if isExecutingCommand then
-        if metaLabelOk( overwrite_t, strExpr, newExpr ) then
+        if metaTagOk( overwrite_t, strExpr, newExpr ) then
            result := storage'( Overwrite( strExpr.value,
               positive( to_numeric( posExpr.value ) ),
               to_string( newExpr.value )
-           ), noMetaLabel, resolveEffectiveMetalabels( kind, strExpr, newExpr ) );
+           ), noMetaTag, resolveEffectiveMetaTags( kind, strExpr, newExpr ) );
         end if;
      end if;
   exception when others =>
@@ -707,12 +707,12 @@ begin
   ParseNextNumericParameter( sdelete_t, lowExpr, low_type, positive_t );
   ParseLastNumericParameter( sdelete_t, hiExpr,  hi_type,  natural_t );
   if isExecutingCommand then
-     if metaLabelOk( sdelete_t, strExpr ) then
+     if metaTagOk( sdelete_t, strExpr ) then
         begin
            result := storage'( Delete( strExpr.value,
               positive( to_numeric( lowExpr.value ) ),
               natural( to_numeric( hiExpr.value ) )
-           ), noMetaLabel, strExpr.policyMetaLabels );
+           ), noMetaTag, strExpr.policyMetaTags );
         exception when others =>
            err_exception_raised;
         end;
@@ -759,8 +759,8 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( trim_t, strExpr ) then
-           result := storage'( trim( strExpr.value, the_trim_end ), noMetaLabel, strExpr.policyMetaLabels );
+        if metaTagOk( trim_t, strExpr ) then
+           result := storage'( trim( strExpr.value, the_trim_end ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -785,8 +785,8 @@ begin
   ParseSingleStringParameter( length_t, strExpr, str_type );
   begin
      if isExecutingCommand then
-        if metaLabelOk( length_t, strExpr ) then
-           result := storage'( to_unbounded_string( length( strExpr.value )'img ), noMetaLabel, strExpr.policyMetaLabels );
+        if metaTagOk( length_t, strExpr ) then
+           result := storage'( to_unbounded_string( length( strExpr.value )'img ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -827,9 +827,9 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( head_t, strExpr ) then
+        if metaTagOk( head_t, strExpr ) then
            result := storage'( head( strExpr.value, natural( to_numeric( cntExpr.value ) ),
-              pad_char ), noMetaLabel, strExpr.policyMetaLabels );
+              pad_char ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -870,9 +870,9 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( tail_t, strExpr ) then
+        if metaTagOk( tail_t, strExpr ) then
            result := storage'( tail( strExpr.value, natural( to_numeric( cntExpr.value ) ),
-             pad_char ), noMetaLabel, strExpr.policyMetaLabels );
+             pad_char ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -908,7 +908,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( starts_with_t, strExpr, headExpr ) then
+        if metaTagOk( starts_with_t, strExpr, headExpr ) then
            if length( headExpr.value ) = 0 then
               err( +"head substring is an empty string" );
            else
@@ -917,14 +917,14 @@ begin
                     to_spar_boolean(
                        head( strExpr.value, length( headExpr.value ) ) = headExpr.value
                     ),
-                       noMetaLabel, noMetaLabels
+                       noMetaTag, noMetaTags
                     );
               else
                  result := storage'(
                     to_spar_boolean(
                        head( ToUpper( strExpr.value ), length( headExpr.value ) ) = ToUpper( headExpr.value )
                     ),
-                       noMetaLabel, noMetaLabels
+                       noMetaTag, noMetaTags
                     );
               end if;
            end if;
@@ -963,18 +963,18 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( ends_with_t, strExpr, tailExpr ) then
+        if metaTagOk( ends_with_t, strExpr, tailExpr ) then
            if length( tailExpr.value ) = 0 then
               err( +"tail substring is an empty string" );
            else
               if sensitivityExpr.value = "1"  then
-                 result := storage'( to_spar_boolean( tail( strExpr.value, length( tailExpr.value ) ) = tailExpr.value ), noMetaLabel, noMetaLabels );
+                 result := storage'( to_spar_boolean( tail( strExpr.value, length( tailExpr.value ) ) = tailExpr.value ), noMetaTag, noMetaTags );
               else
                  result := storage'(
                     to_spar_boolean(
                        tail( ToUpper( strExpr.value ), length( tailExpr.value ) ) = ToUpper( tailExpr.value )
                     ),
-                 noMetaLabel, noMetaLabels );
+                 noMetaTag, noMetaTags );
               end if;
            end if;
         end if;
@@ -1019,9 +1019,9 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( field_t, strExpr ) then
+        if metaTagOk( field_t, strExpr ) then
            result := storage'( stringField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ) ),
-              noMetaLabel, strExpr.policyMetaLabels );
+              noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1081,9 +1081,9 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( csv_field_t, strExpr ) then
+        if metaTagOk( csv_field_t, strExpr ) then
            result := storage'( stringCSVField( strExpr.value, delim, natural( to_numeric( cntExpr.value ) ), squotes ),
-              noMetaLabel, strExpr.policyMetaLabels );
+              noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1109,12 +1109,12 @@ begin
   expectAdaScript( subject => mktemp_t );
   ParseSingleStringParameter( mktemp_t, strExpr, str_type );
   if isExecutingCommand then
-     if metaLabelOk( mktemp_t, strExpr ) then
+     if metaTagOk( mktemp_t, strExpr ) then
         declare
           LinuxPath : string := to_string( strExpr.value ) & "XXXXXX" & ASCII.NUL;
         begin
           result := nullStorage;
-          result.policyMetaLabels := strExpr.policyMetaLabels;
+          result.policyMetaTags := strExpr.policyMetaTags;
           mkstemp( mkstemp_result, LinuxPath );
           if mkstemp_result < 0 then
              err( pl( "mkstemp failed " & OSError( C_errno ) ) );
@@ -1127,7 +1127,7 @@ begin
                    goto retry;
                 end if;
              end if;
-             result.policyMetaLabels := noMetaLabels;
+             result.policyMetaTags := noMetaTags;
              for i in aLinuxPath'range loop
                  exit when LinuxPath( i ) = ASCII.NUL;
                  result.value := result.value & LinuxPath( i );
@@ -1155,9 +1155,9 @@ begin
   ParseSingleNumericParameter( val_t, expr, expr_type, natural_t );
   begin
     if isExecutingCommand then
-       if metaLabelOk( val_t, expr ) then
+       if metaTagOk( val_t, expr ) then
           result := storage'( to_unbounded_string( "" & character'val( natural( to_numeric( expr.value ) ) ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1208,9 +1208,9 @@ begin
           -- parameters.
           findEnumImage( expr.value, expr_type, temp );
           result.value:= temp;
-          result.unitMetaLabel := noMetaLabel;
-          result.policyMetaLabels := sparMetaLabels;
-       elsif metaLabelOk( image_t, expr ) then
+          result.unitMetaTag := noMetaTag;
+          result.policyMetaTags := sparMetaTags;
+       elsif metaTagOk( image_t, expr ) then
           result := expr;
        end if;
     end if;
@@ -1282,17 +1282,17 @@ begin
   end if;
   begin
     if isExecutingCommand then
-       if metaLabelOk( to_string_t, expr ) then
+       if metaTagOk( to_string_t, expr ) then
           if baseType = unbounded_string_t then
              result := expr;
           elsif baseType = json_string_t then
              DoJsonToString( result.value, expr.value );
-             result.unitMetaLabel := noMetaLabel;
-             result.policyMetaLabels := expr.policyMetaLabels;
+             result.unitMetaTag := noMetaTag;
+             result.policyMetaTags := expr.policyMetaTags;
           else
              DoBase64ToString( result.value, expr.value );
-             result.unitMetaLabel := expr.unitMetaLabel;
-             result.policyMetaLabels := expr.policyMetaLabels;
+             result.unitMetaTag := expr.unitMetaTag;
+             result.policyMetaTags := expr.policyMetaTags;
           end if;
        end if;
     end if;
@@ -1318,7 +1318,7 @@ begin
   ParseSingleStringParameter( to_u_string_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( to_u_string_t, expr ) then
+       if metaTagOk( to_u_string_t, expr ) then
           result := expr;
        end if;
     end if;
@@ -1362,9 +1362,9 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( lookup_t, srcExpr ) and metaLabelOk( lookup_t, tarExpr ) then
+        if metaTagOk( lookup_t, srcExpr ) and metaTagOk( lookup_t, tarExpr ) then
            result := storage'( stringLookup( srcExpr.value, tarExpr.value, delim ),
-              noMetaLabel, srcExpr.policyMetaLabels );
+              noMetaTag, srcExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -1412,14 +1412,14 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( replace_t, identifiers( src_ref.id ).store.all, tarExpr ) then
+        if metaTagOk( replace_t, identifiers( src_ref.id ).store.all, tarExpr ) then
            getParameterValue( src_ref, tempStr );
            replaceField( tempStr.value,
               delim,
               natural( to_numeric( cntExpr.value ) ),
               to_string( tarExpr.value ) );
-           tempStr.unitMetaLabel := noMetaLabel;
-           tempStr.policyMetaLabels := resolveEffectiveMetalabels( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
+           tempStr.unitMetaTag := noMetaTag;
+           tempStr.policyMetaTags := resolveEffectiveMetaTags( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
            AssignParameter( src_ref, tempStr );
         end if;
      end if;
@@ -1485,14 +1485,14 @@ begin
   begin
      if isExecutingCommand then
         getParameterValue( src_ref, tempStr );
-        if metaLabelOk( csv_replace_t, identifiers( src_ref.id ).store.all, tarExpr ) then
+        if metaTagOk( csv_replace_t, identifiers( src_ref.id ).store.all, tarExpr ) then
            replaceCSVField( tempStr.value,
               delim,
               natural( to_numeric( cntExpr.value ) ),
               to_string( tarExpr.value ),
               squotes );
-           tempStr.unitMetaLabel := noMetaLabel;
-           tempStr.policyMetaLabels := resolveEffectiveMetalabels( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
+           tempStr.unitMetaTag := noMetaTag;
+           tempStr.policyMetaTags := resolveEffectiveMetaTags( src_ref.kind, identifiers( src_ref.id ).store.all, tarExpr );
            assignParameter( src_ref, tempStr );
         end if;
      end if;
@@ -1517,8 +1517,8 @@ begin
   ParseSingleStringParameter( to_upper_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOk( to_upper_t, srcExpr ) then
-        result := storage'( ToUpper( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
+     if metaTagOk( to_upper_t, srcExpr ) then
+        result := storage'( ToUpper( srcExpr.value ), noMetaTag, srcExpr.policyMetaTags );
      end if;
   end if;
 end ParseStringsToUpper;
@@ -1539,8 +1539,8 @@ begin
   ParseSingleStringParameter( to_lower_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOk( to_lower_t, srcExpr ) then
-        result := storage'( ToLower( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
+     if metaTagOk( to_lower_t, srcExpr ) then
+        result := storage'( ToLower( srcExpr.value ), noMetaTag, srcExpr.policyMetaTags );
      end if;
   end if;
 end ParseStringsToLower;
@@ -1561,8 +1561,8 @@ begin
   ParseSingleStringParameter( to_proper_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOk( to_proper_t, srcExpr ) then
-        result := storage'( ToProper( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
+     if metaTagOk( to_proper_t, srcExpr ) then
+        result := storage'( ToProper( srcExpr.value ), noMetaTag, srcExpr.policyMetaTags );
      end if;
   end if;
 end ParseStringsToProper;
@@ -1583,8 +1583,8 @@ begin
   ParseSingleStringParameter( to_basic_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOk( to_basic_t, srcExpr ) then
-        result := storage'( ToBasic( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
+     if metaTagOk( to_basic_t, srcExpr ) then
+        result := storage'( ToBasic( srcExpr.value ), noMetaTag, srcExpr.policyMetaTags );
      end if;
   end if;
 end ParseStringsToBasic;
@@ -1605,9 +1605,9 @@ begin
   ParseSingleStringParameter( to_escaped_t, srcExpr, src_type );
   kind := src_type;
   if isExecutingCommand then
-     if metaLabelOk( to_escaped_t, srcExpr ) then
+     if metaTagOk( to_escaped_t, srcExpr ) then
         begin
-           result := storage'( ToEscaped( srcExpr.value ), noMetaLabel, srcExpr.policyMetaLabels );
+           result := storage'( ToEscaped( srcExpr.value ), noMetaTag, srcExpr.policyMetaTags );
         exception when others =>
            err_exception_raised;
         end;
@@ -1640,11 +1640,11 @@ begin
   ParseLastNumericParameter( split_t, fieldExpr, field_type, natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( split_t, srcExpr ) then
-           leftStr.unitMetaLabel := noMetaLabel;
-           leftStr.policyMetaLabels := srcExpr.policyMetaLabels;
-           rightStr.unitMetaLabel := noMetaLabel;
-           rightStr.policyMetaLabels := srcExpr.policyMetaLabels;
+        if metaTagOk( split_t, srcExpr ) then
+           leftStr.unitMetaTag := noMetaTag;
+           leftStr.policyMetaTags := srcExpr.policyMetaTags;
+           rightStr.unitMetaTag := noMetaTag;
+           rightStr.policyMetaTags := srcExpr.policyMetaTags;
            split( srcExpr.value, leftStr.value, rightStr.value,
                   natural( to_numeric( fieldExpr.value ) ) );
            assignParameter( left_ref, leftStr );
@@ -1673,8 +1673,8 @@ begin
   ParseSingleStringParameter( is_control_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_control_t, expr ) then
-          result := storage'( to_spar_boolean( is_control( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_control_t, expr ) then
+          result := storage'( to_spar_boolean( is_control( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1699,8 +1699,8 @@ begin
   ParseSingleStringParameter( is_graphic_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_graphic_t, expr ) then
-          result := storage'( to_spar_boolean( is_graphic( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_graphic_t, expr ) then
+          result := storage'( to_spar_boolean( is_graphic( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1725,8 +1725,8 @@ begin
   ParseSingleStringParameter( is_letter_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_letter_t, expr ) then
-          result := storage'( to_spar_boolean( is_letter( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_letter_t, expr ) then
+          result := storage'( to_spar_boolean( is_letter( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1751,8 +1751,8 @@ begin
   ParseSingleStringParameter( is_lower_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_lower_t, expr ) then
-          result := storage'( to_spar_boolean( is_lower( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_lower_t, expr ) then
+          result := storage'( to_spar_boolean( is_lower( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1777,8 +1777,8 @@ begin
   ParseSingleStringParameter( is_upper_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_upper_t, expr ) then
-          result := storage'( to_spar_boolean( is_upper( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_upper_t, expr ) then
+          result := storage'( to_spar_boolean( is_upper( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1803,8 +1803,8 @@ begin
   ParseSingleStringParameter( is_basic_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_basic_t, expr ) then
-          result := storage'( to_spar_boolean( is_basic( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_basic_t, expr ) then
+          result := storage'( to_spar_boolean( is_basic( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1829,8 +1829,8 @@ begin
   ParseSingleStringParameter( is_digit_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_digit_t, expr ) then
-          result := storage'( to_spar_boolean( is_digit( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_digit_t, expr ) then
+          result := storage'( to_spar_boolean( is_digit( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1855,8 +1855,8 @@ begin
   ParseSingleStringParameter( is_hex_digit_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_hex_digit_t, expr ) then
-          result := storage'( to_spar_boolean( is_hexadecimal_digit( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_hex_digit_t, expr ) then
+          result := storage'( to_spar_boolean( is_hexadecimal_digit( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1881,8 +1881,8 @@ begin
   ParseSingleStringParameter( is_alphanumeric_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_alphanumeric_t, expr ) then
-          result := storage'( to_spar_boolean( is_alphanumeric( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_alphanumeric_t, expr ) then
+          result := storage'( to_spar_boolean( is_alphanumeric( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1907,8 +1907,8 @@ begin
   ParseSingleStringParameter( is_special_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_special_t, expr ) then
-          result := storage'( to_spar_boolean( is_special( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_special_t, expr ) then
+          result := storage'( to_spar_boolean( is_special( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1933,8 +1933,8 @@ begin
   ParseSingleStringParameter( is_slashed_date_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_slashed_date_t, expr ) then
-          result := storage'( to_spar_boolean( is_date( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_slashed_date_t, expr ) then
+          result := storage'( to_spar_boolean( is_date( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1959,8 +1959,8 @@ begin
   ParseSingleStringParameter( is_fixed_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_fixed_t, expr ) then
-          result := storage'( to_spar_boolean( is_fixed( expr.value ) ), noMetaLabel, expr.policyMetaLabels );
+       if metaTagOk( is_fixed_t, expr ) then
+          result := storage'( to_spar_boolean( is_fixed( expr.value ) ), noMetaTag, expr.policyMetaTags );
        end if;
     end if;
   exception when others =>
@@ -1987,7 +1987,7 @@ begin
   ParseSingleStringParameter( to_base64_t, expr, expr_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( to_base64_t, expr ) then
+       if metaTagOk( to_base64_t, expr ) then
           -- The AdaPower base64 package requires streams and/or files.  It
           -- doesn't do strings.
           --
@@ -2006,15 +2006,15 @@ begin
           Encode_Stream( From => rawFile, To => base64File  );
           ada.text_io.reset( base64File, ada.text_io.in_file );
           -- TODO: loop
-          result.unitMetaLabel := noMetaLabel;
-          result.policyMetaLabels := noMetaLabels;
+          result.unitMetaTag := noMetaTag;
+          result.policyMetaTags := noMetaTags;
           while not ada.text_io.end_of_file( base64File ) loop
              result.value := result.value & get_line( base64File );
           end loop;
           ada.streams.stream_io.delete( rawFile );
           ada.text_io.delete( base64file );
-          result.unitMetaLabel := expr.unitMetaLabel;
-          result.policyMetaLabels := expr.policyMetaLabels;
+          result.unitMetaTag := expr.unitMetaTag;
+          result.policyMetaTags := expr.policyMetaTags;
        end if;
     end if;
   exception when MODE_ERROR =>
@@ -2050,8 +2050,8 @@ begin
   ParseLastStringParameter( is_typo_of_t, expr2Expr, expr2_type );
   begin
     if isExecutingCommand then
-       if metaLabelOk( is_typo_of_t, expr1Expr, expr2Expr ) then
-          result := storage'( to_spar_boolean( typoOf( expr1Expr.value, expr2Expr.value ) ), noMetaLabel, noMetaLabels );
+       if metaTagOk( is_typo_of_t, expr1Expr, expr2Expr ) then
+          result := storage'( to_spar_boolean( typoOf( expr1Expr.value, expr2Expr.value ) ), noMetaTag, noMetaTags );
        end if;
     end if;
   exception when others =>
@@ -2082,12 +2082,12 @@ begin
   ParseLastNumericParameter( unbounded_slice_t, hiExpr,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
-        if metaLabelOk( unbounded_slice_t, strExpr ) then
+        if metaTagOk( unbounded_slice_t, strExpr ) then
            result := storage'( to_unbounded_string(
               Slice( strExpr.value,
                 positive( to_numeric( lowExpr.value ) ),
                 natural( to_numeric( hiExpr.value ) )
-              ) ), noMetaLabel, strExpr.policyMetaLabels );
+              ) ), noMetaTag, strExpr.policyMetaTags );
         end if;
      end if;
   exception when others =>
@@ -2117,7 +2117,7 @@ begin
   end if;
   begin
      if isExecutingCommand then
-        if metaLabelOk( set_unbounded_string_t, strExpr ) then
+        if metaTagOk( set_unbounded_string_t, strExpr ) then
            AssignParameter( src_ref, strExpr );
         end if;
      end if;
@@ -2143,8 +2143,8 @@ begin
   ParseSingleStringParameter( strings_to_json_t, expr, expr_type );
   begin
     if isExecutingCommand then
-        if metaLabelOk( strings_to_json_t, expr ) then
-           result := storage'( DoStringToJSON( expr.value ), noMetaLabel, expr.policyMetaLabels );
+        if metaTagOk( strings_to_json_t, expr ) then
+           result := storage'( DoStringToJSON( expr.value ), noMetaTag, expr.policyMetaTags );
         end if;
     end if;
   exception when others =>
@@ -2186,17 +2186,17 @@ begin
        digit : natural;
      begin
        if isExecutingCommand then
-          if metaLabelOk( to_hex_digits_t, expr ) then
+          if metaTagOk( to_hex_digits_t, expr ) then
              exprAsNum  := natural'value( to_string( expr.value ) );
              if exprAsNum = 0 then
-                result := storage'( to_unbounded_string( "0" ), noMetaLabel, noMetaLabels );
+                result := storage'( to_unbounded_string( "0" ), noMetaTag, noMetaTags );
              else
                 while exprAsNum > 0 loop
                    digit := exprAsNum mod 16;
                    if digit < 10 then
-                      result := storage'( character'val( 48 + digit ) & result.value, noMetaLabel, expr.policyMetaLabels );
+                      result := storage'( character'val( 48 + digit ) & result.value, noMetaTag, expr.policyMetaTags );
                    else
-                      result := storage'( character'val( 65 + digit - 10 ) & result.value, noMetaLabel, expr.policyMetaLabels );
+                      result := storage'( character'val( 65 + digit - 10 ) & result.value, noMetaTag, expr.policyMetaTags );
                    end if;
                    exprAsNum  := exprAsNum / 16;
                 end loop;
@@ -2229,10 +2229,10 @@ begin
   ParseLastStringParameter( levenshtein_t, str2Expr, str2_type );
   if baseTypesOK( str1_type, str2_type ) then
      if isExecutingCommand then
-        if metaLabelOk( levenshtein_t, str1Expr ) and metaLabelOk( levenshtein_t, str2Expr ) then
+        if metaTagOk( levenshtein_t, str1Expr ) and metaTagOk( levenshtein_t, str2Expr ) then
            begin
               result := storage'( to_unbounded_string( natural'image( Levenshtein_Distance( to_string( str1Expr.value ), to_string( str2Expr.value ) ) ) ),
-                 noMetaLabel, str1Expr.policyMetaLabels );
+                 noMetaTag, str1Expr.policyMetaTags );
            exception when others =>
               err_exception_raised;
            end;
@@ -2257,9 +2257,9 @@ begin
   expectAdaScript( subject => soundex_t );
   ParseSingleStringParameter( soundex_t, strExpr, str_type );
   if isExecutingCommand then
-     if metaLabelOk( soundex_t, strExpr ) then
+     if metaTagOk( soundex_t, strExpr ) then
         begin
-           result := storage'( to_unbounded_string( Soundex( to_string( strExpr.value ) ) ), noMetaLabel, strExpr.policyMetaLabels );
+           result := storage'( to_unbounded_string( Soundex( to_string( strExpr.value ) ) ), noMetaTag, strExpr.policyMetaTags );
         exception when others =>
            err_exception_raised;
         end;
@@ -2283,9 +2283,9 @@ begin
   expectAdaScript( subject => word_count_t );
   ParseSingleStringParameter( word_count_t, strExpr, str_type );
   if isExecutingCommand then
-     if metaLabelOk( word_count_t, strExpr ) then
+     if metaTagOk( word_count_t, strExpr ) then
         begin
-           result := storage'( to_unbounded_string( WordCount( strExpr.value )'img ), noMetaLabel, strExpr.policyMetaLabels );
+           result := storage'( to_unbounded_string( WordCount( strExpr.value )'img ), noMetaTag, strExpr.policyMetaTags );
         exception when others =>
            err_exception_raised;
         end;
@@ -2329,7 +2329,7 @@ begin
     compare_len := natural'last;
   end if;
   if isExecutingCommand then
-     if metaLabelOk( compare_t, firstExpr ) and metaLabelOk( compare_t, lastExpr ) then
+     if metaTagOk( compare_t, firstExpr ) and metaTagOk( compare_t, lastExpr ) then
         -- get the length, if there is one
         if lenExpr.value /= null_unbounded_string then
            compare_len := natural( to_numeric( lenExpr.value ) );
@@ -2351,13 +2351,13 @@ begin
         -- The compare is less than, greater than or equals test
         if firstExpr.value < lastExpr.value then
            result := storage'( to_unbounded_string( "-1" ),
-              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
+              noMetaTag, resolveEffectiveMetaTags( kind, firstExpr, lastExpr ) );
         elsif firstExpr.value > lastExpr.value then
            result := storage'( to_unbounded_string( " 1" ),
-              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
+              noMetaTag, resolveEffectiveMetaTags( kind, firstExpr, lastExpr ) );
         else
            result := storage'( to_unbounded_string( " 0" ),
-              noMetaLabel, resolveEffectiveMetalabels( kind, firstExpr, lastExpr ) );
+              noMetaTag, resolveEffectiveMetaTags( kind, firstExpr, lastExpr ) );
         end if;
      end if;
   end if;

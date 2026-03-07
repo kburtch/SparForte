@@ -71,7 +71,7 @@ begin
   ParseSingleNumericParameter( templates_set_http_status_t, expr, exprKind );
   baseTypesOK( exprKind, natural_t );
   if isExecutingCommand then
-     if metaLabelOk( templates_set_http_status_t, expr ) then
+     if metaTagOk( templates_set_http_status_t, expr ) then
         if templateHeader.templateHeaderSent then
            err( +"HTTP header already sent" );
         else
@@ -98,7 +98,7 @@ begin
   ParseSingleStringParameter( templates_set_http_location_t, expr, exprKind );
   baseTypesOK( exprKind, string_t );
   if isExecutingCommand then
-     if metaLabelOk( templates_set_http_location_t, expr ) then
+     if metaTagOk( templates_set_http_location_t, expr ) then
         if templateHeader.templateHeaderSent then
            err( +"HTTP header already sent" );
         elsif length( expr.value ) = 0 then
@@ -122,7 +122,7 @@ procedure ParseTemplatesPutTemplateHeader is
 begin
   expect( templates_put_template_header_t );
   if isExecutingCommand then
-     if metaLabelOk( templates_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
+     if metaTagOk( templates_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
         begin
           putTemplateHeader( templateHeader );
         exception when constraint_error =>
@@ -142,8 +142,8 @@ begin
   expect( templates_has_put_template_header_t );
   kind := boolean_t;
   if isExecutingCommand then
-     if metaLabelOk( templates_has_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
-        result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaLabel, noMetaLabels );
+     if metaTagOk( templates_has_put_template_header_t, identifiers( standard_output_t ).sstorage ) then
+        result := storage'( to_spar_boolean( templateHeader.templateHeaderSent ), noMetaTag, noMetaTags );
      end if;
   end if;
 end ParseTemplatesHasPutTemplateHeader;

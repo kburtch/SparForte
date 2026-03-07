@@ -235,7 +235,7 @@ begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
        result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Is_Empty( theList.dlslList ) ),
-          noMetaLabel, noMetaLabels );
+          noMetaTag, noMetaTags );
      end;
   end if;
 end ParseDoublyIsEmpty;
@@ -262,7 +262,7 @@ begin
      begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_unbounded_string( numericValue ( Doubly_Linked_Storage_Lists.Length( theList.dlslList ) ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseDoublyLength;
@@ -403,7 +403,7 @@ begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
        oldElem := Doubly_Linked_Storage_Lists.First_Element( theList.dlslList );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      end;
@@ -440,7 +440,7 @@ begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
        oldElem := Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      end;
@@ -488,14 +488,14 @@ begin
           for i in 1..cnt loop
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
-              if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.First_Element( theList.dlslList ) ) then
+              if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.First_Element( theList.dlslList ) ) then
                  Doubly_Linked_Storage_Lists.Delete_First( theList.dlslList );
               end if;
           end loop;
        else
           -- Note: check-before-use.  This will be an issue if concurrency is
           -- introduced.
-          if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.First_Element( theList.dlslList ) ) then
+          if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.First_Element( theList.dlslList ) ) then
              Doubly_Linked_Storage_Lists.Delete_First( theList.dlslList );
           end if;
        end if;
@@ -546,14 +546,14 @@ begin
           for i in 1..cnt loop
               -- Note: check-before-use.  This will be an issue if concurrency is
               -- introduced.
-              if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList ) ) then
+              if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList ) ) then
                  Doubly_Linked_Storage_Lists.Delete_Last( theList.dlslList );
               end if;
           end loop;
        else
           -- Note: check-before-use.  This will be an issue if concurrency is
           -- introduced.
-          if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList ) ) then
+          if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Last_Element( theList.dlslList ) ) then
              Doubly_Linked_Storage_Lists.Delete_Last( theList.dlslList );
           end if;
        end if;
@@ -700,7 +700,7 @@ begin
        getParameterValue( cursRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
        oldElem := Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -737,7 +737,7 @@ begin
      ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( listRef.id ).genKind );
   end if;
   if isExecutingCommand then
-     -- Replace is delete then insert.  The meta labels of the existing element
+     -- Replace is delete then insert.  The meta tags of the existing element
      -- must be checked before replacing it with the new element.
      -- Note: check-before-use.  This will be an issue if concurrency is
      -- introduced.
@@ -746,7 +746,7 @@ begin
        getParameterValue( cursRef, cursResId );
        findResource( to_resource_id( listResId.value), theList );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ), itemExpr ) then
+       if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ), itemExpr ) then
           Doubly_Linked_Storage_Lists.Replace_Element( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
      exception when program_error =>
@@ -839,7 +839,7 @@ begin
        getParameterValue( cursRef, cursResId );
        findResource( to_resource_id( listResId.value), theList );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       if metaLabelOk( subprogramId, itemExpr ) then
+       if metaTagOk( subprogramId, itemExpr ) then
           if hasCnt then
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
              Doubly_Linked_Storage_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr, cnt );
@@ -970,7 +970,7 @@ begin
        if hasNewOutCursor then
           identifiers( ref.id ).resource := true;
           declareResource( resId, doubly_linked_storage_list_cursor, getIdentifierBlock( ref.id ) );
-          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, noMetaLabels ) );
+          AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaTag, noMetaTags ) );
           findResource( resId, theSecondCursor );
        else
           GetParameterValue( ref, secondCursorResourceIdStorage );
@@ -979,7 +979,7 @@ begin
 
        -- there are four variations
        if hasItem and hasCnt then
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
              Doubly_Linked_Storage_Lists.Insert(
                 theList.dlslList,
@@ -990,7 +990,7 @@ begin
              );
           end if;
        elsif hasItem then
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              Doubly_Linked_Storage_Lists.Insert(
                 theList.dlslList,
                 theCursor.dlslCursor,
@@ -1000,7 +1000,7 @@ begin
           end if;
        elsif hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          -- the meta data labels require nullStorage to be insert, not just
+          -- the value meta tags require nullStorage to be insert, not just
           -- random data
           Doubly_Linked_Storage_Lists.Insert(
              theList.dlslList,
@@ -1010,7 +1010,7 @@ begin
              cnt
           );
        else
-          -- the meta data labels require nullStorage to be insert, not just
+          -- the value meta tags require nullStorage to be insert, not just
           -- random data
           Doubly_Linked_Storage_Lists.Insert(
              theList.dlslList,
@@ -1079,13 +1079,13 @@ begin
          end;
          -- Note: check-before-use.  This will be an issue if concurrency is
          -- introduced.
-         if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
+         if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
             Doubly_Linked_Storage_Lists.Delete( theList.dlslList, theCursor.dlslCursor, cnt );
          end if;
        else
          -- Note: check-before-use.  This will be an issue if concurrency is
          -- introduced.
-         if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
+         if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
             Doubly_Linked_Storage_Lists.Delete( theList.dlslList, theCursor.dlslCursor );
          end if;
        end if;
@@ -1102,7 +1102,7 @@ end ParseDoublyDelete;
 -- Syntax: b := doubly_linked_list.contains( l, s );
 -- Ada:    b := doubly_linked_list.contains( l, s );
 -- Return true if the list contains list element e.
--- Does not take into account the data meta label.  Result meta labels not
+-- Does not take into account the value meta tag.  Result meta tag not
 -- affected by the data found.
 ------------------------------------------------------------------------------
 
@@ -1126,7 +1126,7 @@ begin
      begin
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Doubly_Linked_Storage_Lists.Contains( theList.dlslList, itemExpr ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseDoublyContains;
@@ -1139,7 +1139,7 @@ end ParseDoublyContains;
 -- Ada:    c := doubly_linked_list.find( l, s );
 -- Move the cursor to the location of e in the list Start from the beginning.
 -- doubly_linked_lists.has_element will be false if the element is not found.
--- Does not take into account the data meta label.
+-- Does not take into account the value meta tag.
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyFind is
@@ -1186,7 +1186,7 @@ end ParseDoublyFind;
 -- Move the cursor to the location of e in the list. Start from the end of
 -- the list. doubly_linked_lists.has_element will be false if the element is
 -- not found.
--- Does not take into account the data meta label
+-- Does not take into account the value meta tag
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyReverseFind is
@@ -1231,7 +1231,7 @@ end ParseDoublyReverseFind;
 -- Syntax: doubly_linked_list.reverse_elements( l );
 -- Ada:    doubly_linked_list.reverse_elements( l );
 -- Reverse the order of the list elements.
--- Does not take into account data meta label
+-- Does not take into account value meta tag
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyReverseElements is
@@ -1258,7 +1258,7 @@ end ParseDoublyReverseElements;
 -- Syntax: doubly_linked_list.flip( l );
 -- Ada:    N/A (alias for reverse_elements)
 -- Reverse the order of the list elements.
--- Does not take into account data meta label
+-- Does not take into account value meta tag
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyFlip is
@@ -1285,7 +1285,7 @@ end ParseDoublyFlip;
 -- Syntax: doubly_linked_list.assign( l1, l2 );
 -- Ada:    doubly_linked_list.assign( l1, l2 );
 -- Overwrite the contents of list l1 with a copy of l2.
--- Does not take into account data meta label
+-- Does not take into account value meta tag
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyAssign is
@@ -1332,7 +1332,7 @@ end ParseDoublyAssign;
 -- Syntax: doubly_linked_list.move( l1, l2 );
 -- Ada:    doubly_linked_list.move( l1, l2 );
 -- Overwrite the contents of list l1 with a copy of l2 and erase l2.
--- Does not take into account data meta label
+-- Does not take into account value meta tag
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyMove is
@@ -1406,7 +1406,7 @@ begin
        findResource( to_resource_id( listResId.value), theList );
        findResource( to_resource_id( firstCursResId.value ), theFirstCursor );
        findResource( to_resource_id( secondCursResId.value ), theSecondCursor );
-       if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
+       if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap( theList.dlslList,
              theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
@@ -1465,7 +1465,7 @@ begin
        findResource( to_resource_id( listResId.value), theList );
        findResource( to_resource_id( firstCursResId.value ), theFirstCursor );
        findResource( to_resource_id( secondCursResId.value ), theSecondCursor );
-       if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
+       if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theFirstCursor.dlslCursor ),
                        Doubly_Linked_Storage_Lists.Element( theSecondCursor.dlslCursor ) ) then
           Doubly_Linked_Storage_Lists.Swap_Links( theList.dlslList,
              theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
@@ -1557,13 +1557,13 @@ begin
        -- There are 3 variations to this function
        --
        -- In all cases, check the element at the source cursor for the data
-       -- meta label.
+       -- meta tag.
 
        -- doubly_linked_list.splice( l1, c, l2 );
 
        if not hasCurs2 and hasSource then
           begin
-             if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
+             if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
                    theTargetList.dlslList,
                    theCursor.dlslCursor,
@@ -1578,7 +1578,7 @@ begin
        -- doubly_linked_list.splice( l1, c, l2, c2 );
        elsif hasCurs2 and hasSource then
           begin
-             if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
+             if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
                     theTargetList.dlslList,
                     theCursor.dlslCursor,
@@ -1594,7 +1594,7 @@ begin
        -- doubly_linked_list.splice( l1, c, c2 );
        elsif hasCurs2 and not hasSource then
           begin
-             if metaLabelOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
+             if metaTagOK( subprogramId, Doubly_Linked_Storage_Lists.Element( theCursor.dlslCursor ) ) then
                 Doubly_Linked_Storage_Lists.Splice(
                     theTargetList.dlslList,
                     theCursor.dlslCursor,
@@ -1621,7 +1621,7 @@ end ParseDoublySplice;
 -- Syntax: b := doubly_linked_list.has_element( l );
 -- Ada:    b := doubly_linked_list.has_element( l );
 -- True if the cursor is positioned at a list element.
--- Data meta labels are ignored
+-- Data meta tags are ignored
 ------------------------------------------------------------------------------
 
 procedure ParseDoublyHasElement( result : out storage; kind : out identifier ) is
@@ -1638,7 +1638,7 @@ begin
      begin
        getParameterValue( cursRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_Storage_Lists.No_Element ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseDoublyHasElement;
@@ -1696,7 +1696,7 @@ begin
      begin
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaLabel, noMetaLabels );
+          delimExpr := storage'( to_unbounded_string( "" & ASCII.LF ), noMetaTag, noMetaTags );
        end if;
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
@@ -1705,14 +1705,14 @@ begin
        if Doubly_Linked_Storage_Lists.Has_Element( curs ) then
           loop
              elementStore := Doubly_Linked_Storage_Lists.Element( curs );
-             -- the data meta labels of the result is the first element's
-             -- data meta labels.
+             -- the value meta tags of the result is the first element's
+             -- value meta tags.
              if firstElement then
-                result.unitMetaLabel := elementStore.unitMetaLabel;
-                result.policyMetaLabels := elementStore.policyMetaLabels;
+                result.unitMetaTag := elementStore.unitMetaTag;
+                result.policyMetaTags := elementStore.policyMetaTags;
                 firstElement := false;
              end if;
-             if metaLabelOk( subprogramId, result, elementStore ) then
+             if metaTagOk( subprogramId, result, elementStore ) then
                 -- TODO: DATA META LABEL: when combining list items into a string,
                 -- the items could have different security levels but the
                 -- string has only one.  Should resolve differences, if any
@@ -1745,8 +1745,8 @@ end ParseDoublyAssemble;
 -- This should run faster than if the user did it themselves in a script.
 -- As a shell language, this is useful for processing data received from
 -- a shell command.
--- All list items receive the meta data labels of the string.  The script
--- must be able to work with the meta data labels of the string.
+-- All list items receive the value meta tags of the string.  The script
+-- must be able to work with the value meta tags of the string.
 -----------------------------------------------------------------------------
 
 procedure ParseDoublyDisassemble is
@@ -1790,7 +1790,7 @@ begin
        -- default delimiter if none supplied
        if not hasDelim then
           -- TODO: the eol delimiter should be based on the operating system
-          delimExpr := storage'( null_unbounded_string & ASCII.LF, noMetaLabel, noMetaLabels );
+          delimExpr := storage'( null_unbounded_string & ASCII.LF, noMetaTag, noMetaTags );
        end if;
        -- remove final part, if it exists and is defined
        if hasFinal then
@@ -1806,9 +1806,9 @@ begin
        -- generate the list items
        getParameterValue( listRef, listResId );
        findResource( to_resource_id( listResId.value), theList );
-       tempStore.unitMetaLabel := strExpr.unitMetaLabel;
-       tempStore.policyMetaLabels := strExpr.policyMetaLabels;
-       if metaLabelOk( subprogramId, strExpr ) then
+       tempStore.unitMetaTag := strExpr.unitMetaTag;
+       tempStore.policyMetaTags := strExpr.policyMetaTags;
+       if metaTagOk( subprogramId, strExpr ) then
           while l >= i loop
              ch := element( strExpr.value, i );
              if ch = element( delimExpr.value, delimPos+1 ) then                           -- looking at delim?
@@ -1818,7 +1818,7 @@ begin
                    Delete( tempStore.value, length( tempStore.value ) - delimLen + 1, length( tempStore.value ) ); -- remove delimiter
                    Doubly_Linked_Storage_Lists.Append( theList.dlslList, tempStore );   -- put string in list
                    tempStore := nullStorage;                             -- reset the running string
-                   tempStore.policyMetaLabels := strExpr.policyMetaLabels;
+                   tempStore.policyMetaTags := strExpr.policyMetaTags;
                    delimPos := 0;                                                    -- and the delim posn
                 end if;
              else                                                                       -- not the delim?
@@ -1831,7 +1831,7 @@ begin
           if length( tempStore.value ) > 0 then
              Doubly_Linked_Storage_Lists.Append( theList.dlslList, tempStore );
           end if;
-       end if;  -- data meta label OK
+       end if;  -- value meta tag OK
      exception when storage_error =>
        err( +"storage error raised" );
      end;
@@ -1885,9 +1885,9 @@ begin
         -- width should be positive by this point
         firstPos := 1;
         strLen := length( strExpr.value );
-        tempStore.unitMetaLabel := strExpr.unitMetaLabel;
-        tempStore.policyMetaLabels := strExpr.policyMetaLabels;
-        if metaLabelOK( subprogramId, strExpr ) then
+        tempStore.unitMetaTag := strExpr.unitMetaTag;
+        tempStore.policyMetaTags := strExpr.policyMetaTags;
+        if metaTagOK( subprogramId, strExpr ) then
            while firstPos < strLen loop
               lastPos := firstPos + width - 1;
               if lastPos > strLen then

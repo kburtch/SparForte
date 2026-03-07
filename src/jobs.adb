@@ -446,7 +446,7 @@ begin
         subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
         reason       => +"was " & em( "not found" ),
         obstructorNotes => nullMessageStrings,
-        remedy       => +"it was moved and is no longer in the PATH directory list, or you need to clear the command hash by restart SparForte or pragma no_command_hash"
+        remedy       => +"it was moved and is no longer in the directory list in the PATH variable, or you need to clear the command hash by restart SparForte or pragma no_command_hash"
      );
   elsif id /= eof_t then
      err(
@@ -454,7 +454,7 @@ begin
         subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd )  & pl( "'" ),
         reason       => +"was " & em( "not found" ),
         obstructorNotes => nullMessageStrings,
-        remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
+        remedy       => +"it was spelled wrong or a directory is missing in the directory list in the PATH variable"
      );
   else
      if cmd = "=" then -- probably ";=" instead of ":="
@@ -471,7 +471,7 @@ begin
            subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
            reason       => +"was " & em( "not found" ),
            obstructorNotes => nullMessageStrings,
-           remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
+           remedy       => +"it was spelled wrong or a directory is missing in the directory list in the PATH variable"
         );
      end if;
   end if;

@@ -84,17 +84,17 @@ begin
         if last >= first then
            max_string := identifiers( var_id ).aStorage( first ).value;
            max := to_numeric( max_string );
-           if metaLabelOk( stats_max_t, identifiers( var_id ).aStorage( first ) ) then
-              result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-              result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           if metaTagOk( stats_max_t, identifiers( var_id ).aStorage( first ) ) then
+              result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+              result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            end if;
            for i in first+1..last loop
-               if metaLabelOk( stats_max_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_max_t, identifiers( var_id ).aStorage( i ) ) then
                   if to_numeric( identifiers( var_id ).aStorage( i ).value ) > max then
                      max_string := identifiers( var_id ).aStorage( i ).value;
                      max := to_numeric( max_string );
-                     result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                     result.policyMetaLabels := resolveEffectiveMetaLabels(
+                     result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                     result.policyMetaTags := resolveEffectiveMetaTags(
                         kind,
                         result,
                         identifiers( var_id ).aStorage( i )
@@ -104,7 +104,7 @@ begin
            end loop;
            result.value := max_string;
         else
-           result := storage'( to_unbounded_string( 0 ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( 0 ), noMetaTag, noMetaTags );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -140,17 +140,17 @@ begin
         if last >= first then
            min_string := identifiers( var_id ).aStorage( first ).value;
            min := to_numeric( min_string );
-           if metaLabelOk( stats_min_t, identifiers( var_id ).aStorage( first ) ) then
-              result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-              result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           if metaTagOk( stats_min_t, identifiers( var_id ).aStorage( first ) ) then
+              result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+              result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            end if;
            for i in first+1..last loop
-               if metaLabelOk( stats_min_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_min_t, identifiers( var_id ).aStorage( i ) ) then
                   if to_numeric( identifiers( var_id ).aStorage( i ).value ) < min then
                      min_string := identifiers( var_id ).aStorage( i ).value;
                      min := to_numeric( min_string );
-                     result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                     result.policyMetaLabels := resolveEffectiveMetaLabels(
+                     result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                     result.policyMetaTags := resolveEffectiveMetaTags(
                         kind,
                         result,
                         identifiers( var_id ).aStorage( i )
@@ -160,7 +160,7 @@ begin
            end loop;
            result.value := min_string;
         else
-           result := storage'( to_unbounded_string( 0 ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( 0 ), noMetaTag, noMetaTags );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -195,15 +195,15 @@ begin
         last  := identifiers( var_id ).aStorage'last;
         sum := 0.0;
         if last >= first then
-           if metaLabelOk( stats_sum_t, identifiers( var_id ).aStorage( first ) ) then
-              result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-              result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           if metaTagOk( stats_sum_t, identifiers( var_id ).aStorage( first ) ) then
+              result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+              result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            end if;
            for i in first..last loop
-               if metaLabelOk( stats_sum_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_sum_t, identifiers( var_id ).aStorage( i ) ) then
                   sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
-                  result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                  result.policyMetaLabels := resolveEffectiveMetaLabels(
+                  result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                  result.policyMetaTags := resolveEffectiveMetaTags(
                      kind,
                      result,
                      identifiers( var_id ).aStorage( i )
@@ -212,7 +212,7 @@ begin
            end loop;
            result.value := to_unbounded_string( sum );
         else
-           result := storage'( to_unbounded_string( 0 ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( 0 ), noMetaTag, noMetaTags );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -249,15 +249,15 @@ begin
         len   := last-first+1;
         sum := 0.0;
         if last >= first then
-           if metaLabelOk( stats_average_t, identifiers( var_id ).aStorage( first ) ) then
-              result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-              result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           if metaTagOk( stats_average_t, identifiers( var_id ).aStorage( first ) ) then
+              result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+              result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            end if;
            for i in first..last loop
-               if metaLabelOk( stats_average_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_average_t, identifiers( var_id ).aStorage( i ) ) then
                   sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
-                  result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                  result.policyMetaLabels := resolveEffectiveMetaLabels(
+                  result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                  result.policyMetaTags := resolveEffectiveMetaTags(
                      kind,
                      result,
                      identifiers( var_id ).aStorage( i )
@@ -266,7 +266,7 @@ begin
            end loop;
            result.value := to_unbounded_string( sum / numericValue( len ) );
         else
-           result := storage'( to_unbounded_string(0), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string(0), noMetaTag, noMetaTags );
            err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -307,15 +307,15 @@ begin
         sum := 0.0;
         -- a variance on one item will result in divide by zero
         if last > first then
-           if metaLabelOk( stats_variance_t, identifiers( var_id ).aStorage( first ) ) then
-              result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-              result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           if metaTagOk( stats_variance_t, identifiers( var_id ).aStorage( first ) ) then
+              result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+              result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            end if;
            for i in first..last loop
-               if metaLabelOk( stats_variance_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_variance_t, identifiers( var_id ).aStorage( i ) ) then
                  sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
-                 result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                 result.policyMetaLabels := resolveEffectiveMetaLabels(
+                 result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                 result.policyMetaTags := resolveEffectiveMetaTags(
                      kind,
                      result,
                      identifiers( var_id ).aStorage( i )
@@ -331,7 +331,7 @@ begin
            end loop;
            result.value := to_unbounded_string( sum_diff_sq / numericValue( len-1 ) );
         else
-           result := storage'( to_unbounded_string( 0 ), noMetaLabel, noMetaLabels );
+           result := storage'( to_unbounded_string( 0 ), noMetaTag, noMetaTags );
            err( +"array is empty or one element" );
         end if;
      exception when CONSTRAINT_ERROR =>
@@ -372,17 +372,17 @@ begin
      kind   := identifiers( identifiers( var_id ).kind ).kind;
      -- a deviation on one item will result in divide by zero
      if last > first then
-        if metaLabelOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( first ) ) then
+        if metaTagOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( first ) ) then
            -- if the initial meta label is not set, the resolve will throw an
            -- exception.  So skip the main loops if we cannot access the first
            -- element of the array.
-           result.unitMetaLabel := identifiers( var_id ).aStorage( first ).unitMetaLabel;
-           result.policyMetaLabels := identifiers( var_id ).aStorage( first ).policyMetaLabels;
+           result.unitMetaTag := identifiers( var_id ).aStorage( first ).unitMetaTag;
+           result.policyMetaTags := identifiers( var_id ).aStorage( first ).policyMetaTags;
            for i in first..last loop
-               if metaLabelOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( i ) ) then
+               if metaTagOk( stats_standard_deviation_t, identifiers( var_id ).aStorage( i ) ) then
                   sum := sum + to_numeric( identifiers( var_id ).aStorage( i ).value );
-                  result.unitMetaLabel := identifiers( var_id ).aStorage( i ).unitMetaLabel;
-                  result.policyMetaLabels := resolveEffectiveMetaLabels(
+                  result.unitMetaTag := identifiers( var_id ).aStorage( i ).unitMetaTag;
+                  result.policyMetaTags := resolveEffectiveMetaTags(
                      kind,
                      result,
                      identifiers( var_id ).aStorage( i )
@@ -398,7 +398,7 @@ begin
         end if;
         result.value := to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) );
      else
-        result := storage'( to_unbounded_string( 0 ), noMetaLabel, noMetaLabels );
+        result := storage'( to_unbounded_string( 0 ), noMetaTag, noMetaTags );
         err( +"array is empty or one element" );
      end if;
   elsif syntax_check then

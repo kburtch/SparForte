@@ -220,10 +220,10 @@ begin
   genTypesOK( expr_type, expected_type );
   if isExecutingCommand then
 -- begin -- DEBUG
--- put( "ParseNextGenItemParameter: storing as " ); put( expr_se.metaLabel'img );
---    put_line( "/" & to_string( identifiers( expr_se.metaLabel ).name ) ); -- DEBUG
+-- put( "ParseNextGenItemParameter: storing as " ); put( expr_se.metaTag'img );
+--    put_line( "/" & to_string( identifiers( expr_se.metaTag ).name ) ); -- DEBUG
 -- exception when constraint_error =>
--- put_line( "ParseNextGenItemParameter: metaLabel is illegal value" );
+-- put_line( "ParseNextGenItemParameter: metaTag is illegal value" );
 -- end;
      u := getUniType( expected_type );
      if u = uni_string_t or u = uni_numeric_t or u = universal_t then

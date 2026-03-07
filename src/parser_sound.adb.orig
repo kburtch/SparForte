@@ -72,7 +72,7 @@ begin
            expr.value := current_working_directory & "/" & expr.value;
         end if;
      end if;
-     if metaLabelOk( sound_play_t, expr ) then
+     if metaTagOk( sound_play_t, expr ) then
         declare
           path : constant string := to_string( expr.value );
           msg : unbounded_string;
@@ -127,7 +127,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     if metaLabelOk( sound_playcd_t, devNameExpr ) then
+     if metaTagOk( sound_playcd_t, devNameExpr ) then
 #if SOUND
         PlayCD(devNameExpr.value );
 #else

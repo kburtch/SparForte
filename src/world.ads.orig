@@ -412,15 +412,15 @@ type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constantUsage 
 -- with null storage.
 ------------------------------------------------------------------------------
 
-subtype  metaLabelID is identifier;
+subtype  metaTagID is identifier;
 
-noMetaLabel     : constant metaLabelID := identifier'first;
+noMetaTag : constant metaTagID := identifier'first;
 
-function metaLabelSetHash( e : metaLabelID ) return ada.containers.hash_type;
+function metaTagSetHash( e : metaTagID ) return ada.containers.hash_type;
 
-package metaLabelHashedSet is new ada.containers.hashed_sets(
-  element_type => MetaLabelID,
-  hash => metaLabelSetHash,
+package metaTagHashedSet is new ada.containers.hashed_sets(
+  element_type => MetaTagID,
+  hash => metaTagSetHash,
   equivalent_elements => "=",
   "=" => "="
 );
@@ -443,15 +443,15 @@ function value_equal( left, right : storage ) return boolean;
 -- Equals is required for doubly linked lists.
 
 type storage is record
-    value      : aliased unbounded_string;
-    unitMetaLabel  : metaLabelID;
-    policyMetaLabels  : metaLabelHashedSet.Set;
+    value       : aliased unbounded_string;
+    unitMetaTag : metaTagID;
+    policyMetaTags  : metaTagHashedSet.Set;
 end record;
 
-noMetaLabels : metaLabelHashedSet.Set renames metaLabelHashedSet.Empty_Set;
+noMetaTags : metaTagHashedSet.Set renames metaTagHashedSet.Empty_Set;
 
-nullStorage : constant storage := ( null_unbounded_string, noMetaLabel, noMetaLabels );
-undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaLabel, noMetaLabels  );
+nullStorage : constant storage := ( null_unbounded_string, noMetaTag, noMetaTags );
+undefinedStorage : constant storage := ( to_unbounded_string( integer'image( integer'last ) ), noMetaTag, noMetaTags  );
 
 type storagePtr is access all storage;
 
@@ -495,11 +495,11 @@ noDeclaredAt : constant natural := 0;
 -- The run-time security level.
 ------------------------------------------------------------------------------
 
-sparMetaLabels    : metaLabelHashedSet.Set := noMetaLabels;-- the security level
+sparMetaTags     : metaTagHashedSet.Set := noMetaTags;-- the security level
 
-stdinMetaLabel   : metaLabelID := noMetaLabel;
-stdoutMetaLabel  : metaLabelID := noMetaLabel;
-stderrMetaLabel  : metaLabelID := noMetaLabel;
+stdinMetaTag   : metaTagID := noMetaTag;
+stdoutMetaTag  : metaTagID := noMetaTag;
+stderrMetaTag  : metaTagID := noMetaTag;
 
 ------------------------------------------------------------------------------
 -- Block Table

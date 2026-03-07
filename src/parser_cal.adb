@@ -81,10 +81,10 @@ begin
   kind := cal_time_t;
   expect( cal_clock_t );
   --if token = tagged_t then
-  --   ParseMetaLabelSuffix( result.policyMetaLabels );
+  --   ParseMetaTagSuffix( result.policyMetaTags );
   --else
-  result.unitMetaLabel := noMetaLabel;
-  result.policyMetaLabels := sparMetaLabels;
+  result.unitMetaTag := noMetaTag;
+  result.policyMetaTags := sparMetaTags;
   --end if;
   result.value := to_unbounded_string( clock'img );
 end ParseCalClock;
@@ -106,12 +106,12 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( year( time( to_numeric( expr.value ) ) )'img ),
-             noMetaLabel,
-             expr.policyMetaLabels
+             noMetaTag,
+             expr.policyMetaTags
           );
         exception when others =>
           err_exception_raised;
@@ -137,12 +137,12 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( month( time( to_numeric( expr.value ) ) )'img ),
-             noMetaLabel,
-             expr.policyMetaLabels
+             noMetaTag,
+             expr.policyMetaTags
           );
         exception when others =>
           err_exception_raised;
@@ -168,12 +168,12 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( day( time( to_numeric( expr.value ) ) )'img ),
-             noMetaLabel,
-             expr.policyMetaLabels
+             noMetaTag,
+             expr.policyMetaTags
           );
         exception when others =>
           err_exception_raised;
@@ -200,12 +200,12 @@ begin
   expect( subprogramId );
   ParseSingleNumericParameter( subprogramId, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'(
              to_unbounded_string( numericValue( seconds( time( to_numeric( expr.value ) ) ) )'img ),
-             noMetaLabel,
-             expr.policyMetaLabels
+             noMetaTag,
+             expr.policyMetaTags
           );
         exception when others =>
           err_exception_raised;
@@ -242,13 +242,13 @@ begin
   ParseNextOutParameter( subprogramId, id3_ref, cal_day_number_t );
   ParseLastOutParameter( subprogramId, id4_ref, cal_day_duration_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, dateExpr ) then
+     if metaTagOk( subprogramId, dateExpr ) then
         begin
           Split( time( to_numeric( dateExpr.value ) ), year, month, day, seconds );
-          AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), noMetaLabel, dateExpr.policyMetaLabels ));
-          AssignParameter( id2_ref, storage'( to_unbounded_string( month'img ), noMetaLabel, dateExpr.policyMetaLabels ));
-          AssignParameter( id3_ref, storage'( to_unbounded_string( day'img ), noMetaLabel, dateExpr.policyMetaLabels ));
-          AssignParameter( id4_ref, storage'( to_unbounded_string( seconds'img ), noMetaLabel, dateExpr.policyMetaLabels ));
+          AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), noMetaTag, dateExpr.policyMetaTags ));
+          AssignParameter( id2_ref, storage'( to_unbounded_string( month'img ), noMetaTag, dateExpr.policyMetaTags ));
+          AssignParameter( id3_ref, storage'( to_unbounded_string( day'img ), noMetaTag, dateExpr.policyMetaTags ));
+          AssignParameter( id4_ref, storage'( to_unbounded_string( seconds'img ), noMetaTag, dateExpr.policyMetaTags ));
         exception when others =>
           err_exception_raised;
         end;
@@ -282,16 +282,16 @@ begin
   ParseNextNumericParameter( subprogramId, dayExpr, day_type, cal_day_number_t );
   ParseLastNumericParameter( subprogramId, secsExpr, secs_type, cal_day_duration_t );
   if isExecutingCommand then
-     -- this is a bit ugly because I do not have a 4-way version of metaLabelOk
-     if metaLabelOk( subprogramId, yearExpr, monthExpr, dayExpr, secsExpr ) then
+     -- this is a bit ugly because I do not have a 4-way version of metaTagOk
+     if metaTagOk( subprogramId, yearExpr, monthExpr, dayExpr, secsExpr ) then
         begin
           result := storage'( to_unbounded_string(
               Time_Of( year_number( to_numeric( yearExpr.value ) ),
                        month_number( to_numeric( monthExpr.value ) ),
                        day_number( to_numeric( dayExpr.value ) ),
                        day_duration( to_numeric( secsExpr.value ) ) )'img ),
-                 noMetaLabel,
-                 resolveEffectiveMetaLabels( kind, yearExpr, monthExpr, dayExpr, secsExpr )
+                 noMetaTag,
+                 resolveEffectiveMetaTags( kind, yearExpr, monthExpr, dayExpr, secsExpr )
               );
         exception when time_error =>
           err( +"time error: illegal time value" );
@@ -321,7 +321,7 @@ begin
   expect( cal_to_julian_t );
   ParseSingleNumericParameter( cal_to_julian_t, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( cal_to_julian_t, expr ) then
+     if metaTagOk( cal_to_julian_t, expr ) then
        declare
          -- Communications of the ACM, October 1968
          Year   : year_number;
@@ -352,7 +352,7 @@ begin
                   ) / 100.0 )
                   ) / 4.0 );
          Julian := K - 32075.0 + Term1 + Term2 - Term3;
-         result := storage'( to_unbounded_string( long_integer( Julian )'img ), noMetaLabel, expr.policyMetaLabels );
+         result := storage'( to_unbounded_string( long_integer( Julian )'img ), noMetaTag, expr.policyMetaTags );
        exception when others =>
          err_exception_raised;
        end;
@@ -376,7 +376,7 @@ begin
   expect( cal_to_time_t );
   ParseSingleNumericParameter( cal_to_time_t, expr, expr_type, cal_julian_date_t );
   if isExecutingCommand then
-     if metaLabelOk( cal_to_time_t, expr ) then
+     if metaTagOk( cal_to_time_t, expr ) then
        declare
          -- Communications of the ACM, October 1968
          Julian : long_float;
@@ -405,8 +405,8 @@ begin
          Day := Day_Number( K );
          result := storage'(
            to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img ),
-           noMetaLabel,
-           expr.policyMetaLabels );
+           noMetaTag,
+           expr.policyMetaTags );
        exception when others =>
          err_exception_raised;
        end;
@@ -431,7 +431,7 @@ begin
   expect( cal_day_of_week_t );
   ParseSingleNumericParameter( cal_day_of_week_t, expr, expr_type, cal_time_t );
   if isExecutingCommand then
-     if metaLabelOk( cal_day_of_week_t, expr ) then
+     if metaTagOk( cal_day_of_week_t, expr ) then
         declare
           Year   : year_number;
           Month  : month_number;
@@ -441,7 +441,7 @@ begin
         begin
           Split( time( to_numeric( expr.value ) ), Year, Month, Day, DayDur );
           C_day_of_week( wday, Year, Month, Day );
-          result := storage'( to_unbounded_string( wday'img ), noMetaLabel, expr.policyMetaLabels );
+          result := storage'( to_unbounded_string( wday'img ), noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;

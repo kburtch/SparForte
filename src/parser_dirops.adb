@@ -99,7 +99,7 @@ begin
   expect( subprogramId );
   if isExecutingCommand then
      begin
-       result := storage'( null_unbounded_string & dir_separator, noMetaLabel, noMetaLabels );
+       result := storage'( null_unbounded_string & dir_separator, noMetaTag, noMetaTags );
      exception when directory_error =>
        err( +"directory not accessible" );
      when others =>
@@ -128,7 +128,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           Change_Dir( dir_name_str( to_string( expr.value ) ) );
         exception when directory_error =>
@@ -173,7 +173,7 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_dir_name_str_t );
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           Make_Dir( dir_name_str( to_string( expr.value ) ) );
         exception when directory_error =>
@@ -215,7 +215,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         declare
           recursive : constant boolean := expr2.value = to_unbounded_string( "1" );
         begin
@@ -246,7 +246,7 @@ begin
 
   if isExecutingCommand then
      begin
-       result := storage'( to_unbounded_string( get_current_dir ), noMetaLabel, sparMetaLabels );
+       result := storage'( to_unbounded_string( get_current_dir ), noMetaTag, sparMetaTags );
      exception when directory_error =>
        err( +"directory not accessible" );
      when others =>
@@ -274,10 +274,10 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( Containing_Directory (
-             Full_Name( path_name( to_string( expr.value ))))), noMetaLabel, expr.policyMetaLabels );
+             Full_Name( path_name( to_string( expr.value ))))), noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -304,10 +304,10 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( dir_name( path_name( to_string( expr.value ) ) ) ),
-            noMetaLabel, expr.policyMetaLabels );
+            noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -341,10 +341,10 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( base_name( path_name( to_string( expr.value ) ), to_string( expr2.value ) ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -370,10 +370,10 @@ begin
   expect( subprogramId );
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_extension( path_name( to_string( expr.value ) ) ) ),
-            noMetaLabel, expr.policyMetaLabels );
+            noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -400,10 +400,10 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type, dirops_path_name_t );
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_unbounded_string( file_name( path_name( to_string( expr.value ) ) ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -437,7 +437,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         declare
           style : path_style := system_default;
         begin
@@ -450,7 +450,7 @@ begin
                 style := System_Default;
              end if;
              result := storage'( to_unbounded_string( format_pathname( path_name( to_string( expr.value ) ), style ) ),
-                noMetaLabel, expr.policyMetaLabels );
+                noMetaTag, expr.policyMetaTags );
         exception when directory_error =>
           err( +"directory not accessible" );
         when others =>
@@ -486,7 +486,7 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         declare
           style : environment_style := System_Default;
         begin
@@ -501,7 +501,7 @@ begin
              style := System_Default;
           end if;
           result := storage'( to_unbounded_string( expand_path( path_name( to_string( expr.value ) ), style ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
        exception when directory_error =>
           err( +"directory not accessible" );
        when others =>
@@ -535,12 +535,12 @@ begin
   end if;
 
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           if not identifiers( ref.id ).resource then
              identifiers( ref.id ).resource := true;
              declareResource( resId, directory, getIdentifierBlock( ref.id ) );
-             AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaLabel, expr.policyMetaLabels ) );
+             AssignParameter( ref, storage'( to_unbounded_string( resId ), noMetaTag, expr.policyMetaTags ) );
              findResource( resId, theDir );
           else
              -- Reuse existing resource
@@ -580,7 +580,7 @@ begin
   ParseSingleInOutParameter( subprogramId, dirRef, dirops_dir_type_t );
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( subprogramId, dir ) then
+     if metaTagOk( subprogramId, dir ) then
         -- TODO: how do we tell if the directory is open?
         -- if identifiers( dirRef.id ).resource then
            begin
@@ -619,19 +619,19 @@ begin
 
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( subprogramId, dir ) then
+     if metaTagOk( subprogramId, dir ) then
         -- TODO: probably cannot tell if it's open in an array
         if dir.value /= null_unbounded_string then
            begin
              findResource( to_resource_id( dir.value ), theDir );
-             result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaLabel, sparMetaLabels );
+             result := storage'( to_spar_boolean( Is_Open( theDir.dir ) ), noMetaTag, sparMetaTags );
            exception when others =>
              err_exception_raised;
            end;
         else
            -- probably not open
            result := storage'( to_spar_boolean( false ),
-              noMetaLabel, dir.policyMetaLabels );
+              noMetaTag, dir.policyMetaTags );
         end if;
      end if;
   end if;
@@ -660,7 +660,7 @@ begin
   --ParseLastOutParameter( lastRef, natural_t );
   if isExecutingCommand then
      getParameterValue( dirRef, dir );
-     if metaLabelOk( subprogramId, dir ) then
+     if metaTagOk( subprogramId, dir ) then
         declare
           s : string(1..1024);
           last : natural;
@@ -668,7 +668,7 @@ begin
           findResource( to_resource_id( dir.value ), theDir );
           Read( theDir.dir, s, last );
           AssignParameter( strRef, storage'( to_unbounded_string( s(1..Last) ),
-             noMetaLabel, dir.policyMetaLabels ) );
+             noMetaTag, dir.policyMetaTags ) );
           --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
         exception when DIRECTORY_ERROR =>
           err( +"directory is not open" );

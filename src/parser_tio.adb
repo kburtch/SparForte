@@ -396,14 +396,14 @@ procedure ParseIsOpen( result : out storage ) is
   theOpenFileRec : storage;
   subprogramId : constant identifier := is_open_t;
 begin
-  result := storage'( identifiers( false_t ).store.value, noMetaLabel, sparMetaLabels );
+  result := storage'( identifiers( false_t ).store.value, noMetaTag, sparMetaTags );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( openFileRef, theOpenFileRec );
-     if metaLabelOk( subprogramId, theOpenFileRec ) then
+     if metaTagOk( subprogramId, theOpenFileRec ) then
         -- The value of current_input, current_output, current_error are aliases
         -- to the actual file.
         if openFileRef.id = current_input_t then
@@ -417,7 +417,7 @@ begin
         -- executing anything external to SparForte
         if uniTypesOk( openFileRef.kind, file_type_t ) then
            if length( theOpenFileRec.value ) > 0 then
-              result := storage'( identifiers( true_t ).store.value, noMetaLabel, theOpenFileRec.policyMetaLabels );
+              result := storage'( identifiers( true_t ).store.value, noMetaTag, theOpenFileRec.policyMetaTags );
            end if;
         end if;
      end if;
@@ -433,13 +433,13 @@ procedure ParseEndOfFile( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := end_of_file_t;
 begin
   kind := boolean_t;
-  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaLabel, noMetaLabels );
+  result := storage'( to_unbounded_string( boolean'image( false ) ), noMetaTag, noMetaTags );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFileOrSocket( subprogramId, openFileRef, openFileKind );
   if isExecutingCommand then
      GetParameterValue( openFileRef, theOpenFileRec );
-     if metaLabelOk( subprogramId, theOpenFileRec ) then
+     if metaTagOk( subprogramId, theOpenFileRec ) then
         begin
            if openFileKind = file_type_t then
               if identifier'value( to_string( stringField( openFileRef, mode_field ) ) ) /= in_file_t then
@@ -463,7 +463,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := storage'( stringField( openFileRef, eof_field ), noMetaLabel, theOpenFileRec.policyMetaLabels );
+     result := storage'( stringField( openFileRef, eof_field ), noMetaTag, theOpenFileRec.policyMetaTags );
   end if;
 end ParseEndOfFile;
 
@@ -475,15 +475,15 @@ procedure ParseEndOfLine( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := end_of_line_t;
 begin
   kind := boolean_t;
-  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel, noMetaLabels );
+  result:= storage'( to_unbounded_string( integer'image( 0 ) ), noMetaTag, noMetaTags );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFile( subprogramId, fileRef );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( fileRef, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
-        result := storage'( stringField( fileRef, eol_field ), noMetaLabel, theFileRec.policyMetaLabels );
+     if metaTagOk( subprogramId, theFileRec ) then
+        result := storage'( stringField( fileRef, eol_field ), noMetaTag, theFileRec.policyMetaTags );
      end if;
   end if;
 end ParseEndOfLine;
@@ -496,16 +496,16 @@ procedure ParseLine( result : out storage; kind : out identifier ) is
   subprogramId : constant identifier := line_t;
 begin
   kind := integer_t;   -- TODO: probably should be something more specific
-  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaLabel, noMetaLabels );
+  result := storage'( to_unbounded_string( integer'image( 0 ) ), noMetaTag, noMetaTags );
   expect( subprogramId );
   expect( symbol_t, "(" );
   ParseOpenFile( line_t, file_ref );
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
+     if metaTagOk( subprogramId, theFileRec ) then
         result := storage'( stringField( file_ref, line_field ),
-           noMetaLabel, theFileRec.policyMetaLabels );
+           noMetaTag, theFileRec.policyMetaTags );
      end if;
   end if;
 end ParseLine;
@@ -525,9 +525,9 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
+     if metaTagOk( subprogramId, theFileRec ) then
         result := storage'( stringField( file_ref, name_field ),
-           noMetaLabel, theFileRec.policyMetaLabels );
+           noMetaTag, theFileRec.policyMetaTags );
      end if;
   end if;
 end ParseName;
@@ -547,11 +547,11 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec) then
+     if metaTagOk( subprogramId, theFileRec) then
         begin
           result.value := stringField( file_ref, mode_field );
-          result.unitMetaLabel := noMetaLabel;
-          result.policyMetaLabels := theFileRec.policyMetaLabels;
+          result.unitMetaTag := noMetaTag;
+          result.policyMetaTags := theFileRec.policyMetaTags;
           if identifier'value( to_string( result.value ) ) = in_file_t then
              result.value := identifiers( in_file_t ).store.value;
           elsif identifier'value( to_string( result.value ) ) = out_file_t then
@@ -588,9 +588,9 @@ begin
   kind := character_t;
   expect( subprogramId );
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
+     if metaTagOk( subprogramId, identifiers( current_input_t ).store.all ) then
         getKey( ch );
-        result := storage'( to_unbounded_string( ch & "" ), noMetaLabel, sparMetaLabels );
+        result := storage'( to_unbounded_string( ch & "" ), noMetaTag, sparMetaTags );
      end if;
   end if;
 end ParseInkey;
@@ -619,7 +619,7 @@ begin
      if file_ref.id /= eof_t then
         begin
            GetParameterValue( file_ref, fileInfo );
-           if metaLabelOk( subprogramId, fileInfo ) then
+           if metaTagOk( subprogramId, fileInfo ) then
               if trace then
                  put_trace( "Input from file descriptor" & to_string(
                     stringField( file_ref, fd_field ) ) );
@@ -642,8 +642,8 @@ begin
                  exit when ch = ASCII.LF or error_found or wasSIGINT or wasSIGTERM;
                  result.value := result.value & ch;
               end loop;
-              result.unitMetaLabel := noMetaLabel;
-              result.policyMetaLabels := identifiers( file_ref.id ).store.policyMetaLabels;
+              result.unitMetaTag := noMetaTag;
+              result.policyMetaTags := identifiers( file_ref.id ).store.policyMetaTags;
            end if;
         exception when msg : others =>
           err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -656,10 +656,10 @@ begin
           );
        end;
      else
-        if metaLabelOk( subprogramId, identifiers( current_input_t ).store.all ) then
+        if metaTagOk( subprogramId, identifiers( current_input_t ).store.all ) then
            pegasoft.user_io.getline.getLine( result.value );
-           result.unitMetaLabel := noMetaLabel;
-           result.policyMetaLabels := identifiers( current_input_t ).store.policyMetaLabels;
+           result.unitMetaTag := noMetaTag;
+           result.policyMetaTags := identifiers( current_input_t ).store.policyMetaTags;
            if wasSIGINT or wasSIGTERM then
               new_line;  -- user didn't press enter
               -- wasSIGINT will be cleared later
@@ -683,7 +683,7 @@ procedure ParseOpen( create : boolean := false ) is
   mode : identifier;
   fileName : storage;
   -- name : unbounded_string;
-  -- fileMetaLabel : metaLabelID;
+  -- fileMetaTag : metaTagID;
   kind : identifier;
   expr     : storage;
   exprType : identifier;
@@ -712,15 +712,15 @@ begin
      -- the name is optional, default to a temp file name
      if token = symbol_t and identifiers( token ).store.value = ")" then
         makeTempFile( fileName.value );
-        fileName.unitMetaLabel := noMetaLabel;
-        fileName.policyMetaLabels := sparMetaLabels;
+        fileName.unitMetaTag := noMetaTag;
+        fileName.policyMetaTags := sparMetaTags;
      else
         expectParameterComma;
         ParseExpression( expr, exprType );
         if uniTypesOk( exprType, uni_string_t ) then
            fileName := expr;
            -- name := expr.value;
-           --fileMetaLabel := expr.metaLabel;
+           --fileMetaTag := expr.metaTag;
            if length( fileName.value ) = 0 and then not syntax_check then
               err( +"pathname should not be null" );
            end if;
@@ -757,7 +757,7 @@ begin
            if uniTypesOk( exprType, uni_string_t ) then
               fileName := expr;
               --name := expr.value;
-              --fileMetaLabel := expr.metaLabel;
+              --fileMetaTag := expr.metaTag;
               if length( fileName.value ) = 0 and then not syntax_check then
                  err( +"hostname should not be null" );
               end if;
@@ -768,7 +768,7 @@ begin
            if uniTypesOk( exprType, uni_string_t ) then
               fileName := expr;
               --name := expr.value;
-              --fileMetaLabel := expr.metaLabel;
+              --fileMetaTag := expr.metaTag;
               if length( fileName.value ) = 0 and then not syntax_check then
                  err( +"pathname should not be null" );
               end if;
@@ -779,12 +779,12 @@ begin
   end if; -- is open
   -- do it
   if isExecutingCommand then -- should use umask for permissions
-     if metaLabelOk( subprogramId, fileName ) then
+     if metaTagOk( subprogramId, fileName ) then
         begin
            if kind = file_type_t then
-              DoFileOpen( file_ref, mode, create, to_string( fileName.value ), fileName.policyMetaLabels );
+              DoFileOpen( file_ref, mode, create, to_string( fileName.value ), fileName.policyMetaTags );
            else
-              DoSocketOpen( file_ref, fileName.value, fileName.policyMetaLabels );
+              DoSocketOpen( file_ref, fileName.value, fileName.policyMetaTags );
            end if;
         exception when msg : others =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -806,7 +806,7 @@ procedure ParseReset is
   file_ref: reference;
   mode    : identifier := eof_t;
   name    : unbounded_string;
-  fileMetaLabels : metaLabelHashedSet.Set;
+  fileMetaTags : metaTagHashedSet.Set;
   modestr : unbounded_string;
   fd      : aFileDescriptor;
   closeResult : int;
@@ -829,11 +829,11 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      GetParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
+     if metaTagOk( subprogramId, theFileRec ) then
         begin
            fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
            name := stringField( file_ref, name_field );
-           fileMetaLabels := theFileRec.policyMetaLabels;
+           fileMetaTags := theFileRec.policyMetaTags;
            if mode = eof_t then
               modestr := stringField( file_ref, mode_field );
               if to_string( modestr ) = in_file_t'img then
@@ -853,7 +853,7 @@ begin
                  goto retry;
               end if;
            end if;
-           DoFileOpen( file_ref, mode, false, to_string( name ), fileMetaLabels );
+           DoFileOpen( file_ref, mode, false, to_string( name ), fileMetaTags );
 
         exception when msg : others =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -884,7 +884,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      getParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
+     if metaTagOk( subprogramId, theFileRec ) then
         begin
            fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
            if fd = currentStandardInput then
@@ -940,7 +940,7 @@ begin
   end if;
   if isExecutingCommand then
      GetParameterValue( file_ref, theFileRec );
-     if metaLabelOk( subprogramId, theFileRec ) then
+     if metaTagOk( subprogramId, theFileRec ) then
         begin
           fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
           if fd = currentStandardInput then
@@ -1005,7 +1005,7 @@ begin
         end if;
         if file_ref.id /= eof_t then
            getParameterValue( file_ref, theFileRec );
-           if metaLabelOk( subprogramId, theFileRec ) then
+           if metaTagOk( subprogramId, theFileRec ) then
               if kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
                  DoGet( file_ref );
                  replaceField( file_ref, doget_field, "0" );
@@ -1023,7 +1023,7 @@ begin
            end if;
         else
            -- stdin (I don't like this)
-           if metaLabelOk( subprogramId, identifiers( standard_input_t ).store.all ) then
+           if metaTagOk( subprogramId, identifiers( standard_input_t ).store.all ) then
               loop
                  readchar( result, stdin, ch, 1 );
  -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
@@ -1096,7 +1096,7 @@ begin
         end if;
         if file_ref.id /= eof_t then
            getParameterValue( file_ref, theFileRec );
-           if metaLabelOk( subprogramId, theFileRec ) then
+           if metaTagOk( subprogramId, theFileRec ) then
               GetParameterValue( file_ref, fileInfo );
               if kind = socket_type_t and then stringField( fileInfo.value, recSep, doget_field ) = "1" then
                  -- First get must update the 1 char look-ahead in the file_info
@@ -1110,15 +1110,15 @@ begin
                  ch := Element( fileInfo.value, 1 );
                  AssignParameter( id_ref,
                     storage'( to_unbounded_string( "" & ch ),
-                    unitMetaLabel => noMetaLabel,
-                    policyMetaLabels => identifiers( file_ref.id ).store.policyMetaLabels )
+                    unitMetaTag => noMetaTag,
+                    policyMetaTags => identifiers( file_ref.id ).store.policyMetaTags )
                  );
                  AssignParameter( file_ref, fileInfo );
                  DoGet( file_ref );
               end if;
            end if;
         else
-           if metaLabelOk( subprogramId, identifiers( standard_input_t ).store.all ) then
+           if metaTagOk( subprogramId, identifiers( standard_input_t ).store.all ) then
               fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
    <<reread>>    readchar( result, fd, ch, 1 );
  -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
@@ -1132,8 +1132,8 @@ begin
               else
                  AssignParameter( id_ref,
                     storage'(to_unbounded_string( "" & ch ),
-                    unitMetaLabel => noMetaLabel,
-                    policyMetaLabels => identifiers( standard_input_t ).store.policyMetaLabels )
+                    unitMetaTag => noMetaTag,
+                    policyMetaTags => identifiers( standard_input_t ).store.policyMetaTags )
                  );
               end if;
               if ch = ASCII.LF then -- not stdin (or error)?
@@ -1207,7 +1207,7 @@ begin
   if isExecutingCommand then
      begin
         if target_ref.id = standard_error_t then
-           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+           if metaTagOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1225,7 +1225,7 @@ begin
               end loop;
            end if;
         elsif target_ref.id = standard_output_t then
-           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+           if metaTagOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1246,7 +1246,7 @@ begin
            end if;
         else
            getParameterValue( target_ref, theFileRec );
-           if metaLabelOk( subprogramId, theFileRec, expr ) then
+           if metaTagOk( subprogramId, theFileRec, expr ) then
               fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
               for i in 1..length( expr.value ) loop
                   ch := Element( expr.value, i );
@@ -1417,7 +1417,7 @@ begin
            err( pl( "full records cannot be printed with ?.  Try env" ) );
         end if;
         -- If an just error occurred, don't print anything further.
-        if metaLabelOk( "?", identifiers( standard_output_t ).store.all, expr ) then
+        if metaTagOk( "?", identifiers( standard_output_t ).store.all, expr ) then
            if not error_found then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
@@ -1527,7 +1527,7 @@ begin
   if isExecutingCommand then
      begin
         if target_ref.id = standard_error_t then
-           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+           if metaTagOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1545,7 +1545,7 @@ begin
               end loop;
            end if;
         elsif target_ref.id = standard_output_t then
-           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+           if metaTagOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1565,7 +1565,7 @@ begin
            end if;
         else
            getParameterValue( target_ref, theFileRec );
-           if metaLabelOk( subprogramId, theFileRec, expr ) then
+           if metaTagOk( subprogramId, theFileRec, expr ) then
               fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
               for i in 1..length( expr.value ) loop
                   ch := Element( expr.value, i );
@@ -1614,16 +1614,16 @@ begin
   if isExecutingCommand then
      begin
         if target_ref.id = standard_error_t then
-           if metaLabelOk( subprogramId, identifiers( standard_error_t ).store.all ) then
+           if metaTagOk( subprogramId, identifiers( standard_error_t ).store.all ) then
               New_Line( standard_error );
            end if;
         elsif target_ref.id = standard_output_t then
-           if metaLabelOk( subprogramId, identifiers( standard_output_t ).store.all ) then
+           if metaTagOk( subprogramId, identifiers( standard_output_t ).store.all ) then
               New_Line;
            end if;
         else
            getParameterValue( target_ref, theFileRec );
-           if metaLabelOk( subprogramId, theFileRec ) then
+           if metaTagOk( subprogramId, theFileRec ) then
               fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
               ch := ASCII.LF;
 <<rewrite>>   writechar( result, fd, ch, 1 );
@@ -1691,7 +1691,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( inputFile_ref, theInputFile );
-     if metaLabelOk( subprogramId, theInputFile ) then
+     if metaTagOk( subprogramId, theInputFile ) then
         -- setting it to itself is a no-op
         if inputFile_ref.id /= current_input_t then
            begin
@@ -1759,7 +1759,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( outputFile_ref, theOutputFile );
-     if metaLabelOk( subprogramId, theOutputFile ) then
+     if metaTagOk( subprogramId, theOutputFile ) then
         -- setting it to itself is a no-op
         if outputFile_ref.id /= current_output_t then
            begin
@@ -1827,7 +1827,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( errorOutputFile_ref, theErrorOutputFile );
-     if metaLabelOk( subprogramId, theErrorOutputFile ) then
+     if metaTagOk( subprogramId, theErrorOutputFile ) then
         -- setting it to itself is a no-op
         if errorOutputFile_ref.id /= current_error_t then
            begin
@@ -1899,7 +1899,7 @@ begin
 
   if isExecutingCommand then
      getParameterValue( file_ref, theInputFile );
-     if metaLabelOk( subprogramId, theInputFile ) then
+     if metaTagOk( subprogramId, theInputFile ) then
         begin
           -- TODO: integration with text_io functions.  Currently, it's ignoring
           -- TextIO's double-buffer queue.
@@ -1914,16 +1914,16 @@ begin
                    -- when non-blocking, Control-D indicates nothing read
                    AssignParameter( avail_ref,
                       storage'(to_spar_boolean( ch = ASCII.EOT ),
-                      unitMetaLabel => noMetaLabel,
-                      policyMetaLabels => theInputFile.policyMetaLabels )
+                      unitMetaTag => noMetaTag,
+                      policyMetaTags => theInputFile.policyMetaTags )
                    );
                  else
                    getKey( ch );
                  end if;
                  AssignParameter( id_ref,
                     storage'(to_unbounded_string( "" & ch ),
-                    unitMetaLabel => noMetaLabel,
-                    policyMetaLabels => theInputFile.policyMetaLabels )
+                    unitMetaTag => noMetaTag,
+                    policyMetaTags => theInputFile.policyMetaTags )
                  );
               else
                  err( +"only implemented for a tty/terminal" );

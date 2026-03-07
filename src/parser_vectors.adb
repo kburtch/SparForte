@@ -403,8 +403,8 @@ begin
         -- leaks in the resource table.
         if not identifiers( cursRef.id ).resource then
            declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-           identifiers( cursRef.id ).sStorage.unitMetaLabel := noMetaLabel;
-           identifiers( cursRef.id ).sStorage.policyMetaLabels := noMetaLabels;
+           identifiers( cursRef.id ).sStorage.unitMetaTag := noMetaTag;
+           identifiers( cursRef.id ).sStorage.policyMetaTags := noMetaTags;
            identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
            identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
            identifiers( cursRef.id ).resource := true;
@@ -447,8 +447,8 @@ begin
         -- leaks in the resource table.
         if not identifiers( cursRef.id ).resource then
            declareResource( resId, vector_storage_list_cursor, getIdentifierBlock( cursRef.id ) );
-           identifiers( cursRef.id ).sStorage.unitMetaLabel := noMetaLabel;
-           identifiers( cursRef.id ).sStorage.policyMetaLabels := noMetaLabels;
+           identifiers( cursRef.id ).sStorage.unitMetaTag := noMetaTag;
+           identifiers( cursRef.id ).sStorage.policyMetaTags := noMetaTags;
            identifiers( cursRef.id ).sStorage.value := to_unbounded_string( resId );
            identifiers( cursRef.id ).store := identifiers( cursRef.id ).sStorage'access;
            identifiers( cursRef.id ).resource := true;
@@ -675,7 +675,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       if metaLabelOk( subprogramId, itemExpr ) then
+       if metaTagOk( subprogramId, itemExpr ) then
           theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
              ada.containers.count_type'value( to_string( cntExpr.value ) ) );
        end if;
@@ -710,7 +710,7 @@ begin
          to_unbounded_string(
             ada.containers.count_type'image( Vector_Storage_Lists.Capacity( theVector.vslVector ) )
          ),
-         noMetaLabel, noMetaLabels
+         noMetaTag, noMetaTags
       );
      end;
   end if;
@@ -784,7 +784,7 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        result := storage'(
          to_unbounded_string( ada.containers.count_type'image( Vector_Storage_Lists.Length( theVector.vslVector ) ) ),
-         noMetaLabel, noMetaLabels
+         noMetaTag, noMetaTags
       );
      end;
   end if;
@@ -857,7 +857,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Is_Empty( theVector.vslVector ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsIsEmpty;
@@ -900,11 +900,11 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Append( theVector.vslVector, itemExpr, cnt );
           end if;
        else
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Append( theVector.vslVector, itemExpr );
           end if;
        end if;
@@ -956,11 +956,11 @@ begin
        findResource( to_resource_id( vecResId.value ), theVector );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr.value ) );
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr, cnt );
           end if;
        else
-          if metaLabelOk( subprogramId, itemExpr ) then
+          if metaTagOk( subprogramId, itemExpr ) then
              Vector_Storage_Lists.Prepend( theVector.vslVector, itemExpr );
           end if;
        end if;
@@ -1012,7 +1012,7 @@ begin
          the_string : storage;
        begin
          the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOK( subprogramId, the_string, strExpr ) then
+         if metaTagOK( subprogramId, the_string, strExpr ) then
             the_string.value := the_string.value & strExpr.value;
             Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
          end if;
@@ -1063,7 +1063,7 @@ begin
          the_string : storage;
        begin
          the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOK( subprogramId, the_string, strExpr ) then
+         if metaTagOK( subprogramId, the_string, strExpr ) then
             the_string.value := strExpr.value & the_string.value;
             Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
          end if;
@@ -1104,7 +1104,7 @@ begin
        userIdx := Vector_Storage_Lists.First_Index( theVector.vslVector );
        result := storage'( to_unbounded_string( long_long_integer'image(
             toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ),
-         noMetaLabel, noMetaLabels );
+         noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsFirstIndex;
@@ -1133,7 +1133,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        userIdx := Vector_Storage_Lists.Last_Index( theVector.vslVector );
-       result := storage'( to_unbounded_string( long_long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_unbounded_string( long_long_integer'image( toUserVectorIndex( subprogramId, vectorRef.Id, userIdx ) ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsLastIndex;
@@ -1216,7 +1216,7 @@ begin
          getParameterValue( cursorRef, cursResId );
          findResource( to_resource_id( cursResId.value ), theCursor );
          oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
-         if metaLabelOk( subprogramId, oldElem ) then
+         if metaTagOk( subprogramId, oldElem ) then
             result := oldElem;
          end if;
        else
@@ -1225,7 +1225,7 @@ begin
          --idx := vector_index( to_numeric( idxExpr ) );
          idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
          oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-         if metaLabelOk( subprogramId, oldElem ) then
+         if metaTagOk( subprogramId, oldElem ) then
             result := oldElem;
          end if;
        end if;
@@ -1263,7 +1263,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.First_Element( theVector.vslVector );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1297,7 +1297,7 @@ begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
        oldElem := Vector_Storage_Lists.Last_Element( theVector.vslVector );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1349,12 +1349,12 @@ begin
           for i in 1..cnt loop
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
-             if metaLabelOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
+             if metaTagOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
                 Vector_Storage_Lists.Delete_First( theVector.vslVector );
              end if;
           end loop;
        else
-          if metaLabelOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
+          if metaTagOK( subprogramId, Vector_Storage_Lists.First_Element( theVector.vslVector ) ) then
              Vector_Storage_Lists.Delete_First( theVector.vslVector );
           end if;
        end if;
@@ -1409,12 +1409,12 @@ begin
           for i in 1..cnt loop
              -- Note: check-before-use.  This will be an issue if concurrency is
              -- introduced.
-             if metaLabelOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
+             if metaTagOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
                 Vector_Storage_Lists.Delete_Last( theVector.vslVector );
              end if;
           end loop;
        else
-          if metaLabelOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
+          if metaTagOK( subprogramId, Vector_Storage_Lists.Last_Element( theVector.vslVector ) ) then
              Vector_Storage_Lists.Delete_Last( theVector.vslVector );
           end if;
        end if;
@@ -1453,7 +1453,7 @@ begin
      begin
        getParameterValue( vectorRef, vecResId );
        findResource( to_resource_id( vecResId.value ), theVector );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Contains( theVector.vslVector, itemExpr ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsContains;
@@ -1739,7 +1739,7 @@ begin
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
               for i in 1..cnt loop
                   oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-                  if metaLabelOk( subprogramId, oldElem ) then
+                  if metaTagOk( subprogramId, oldElem ) then
                      vector_Storage_Lists.Delete( theVector.vslVector, idx );
                   end if;
               end loop;
@@ -1747,7 +1747,7 @@ begin
            else
               idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
               oldElem := Vector_Storage_Lists.Element( theVector.vslVector, idx );
-              if metaLabelOk( subprogramId, oldElem ) then
+              if metaTagOk( subprogramId, oldElem ) then
                  vector_Storage_Lists.Delete( theVector.vslVector, idx );
               end if;
            end if;
@@ -1761,7 +1761,7 @@ begin
                    subjectNotes => pl( qp( "the count value" ) ),
                    subjectType  => cntType,
                    reason => +"cannot be used with with a cursor because",
-                   obstructorNotes => +"of SparForte's meta data label implementation",
+                   obstructorNotes => +"of SparForte's value meta tags implementation",
                    remedy => +"reposition the cursor and delete each item"
               );
               --begin
@@ -1776,7 +1776,7 @@ begin
               --begin
               --for i in 1..cnt loop
               --    oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
-              --    if metaLabelOk( oldElem ) then
+              --    if metaTagOk( oldElem ) then
               --       nextCursor := Vector_Storage_Lists.Next( theCursor.vslCursor );
               --       Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
               --       theCursor.vslCursor := nextCursor;
@@ -1788,7 +1788,7 @@ begin
               -- Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor, cnt );
            else
               oldElem := Vector_Storage_Lists.Element( theCursor.vslCursor );
-              if metaLabelOk( subprogramId, oldElem ) then
+              if metaTagOk( subprogramId, oldElem ) then
                  Vector_Storage_Lists.Delete( theVector.vslVector, theCursor.vslCursor );
               end if;
            end if;
@@ -1828,7 +1828,7 @@ begin
      begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Vector_Storage_Lists.Has_Element( theCursor.vslCursor ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsHasElement;
@@ -1866,7 +1866,7 @@ begin
        findResource( to_resource_id( leftVecResId.value ), leftVector );
        getParameterValue( rightVectorRef, rightVecResId );
        findResource( to_resource_id( rightVecResId.value ), rightVector );
-       result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( leftVector.vslVector = rightVector.vslVector ), noMetaTag, noMetaTags );
      exception when storage_error =>
        err_storage;
      when others =>
@@ -1953,11 +1953,11 @@ begin
           exception when others =>
              err_count( subprogramId, cntExpr, cntType );
           end;
-          if metaLabelOk( subprogramId, elemExpr ) then
+          if metaTagOk( subprogramId, elemExpr ) then
              Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr, cnt );
           end if;
        else
-          if metaLabelOk( subprogramId, elemExpr ) then
+          if metaTagOk( subprogramId, elemExpr ) then
              Vector_Storage_Lists.Insert( theVector.vslVector, idx, elemExpr );
           end if;
        end if;
@@ -1979,7 +1979,7 @@ end ParseVectorsInsert;
 -- Ada:    insert
 -- Copy the elements of v2 into vector v before cursor c. The second vector is
 -- unchanged.
--- Meta data labels are not checked.
+-- Meta tags are not checked.
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertVector is
@@ -2094,7 +2094,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       if metaLabelOk( subprogramId, elemExpr ) then
+       if metaTagOk( subprogramId, elemExpr ) then
           Vector_Storage_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemExpr, cnt );
        end if;
      exception when storage_error =>
@@ -2265,7 +2265,7 @@ begin
              err_count( subprogramId, cntExpr, cntType );
           end;
        end if;
-       if metaLabelOK( subprogramId, elemExpr ) then
+       if metaTagOK( subprogramId, elemExpr ) then
           Vector_Storage_Lists.Insert(
              Container => theVector.vslVector,
              Before    => theCursor.vslCursor,
@@ -2295,7 +2295,7 @@ end ParseVectorsInsertBeforeAndMark;
 -- instead, insert the elements before cursor c. Return the position new
 -- cursor. If a count n is used, insert n copies of the element. The second
 -- vector is unchanged.
--- Does not take into account meta data labels
+-- Does not take into account meta tags
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertSpace is
@@ -2392,7 +2392,7 @@ begin
                 );
                 AssignParameter(
                     positionCursorRef,
-                    storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
+                    storage'( to_unbounded_string( positionCursorResourceId ), noMetaTag, noMetaTags )
                 );
                 findResource( positionCursorResourceId, thePositionCursor );
              else
@@ -2425,7 +2425,7 @@ end ParseVectorsInsertSpace;
 -- Ada:    v0 := v1 & v2;
 -- Add the contents of vector v2 to the end of vector v1. Vector v2 is
 -- unchanged.
--- Does not take into account meta data labels
+-- Does not take into account meta tags
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsAppendVector is
@@ -2529,7 +2529,7 @@ begin
            idx2 := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idx2Expr.value ) ) );
            getParameterValue( vectorRef, vecResId );
            findResource( to_resource_id( vecResId.value ), theVector );
-           if metaLabelOK( subprogramId, Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
+           if metaTagOK( subprogramId, Vector_Storage_Lists.Element( theVector.vslVector, idx1 ),
                            Vector_Storage_Lists.Element( theVector.vslVector, idx2 ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, idx1, idx2 );
            end if;
@@ -2546,7 +2546,7 @@ begin
            findResource( to_resource_id( cursResId.value ), theCursor );
            getParameterValue( cursorRef2, cursResId2 );
            findResource( to_resource_id( cursResId2.value ), theCursor2 );
-           if metaLabelOK( subprogramId, Vector_Storage_Lists.Element( theCursor.vslCursor),
+           if metaTagOK( subprogramId, Vector_Storage_Lists.Element( theCursor.vslCursor),
                            Vector_Storage_Lists.Element( theCursor2.vslCursor ) ) then
               Vector_Storage_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
            end if;
@@ -2626,11 +2626,11 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaTag, noMetaTags )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        if metaLabelOk( subprogramId, itemExpr ) then
+        if metaTagOk( subprogramId, itemExpr ) then
         thePositionCursor.vslCursor := Vector_Storage_Lists.Find( theVector.vslVector,
            itemExpr, theCursor.vslCursor );
         else
@@ -2711,11 +2711,11 @@ begin
         );
         AssignParameter(
             positionCursorRef,
-            storage'( to_unbounded_string( positionCursorResourceId ), noMetaLabel, noMetaLabels )
+            storage'( to_unbounded_string( positionCursorResourceId ), noMetaTag, noMetaTags )
         );
         findResource( positionCursorResourceId, thePositionCursor );
 
-        if metaLabelOk( subprogramId, itemExpr ) then
+        if metaTagOk( subprogramId, itemExpr ) then
            thePositionCursor.vslCursor := Vector_Storage_Lists.Reverse_Find(
               theVector.vslVector, itemExpr, theCursor.vslCursor );
         else
@@ -2769,14 +2769,14 @@ begin
         findResource( to_resource_id( vecResId.value ), theVector );
         startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer(
            to_numeric( startIdxExpr.value ) ) );
-        if metaLabelOk( subprogramId, itemExpr ) then
+        if metaTagOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Find_Index( theVector.vslVector,
              itemExpr, startIdx );
         end if;
         positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( subprogramId, vectorRef.Id, positionIdx ) ) );
         AssignParameter(
            positionIdxRef,
-           storage'( positionValue, noMetaLabel, noMetaLabels )
+           storage'( positionValue, noMetaTag, noMetaTags )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -2827,7 +2827,7 @@ begin
 
         startIdx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( startIdxExpr.value ) ) );
 
-        if metaLabelOk( subprogramId, itemExpr ) then
+        if metaTagOk( subprogramId, itemExpr ) then
            positionIdx := Vector_Storage_Lists.Reverse_Find_Index( theVector.vslVector,
               itemExpr, startIdx );
         end if;
@@ -2836,7 +2836,7 @@ begin
 
         AssignParameter(
             positionIdxRef,
-            storage'( positionValue, noMetaLabel, noMetaLabels )
+            storage'( positionValue, noMetaTag, noMetaTags )
         );
      exception when constraint_error =>
         err_index( subprogramId, startIdxExpr );
@@ -2922,12 +2922,12 @@ begin
          begin
            the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
            if hasAmt then
-              if metaLabelOk( subprogramId, the_string, numExpr ) then
+              if metaTagOk( subprogramId, the_string, numExpr ) then
                  the_string.value := to_unbounded_string( to_numeric( the_string.value ) + floatVal );
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            else
-              if metaLabelOk( subprogramId, the_string ) then
+              if metaTagOk( subprogramId, the_string ) then
                  the_string.value := to_unbounded_string( to_numeric( the_string.value ) + floatVal );
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
@@ -3020,11 +3020,11 @@ begin
            the_string := Vector_Storage_Lists.Element( theVector.vslVector, idx );
            the_string.value := to_unbounded_string( to_numeric( the_string.value ) - floatVal );
            if hasAmt then
-              if metaLabelOk( subprogramId, the_string, numExpr ) then
+              if metaTagOk( subprogramId, the_string, numExpr ) then
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            else
-              if metaLabelOk( subprogramId, the_string ) then
+              if metaTagOk( subprogramId, the_string ) then
                  Vector_Storage_Lists.Replace_Element( theVector.vslVector, idx, the_string );
               end if;
            end if;
@@ -3112,7 +3112,7 @@ begin
          to_unbounded_string(
             long_long_integer'image( convertedIdx )
          ),
-         noMetaLabel, noMetaLabels );
+         noMetaTag, noMetaTags );
      end;
   end if;
 end ParseVectorsToIndex;

@@ -70,7 +70,7 @@ use ada.text_io,
     parser_teams,
     parser_tio;
 
-use world.metaLabelHashedSet;
+use world.metaTagHashedSet;
 
 package body parser_pragmas is
 
@@ -109,7 +109,7 @@ type aPragmaKind is (
      license,
      manual_test,
      manual_test_result,
-     meta_label,
+     meta_tag,
      noCommandHash,
      peek,
      promptChange,
@@ -236,8 +236,8 @@ begin
      pragmaKind :=  manual_test;
   elsif name = "manual_test_result" then
      pragmaKind :=  manual_test_result;
-  elsif name = "meta_label" then  -- DATA META LABEL
-     pragmaKind := meta_label;
+  elsif name = "meta_tag" then  -- DATA META LABEL
+     pragmaKind := meta_tag;
   elsif name = "no_command_hash" then
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
@@ -1396,7 +1396,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   expr_type   : identifier;
   --results     : unbounded_string;
   var_id      : identifier;
-  metalabel   : metaLabelID;
+  metaTag     : metaTagID;
   exportType  : unbounded_string;
   importType  : unbounded_string;
   newValue    : unbounded_string;
@@ -1658,7 +1658,7 @@ begin
      pragma warnings( on );
          err( +"inspection_peek cannot be used with testing or maintenance phase mode unless at the breakout prompt" );
      end if;
-  when meta_label => -- DATA META LABEL
+  when meta_tag => -- DATA META LABEL
      if token /= standard_input_t and
         token /= standard_output_t and
         token /= standard_error_t then
@@ -1666,11 +1666,11 @@ begin
      end if;
      ParseIdentifier( var_id );                      -- the subsystem
      expectPragmaComma;
-     ParseIdentifier( metaLabel );                    -- the meta label
-     if getUniType( identifiers( metaLabel ).kind ) /= meta_t then
+     ParseIdentifier( metaTag );                    -- the meta tag
+     if getUniType( identifiers( metaTag ).kind ) /= meta_t then
         err( +"meta tag expected" );
      end if;
-     if identifiers( var_id ).store.policyMetaLabels /= noMetaLabels then
+     if identifiers( var_id ).store.policyMetaTags /= noMetaTags then
         err( +"meta tag already assigned" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
@@ -2358,7 +2358,7 @@ begin
               identifiers( var_id ).method := http_cgi;
               declare
                  found : boolean := false;
-                 jsonStore : storage; -- kludge for records with data meta labels
+                 jsonStore : storage; -- kludge for records with value meta tags
               begin
                  for i in 1..cgi.key_count( to_string( identifiers( var_id ).name ) ) loop
                      newValue := newValue & to_unbounded_string( cgi.value(
@@ -2371,11 +2371,11 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue, noMetaLabels );
+                           DoJsonToArray( var_id, newValue, noMetaTags );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            jsonStore.value := newValue;
-                           jsonStore.unitMetaLabel := noMetaLabel;
-                           jsonStore.policyMetaLabels := sparMetaLabels;
+                           jsonStore.unitMetaTag := noMetaTag;
+                           jsonStore.policyMetaTags := sparMetaTags;
                            DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );
@@ -2402,7 +2402,7 @@ begin
                    temp1_t    : identifier;
                    temp2_t    : identifier;
                    importValue: unbounded_string;
-                   jsonStore  : storage; -- kludge for records with data meta labels
+                   jsonStore  : storage; -- kludge for records with value meta tags
                    --b          : boolean;
                  begin
                    -- TODO: full prefix is a good idea but should be done with
@@ -2428,11 +2428,11 @@ begin
                          if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                             DoJsonToString( identifiers( var_id ).store.value, importValue );
                          elsif identifiers( var_id ).list then                           -- array
-                            DoJsonToArray( var_id, importValue, noMetaLabels );
+                            DoJsonToArray( var_id, importValue, noMetaTags );
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                              jsonStore.value := importValue;
-                             jsonStore.unitMetalabel := noMetaLabel;
-                            jsonStore.policyMetaLabels := sparMetaLabels;
+                             jsonStore.unitMetaTag := noMetaTag;
+                            jsonStore.policyMetaTags := sparMetaTags;
                             DoJsonToRecord( var_id, jsonStore );
                          elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                             DoJsonToNumber( importValue, identifiers( var_id ).store.value );
@@ -2507,14 +2507,14 @@ begin
               record_test_result( test_result_status, test_message );
            end if;
         end if;
-     when meta_label =>  -- DATA META LABEL
+     when meta_tag =>  -- DATA META LABEL
         -- These are restricted to non-arrays
-        identifiers( var_id ).store.unitMetaLabel := noMetaLabel;
-        identifiers( var_id ).store.policyMetaLabels := To_Set( metaLabel );
+        identifiers( var_id ).store.unitMetaTag := noMetaTag;
+        identifiers( var_id ).store.policyMetaTags := To_Set( metaTag );
         if trace then
            put_trace( to_string( identifiers( var_id ).name ) &
-              " value has policy data meta labels '" &
-              to_string( image( identifiers( var_id ).store.policyMetaLabels ) ) & "'" );
+              " value has policy meta tags '" &
+              to_string( image( identifiers( var_id ).store.policyMetaTags ) ) & "'" );
         end if;
      when noCommandHash =>
         clearCommandHash;
@@ -2778,11 +2778,11 @@ begin
                         if getUniType( identifiers( var_id ).kind ) = uni_string_t then -- string
                            DoJsonToString( identifiers( var_id ).store.value, newValue );
                         elsif identifiers( var_id ).list then                           -- array
-                           DoJsonToArray( var_id, newValue, noMetaLabels );
+                           DoJsonToArray( var_id, newValue, noMetaTags );
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then -- record
                            jsonStore.value := newValue;
-                           jsonStore.unitMetaLabel := noMetaLabel;
-                           jsonStore.policyMetaLabels := sparMetaLabels;
+                           jsonStore.unitMetaTag := noMetaTag;
+                           jsonStore.policyMetaTags := sparMetaTags;
                            DoJsonToRecord( var_id, jsonStore );
                         elsif getUniType( identifiers( var_id ).kind ) = uni_numeric_t then -- number
                            DoJsonToNumber( newValue, identifiers( var_id ).store.value );

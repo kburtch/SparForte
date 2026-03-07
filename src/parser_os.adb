@@ -64,10 +64,10 @@ begin
       );
   end if;
   if isExecutingCommand then
-     if metaLabelOk( os_system_t, expr ) and
-        metaLabelOk( os_system_t, identifiers( standard_input_t ).sstorage ) and
-        metaLabelOk( os_system_t, identifiers( standard_output_t ).sstorage ) and
-        metaLabelOk( os_system_t, identifiers( standard_error_t ).sstorage ) then
+     if metaTagOk( os_system_t, expr ) and
+        metaTagOk( os_system_t, identifiers( standard_input_t ).sstorage ) and
+        metaTagOk( os_system_t, identifiers( standard_output_t ).sstorage ) and
+        metaTagOk( os_system_t, identifiers( standard_error_t ).sstorage ) then
         begin
            last_status:= aStatusCode( linux_system( to_string( expr.value ) & ascii.nul ) );
         exception when others =>
@@ -83,7 +83,7 @@ begin
   kind := integer_t;
   expect( os_status_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aStatusCode'image( last_status ) ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_unbounded_string( aStatusCode'image( last_status ) ), noMetaTag, sparMetaTags );
   end if;
 end ParseOSStatus;
 
@@ -93,7 +93,7 @@ begin
   kind := natural_t;
   expect( os_pid_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_unbounded_string( aPID'image( getpid ) ), noMetaTag, sparMetaTags );
   end if;
 end ParseOSPid;
 
@@ -106,10 +106,10 @@ begin
   expect( os_error_string_t );
   ParseSingleNumericParameter( os_error_string_t, expr, expr_type, integer_t );
   if isExecutingCommand then
-     if metaLabelOk( os_error_string_t, expr ) then
+     if metaTagOk( os_error_string_t, expr ) then
         begin
           result := storage'( to_unbounded_string( OSerror( integer( to_numeric( expr.value ) ) ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
         exception when others =>
            err_exception_raised;
         end;
@@ -123,7 +123,7 @@ begin
   kind := natural_t;
   expect( os_last_child_t );
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_unbounded_string( aPID'image( lastChild ) ), noMetaTag, sparMetaTags );
   end if;
 end ParseOSLastChild;
 

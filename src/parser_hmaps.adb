@@ -232,7 +232,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Is_Empty( theMap.shmMap ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashedMapsIsEmpty;
@@ -259,7 +259,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaLabel, noMetaLabels );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Capacity( theMap.shmMap )'img ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashedMapsCapacity;
@@ -360,28 +360,28 @@ begin
        -- ( m, k, e )
        when 1 =>
           -- assuming the key and value can fall under different policies
-          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
+          if metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr );
           end if;
        -- (m, k, p, b )
-       -- meta data labels require inserted values to have defined values so
+       -- value meta tags require inserted values to have defined values so
        -- null storage is used.
        when 2 =>
           findResource( to_resource_id( identifiers( cursorRef.id ).store.value ), theCursor );
-          if metaLabelOK( subprogramId, keyExpr ) then
+          if metaTagOK( subprogramId, keyExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, nullStorage, theCursor.shmCursor,
                 result );
-             AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel, noMetaLabels ) );
+             AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaTag, noMetaTags ) );
           end if;
        -- (m, k, e, p, b )
        when 3 =>
           findResource( to_resource_id( identifiers( cursorRef.Id ).store.value ), theCursor );
           -- assuming the key and value can fall under different policies
-          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
+          if metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Insert( theMap.shmMap, keyExpr, elemExpr,
                 theCursor.shmCursor, result );
           end if;
-          AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaLabel, noMetaLabels ) );
+          AssignParameter( insertRef, storage'( to_spar_boolean( result ), noMetaTag, noMetaTags ) );
        when others =>
           put_line_retry( gnat.source_info.source_location &
              ": internal error: unknown insert version" );
@@ -430,11 +430,11 @@ begin
        -- may also be empty but existence is optional.
        if Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr ) then
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( subprogramId, oldElem ) and
-             metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
+          if metaTagOK( subprogramId, oldElem ) and
+             metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, elemExpr ) then
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
           end if;
-       elsif metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
+       elsif metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, elemExpr ) then
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, elemExpr );
        end if;
      exception when storage_error =>
@@ -476,8 +476,8 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( subprogramId, oldElem ) and
-          metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, elemExpr ) then
+       if metaTagOK( subprogramId, oldElem ) and
+          metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, elemExpr ) then
           Storage_Hashed_Maps.Replace( theMap.shmMap, keyExpr, elemExpr );
        end if;
      exception when constraint_error =>
@@ -518,7 +518,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- the key, value and existing value must all be checked.
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
+       if metaTagOK( subprogramId, oldElem ) and metaTagOK( subprogramId, keyExpr ) then
           Storage_Hashed_Maps.Exclude( theMap.shmMap, keyExpr );
        end if;
      exception when storage_error =>
@@ -573,7 +573,7 @@ begin
           -- the key and existing value must be checked. The map
           -- may also be empty or the key may not exist.
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
+          if metaTagOK( subprogramId, oldElem ) and metaTagOK( subprogramId, keyExpr ) then
              Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
           end if;
        else
@@ -581,7 +581,7 @@ begin
           findResource( to_resource_id( cursResId.value ), theCursor );
           -- the existing value must be checked
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
-          if metaLabelOK( subprogramId, oldElem ) then
+          if metaTagOK( subprogramId, oldElem ) then
              Storage_Hashed_Maps.Delete( theMap.shmMap, theCursor.shmCursor );
           end if;
        end if;
@@ -602,7 +602,7 @@ end ParseHashedMapsDelete;
 -- Syntax: b := hashed_maps.contains( m, k );
 -- Ada:    b := hashed_maps.contains( m, k );
 -- Return true if key k is in the map m.
--- Does not take into account the data meta label.  Result meta labels not
+-- Does not take into account the value meta tag.  Result meta tags not
 -- affected by the data found.
 ------------------------------------------------------------------------------
 
@@ -626,7 +626,7 @@ begin
           to_spar_boolean(
              Storage_Hashed_Maps.Contains( theMap.shmMap, keyExpr )
           ),
-          noMetaLabel, noMetaLabels );
+          noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashedMapsContains;
@@ -716,14 +716,14 @@ begin
           getParameterValue( cursorRef, cursResId );
           findResource( to_resource_id( cursResId.value ), theCursor );
           oldElem := Storage_Hashed_Maps.Element( theCursor.shmCursor );
-          if metaLabelOK( subprogramId, oldElem ) then
+          if metaTagOK( subprogramId, oldElem ) then
              result := oldElem;
           end if;
        else
           getParameterValue( mapRef, mapResId );
           findResource( to_resource_id( mapResId.value ), theMap );
           oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-          if metaLabelOK( subprogramId, keyExpr ) and metaLabelOK( subprogramId, oldElem ) then
+          if metaTagOK( subprogramId, keyExpr ) and metaTagOK( subprogramId, oldElem ) then
              result := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
           end if;
        end if;
@@ -757,7 +757,7 @@ begin
      begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
-       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaLabel, noMetaLabels );
+       result := storage'( to_unbounded_string( Storage_Hashed_Maps.Length( theMap.shmMap )'img ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashedMapsLength;
@@ -798,7 +798,7 @@ begin
        -- Append( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        -- labels must be the same for the original value and the appending value
-       if metaLabelOk( subprogramId, elemExpr, original ) then
+       if metaTagOk( subprogramId, elemExpr, original ) then
           original.value := original.value & elemExpr.value;
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
        end if;
@@ -847,7 +847,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        -- Prepend( theMap.shmMap, keyExpr, elemExpr );
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOk( subprogramId, elemExpr, original ) then
+       if metaTagOk( subprogramId, elemExpr, original ) then
           original.value := elemExpr.value & original.value;
           Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
        end if;
@@ -914,12 +914,12 @@ begin
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( natural( to_numeric( original.value ) ) ) + floatVal;
        if hasAmt then
-          if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, incExpr, original ) then
+          if metaTagOk( subprogramId, keyExpr ) and metaTagOk( subprogramId, incExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
        else
-          if metaLabelOk( subprogramId, keyExpr ) and metaLabelOk( subprogramId, original ) then
+          if metaTagOk( subprogramId, keyExpr ) and metaTagOk( subprogramId, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
@@ -987,12 +987,12 @@ begin
        original := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
        floatVal := numericValue( natural( to_numeric( original.value ) ) ) - floatVal;
        if hasAmt then
-          if metaLabelOk( subprogramId, decExpr, original ) then
+          if metaTagOk( subprogramId, decExpr, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
        else
-          if metaLabelOk( subprogramId, original ) then
+          if metaTagOk( subprogramId, original ) then
              original.value := to_unbounded_string( floatVal'img ) ;
              Storage_Hashed_Maps.Include( theMap.shmMap, keyExpr, original );
           end if;
@@ -1039,7 +1039,7 @@ begin
        getParameterValue( mapRef, mapResId );
        findResource( to_resource_id( mapResId.value ), theMap );
        oldElem := Storage_Hashed_Maps.Element( theMap.shmMap, keyExpr );
-       if metaLabelOK( subprogramId, oldElem ) and metaLabelOK( subprogramId, keyExpr ) then
+       if metaTagOK( subprogramId, oldElem ) and metaTagOK( subprogramId, keyExpr ) then
           result := oldElem;
           Storage_Hashed_Maps.Delete( theMap.shmMap, keyExpr );
        end if;
@@ -1059,7 +1059,7 @@ end ParseHashedMapsExtract;
 -- Ada:    hashed_maps.assign( t, s );
 -- Assign source map s to target map t, overwriting the contents of t. s is
 -- unchanged.
--- Does not take into account data meta label
+-- Does not take into account value meta tags
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsAssign is
@@ -1218,7 +1218,7 @@ begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
        oldElem := Storage_Hashed_Maps.Key( theCursor.shmCursor );
-       if metaLabelOk( subprogramId, oldElem ) then
+       if metaTagOk( subprogramId, oldElem ) then
           result := oldElem;
        end if;
      exception when constraint_error =>
@@ -1306,7 +1306,7 @@ begin
        findResource( to_resource_id( mapResId.value ), theMap );
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       if metaLabelOK( subprogramId, Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
+       if metaTagOK( subprogramId, Storage_Hashed_Maps.Element( theCursor.shmCursor ), newExpr ) then
           Storage_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newExpr );
        end if;
      exception when constraint_error =>
@@ -1328,7 +1328,7 @@ end ParseHashedMapsReplaceElement;
 -- Syntax: b := hashed_maps.has_element( c );
 -- Ada:    b := hashed_maps.has_element( c );
 -- True if item under cursor has a value.
--- Does not take into account the data meta label.  Result meta labels not
+-- Does not take into account the value meta tag.  Result meta tags not
 -- affected by the data found.
 ------------------------------------------------------------------------------
 
@@ -1345,7 +1345,7 @@ begin
      begin
        getParameterValue( cursorRef, cursResId );
        findResource( to_resource_id( cursResId.value ), theCursor );
-       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( Storage_Hashed_Maps.Has_Element( theCursor.shmCursor ) ), noMetaTag, noMetaTags );
      end;
   end if;
 end ParseHashedMapsHasElement;
@@ -1356,7 +1356,7 @@ end ParseHashedMapsHasElement;
 --
 -- Syntax: b := hashed_maps.equal( m1, m2 );
 -- Ada:    b := m1 = m2;
--- True if the two maps have identical content.  Also checks meta data labels.
+-- True if the two maps have identical content.  Also checks value meta tags.
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsEqual( result : out storage; kind : out identifier ) is
@@ -1383,7 +1383,7 @@ begin
        findResource( to_resource_id( leftMapResId.value ), leftMap );
        getParameterValue( rightMapRef, rightMapResId );
        findResource( to_resource_id( rightMapResId.value ), rightMap );
-       result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaLabel, noMetaLabels );
+       result := storage'( to_spar_boolean( leftMap.shmMap = rightMap.shmMap ), noMetaTag, noMetaTags );
      exception when storage_error =>
        err_storage;
      when others =>

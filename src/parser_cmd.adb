@@ -84,7 +84,7 @@ begin
   if isExecutingCommand then
      begin
        result := storage'( to_unbounded_string( Argument( integer'value(
-         to_string( expr.value ) ) + optionOffset ) ), noMetaLabel, sparMetaLabels );
+         to_string( expr.value ) ) + optionOffset ) ), noMetaTag, sparMetaTags );
      exception when constraint_error =>
        err( context => subprogramId,
             subjectNotes => pl( "position " ) & em_value( trim( expr.value, both ) ),
@@ -114,7 +114,7 @@ begin
 
   if isExecutingCommand then
      result := storage'( to_unbounded_string( integer'image( Argument_Count-optionOffset )),
-        noMetaLabel, sparMetaLabels );
+        noMetaTag, sparMetaTags );
   end if;
 end ParseArgument_Count;
 
@@ -133,7 +133,7 @@ begin
   expect( subprogramId );
 
   if isExecutingCommand then
-     result := storage'( to_unbounded_string( Command_Name ), noMetaLabel, sparMetaLabels );
+     result := storage'( to_unbounded_string( Command_Name ), noMetaTag, sparMetaTags );
   end if;
 end ParseCommand_Name;
 
@@ -189,7 +189,7 @@ begin
 
   if isExecutingCommand then
      result := storage'( to_unbounded_string( integer'image( Environment_Count )),
-        noMetaLabel, sparMetaLabels );
+        noMetaTag, sparMetaTags );
   end if;
 end ParseEnvironment_Count;
 
@@ -219,7 +219,7 @@ begin
      -- the meta label is not checked since it is a position
      begin
         result := storage'( to_unbounded_string( Environment_Value( integer'value(
-           to_string( expr.value ) ) ) ), noMetaLabel, sparMetaLabels );
+           to_string( expr.value ) ) ) ), noMetaTag, sparMetaTags );
      exception when others =>
         err_exception_raised;
      end;

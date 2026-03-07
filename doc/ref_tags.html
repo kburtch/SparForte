@@ -44,19 +44,19 @@
 <p><b>NOTE: This feature is under construction.  The features are not complete and may change.</b></p>
 
 <p>Variables and parameters have types or subtypes.  The values that are
-stored in them can have optional data meta labels.  The labels are names
+stored in them can have optional data meta tags.  The labels are names
 that are attached to a value and follow the values as they move through
 the script.  Every value will have a set of tags, just like in the
 previous examples.  Each variable, function parameters and other places
 that store values will also store the tags along with them.</p>
 
-<p>There are different categories of value meta labels.
+<p>There are different categories of value meta tags.
 
 </p>
 
 <h3>The Meta Statement</h3>
 
-<p>The meta statement defines new meta labels.  A top-level meta tag
+<p>The meta statement defines new meta tags.  A top-level meta tag
 is created with "is new meta".</p>
 
 <pre>
@@ -83,14 +83,24 @@ to values.</p>
 
 <p>Meta tags are attached to a value with the <tt>tagged</tt> keyword.
 Tagged can be used on numeric literals, string literals, backquoted
-literals.</p>
+literals or enumerated type items.</p>
 
 <ul>
-<li>30 <b>tagged</b> miles</li>
-<li> "company name" <b>tagged</b> english</li>
-<li>`ls -l` <b>tagged</b> unchecked</li>
+<li>30 <b>tagged</b> kilometers</li>
+<li>50.0 <b>tagged</b> us_dollars</li>
+<li> "company name" <b>tagged</b> utf8_english</li>
+<li>`ls -l` <b>tagged</b> <b>policy</b> unchecked_data</li>
+<li>apple <b>tagged</b> <b>policy</b> confidential -- where apple in an enumerated item</li>
 </li>
 </ul>
+
+<p>The value in variables cannot be tagged.  You can only tag values at
+their point of origin.  In x := y + 5, the "5" can be tagged but "y"
+cannot be tagged.  The value of "y" must have originated somewhere
+earlier.</p>
+
+<p>Enumerated items cannot be given a tag when they are defined in
+a <tt>type</tt> declaration.</p>
 
 <h3>Unit-of-Measure Labels</h3>
 
@@ -197,8 +207,8 @@ current system security policies.</p>
 <p>The default security policy set is empty, meaning security policies
 will not be enforced.  This is for backward compatibility.</p>
 
-<p>For policy meta labels, the label cannot be assigned unless
-the script is authorized to use the meta label.  The authorization
+<p>For policy meta tags, the label cannot be assigned unless
+the script is authorized to use the meta tag.  The authorization
 expires at the end of the <tt>authorize</tt> block.</p>
 
 <pre>
@@ -221,12 +231,12 @@ as policy <tt>pci</tt>:</p>
 <h3>Assigning Meta Policies to Standard Files</h3>
 
 <p>Policies can be assigned to standard input, standard output or
-standard error using <tt>pragma meta_label</tt>.  Once a policy
+standard error using <tt>pragma meta_tag</tt>.  Once a policy
 has been set, it cannot be changed.</p>
 
 <pre>
-  <b>pragma</b> meta_label( standard_input, unchecked );
-  <b>pragma</b> meta_label( standard_output, pci );
+  <b>pragma</b> meta_tag( standard_input, unchecked );
+  <b>pragma</b> meta_tag( standard_output, pci );
 </pre>
 
 <p>In this example, every value read from standard input will have

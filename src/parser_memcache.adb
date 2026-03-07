@@ -231,10 +231,10 @@ begin
   ParseSingleStringParameter( subprogramId, expr, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
-     if metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, expr ) then
         begin
           result := storage'( to_spar_boolean( isValidMemcacheKey( expr.value ) ),
-             noMetaLabel, expr.policyMetaLabels );
+             noMetaTag, expr.policyMetaTags );
         exception when others =>
           err_exception_raised;
         end;
@@ -260,7 +260,7 @@ begin
         cluster_entry.id := cluster_id_value;
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
         result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ),
-           noMetaLabel, sparMetaLabels );
+           noMetaTag, sparMetaTags );
      exception when others =>
         err_exception_raised;
      end;
@@ -287,7 +287,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-        if metaLabelOk( subprogramId, cluster, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+        if metaTagOk( subprogramId, cluster, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            port : constant natural := natural( to_numeric( expr2.value ) );
@@ -319,7 +319,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) then
+     if metaTagOk( subprogramId, cluster ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -353,7 +353,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) then
+     if metaTagOk( subprogramId, cluster, expr ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -389,7 +389,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) then
+     if metaTagOk( subprogramId, cluster, expr ) then
         begin
            mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
         exception when constraint_error =>
@@ -433,7 +433,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -472,7 +472,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -513,7 +513,7 @@ begin
      getParameterValue( clusterRef, cluster );
      -- The data in memcache has no data meta label so we cannot check the existing
      -- data against new data's meta label
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -550,7 +550,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -587,7 +587,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -622,7 +622,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -631,7 +631,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Get( cluster_entry.cluster, expr.value, result.value );
-              result.policyMetaLabels := sparMetaLabels;
+              result.policyMetaTags := sparMetaTags;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -660,7 +660,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -694,7 +694,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -702,8 +702,8 @@ begin
            GetCluster( theCluster, cluster_entry, clusterIndex );
            if clusterIndex /= 0 then
               Stats( cluster_entry.cluster, result.value );
-              result.unitMetaLabel := noMetaLabel;
-              result.policyMetaLabels := cluster.policyMetaLabels;
+              result.unitMetaTag := noMetaTag;
+              result.policyMetaTags := cluster.policyMetaTags;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when others =>
@@ -728,7 +728,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -737,7 +737,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               pegasock.memcache.Version( cluster_entry.cluster, result.value );
-              result.policyMetaLabels := cluster.policyMetaLabels;
+              result.policyMetaTags := cluster.policyMetaTags;
               memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -763,7 +763,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -803,7 +803,7 @@ begin
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheDualClusterList.Queue( memcacheDualCluster, cluster_entry );
-        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaLabel, sparMetaLabels );
+        result := storage'( to_unbounded_string( numericValue( cluster_id_value ) ), noMetaTag, sparMetaTags );
      exception when others =>
         err_exception_raised;
      end;
@@ -830,7 +830,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            port : constant natural := natural( to_numeric( expr2.value ) );
@@ -868,7 +868,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            port : constant natural := natural( to_numeric( expr2.value ) );
@@ -900,7 +900,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) then
+     if metaTagOk( subprogramId, cluster ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -934,7 +934,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) then
+     if metaTagOk( subprogramId, cluster, expr ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -970,7 +970,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster, expr ) then
+     if metaTagOk( subprogramId, cluster, expr ) then
         begin
            mct := aMemcacheClusterType'val( natural( to_numeric( expr.value ) ) );
         exception when constraint_error =>
@@ -1014,7 +1014,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheClusterList.aListIndex;
@@ -1053,7 +1053,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1092,7 +1092,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1129,7 +1129,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1166,7 +1166,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) and metaLabelOk( subprogramId, cluster, expr2 ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) and metaTagOk( subprogramId, cluster, expr2 ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1201,7 +1201,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1210,7 +1210,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Get( cluster_entry.cluster, expr.value, result.value );
-              result.policyMetaLabels := sparMetaLabels;
+              result.policyMetaTags := sparMetaTags;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -1239,7 +1239,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster ) and metaLabelOk( subprogramId, expr ) then
+     if metaTagOk( subprogramId, cluster ) and metaTagOk( subprogramId, expr ) then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1273,7 +1273,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1282,7 +1282,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               Stats( cluster_entry.cluster, result.value);
-              result.policyMetaLabels := cluster.policyMetaLabels;
+              result.policyMetaTags := cluster.policyMetaTags;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when others =>
@@ -1307,7 +1307,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
@@ -1316,7 +1316,7 @@ begin
            if clusterIndex /= 0 then
               result := nullStorage;
               pegasock.memcache.highread.Version( cluster_entry.cluster, result.value );
-              result.policyMetaLabels := cluster.policyMetaLabels;
+              result.policyMetaTags := cluster.policyMetaTags;
               memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
            end if;
         exception when constraint_error =>
@@ -1342,7 +1342,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      getParameterValue( clusterRef, cluster );
-     if metaLabelOk( subprogramId, cluster )then
+     if metaTagOk( subprogramId, cluster )then
         declare
            theCluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( cluster.value ) );
            clusterIndex : memcacheDualClusterList.aListIndex;
