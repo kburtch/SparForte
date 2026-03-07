@@ -24,7 +24,7 @@ CHANGES SINCE 2.6.4
 
 8. Fix: vectors.delete no longer allows a count with a cursor because of SparForte's meta data label implementation.
 
-9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index. [positive and negative tests needed]
+9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index. [negative tests needed]
 
 10. Fix: dynamic_hash_table package documentation correction.
 
@@ -44,7 +44,7 @@ CHANGES SINCE 2.6.4
 
 18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
-19. New: tags package.  Name may change.  [docs needed][tests needed][name may change].
+19. New: tags package.  Name may change. [tests needed].
 
 20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
 

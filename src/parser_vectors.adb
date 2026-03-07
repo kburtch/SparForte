@@ -2735,7 +2735,7 @@ end ParseVectorsReverseFind;
 --
 -- Syntax: find_index( v, e, ,i1, i2 );
 -- Ada:    find_index( v, e, [,i1], i2 );
--- Return the index in the vector for element e, searching backwards. Start at
+-- Return the index in the vector for element e, searching forwards. Start at
 -- the position of index i1. If the element does not exist, the index i2 will
 -- have no index.
 ------------------------------------------------------------------------------

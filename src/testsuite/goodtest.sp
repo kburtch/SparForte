@@ -6825,6 +6825,9 @@ end;
 declare
   v : vectors.vector( natural, string );
   v2 : vectors.vector( natural, string );
+  v3 : vectors.vector( natural, string );
+  v4 : vectors.vector( natural, integer );
+  index :  long_integer;
 begin
 
   -- basic non-cursor tests
@@ -6902,6 +6905,32 @@ begin
   pragma assert( vectors.last_element( v ) = "apple" );
   vectors.append_elements( v, "" );
   pragma assert( vectors.last_element( v ) = "" );
+  vectors.clear( v );
+  vectors.append_elements( v, "apple" );
+  vectors.append_elements( v, "blueberry" );
+  vectors.append_elements( v, "cherry" );
+  vectors.append_elements( v, "pear" );
+  vectors.find_index( v, "apple", 0, index );
+  pragma assert( index = 0 );
+  vectors.find_index( v, "apple", 1, index );
+  pragma assert( index = vectors.no_index );
+  vectors.reverse_find_index( v, "cherry", 2, index );
+  pragma assert( index = 2 );
+  vectors.reverse_find_index( v, "cherry", 1, index );
+  pragma assert( index = vectors.no_index );
+  vectors.assign( v3, v );
+  pragma assert( vectors.length( v3 ) = 4 );
+  vectors.clear( v );
+  vectors.append_elements( v4, 1 );
+  vectors.append_elements( v4, 4 );
+  vectors.increment( v4, 0 );
+  pragma assert( vectors.first_element( v4 ) = 2 );
+  vectors.decrement( v4, 1 );
+  pragma assert( vectors.last_element( v4 ) = 3 );
+  vectors.increment( v4, 0, 2 );
+  pragma assert( vectors.first_element( v4 ) = 4 );
+  vectors.decrement( v4, 1, 2 );
+  pragma assert( vectors.last_element( v4 ) = 1 );
 end;
 
 -- vector cursors
@@ -6909,11 +6938,15 @@ end;
 declare
   v : vectors.vector( natural, string );
   c : vectors.cursor( natural, string );
+  index : long_integer;
 begin
   vectors.append_elements( v, "ant" );
   vectors.append_elements( v, "bear" );
   vectors.first( v, c );
+  pragma assert( vectors.has_element( c ) );
   pragma assert( vectors.element( c ) = "ant" );
+  index := vectors.to_index( v, c );
+  pragma assert (index = 0 );
   vectors.next( c );
   pragma assert( vectors.element( c ) = "bear" );
   vectors.next( c );
@@ -6925,9 +6958,12 @@ begin
   vectors.append_elements( v, "cow" );
   vectors.first( v, c );
   vectors.delete( v, c );
+  pragma assert( not vectors.has_element( c ) );
   pragma assert( vectors.first_element( v ) = "bear" );
   vectors.first( v, c );
   vectors.delete( v, c );
+  index := vectors.to_index( v, c );
+  pragma assert( index = vectors.no_index );
   pragma assert( vectors.length( v ) = 1 );
 end;
 
