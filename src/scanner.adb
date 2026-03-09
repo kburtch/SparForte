@@ -3206,10 +3206,13 @@ end getBaseType;
 --
 -- Check if identifier matches a certain class.  If the identifier is
 -- of another class, display an error message and return false.
+-- The parser may or may not have read the past the identifier, so there
+-- is a previous flag...set it to false if the identifer is the current
+-- token.
 -- Exception is a special case because it is a keyword.
 -----------------------------------------------------------------------------
 
-function class_ok( id : identifier; class : anIdentifierClass ) return boolean is
+function class_ok( id : identifier; class : anIdentifierClass; previous : boolean := true ) return boolean is
 begin
   if identifiers( id ).class /= class then
       if id = eof_t then
@@ -3226,22 +3229,45 @@ begin
      --      name_em( id ) &
      --      pl( " is not declared" ) );
      elsif id = exception_t then
-        err_previous( pl( "While checking the identifier category, " &
-           "an " ) & em( "exception" ) &
-           pl( " is not a " &
-           getIdentifierClassImage( class ) ) );
+        if previous then
+           err_previous( pl( "While checking the identifier category, " &
+              "an " ) & em( "exception" ) &
+              pl( " is not a " &
+              getIdentifierClassImage( class ) ) );
+        else
+           err( pl( "While checking the identifier category, " &
+              "an " ) & em( "exception" ) &
+              pl( " is not a " &
+              getIdentifierClassImage( class ) ) );
+        end if;
      elsif id < reserved_top then
-        err_previous( pl( "While checking the identifier category, " &
-           "a " ) & em( "keyword" ) &
-           pl( " is not a " &
-           getIdentifierClassImage( class ) ) );
+        if previous then
+           err_previous( pl( "While checking the identifier category, " &
+              "a " ) & em( "keyword" ) &
+              pl( " is not a " &
+              getIdentifierClassImage( class ) ) );
+        else
+           err_previous( pl( "While checking the identifier category, " &
+              "a " ) & em( "keyword" ) &
+              pl( " is not a " &
+              getIdentifierClassImage( class ) ) );
+        end if;
      else
-        err_previous( pl( "While checking the identifier category, " ) &
-           name_em( id ) &
-           pl( " is a " &
-           getIdentifierClassImage( identifiers( id ).class ) ) &
-           pl( ", not a " &
-           getIdentifierClassImage( class ) ) );
+        if previous then
+           err_previous( pl( "While checking the identifier category, " ) &
+              name_em( id ) &
+              pl( " is a " &
+              getIdentifierClassImage( identifiers( id ).class ) ) &
+              pl( ", not a " &
+              getIdentifierClassImage( class ) ) );
+        else
+           err( pl( "While checking the identifier category, " ) &
+              name_em( id ) &
+              pl( " is a " &
+              getIdentifierClassImage( identifiers( id ).class ) ) &
+              pl( ", not a " &
+              getIdentifierClassImage( class ) ) );
+        end if;
      end if;
      return false;
   end if;

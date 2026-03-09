@@ -231,6 +231,7 @@ begin
   line_lastpos := line_lastpos - 1;
   indent := natural( integer( character'pos( script( line_firstpos ) ) - 1 ) );
   line_firstpos := line_firstpos+1;
+--  put_line( "GCL: start line_first/lastpos =" & line_firstpos'img & ", " & line_lastpos'img ); -- DEBUG
 
   -- find token in command line
 
@@ -243,14 +244,21 @@ begin
      if token_firstpos = 0 then
         token_firstpos := 1;
      end if;
+  --put_line( "GCL: after start token_firstpos =" & token_firstpos'img ); -- DEBUG
      -- KB: 26/03/05: plus 1 because the first char on line is pos 1
+  --put_line( "GCL: after start firstpos =" & firstpos'img ); -- DEBUG
+  --put_line( "GCL: after start lastpos =" & lastpos'img ); -- DEBUG
+  --put_line( "GCL: after start line_firstpos =" & line_firstpos'img ); -- DEBUG
+
      token_lastpos := lastpos-line_firstpos+1;        -- returned string
      -- KB: 26/02/23: when unit test results put a failed error, the
      -- script is at end of file so the position will appear to be zero
      -- Add one to see eof token.
+  --put_line( "GCL: after start token_lastpos =" & token_lastpos'img ); -- DEBUG
      if token_lastpos = 0 then
         token_lastpos := 1;
      end if;
+  --put_line( "GCL: after start token_lastpos =" & token_lastpos'img ); -- DEBUG
      --token_lastpos := lastpos-line_firstpos;        -- returned string
      --put_line( "GCL: token_firstpos: " & token_firstpos'img ); -- DEBUG
      --put_line( "GCL: token_lastpos:  " & token_lastpos'img ); -- DEBUG
@@ -279,6 +287,8 @@ begin
                   token_firstpos := token_firstpos - 1;     -- adjust
                   token_lastpos := token_lastpos - 1;
                end if;
+--put_line( "GCL: end of word, cmdline = " & to_string(cmdline.templateMessage) ); -- DEBUG
+--put_line( "GCL: end of word, token_first/lastpos =" & token_firstpos'img & ", " & token_lastpos'img ); -- DEBUG
             else
                if not is_escaping then              -- not escaping?
                   --cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;

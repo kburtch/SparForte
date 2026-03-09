@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- AdaScript Language Parser                                                --
+-- AdaScript Language Parser - Identifiers and Expressions                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -1362,7 +1362,7 @@ begin
         --if not error_found then
         --   discardUnusedIdentifier( token );
         --end if;
-    elsif class_ok( token, metaClass  ) then
+    elsif class_ok( token, metaClass, previous => false  ) then
         id := token;
     end if;
   end if;

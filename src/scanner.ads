@@ -299,7 +299,7 @@ function getBaseType( original : identifier ) return identifier;
 -- quit if a circular relationship is suspected
 -- errors result in type universal
 
-function class_ok( id : identifier; class : anIdentifierClass ) return boolean;
+function class_ok( id : identifier; class : anIdentifierClass; previous : boolean := true ) return boolean;
 function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean;
 function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolean;
 -- check identifier is of a certain class
