@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- AdaScript Language Parser                                                --
+-- AdaScript Language Parser - Mostly Declaration Features                  --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -3121,10 +3121,10 @@ begin
   if token = meta_t then
      expect( meta_t );
      oldmeta_id := meta_t;
-  else
+  elsif isPolicy then
      ParseMetaIdentifier( oldmeta_id, policyMetaClass );
-     -- ParseIdentifier( oldmeta_id );
-     -- b := class_ok( oldmeta_id, policyMetaClass );
+  else
+     ParseMetaIdentifier( oldmeta_id, unitMetaClass );
   end if;
 
   if isExecutingCommand or syntax_check then
