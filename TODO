@@ -20,6 +20,7 @@ expression or use pragma unchecked_volatile.)
 
 - value meta labels project
   - NOTE: left off good testing of arrays package
+  - remedy message when tagged clause without policy keyword occurs
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
   - tagged does not have a way to not clear either unit or policy tags

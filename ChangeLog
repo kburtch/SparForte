@@ -44,7 +44,7 @@ CHANGES SINCE 2.6.4
 
 18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
-19. New: tags package.  Name may change. [tests needed].
+19. New: tags package.  Name may change. [negative tests needed].
 
 20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
 
