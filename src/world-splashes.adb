@@ -42,6 +42,7 @@ begin
      else
         Put_Line( version & " (Build ID " & buildDate & ')' );
      end if;
+     Put_Line( "Built by " & builder );
      Put_Line( copyright );
      Put_Line( "This is free software; see the source for copying conditions." );
      Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );
