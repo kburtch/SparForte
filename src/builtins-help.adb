@@ -1408,6 +1408,7 @@ begin
      examples( e, "authorize policy pci begin ... end meta pci;" );
      errors( e, "An exception is raised if the meta tag is not a policy" );
      seeAlso( e, "doc/ref_tags.html" );
+     createdOn( e, "v3.0");
      endHelp( e );
   elsif helpTopic = "btree_io" then
      helpBTreeIO;
@@ -2444,7 +2445,8 @@ begin
      examples( e, "temperature := 15 tagged celsius" );
      examples( e, "credit_card := ""123456789"" tagged policy pci" );
      errors( e, "An exception is raised if the literal already has a similar meta tag" );
-     --seeAlso( e, "doc/pkg_templates.html" );
+     seeAlso( e, "doc/ref_tags.html" );
+     createdOn( e, "v3.0");
      endHelp( e );
   elsif helpTopic = "typeset" then
      startHelp( e, "typeset" );
@@ -2606,6 +2608,7 @@ begin
      content( e, "s := get_unit_image( x )" );
      content( e, "s := get_policies_image( x )" );
      seeAlso( e, "doc/pkg_tags.html" );
+     createdOn( e, "v3.0");
      endHelp( e );
   elsif helpTopic = "teams" then
      startHelp( e, "teams" );
