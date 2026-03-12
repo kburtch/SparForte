@@ -440,9 +440,10 @@ bintar: c_os.o all
 	@echo "4. Do an extended test on SSDS firewall project"
 	@echo "5. Ensure the copyright year is up-to-date"
 	@echo "6. Build with aggressive linting and clean up issues"
-	@echo "7. Ensure a tag has been created for GitHub"
-	@echo "8. Build with the release script"
-	@echo "9. Checksums for tar file: sha256sum -b, sha1sum -b, md5sum -b ."
+	@echo "7. Check the Dockerfile"
+	@echo "8. Ensure a tag has been created for GitHub"
+	@echo "9. Build with the release script"
+	@echo "10. Checksums for tar file: sha256sum -b, sha1sum -b, md5sum -b ."
 
 install:
 ifdef RPM_BUILD_ROOT

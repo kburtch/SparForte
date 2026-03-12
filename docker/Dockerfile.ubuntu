@@ -1,9 +1,12 @@
 # Docker file for creating a container with SparForte with Ubuntu
 #
+# Copy this to "SparForte/Dockerfile"
+# Run docker from the SparForte directory.
+#
 # $ docker build -t sparforte_ubuntu .
 # $ docker run sparforte_ubuntu
 
-FROM ubuntu:22.10
+FROM ubuntu:24.04
 
 # Update the installer repositories
 

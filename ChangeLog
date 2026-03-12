@@ -118,3 +118,5 @@ CHANGES SINCE 2.6.4
 
 55. Fix: error pointer was adjusted by -1. Error pointer skips invisible delimiters so no longer moved to the right.
 
+56. Change: Dockerfile for ubuntu updated to 24.04.
+
