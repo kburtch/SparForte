@@ -47,7 +47,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-builder   : constant string  := "PegaSoft (Ken Burtch)";
+builder   : constant string  := $configbuilder;
 version   : constant string  := "3.0";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;

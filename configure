@@ -15,6 +15,13 @@ CONFIGBUILDDATE=`date "+%y%m%d"`
 # Default, this is not a release version
 CONFIGRELEASED="false"
 
+# Who built this
+if [ -n "$COMPANY" ] ; then
+   CONFIGBUILDER="$COMPANY/$LOGNAME"
+else
+   CONFIGBUILDER="$LOGNAME"
+fi
+
 # Default installation prefix
 PREFIX="/usr/local"
 
@@ -1591,6 +1598,8 @@ else
 fi
 GNATPREP_OPTS="$GNATPREP_OPTS -D configbuildDate=\"$CONFIGBUILDDATE\""
 GNATPREP_OPTS="$GNATPREP_OPTS -D configreleased=$CONFIGRELEASED"
+GNATPREP_OPTS="$GNATPREP_OPTS -D configbuilder=\"$CONFIGBUILDER\""
+echo "$GNATPREP_OPTS"
 
 # Run each ".orig" file through GnatPrep Ada pre-processor to create the
 # final file, with any disabled features removed.
