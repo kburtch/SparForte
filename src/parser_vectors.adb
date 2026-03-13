@@ -679,6 +679,10 @@ begin
           theVector.vslVector := Vector_Storage_Lists.To_Vector( itemExpr,
              ada.containers.count_type'value( to_string( cntExpr.value ) ) );
        end if;
+     exception when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
      end;
   end if;
 end ParseVectorsToVector;
@@ -2895,7 +2899,17 @@ begin
        floatVal  : numericValue;
      begin
        if hasAmt then
-          floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
+          begin
+             floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
+          exception when constraint_error =>
+             err( context => subprogramId,
+               subjectNotes => pl( qp( "the amount" ) ),
+               reason  => +"should be a natural not",
+               obstructorNotes => em_value( numExpr.value ),
+               obstructorType => numType,
+               remedy => +"the value should be >= 0"
+               );
+           end;
        else
           floatVal := 1.0;
        end if;
@@ -2908,13 +2922,7 @@ begin
            idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
-           err( context => subprogramId,
-             subjectNotes => pl( qp( "the amount" ) ),
-             reason  => +"should be a natural not",
-             obstructorNotes => em_value( numExpr.value ),
-             obstructorType => numType,
-             remedy => +"the value should be >= 0"
-           );
+           err_index( subprogramId, idxExpr );
          end;
 
          declare
@@ -2990,9 +2998,19 @@ begin
      declare
        floatVal  : numericValue;
      begin
-       if hasAmt then
-          floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
-       else
+         if hasAmt then
+          begin
+             floatVal := numericValue( natural( to_numeric( numExpr.value ) ) );
+          exception when constraint_error =>
+             err( context => subprogramId,
+               subjectNotes => pl( qp( "the amount" ) ),
+               reason  => +"should be a natural not",
+               obstructorNotes => em_value( numExpr.value ),
+               obstructorType => numType,
+               remedy => +"the value should be >= 0"
+               );
+         end;
+         else
           floatVal := 1.0;
        end if;
        declare
@@ -3002,13 +3020,7 @@ begin
            idx := toRealVectorIndex( subprogramId, vectorRef.Id, long_long_integer( to_numeric( idxExpr.value ) ) );
            --Increment( theVector.vslVector, idx, floatVal );
          exception when constraint_error =>
-           err( context => subprogramId,
-             subjectNotes => pl( qp( "the amount" ) ),
-             reason  => +"should be a natural not",
-             obstructorNotes => em_value( numExpr.value ),
-             obstructorType => numType,
-             remedy => +"the value should be >= 0"
-           );
+            err_index( subprogramId, idxExpr );
          end;
          getParameterValue( vectorRef, vecResId );
          findResource( to_resource_id( vecResId.value ), theVector );
