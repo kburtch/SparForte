@@ -292,6 +292,7 @@ echo -n "checking for locate ($LOCATE)... "
 if [ $? -ne 0 ] ; then
   echo "no"
   LOCATE="locate"
+  echo -n "checking for locate ($LOCATE)... "
   "$LOCATE" --help >/dev/null 2>/dev/null
   if [ $? -ne 0 ] ; then
      LOCATE="locate"
@@ -603,7 +604,6 @@ echo -n "checking for gcc w/Ada (with gcc)... "
 (exec $CC -c spar_os.ads >/dev/null 2>/dev/null)
 #FreeBSD requires exec in a subshell because a command not found error
 #is reported before the stderr redirect
-echo "good"
 if [ $? -eq 0 ] ; then
    echo "yes"
 else
