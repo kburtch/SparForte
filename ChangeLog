@@ -24,7 +24,7 @@ CHANGES SINCE 2.6.4
 
 8. Fix: vectors.delete no longer allows a count with a cursor because of SparForte's meta data label implementation.
 
-9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index. [negative tests needed]
+9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index.
 
 10. Fix: dynamic_hash_table package documentation correction.
 
