@@ -74,9 +74,9 @@ procedure ParseTagsHasUnit( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   ParseExpression( expr, expr_type );
-  expect( symbol_t, ")" );
+  expectParameterClose( subprogramId );
   if isExecutingCommand then
      result := storage'( to_spar_boolean( expr.unitMetaTag /= noMetaTag ), noMetaTag, noMetaTags );
   end if;
@@ -101,7 +101,7 @@ procedure ParseTagsContainsUnit( result : out storage; kind : out identifier ) i
 begin
   kind := boolean_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   -- An arbitrary expression can be tested.  However, expressions cannot
   -- contain a limited variable, such as file or directory resource, and
   -- those also need to be checked.  Abstract variables do not exist.
@@ -111,10 +111,10 @@ begin
   else
      ParseExpression( expr, expr_type );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma( subprogramId );
   ParseIdentifier( tagId );
   if class_ok( tagId, unitMetaClass ) then
-     expect( symbol_t, ")" );
+     expectParameterClose( subprogramId );
   else
      err( +"unit value meta tag expected" );
   end if;
@@ -140,9 +140,9 @@ procedure ParseTagsGetUnitImage( result : out storage; kind : out identifier ) i
 begin
   kind := string_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   ParseExpression( expr, expr_type );
-  expect( symbol_t, ")" );
+  expectParameterClose( subprogramId );
   if isExecutingCommand then
      result := storage'( identifiers( expr.unitMetaTag ).name, noMetaTag, noMetaTags );
   end if;
@@ -165,9 +165,9 @@ procedure ParseTagsHasPolicies( result : out storage; kind : out identifier ) is
 begin
   kind := boolean_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   ParseExpression( expr, expr_type );
-  expect( symbol_t, ")" );
+  expectParameterClose( subprogramId );
   if isExecutingCommand then
      result := storage'( to_spar_boolean( expr.policyMetaTags /= noMetaTags ), noMetaTag, noMetaTags );
   end if;
@@ -192,7 +192,7 @@ procedure ParseTagsContainsPolicy( result : out storage; kind : out identifier )
 begin
   kind := boolean_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   -- An arbitrary expression can be tested.  However, expressions cannot
   -- contain a limited variable, such as file or directory resource, and
   -- those also need to be checked.  Abstract variables do not exist.
@@ -202,10 +202,10 @@ begin
   else
      ParseExpression( expr, expr_type );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma( subprogramId );
   ParseIdentifier( tagId );
   if class_ok( tagId, policyMetaClass ) then
-     expect( symbol_t, ")" );
+     expectParameterClose( subprogramId );
   else
      err( +"policy value meta tag expected" );
   end if;
@@ -231,9 +231,9 @@ procedure ParseTagsGetPoliciesImage( result : out storage; kind : out identifier
 begin
   kind := string_t;
   expect( subprogramId );
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogramId );
   ParseExpression( expr, expr_type );
-  expect( symbol_t, ")" );
+  expectParameterClose( subprogramId );
   if isExecutingCommand then
      result := storage'( image( expr.policyMetaTags ), noMetaTag, noMetaTags );
   end if;
