@@ -1009,7 +1009,7 @@ begin
                              if trace then
                                 put_trace(
                                   to_string( fieldName ) & " := " &
-                                  toSecureData( to_string( toEscaped( expr.value) ) ) );
+                                  toSecureData( to_string( toEscaped( traceAbbreviate( expr.value ) ) ) ) );
                              end if;
                           end if;
                        end if;
@@ -1103,7 +1103,7 @@ begin
                         if trace then
                           put_trace(
                             to_string( targetFieldName ) & " := " &
-                            toSecureData( to_string( toEscaped( identifiers( target_field_t ).store.value ) ) ) );
+                            toSecureData( to_string( toEscaped( traceAbbreviate( identifiers( target_field_t ).store.value ) ) ) ) );
                         end if;
                      end if; -- right number
                   end if; -- field member
@@ -1936,7 +1936,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
           if trace then
              put_trace(
                 to_string( identifiers( new_const_id ).name ) & " := """ &
-                 toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
+                 toSecureData( to_string( traceAbbreviate( ToEscaped( expr.value ) ) ) ) & """" );
          end if;
          if expr.unitMetaTag /= noMetaTag then
             if trace then
@@ -2548,7 +2548,7 @@ begin
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
-               toSecureData( to_string( ToEscaped( expr.value ) ) ) & """" );
+               toSecureData( to_string( traceAbbreviate( ToEscaped( expr.value ) ) ) ) & """" );
 
         end if;
         if expr.unitMetaTag /= noMetaTag then

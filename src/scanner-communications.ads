@@ -523,6 +523,7 @@ procedure internalErrorUsageQualifier(
 altTextDisplayLength : constant natural := 128;
 altTextIdentifierDisplayLength : constant natural := 64;
 
+function traceAbbreviate( normal : unbounded_string ) return unbounded_string;
 function contextAltText( normal : unbounded_string; too_long : string )
    return messageStrings;
 function jsonDecodeContextAltText( normal : unbounded_string; too_long : string )

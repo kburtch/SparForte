@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Foundation for value meta labels
+Objective: Foundation for value meta labels (Phase 1)
 
 Known Issues
 
@@ -44,7 +44,7 @@ CHANGES SINCE 2.6.4
 
 18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
-19. New: tags package.  Name may change. [negative tests needed].
+19. New: tags package.
 
 20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
 
@@ -68,7 +68,7 @@ CHANGES SINCE 2.6.4
 
 30. Fix: array index zero handling fixed for out and in out parameters.  That is, no longer treats a reference to a(0) as a scalar variable a.
 
-31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable. [tests needed]
+31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
 
 32. Fix. l10n functions returning a natural 255 no longer raise an exception.  Returns 255 for a -1 signed byte.
 

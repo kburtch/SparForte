@@ -2835,6 +2835,20 @@ end internalErrorUsageQualifier;
 
 
 -----------------------------------------------------------------------------
+--  TRACE ABBREVIATE
+--
+-- Simple truncate for string messages, mainly for put_trace.
+-----------------------------------------------------------------------------
+
+function traceAbbreviate( normal : unbounded_string ) return unbounded_string is
+begin
+  if length( normal ) < altTextDisplayLength then
+     return normal;
+  end if;
+  return head( normal, altTextDisplayLength ) & to_unbounded_string( "..." );
+end traceAbbreviate;
+
+-----------------------------------------------------------------------------
 --  CONTEXT ALT TEXT
 --
 -- Return a context string for a secured value, or return the alternative

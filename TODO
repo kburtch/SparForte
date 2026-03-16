@@ -17,9 +17,10 @@ refactor so one is a procedure, or break up the shared
 expression or use pragma unchecked_volatile.)
 "  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
 -- unchecked volatile did not cure this issue
+- tests still needed for subprograms with an in out parameter of a generic type
 
 - value meta labels project
-  - NOTE: left off good testing of arrays package
+  - NOTE: left off recreation of good testing of value meta labels with arrays package
   - remedy message when tagged clause without policy keyword occurs
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
@@ -38,7 +39,6 @@ expression or use pragma unchecked_volatile.)
 - text_io
   - socket tests
 
-  - pragma meta_tag and logs, text_io
   - the output length of an assignment trace should probably
     be limited with perhaps a length
   - pragma import/export and meta labels
@@ -61,14 +61,10 @@ expression or use pragma unchecked_volatile.)
     - meta tags should be able to be defined in policy blocks
   - tagged on a literal can be applied even if the system meta label
     doesn't allow it...but shouldn't.  Is there a reason it should?
-
-  - Does change_dir affect current_working_directory?
-
   - setting the meta label for files such as btree_io
   - setting the meta label for files such as database packages
 
-  - the global meta mode syntax for the language for different types
-    of tags - instead of tagged, policy tagged, uom tagged, class tagged?
+  - Does change_dir affect current_working_directory?
 
   - array built-in help vs. summary vs. docs - should functions have x :=
    in front or not?  Thought this was already consistent.
@@ -87,15 +83,12 @@ expression or use pragma unchecked_volatile.)
 
   - factors can be labelled but continue with expressions and labels
     - related unit tests
-    calendar.clock [tagged tag] may not be the best syntax
-    - removing tagged tag
   - designing how meta labels apply to database columns
   - designing how meta labels apply to fields in a file of records
   - ? deploying strings + meta tags
   - consider other issues like decision making on the meta tags and
     global meta tag
   - identifying individual trees
-  - adaptation to other uses such as units of measure
   - what happens when unsetting meta labels with unset
     - what is the policy?
   - System package values should be labeled secure
@@ -137,7 +130,6 @@ expression or use pragma unchecked_volatile.)
       or written?
     - pragmas to define trust thresholds?
 
-
   - data fields
     General - Asset Name, Asset Type, Purpose, Oragnization
     Data Hosting/Location - Country (determines laws), Type
@@ -177,7 +169,6 @@ expression or use pragma unchecked_volatile.)
   - error messages addressing common problems listed in StackOverflow
   - bash comparision and making the shell more standards compliant
     - add ctrl-c to pause / fg / bg commmands to SparForte, and maybe job control?
-  - coverage tests of recent changes
   - secrets detection
     - should be applied to all string literals
     - should be able to be turned off
@@ -209,6 +200,8 @@ Priority Issues (Fix These First)
   such as unit tests and agile reports and secure the output; if it is
   not, determine how to escape characters
   - help command shows help of all include files
+- generic types
+    - arrays of a custom generic type should initialize all the elements of
 - documenting that AdaScript parameters to commands may avoid injection
   attacks (vs. bourne shell) provided concat, etc. are not used.
 - constants can be assigned abstract types...was that intentional or
