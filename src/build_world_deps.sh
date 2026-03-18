@@ -73,15 +73,16 @@ LDD_OUTPUT=`ldd spar | sed 's/\t//g'`
 echo "$LDD_OUTPUT" | ( while read LDD_LINE ; do
   LDD_FILE=`echo "$LDD_LINE" | cut -d' ' -f 1`
   # This file is always included and is not a real file.  It's a
-  # virtual file added for the Linux kernel.
+  # virtual file added for the Linux kernel.  The other is the
+  # arm architecture library for Raspberry Pi which is real but
+  # not a tool dependency.
   # Dash shell does not support substring substitutions so use case
   case "$LDD_FILE" in
   "linux-vdso.so"* ) continue
   ;;
+  "/usr/lib/arm-linux-gnueabihf"* ) continue
+  ;;
   esac
-  #if [ "${LDD_FILE:0:13}" = "linux-vdso.so" ] ; then
-  #   continue
-  #fi
   LDD_PATH=`echo "$LDD_LINE" | cut -d' ' -f 3`
   # Determine the package providing the file
   if [ -x "$DPKG_CMD" ] ; then
