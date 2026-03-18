@@ -27,7 +27,9 @@
 #define NULL    ((void *) 0)
 #endif
 
-typedef int bool;
+// KB: 26/03/18: renamed bool "mybool" because bool is a keyword
+// in C 2023.
+typedef int mybool;
 #define FALSE 0
 #define TRUE  1
 

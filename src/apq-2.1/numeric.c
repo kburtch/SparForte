@@ -1404,9 +1404,9 @@ zero_var(NumericVar *var)
 static void
 set_var_from_str(const char *str, NumericVar *dest, Decimal_Exception *ex) {
 	char	*cp = (char *) str;
-	bool	have_dp = FALSE;
+	mybool	have_dp = FALSE;
 	int	i = 0;
-	bool	bad_format = FALSE;
+	mybool	bad_format = FALSE;
 
 	while (*cp)
 	{
@@ -2620,7 +2620,7 @@ exp_var(NumericVar *arg, NumericVar *result,int *global_rscale, Decimal_Exceptio
 	int		d;
 	int		i;
 	int		ndiv2 = 0;
-	bool		xneg = FALSE;
+	mybool		xneg = FALSE;
 	int		save_global_rscale;
 
 	init_var(&x);
