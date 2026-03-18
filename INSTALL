@@ -16,8 +16,9 @@ Building from Sources
    1. sh provision.sh
    2. configure
    3. gmake
-   4. gmake test (optional)
-   5. gmake install (as root user)
+   4. gmake sbom
+   5. gmake test (optional)
+   6. gmake install (as root user)
 
 
 LONG VERSION
@@ -304,7 +305,12 @@ By default, SparForte will install under /usr/local.
    found.  Some packages have a "config" program to determine the proper
    settings, such as "SDL_config", "pg_config" or "mysql_config".
 
-4. (Optional) "gmake test" to run the SparForte core language regression
+4. "gmake sbom" will add a full software bill of materials (SBOM), including
+   all the dynamically linked libraries used by SparForte.  Without this
+   step, only the third-party source code included with SparForte are
+   in the bill of materials.
+
+5. (Optional) "gmake test" to run the SparForte core language regression
    tests.  The tests should by run as an unprivileged user (as some tests
    check file access rights and will fail if run as root).
 
@@ -312,7 +318,7 @@ By default, SparForte will install under /usr/local.
    results with gcov and lcov, or "gmake releasetest" to perform more
    extensive testing prior to pushing changes to GitHub.
 
-5. (Optional) "gmake install" will copy the spar executable to the
+6. (Optional) "gmake install" will copy the spar executable to the
    /usr/local/bin/ directory so that other users can access it.  Alteratively,
    you can copy the spar executable and man page yourself and set the
    appropriate permission bits.
