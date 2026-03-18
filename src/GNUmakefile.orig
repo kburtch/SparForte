@@ -230,7 +230,7 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 
 sbom:
 	@echo "---------------------------------------------------------------"
-	@echo "Searching for library dependencies"
+	@echo "  SBOM: Searching for library dependencies"
 	@echo "---------------------------------------------------------------"
 	@echo
 	sh build_world_deps.sh
@@ -422,15 +422,7 @@ srctar: distclean
 rpm:	all
 
 bintar: c_os.o all sbom all
-	#gnatbind -x $(INCLUDE_BIND) spar.ali
-	#gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
-	#@echo
-	#@echo "---------------------------------------------------------------"
-	#@echo "  BUILDING SOFTWARE BILL-OF_MATERIALS (SBOM) AND RELINKING"
-	#@echo "---------------------------------------------------------------"
-	#@echo
-	#sh build_world_deps.sh
-	#$(MAKE) all -C '.'
+	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS) ; ( cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL ChangeLog provision.sh examples doc GNUmakefile sparforte_f_icon.xpm  sparforte_sail_icon.xpm; rm -f spar )
 	@echo
 	@echo "Release checklist"
