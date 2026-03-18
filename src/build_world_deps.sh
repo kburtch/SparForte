@@ -158,7 +158,7 @@ HERE
   elif [ -n "$PACMAN_OUTPUT" ] ; then
      PACMAN_PKG=`echo "$PACMAN_OUTPUT" | cut -d' ' -f 5 | cut -d. -f1-2`
      PACMAN_OUTPUT=`"$PACMAN_CMD" --query --info "$PACMAN_PKG"`
-      With version, strip any leading space
+     # With version, strip any leading space
      PACMAN_VERSION=`echo "$PACMAN_OUTPUT" | grep -F "Version" | cut -d: -f2-`
      if [ "${PACMAN_VERSION:0:1}" = ' ' ] ; then
         PACMAN_VERSION="${PACMAN_VERSION:1}"
