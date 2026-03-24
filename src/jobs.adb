@@ -147,7 +147,7 @@ begin
       end if;
    end if;
    -- this only applies to hashed command names not paths like "./foo".
-   if oneNotExecutableExists then
+   if oneNotExecutableExists and fullPath = null_unbounded_string then
       err( contextNotes => contextInCommand,
            subjectNotes => subjectInterpreter,
            reason => +"found no command but",
@@ -468,21 +468,21 @@ begin
         remedy       => +"it was spelled wrong or a directory is missing in the directory list in the PATH variable"
      );
   else
-     if cmd = "=" then -- probably ";=" instead of ":="
-        err(
-           contextNotes => unb_pl( current_working_directory ),
-           subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
-           reason       => +"was " & em( "not found" ),
-           obstructorNotes => nullMessageStrings,
-           remedy       => +"an asignment operator ':=' was spelled wrong as ';=' (semi-colon equals)"
-        );
-     elsif not C_is_executable( to_string( che.fullPath ) & ASCII.NUL ) then
+     if not C_is_executable( to_string( che.fullPath ) & ASCII.NUL ) then
         -- Perhaps this should be tested for elsewhere
         err(
            contextNotes => unb_pl( current_working_directory ),
            subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
            reason       => +"was found but",
            obstructorNotes => em( "the command has no executable permission" )
+        );
+     elsif cmd = "=" then -- probably ";=" instead of ":="
+        err(
+           contextNotes => unb_pl( current_working_directory ),
+           subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+           reason       => +"was " & em( "not found" ),
+           obstructorNotes => nullMessageStrings,
+           remedy       => +"an asignment operator ':=' was spelled wrong as ';=' (semi-colon equals)"
         );
      else
         err(
