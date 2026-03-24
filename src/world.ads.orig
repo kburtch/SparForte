@@ -48,7 +48,7 @@ package world is
 ------------------------------------------------------------------------------
 
 builder   : constant string  := $configbuilder;
-version   : constant string  := "3.0";
+version   : constant string  := "3.0.1";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
 copyright : constant string  :=  " Copyright (c)2001-2026 Free Software Foundation";

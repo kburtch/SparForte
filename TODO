@@ -11,16 +11,25 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-=> (error: side-effects: offender_file used here in
-reblock_all is also changed by main task.  Perhaps
-refactor so one is a procedure, or break up the shared
-expression or use pragma unchecked_volatile.)
-"  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
--- unchecked volatile did not cure this issue
+- CGI package broken since 2.5.
+    - is getlogin() the wrong function to use with group_member()?
+    - the sandbox wrapper is not recognized and was called "not found"
+      rather than not executable
+  - better testing needed for CGI package and/or file mode features
+
+- side-effects problem
+  => (error: side-effects: offender_file used here in
+  reblock_all is also changed by main task.  Perhaps
+  refactor so one is a procedure, or break up the shared
+  expression or use pragma unchecked_volatile.)
+  "  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
+  -- unchecked volatile did not cure this issue
 - tests still needed for subprograms with an in out parameter of a generic type
 
 - value meta labels project
   - NOTE: left off recreation of good testing of value meta labels with arrays package
+  - "? 2 tagged km" failed with an error about left-hand unit-of-measure when
+    there is no left hand??
   - remedy message when tagged clause without policy keyword occurs
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities

@@ -1,126 +1,15 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Foundation for value meta labels (Phase 1)
+Objective: Foundation for value meta labels (Phase 2)
 
 Known Issues
 
 SparForte will run slower because of the value meta labels checking at run-time.
 
-CHANGES SINCE 2.6.4
+CHANGES SINCE 3.0
 
-1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
+1. Fix: In files.is_execute/is_execute file, the group execute permission is now checked.
 
-2. Fix: command type variables must contain paths to files in a secure directory.
+2. Fix: In files.is_readable and other functions that check readability, in edge cases where the kernel getlogin() fails and, in turn, group_member() fails, the read access checks fall back to checking the simple file gid againt the user's effective gid.  Comments also fixed in c_os.c.
 
-3. Fix: arrays with limited or constant elements cannot be rearranged by sorting, shuffling, rotating, shifting, or flipping.  to_array also will no longer write to limited or constant array elements.
-
-4. Fix: malformed numeric literals like "123_" no longer throw an Ada exception.
-
-5. Fix: Added missing entry for doubly_linked_lists.last to the documentation.
-
-6. Fix: vectors package documentation has several corrections.
-
-7. Fix: vectors.delete calculates the vector index correctly.
-
-8. Fix: vectors.delete no longer allows a count with a cursor because of SparForte's meta data label implementation.
-
-9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index.
-
-10. Fix: dynamic_hash_table package documentation correction.
-
-11. Fix: doubly linked lists assemble / disassemble are restricted under pragma ada_95.
-
-12. Enhancement: better error messages for procedure / function mismatches.
-
-13. Enhancement: better error messages for some edge cases like using a generic type as a shell command.
-
-14. Refactor: world package was refactored especially moving the symbol table into a separate file.
-
-15. Fix: documentation corrected for doubly_linked_lists.insert_before, cgi package, calendar.to_julian.
-
-16. New: enum.pos / enum.val.
-
-17. New: added type calendar.julian_date.
-
-18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
-
-19. New: tags package.
-
-20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
-
-21. Change: performance static metrics are right-justified.
-
-22. Fix: command_line.argument has an error message with a position is out-of-range rather than reporting an unexpected exception.
-
-23. Fix: exit status codes are limited to range 0..255 and a new error message in command_line.set_exit_status when a status code is out-of-range.
-
-24. Fix: directory_operations.dir_name missing entry added to package documentation.
-
-25. Change: directory_operations.change_dir now updates the PWD and OLDPWD variables for Bourne shell compatibility, even though the Ada version does not update these variables.
-
-26. Fix: array out parameters now type checked against their element type not the array type.
-
-27. Fix: gnat.crc32.initialize() no longer checks the parameter type twice.
-
-28. Fix: dbm package calls using an uninitialized query object no longer show an error message with "connection" instead of "query".
-
-29. Fix: non-generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
-
-30. Fix: array index zero handling fixed for out and in out parameters.  That is, no longer treats a reference to a(0) as a scalar variable a.
-
-31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
-
-32. Fix. l10n functions returning a natural 255 no longer raise an exception.  Returns 255 for a -1 signed byte.
-
-33. Fix: logs.mode, logs.width no longer run during a syntax check.
-
-34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Tests needed]
-
-35. Fix: added missing logs.width function to logs documentation.
-
-36. Change: numerics.expr and trig functions now report detailed errors instead of an unexpected exceptions.
-
-37. Change: restriction( no_external_commands ) also disallows os.system().
-
-38. Fix: where possible stats package subprograms no longer have an array empty error with arrays of one element.
-
-39. Fix: missing parameter in get_immediate added to documentation.
-
-40. Fix: Most Text_IO subprograms tested to support arrays of files.  is_open is now an in_out mode parameter for this reason.
-
-41. Fix: current_input, current_output and current_error support renamings and arrays elements.
-
-42. Fix: initialization of renamings no longer point to a scalar value but to a scalar or array element.  (Probably overridden by higher level functions but should be correct here.)
-
-43. Fix: when logging to standard error, the logs package uses the end-of-line for your operating system, rather than a line feed.
-
-44. Fix: get_line reads from current input by default not standard input.
-
-45. New: spar --sbom/-B displays build dependencies (Software Bill of Lading, SBOM).  Tested on Ubuntu, Raspberry Pi, Arch, FreeBSD.  Licenses not available on all systems.
-
-46. Fix: fixed cursor issue in btree get_first function.
-
-47. Fix: fix for btree good regression tests.
-
-48. Fix: broken custom command prompt fixed.
-
-49. Change: a short bug report message appears when an uncaught exception is raised to the main program.
-
-50. Change: the provision.sh script updated for FreeBSD 15.
-
-51. New: pragma annotate( release_date, "string" ).
-
-52. New: added "make sbom" to gather a full sbom when building from sources".
-
-53. New: pragma error_processor [Tests needed]
-
-54. New: basic C type names such as "int", "long" "char", "bool" will have a unique error message if type are not defined.
-
-55. Fix: error pointer was adjusted by -1. Error pointer skips invisible delimiters so no longer moved to the right.
-
-56. Change: Dockerfile for ubuntu updated to 24.04.
-
-57. New: spar --version shows the name of the builder based on COMPANY and LOGNAME environment variables.
-
-58. Fix: configure script putting 'yes' in wrong location in some tests fixed.
 

@@ -1,79 +1,126 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Error message improvements
+Objective: Foundation for value meta labels (Phase 1)
 
 Known Issues
 
-Warnings from MariaDB libraries Raspberry Pi OS / Bullseye.
+SparForte will run slower because of the value meta labels checking at run-time.
 
-Failure on OpenSuSE 15.5 on error in errmsg.h: MariaDB has mixed integers and string pointers in this file, which is illegal in C--presumably because a pointer may be a different size than an integer--and now strictly enforced by recent versions of GCC.  You may be able to edit errmsg.h and replace the strings near line 40 with integers as a kludge.
+CHANGES SINCE 2.6.4
 
-Failing to build on Raspberry Pi OS / Bookworm due to an internal error in the Ada standard address to access conversions function.
+1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
 
-CHANGES SINCE 2.6
+2. Fix: command type variables must contain paths to files in a secure directory.
 
-1. Fix: --without-sound now builds successfully.
+3. Fix: arrays with limited or constant elements cannot be rearranged by sorting, shuffling, rotating, shifting, or flipping.  to_array also will no longer write to limited or constant array elements.
 
-2. Fix: --without-readline now builds successfully.
+4. Fix: malformed numeric literals like "123_" no longer throw an Ada exception.
 
+5. Fix: Added missing entry for doubly_linked_lists.last to the documentation.
 
-CHANGES SINCE 2.6.1
+6. Fix: vectors package documentation has several corrections.
 
-3. Change: more error messages updated to new format.
+7. Fix: vectors.delete calculates the vector index correctly.
 
-4. Fix: additional error checks for JSON encoding/decoding.
+8. Fix: vectors.delete no longer allows a count with a cursor because of SparForte's meta data label implementation.
 
-5. Fix: whitespace handling for JSON encoding/decoding.
+9. New: vectors.no_index, vectors.find_index, vectors.reverse_find_index, vectors.has_element, vectors.assign, vectors.decrement, vectors.increment, vectors.to_index.
 
-6. Fix: boolean values now shown in env command.
+10. Fix: dynamic_hash_table package documentation correction.
 
-7. Fix: an error is reported when bubble or heap sorting arrays containing undefined numeric or enumerated values, instead of raising an exception.
+11. Fix: doubly linked lists assemble / disassemble are restricted under pragma ada_95.
 
-8. Fix: type checking on out mode parameters.
+12. Enhancement: better error messages for procedure / function mismatches.
 
-9. Fix: trailing whitespace in a prompt script shows an appropriate message instead of "statement expected".
+13. Enhancement: better error messages for some edge cases like using a generic type as a shell command.
 
-10. New: New style error messages may include the location where an identifier was declared.
+14. Refactor: world package was refactored especially moving the symbol table into a separate file.
 
-11. Change: configure will try to use find /usr/lib if locate command is not installed.
+15. Fix: documentation corrected for doubly_linked_lists.insert_before, cgi package, calendar.to_julian.
 
-12. Change: very long identifier names will be replaced with the text "the identifier" in new style error messages.
+16. New: enum.pos / enum.val.
 
-13. Change: when using cd on a path to a non-directory, cd will attempt to change directory to the directory containing the file with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
+17. New: added type calendar.julian_date.
 
-14. Change: when using cd with a path with leading/trailing spaces, cd will attempt to change directory to the directory without spaces with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
+18. Fix: out parameters with resource variables won't  create new resources when one is already attached to the variable.
 
-15. Change; when using cd with the wrong slash delimiter, cd will attempt to use the correct directory delimiter with an "Assuming" warning.  In a script, this is a suggested remedy.
+19. New: tags package.
 
-16. Change: umask will correct suspicious values, at the command prompt only.
+20. Refactor: cgi package largely rewritten but no new functionality. [testing needed]
 
-17. Change: standard names PATH, HOME, PWD, OLDPWD and TERM may no longer be deleted with unset.  These names also disallowed in declarations of new variables.
+21. Change: performance static metrics are right-justified.
 
-18. Fix: design pragmas constraint mode error messages updated for the correct names.
+22. Fix: command_line.argument has an error message with a position is out-of-range rather than reporting an unexpected exception.
 
-19. Change: support for newer Raspberry Pi OS Bullseye releases.  Bookworm failing to compile due to an Ada internal error.
+23. Fix: exit status codes are limited to range 0..255 and a new error message in command_line.set_exit_status when a status code is out-of-range.
 
-CHANGES SINCE 2.6.2
+24. Fix: directory_operations.dir_name missing entry added to package documentation.
 
-20. Fix: first item in an enumerated type no longer gives an undefined error when converting a record to JSON.
+25. Change: directory_operations.change_dir now updates the PWD and OLDPWD variables for Bourne shell compatibility, even though the Ada version does not update these variables.
 
-21. Fix: SDL support is now removed through the gnat preprocessor when --without-sdl is used.  This is a workaround for GCC 13 bug failing on graphics support.
+26. Fix: array out parameters now type checked against their element type not the array type.
 
-22. Fix: --without-sdl now requires --without-opengl.
+27. Fix: gnat.crc32.initialize() no longer checks the parameter type twice.
 
-23. Fix: provision.sh for Rocky Linux and --without-sdl and --without-opengl should work.
+28. Fix: dbm package calls using an uninitialized query object no longer show an error message with "connection" instead of "query".
 
-CHANGES SINCE 2.6.3
+29. Fix: non-generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
 
-24. Fix: arrays.shuffle error message no longer says an array type can be used.
+30. Fix: array index zero handling fixed for out and in out parameters.  That is, no longer treats a reference to a(0) as a scalar variable a.
 
-25. New: numerics.shannon_entropy_of for byte entropy for string types.
+31. Fix: generic in out parameters to built-in package subprograms should be able to use an array element as well as a scalar variable.
 
-26. New: string constants are checked for secret data using shannon entropy plus heuristics. [docs, positive tests needed]
+32. Fix. l10n functions returning a natural 255 no longer raise an exception.  Returns 255 for a -1 signed byte.
 
-27. Fix: teams.messaging spelling corrected.
+33. Fix: logs.mode, logs.width no longer run during a syntax check.
 
-28. Fix: Building mostly successfully under Linux Mint 22 / Ubuntu 24.04.  Graphics show warnings due to Ubuntu MESA bugs.  Sound must be disabled due with --without-sound to Ubuntu gstreamer bugs.  Some OpenGL functions commented out due to GCC Ada compiler bugs.
+34. New: pragma meta_label to assign meta labels to stdin, stdout and stderr. [Tests needed]
 
-29. Fix: Due to new rules about the arrangement of subprogram methods, some classes have been reordered to prevent GCC 13 "frozen" errors.
+35. Fix: added missing logs.width function to logs documentation.
+
+36. Change: numerics.expr and trig functions now report detailed errors instead of an unexpected exceptions.
+
+37. Change: restriction( no_external_commands ) also disallows os.system().
+
+38. Fix: where possible stats package subprograms no longer have an array empty error with arrays of one element.
+
+39. Fix: missing parameter in get_immediate added to documentation.
+
+40. Fix: Most Text_IO subprograms tested to support arrays of files.  is_open is now an in_out mode parameter for this reason.
+
+41. Fix: current_input, current_output and current_error support renamings and arrays elements.
+
+42. Fix: initialization of renamings no longer point to a scalar value but to a scalar or array element.  (Probably overridden by higher level functions but should be correct here.)
+
+43. Fix: when logging to standard error, the logs package uses the end-of-line for your operating system, rather than a line feed.
+
+44. Fix: get_line reads from current input by default not standard input.
+
+45. New: spar --sbom/-B displays build dependencies (Software Bill of Lading, SBOM).  Tested on Ubuntu, Raspberry Pi, Arch, FreeBSD.  Licenses not available on all systems.
+
+46. Fix: fixed cursor issue in btree get_first function.
+
+47. Fix: fix for btree good regression tests.
+
+48. Fix: broken custom command prompt fixed.
+
+49. Change: a short bug report message appears when an uncaught exception is raised to the main program.
+
+50. Change: the provision.sh script updated for FreeBSD 15.
+
+51. New: pragma annotate( release_date, "string" ).
+
+52. New: added "make sbom" to gather a full sbom when building from sources".
+
+53. New: pragma error_processor [Tests needed]
+
+54. New: basic C type names such as "int", "long" "char", "bool" will have a unique error message if type are not defined.
+
+55. Fix: error pointer was adjusted by -1. Error pointer skips invisible delimiters so no longer moved to the right.
+
+56. Change: Dockerfile for ubuntu updated to 24.04.
+
+57. New: spar --version shows the name of the builder based on COMPANY and LOGNAME environment variables.
+
+58. Fix: configure script putting 'yes' in wrong location in some tests fixed.
 

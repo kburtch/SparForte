@@ -35,17 +35,22 @@ int group_member(gid_t gid) {
 #else
   unsigned int groups[NGROUPS_MAX];
 #endif
+  char *login = NULL;
 
   ngroups = NGROUPS_MAX;
-  if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
-    printf ("Groups array is too small: %d\n", ngroups);
-  }
   ret = 0;
-  for (i = 0; i < ngroups; i++) {
-    if (gid == groups[i]) {
-      ret = 1;
-      break;
-      }
+  // This may fail and return NULL e.g. CGI scripts.
+  login = getlogin();
+  if (login != NULL ) {
+     if (getgrouplist(login, -1, groups, &ngroups) == -1) {
+       printf ("Groups array is too small: %d\n", ngroups);
+     }
+     for (i = 0; i < ngroups; i++) {
+       if (gid == groups[i]) {
+         ret = 1;
+         break;
+         }
+     }
   }
   return ret;
 }
@@ -59,18 +64,23 @@ int group_member(gid_t gid) {
 
 int group_member(gid_t gid) {
   int ngroups, i, ret;
-  unsigned int groups[NGROUPS_MAX];
+  char *login = NULL;
+  gid_t groups[NGROUPS_MAX];
 
   ngroups = NGROUPS_MAX;
-  if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
-    printf ("Groups array is too small: %d\n", ngroups);
-  }
   ret = 0;
-  for (i = 0; i < ngroups; i++) {
-    if (gid == groups[i]) {
-      ret = 1;
-      break;
-      }
+  // This may fail and return NULL e.g. CGI scripts.
+  login = getlogin();
+  if ( login != NULL ) {
+     if (getgrouplist(login, -1, groups, &ngroups) == -1) {
+       fprintf(stderr, "Groups array is too small: %d\n", ngroups);
+     }
+     for (i = 0; i < ngroups; i++) {
+       if (gid == groups[i]) {
+         ret = 1;
+         break;
+         }
+     }
   }
   return ret;
 }
@@ -110,12 +120,16 @@ int C_WEXITSTATUS( int waitpid_status ) {
 /* IS EXECUTABLE FILE                                       */
 /*                                                          */
 /* True if file exists, is regular, and is executable       */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_executable_file( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
 		/* Administrator runs if any execute bit */
@@ -125,9 +139,12 @@ int C_is_executable_file( char * path ) {
 		} else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IXUSR ) > 0;
 		/* Group member can run if the file has group execute */
-        //} else if ( group_member( info.st_gid ) ) {
-        //   fprintf(stderr, "is_exec_file: C4\n");
-        //   result = (info.st_mode & S_IXGRP ) > 0;
+        } else if ( group_member( info.st_gid ) ) {
+           result = (info.st_mode & S_IXGRP ) > 0;
+        /* Fallback: should group member fail due to security reasons */
+        /* Group can run if the file is group executable */
+        } else if ( gid == info.st_gid ) {
+            result = (info.st_mode & S_IXGRP ) > 0;
 		/* World can run if the file is other execute */
         } else {
            result = (info.st_mode & S_IXOTH ) > 0;
@@ -140,12 +157,16 @@ int C_is_executable_file( char * path ) {
 /* IS EXECUTABLE                                            */
 /*                                                          */
 /* True if file or special file exists and is executable    */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_executable( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
 	/* Administrator runs if any execute bit */
 	if ( 0 == euid ) {
@@ -153,10 +174,14 @@ int C_is_executable( char * path ) {
 	/* Owner can run if the file has user execute */
 	} else if ( euid == info.st_uid ) {
         result = (info.st_mode & S_IXUSR ) > 0;
-		/* Group member can run if the file has group execute */
+    /* Group member can run if the file has group execute */
     } else if ( group_member( info.st_gid ) ) {
         result = (info.st_mode & S_IXGRP ) > 0;
-		/* World can run if the file is other execute */
+    /* Fallback: should group member fail due to security reasons */
+    /* Group can run if the file is group executable */
+    } else if ( gid == info.st_gid ) {
+        result = (info.st_mode & S_IXGRP ) > 0;
+    /* World can run if the file is other readable */
     } else {
         result = (info.st_mode & S_IXOTH ) > 0;
     }
@@ -166,25 +191,33 @@ int C_is_executable( char * path ) {
 
 /* IS READABLE FILE                                         */
 /*                                                          */
-/* True if file exists, is regular, and is executable       */
+/* True if file exists, is regular, and is readable.        */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_readable_file( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
-		/* Administrator runs if any execute bit */
+		/* Administrator can read any file if any read bit */
 		if ( 0 == euid ) {
 		   result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
-		/* Owner can run if the file has user execute */
+		/* Owner can read if the file has user read */
 		} else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IRUSR ) > 0;
-		/* Group member can run if the file has group execute */
+		/* Group member can read if the file has group execute */
         } else if ( group_member( info.st_gid ) ) {
            result = (info.st_mode & S_IRGRP ) > 0;
-		/* World can run if the file is other execute */
+        /* Fallback: should group member fail due to security reasons */
+        /* Group can read if the file is group readable */
+        } else if ( gid == info.st_gid ) {
+            result = (info.st_mode & S_IRGRP ) > 0;
+		/* World can read if the file is other execute */
         } else {
            result = (info.st_mode & S_IROTH ) > 0;
         }
@@ -196,23 +229,31 @@ int C_is_readable_file( char * path ) {
 /* IS READABLE                                              */
 /*                                                          */
 /* True if file exists and is readable.                     */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_readable( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
-	/* Administrator runs if any execute bit */
+	/* Administrator reads if any read bit */
 	if ( 0 == euid ) {
 		result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
-	/* Owner can run if the file has user execute */
+	/* Owner can read if the file has user read */
 	} else if ( euid == info.st_uid ) {
         result = (info.st_mode & S_IRUSR ) > 0;
-		/* Group member can run if the file has group execute */
+    /* Group member can read if the file has group read */
     } else if ( group_member( info.st_gid ) ) {
         result = (info.st_mode & S_IRGRP ) > 0;
-		/* World can run if the file is other execute */
+    /* Fallback: should group member fail due to security reasons */
+    /* Group can read if the file is group readable */
+    } else if ( gid == info.st_gid ) {
+        result = (info.st_mode & S_IRGRP ) > 0;
+    /* World can read if the file is other readable */
     } else {
         result = (info.st_mode & S_IROTH ) > 0;
     }
@@ -223,25 +264,33 @@ int C_is_readable( char * path ) {
 /* IS WAITING FILE                                          */
 /*                                                          */
 /* True if file exists, is regular, readable and not empty  */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_waiting_file( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
         if ( info.st_size > 0 ) {
-	       /* Administrator runs if any execute bit */
+	       /* Administrator reads if any read bit */
 	       if ( 0 == euid ) {
 		      result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
-	       /* Owner can run if the file has user execute */
+	       /* Owner can read if the file has user read */
 	       } else if ( euid == info.st_uid ) {
               result = (info.st_mode & S_IRUSR ) > 0;
-		   /* Group member can run if the file has group execute */
+		   /* Group member can read if the file has group read */
            } else if ( group_member( info.st_gid ) ) {
               result = (info.st_mode & S_IRGRP ) > 0;
-		   /* World can run if the file is other execute */
+           /* Fallback: should group member fail due to security reasons */
+           /* Group can read if the file is group readable */
+           } else if ( gid == info.st_gid ) {
+              result = (info.st_mode & S_IRGRP ) > 0;
+		   /* World can read if the file is other read */
            } else {
               result = (info.st_mode & S_IROTH ) > 0;
            }
@@ -255,28 +304,37 @@ int C_is_waiting_file( char * path ) {
 /*                                                          */
 /* True if file exists, is regular, readable, not empty and */
 /* not world writable                                       */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_includable_file( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
         if ( info.st_size > 0 ) {
-	       /* Administrator runs if any execute bit */
+	       /* Administrator reads if any read bit */
 	       if ( 0 == euid ) {
 		      result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
-	       /* Owner can run if the file has user execute */
+	       /* Owner can read if the file has user read */
 	       } else if ( euid == info.st_uid ) {
               result = (info.st_mode & S_IRUSR ) > 0;
-		   /* Group member can run if the file has group execute */
+		   /* Group member can read if the file has group read */
            } else if ( group_member( info.st_gid ) ) {
               result = (info.st_mode & S_IRGRP ) > 0;
-		   /* World can run if the file is other execute */
+           /* Fallback: should group member fail due to security reasons */
+           /* Group can read if the file is group readable */
+           } else if ( gid == info.st_gid ) {
+              result = (info.st_mode & S_IRGRP ) > 0;
+		   /* World can read if the file is other read */
            } else {
               result = (info.st_mode & S_IROTH ) > 0;
            }
+		   /* File should not be world writable */
            if ( result ) {
               result = (info.st_mode & S_IWOTH ) == 0;
            }
@@ -290,27 +348,37 @@ int C_is_includable_file( char * path ) {
 /*                                                          */
 /* True if directory exists, is readable and is not world   */
 /* writable.                                                */
+/* Basic logic checked against BASH 5.0 lib/sh/eaccess.c/   */
+/* sh_stataccess()                                          */
 
 int C_is_secure_dir( char * path ) {
   struct stat info;
   int euid = -1;   /* effective UID */
+  int gid = -1;
   int result = 0;
+  errno = 0;
   euid = geteuid();
+  gid = getegid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFDIR ) {
-	    /* Administrator runs if any execute bit */
+	    /* Administrator reads if any read bit */
 	    if ( 0 == euid ) {
 		   result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
-	    /* Owner can run if the file has user execute */
+	    /* Owner can read if the dir has user read */
 	    } else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IRUSR ) > 0;
-		/* Group member can run if the file has group execute */
+		/* Group member can run if the dir has group read */
         } else if ( group_member( info.st_gid ) ) {
            result = (info.st_mode & S_IRGRP ) > 0;
-		/* World can run if the file is other execute */
+        /* Fallback: should group member fail due to security reasons */
+        /* Group can read if the dir is group readable */
+        } else if ( gid == info.st_gid ) {
+           result = (info.st_mode & S_IRGRP ) > 0;
+		/* World can read if the dir is other read */
         } else {
            result = (info.st_mode & S_IROTH ) > 0;
         }
+		/* Directory should not be world writable */
         if ( result ) {
            result = (info.st_mode & S_IWOTH ) == 0;
         }
