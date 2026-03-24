@@ -13,8 +13,6 @@ Long term Ongoing Work
 
 - CGI package broken since 2.5.
     - is getlogin() the wrong function to use with group_member()?
-    - the sandbox wrapper is not recognized and was called "not found"
-      rather than not executable
   - better testing needed for CGI package and/or file mode features
 
 - side-effects problem

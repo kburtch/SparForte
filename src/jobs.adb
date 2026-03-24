@@ -102,6 +102,8 @@ procedure findCmdPath( cmd : unbounded_string; fullpath : out unbounded_string )
    cmdpath  : unbounded_string; -- working copy of the cmd path
    prefixes : unbounded_string; -- PATH prefix list
    prefix   : unbounded_string; -- prefix being tested
+   oneNotExecutableExists : boolean := false; -- true if filename exists
+                                -- but not executable
 begin
    cmdPath := cmd;
    slashPos := index( cmd, "/" );
@@ -138,10 +140,19 @@ begin
             if C_is_executable_file( to_string( fullPath ) & ASCII.NUL ) then
                exit;
             else
+               oneNotExecutableExists := true;
                fullPath := null_unbounded_string;
             end if;
          end loop;
       end if;
+   end if;
+   -- this only applies to hashed command names not paths like "./foo".
+   if oneNotExecutableExists then
+      err( contextNotes => contextInCommand,
+           subjectNotes => subjectInterpreter,
+           reason => +"found no command but",
+           obstructorNotes => em( "one or more files with this name exists but have no executable permission" )
+      );
    end if;
 end findCmdPath;
 
@@ -464,6 +475,14 @@ begin
            reason       => +"was " & em( "not found" ),
            obstructorNotes => nullMessageStrings,
            remedy       => +"an asignment operator ':=' was spelled wrong as ';=' (semi-colon equals)"
+        );
+     elsif not C_is_executable( to_string( che.fullPath ) & ASCII.NUL ) then
+        -- Perhaps this should be tested for elsewhere
+        err(
+           contextNotes => unb_pl( current_working_directory ),
+           subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+           reason       => +"was found but",
+           obstructorNotes => em( "the command has no executable permission" )
         );
      else
         err(

@@ -12,4 +12,5 @@ CHANGES SINCE 3.0
 
 2. Fix: In files.is_readable and other functions that check readability, in edge cases where the kernel getlogin() fails and, in turn, group_member() fails, the read access checks fall back to checking the simple file gid againt the user's effective gid.  Comments also fixed in c_os.c.
 
+3. Change: when a hash-able command (e.g. "foo") is not found but a file exists without executable permission, an error message describes this condition rather than describing it as not found. When a command path (e.g. "/bin/foo") cannot be run when the file exists without executable permission, an error describes this condition rather than describing it as not found.
 
