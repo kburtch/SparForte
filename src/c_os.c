@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
+#include <pwd.h>
 
 /* For group_member(), a GNU libc extension, moved in recent versions */
 /* Some Linuxes do not have group_list defined and we must use the */
