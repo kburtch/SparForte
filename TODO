@@ -15,19 +15,14 @@ Long term Ongoing Work
     - is getlogin() the wrong function to use with group_member()?
   - better testing needed for CGI package and/or file mode features
 
-- side-effects problem
-  => (error: side-effects: offender_file used here in
-  reblock_all is also changed by main task.  Perhaps
-  refactor so one is a procedure, or break up the shared
-  expression or use pragma unchecked_volatile.)
-  "  btree_io.open_cursor( offender_file, offender_cursor );" [lib/blocking.inc.sp: 1008]
-  -- unchecked volatile did not cure this issue
 - tests still needed for subprograms with an in out parameter of a generic type
 
 - value meta labels project
   - NOTE: left off recreation of good testing of value meta labels with arrays package
   - "? 2 tagged km" failed with an error about left-hand unit-of-measure when
     there is no left hand??
+    - the left hand is standard_output, which is a file without a
+      unit-of-measure but needs its policies checked.
   - remedy message when tagged clause without policy keyword occurs
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
@@ -52,7 +47,9 @@ Long term Ongoing Work
     - refresh volatile should call DoJsonToRecord but not
       overwrite the existing meta labels as a special case.
       But this means the field meta labels should exist first.
-
+  - ensure there is a permanent fix for metaTagOk for a file and
+    a value so that the file.  Should a file have a unit of measure?
+    If not, do not check the unit of measure for a file.
   - text_io.parseOpenFile requires special type checking
   - tinyserve needs to be fixed for storage
     - a resource is an attribute associated with a value, not a variable

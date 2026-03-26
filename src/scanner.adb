@@ -4250,17 +4250,6 @@ begin
     leftUnitMetaTag := noMetaTag;
   end;
 
-  --if leftUnitMetaTag /= sparMetaTag then
-  --   getLabelStrings;
-  --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-  --       pl( ", unit of measure data meta tag " ) &
-  --       unb_em( theUnitMetaTagString ) &
-  --       pl( " is not compatible with system meta tag " ) &
-  --       unb_em( sparMetaTagString )
-  --   );
-  --   return false;
-  --end if;
-
   -- Security Policy Meta Tags
 
   -- if the data meta tags are given an initial value, a constraint error
@@ -4307,6 +4296,153 @@ function metaTagOk( context : identifier; theStorage : storage ) return boolean 
 begin
    return metaTagOk( to_string( identifiers( context ).name ), theStorage );
 end metaTagOk;
+
+-- Kludge: This is a special version for the left hand being a file type
+
+function metaTagOkForFileType( contextNotes : string; leftStorage, rightStorage: storage ) return boolean is
+  leftUnitMetaTagString : unbounded_string;
+  rightUnitMetaTagString : unbounded_string;
+  leftPolicyMetaTagString : unbounded_string;
+  rightPolicyMetaTagString : unbounded_string;
+  sparMetaTagString : unbounded_string;
+
+  -- GET LABEL STRINGS
+  --
+  -- Return human-readable strings describing value meta tags, especially
+  -- when they are undefined or not initialized
+  -- TODO: this is a hack for testing data meta tags until we get better
+  -- names/identifiers
+
+  procedure getLabelStrings is
+  begin
+    begin
+      if sparMetaTags = noMetaTags then
+         sparMetaTagString := to_unbounded_string( "undefined" );
+      else
+         sparMetaTagString := image( sparMetaTags );
+      end if;
+    exception when constraint_error =>
+      sparMetaTagString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if leftStorage.unitMetaTag = noMetaTag then
+         leftUnitMetaTagString := to_unbounded_string( "undefined" );
+      else
+          leftUnitMetaTagString :=  identifiers( leftStorage.unitMetaTag ).name;
+      end if;
+    exception when constraint_error =>
+      leftUnitMetaTagString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if leftStorage.policyMetaTags = noMetaTags then
+         leftPolicyMetaTagString := to_unbounded_string( "undefined" );
+      else
+          leftPolicyMetaTagString :=  image( leftStorage.policyMetaTags );
+      end if;
+    exception when constraint_error =>
+      leftPolicyMetaTagString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if rightStorage.unitMetaTag = noMetaTag then
+         rightUnitMetaTagString := to_unbounded_string( "undefined" );
+      else
+         rightUnitMetaTagString :=  identifiers( rightStorage.unitMetaTag ).name;
+      end if;
+    exception when constraint_error =>
+      rightUnitMetaTagString := to_unbounded_string( "not initialized" );
+    end;
+    begin
+      if rightStorage.policyMetaTags = noMetaTags then
+         rightPolicyMetaTagString := to_unbounded_string( "undefined" );
+      else
+         rightPolicyMetaTagString :=  image( rightStorage.policyMetaTags );
+      end if;
+    exception when constraint_error =>
+      rightPolicyMetaTagString := to_unbounded_string( "not initialized" );
+    end;
+  end getLabelStrings;
+
+  leftUnitMetaTag : identifier;
+  rightUnitMetaTag : identifier;
+  leftPolicyMetaTags : metaTagHashedSet.Set;
+  rightPolicyMetaTags : metaTagHashedSet.Set;
+
+begin
+
+  -- if the data meta tags are given an initial value, a constraint error
+  -- is usually raised.
+
+  -- Unit of Measure Meta Labels
+
+  begin
+    leftUnitMetaTag := leftStorage.unitMetaTag;
+  exception when constraint_error =>
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( ", left unit of measure meta tag is not initialized" ) );
+    leftUnitMetaTag := noMetaTag;
+  end;
+  begin
+    rightUnitMetaTag := rightStorage.unitMetaTag;
+  exception when constraint_error =>
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( ", right unit of measure meta tag is not initialized" ) );
+    rightUnitMetaTag := noMetaTag;
+  end;
+
+  -- there is no unit of measure check if the left is a file...for now
+  --if leftUnitMetaTag /= rightUnitMetaTag then
+  --   getLabelStrings;
+  --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+  --        pl( ", left unit of measure data meta tag " ) &
+  --        unb_em( leftUnitMetaTagString ) &
+  --        pl( " is not compatible with right data meta tag " ) &
+  --        unb_em( rightUnitMetaTagString )
+  --   );
+  --   return false;
+  --end if;
+
+  -- Security Policy Meta Labels
+
+  begin
+    leftPolicyMetaTags := leftStorage.policyMetaTags;
+  exception when constraint_error =>
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "left policy meta tags are not initialized" ) );
+    leftPolicyMetaTags := noMetaTags;
+  end;
+  begin
+    rightPolicyMetaTags := rightStorage.policyMetaTags;
+  exception when constraint_error =>
+    err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+       pl( "policy meta tags are not initialized" ) );
+    rightPolicyMetaTags := noMetaTags;
+  end;
+
+  if leftPolicyMetaTags /= rightPolicyMetaTags then
+     getLabelStrings;
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+          pl( ", left value policy meta tags " ) &
+          unb_em( leftPolicyMetaTagString ) &
+          pl( " is not compatible with right value meta tag " ) &
+          unb_em( rightPolicyMetaTagString )
+     );
+     return false;
+  elsif not sparMetaTags.is_subset( leftPolicyMetaTags ) then
+     getLabelStrings;
+     err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
+         pl( ", policy meta tag " ) &
+         unb_em( leftPolicyMetaTagString ) &
+         pl( " is not compatible with system meta tag " ) &
+         unb_em( sparMetaTagString )
+      );
+  end if;
+  return true;
+end metaTagOkForFileType;
+
+function metaTagOkForFileType( context : identifier; leftStorage, rightStorage: storage ) return boolean is
+begin
+   return metaTagOkForFileType( to_string( identifiers( context ).name ), leftStorage, rightStorage );
+end metaTagOkForFileType;
 
 function metaTagOk( contextNotes : string; leftStorage, rightStorage: storage ) return boolean is
   leftUnitMetaTagString : unbounded_string;
@@ -4407,14 +4543,6 @@ begin
           unb_em( rightUnitMetaTagString )
      );
      return false;
-  --elsif leftUnitMetaTag /= sparMetaTag then
-  --   getLabelStrings;
-  --   err_previous( pl( qp( "in " ) ) & em( contextNotes ) &
-  --       pl( ", unit of measure data meta tag " ) &
-  --       unb_em( leftUnitMetaTagString ) &
-  --       pl( " is not compatible with system meta tag " ) &
-  --       unb_em( sparMetaTagString )
-  --    );
   end if;
 
   -- Security Policy Meta Labels

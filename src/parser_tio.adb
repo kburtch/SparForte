@@ -1207,7 +1207,7 @@ begin
   if isExecutingCommand then
      begin
         if target_ref.id = standard_error_t then
-           if metaTagOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+           if metaTagOkForFileType( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1225,7 +1225,7 @@ begin
               end loop;
            end if;
         elsif target_ref.id = standard_output_t then
-           if metaTagOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+           if metaTagOkForFileType( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1246,7 +1246,7 @@ begin
            end if;
         else
            getParameterValue( target_ref, theFileRec );
-           if metaTagOk( subprogramId, theFileRec, expr ) then
+           if metaTagOkForFileType( subprogramId, theFileRec, expr ) then
               fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
               for i in 1..length( expr.value ) loop
                   ch := Element( expr.value, i );
@@ -1417,7 +1417,7 @@ begin
            err( pl( "full records cannot be printed with ?.  Try env" ) );
         end if;
         -- If an just error occurred, don't print anything further.
-        if metaTagOk( "?", identifiers( standard_output_t ).store.all, expr ) then
+        if metaTagOkForFileType( "?", identifiers( standard_output_t ).store.all, expr ) then
            if not error_found then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
@@ -1527,7 +1527,7 @@ begin
   if isExecutingCommand then
      begin
         if target_ref.id = standard_error_t then
-           if metaTagOk( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
+           if metaTagOkForFileType( subprogramId, identifiers( standard_error_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1545,7 +1545,7 @@ begin
               end loop;
            end if;
         elsif target_ref.id = standard_output_t then
-           if metaTagOk( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
+           if metaTagOkForFileType( subprogramId, identifiers( standard_output_t ).store.all, expr ) then
               -- Ada doesn't handle interrupted system calls properly.
               -- maybe a more elegant way to do this...
               loop
@@ -1565,7 +1565,7 @@ begin
            end if;
         else
            getParameterValue( target_ref, theFileRec );
-           if metaTagOk( subprogramId, theFileRec, expr ) then
+           if metaTagOkForFileType( subprogramId, theFileRec, expr ) then
               fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
               for i in 1..length( expr.value ) loop
                   ch := Element( expr.value, i );

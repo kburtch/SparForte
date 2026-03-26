@@ -355,6 +355,8 @@ function metaTagOk( contextNotes : string; theStorage : storage ) return boolean
 function metaTagOk( context : identifier; theStorage : storage ) return boolean;
 function metaTagOk( contextNotes : string; policies : metaTagHashedSet.Set ) return boolean;
 function metaTagOk( contextNotes : string; unit : metaTagID ) return boolean;
+function metaTagOkForFileType( contextNotes : string; leftStorage, rightStorage: storage ) return boolean; -- Kludge: temporary workaround to be removed later
+function metaTagOkForFileType( context : identifier; leftStorage, rightStorage: storage ) return boolean; -- Kludge: temporary workaround to be removed later
 function metaTagOk( contextNotes : string; leftStorage, rightStorage : storage ) return boolean;
 function metaTagOk( context : identifier; leftStorage, rightStorage : storage ) return boolean;
 function metaTagOk( contextNotes : string; leftStorage, middleStorage, rightStorage: storage ) return boolean;
