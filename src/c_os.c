@@ -66,11 +66,19 @@ int group_member(gid_t gid) {
   int ngroups, i, ret;
   char *login = NULL;
   gid_t groups[NGROUPS_MAX];
+  struct passwd *pw_info;
+
+  // This is more secure and reliable than getlogin()
+  // But I haven't tested it on other systems besides Linux.
+  // This may fail and return NULL e.g. CGI scripts.
+
+  pw_info = getpwuid(geteuid());
+  if ( pw_info != NULL ) {
+     login = pw_info->pw_name;
+  }
 
   ngroups = NGROUPS_MAX;
   ret = 0;
-  // This may fail and return NULL e.g. CGI scripts.
-  login = getlogin();
   if ( login != NULL ) {
      if (getgrouplist(login, -1, groups, &ngroups) == -1) {
        fprintf(stderr, "Groups array is too small: %d\n", ngroups);

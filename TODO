@@ -12,17 +12,12 @@ Long term Ongoing Work
 ----------------------
 
 - CGI package broken since 2.5.
-    - is getlogin() the wrong function to use with group_member()?
   - better testing needed for CGI package and/or file mode features
 
 - tests still needed for subprograms with an in out parameter of a generic type
 
 - value meta labels project
   - NOTE: left off recreation of good testing of value meta labels with arrays package
-  - "? 2 tagged km" failed with an error about left-hand unit-of-measure when
-    there is no left hand??
-    - the left hand is standard_output, which is a file without a
-      unit-of-measure but needs its policies checked.
   - remedy message when tagged clause without policy keyword occurs
   * adding tags to a set is probably not "include" but will need a
     special function to control position in a tree of possibilities
